@@ -1,0 +1,40 @@
+---
+title: "CensusData"
+author: "Jorge Cornick"
+date: "2026-04-16"
+output: html_document
+---
+
+Great context. Let me do some targeted research on what Census trade data is actually available via `censusapi`, so I can give you an accurate picture rather than guessing.Good, I have a very solid picture now. Let me build you a proper orientation map.Now I have everything I need. Let me build you a proper orientation map.
+
+Here's a structured picture of what's in the Census Bureau's international trade API — focused purely on what's relevant to your project (imports, by country, by commodity classification).Here's the conceptual lay of the land, oriented toward your specific project.
+
+**The core structure**
+
+Everything lives under `timeseries/intltrade/imports/[endpoint]`. You pick an endpoint based on how you want commodities classified — that's the most fundamental choice. Since you want to drill into Mexico at multiple aggregation levels, the **HS endpoint** (`imports/hs`) will be your primary workhorse. It's the most detailed, goes down to 10-digit product codes, and you can aggregate upward at will.
+
+**The commodity classification decision**
+
+This is genuinely important to understand before you write a single line of R. The six systems are:
+
+- **HS (Harmonized System)** — the international standard. 2-digit chapters → 4-digit headings → 6-digit subheadings → 10-digit statistical suffixes. This is the right choice for "what specific goods are coming from Mexico." You can ask for all 10-digit detail and roll up yourself, or use `COMM_LVL` to get pre-aggregated 2 or 4-digit results directly from the API.
+- **NAICS** — organizes trade by the *US industry* that would use the goods (2–6-digit). Useful if you want to connect trade flows to US industry data later, but HS is more natural for "what is Mexico sending us."
+- **End-use** — groups goods by their economic purpose (capital goods, consumer goods, industrial supplies, etc.). Good for macro-level analysis but coarser than HS.
+- **SITC** — the UN's older system. Still used for international comparisons but mostly legacy at this point.
+- **USDA / HiTech** — specialty subsets (agriculture and advanced technology respectively). Narrow but useful if those sectors come up.
+
+You cannot mix classification systems in one API call — you pick one per call.
+
+**Filtering for Mexico**
+
+Mexico's `CTY_CODE` is `"2010"`. Once you know that, you can filter any endpoint to Mexico-only data and it becomes the centerpiece of your analysis.
+
+**What "aggregation level" means in practice**
+
+When you pull from `imports/hs`, the API can return rows at any HS digit level. The `COMM_LVL` parameter controls this — `HS2`, `HS4`, `HS6`, or `HS10`. For your multi-level Mexico analysis, you'd pull data at different `COMM_LVL` values to go from broad categories down to specific products. That maps directly to what DataWeb shows in its drill-down interface, but you'll have it in R as a tidy data frame.
+
+**Your learning path**
+
+A natural progression would be: (1) set up `censusapi` with your API key and run `listCensusApis()` to confirm the trade endpoints are visible, (2) pull total imports by country to establish the global picture and Mexico's rank, (3) pull Mexico-only imports at HS2 for a broad sector view, (4) drill into specific HS2 chapters at HS6 or HS10 for the goods-level detail. Each step is one `getCensus()` call with progressively more specific parameters.
+
+Click any box in the diagram to go straight to a code example for that piece. Where would you like to start?
