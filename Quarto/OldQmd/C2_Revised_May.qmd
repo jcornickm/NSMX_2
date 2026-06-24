@@ -1,0 +1,2394 @@
+---
+title: "Nearshoring en los datos"
+author: "Jorge Cornick y Carlos Zafra, abril - mayo 2026"
+format:
+  html:
+    embed-resources: true
+lang: es
+toc: true
+toc-depth: 3
+editor: source
+editor_options:
+  chunk_output_type: console
+#bibliography: references.bib
+# link-citations: true
+bibliography: references.bib
+---
+
+```{r}
+#| label: loadlibs
+#| code-fold: true
+#| code-summary: "Carga de bibliotecas"
+
+pacman::p_load(
+  tidyverse, here, scales, knitr, gt,
+  treemapify, patchwork, glue,
+  geodata, sf, cowplot, ggrepel
+)
+```
+
+```{r}
+#| label: setup
+#| include: false
+
+source(here::here("Scripts", "funciones.R"))
+```
+
+## 1. Introducción
+
+### 1.1 ¿Nearshoring en México?
+
+El "nearshoring" fue un tema que se empezó a discutir tras el inicio de la guerra comercial entre Estados Unidos y China, pero que tomó fuerza a partir de la pandemia del COVID-19 en 2020; a partir de 2021, es un tema que se menciona cada vez con más frecuencia en las comunicaciones empresariales, como lo muestra la @fig-nearshoring.
+
+```{r}
+#| label: fig-nearshoring
+#| fig-cap: "Menciones de Nearshoring por parte de CEOs <br> Fuente: https://iot-analytics.com/what-ceos-talked-about-in-q4-2024-tariffs-reshoring-agentic-ai/"
+#| cap-location: top
+#| echo: false
+
+knitr::include_graphics(here::here("Images", "nearshoring.png"))
+```
+
+Sin embargo, un cambio en los temas que los CEOs disctuen, y un cambio en lo que las empresas hacen no son sinónimos.  Era razonable preguntarse si la discusión sobre NS, en conversaciones empresariles pero también en instituciones de desarrollo y en círculos académicos estaba acompañada de cambios en la organización geográfica de las cadenas globales de valor (CGV).
+
+Investigaciones tempranas concluyeron que no mucha reconfiguración estaba teniendo lugar [@brenton2022] e incluso argumentaron que la prioridad de política debería de ser el fortalecimento de las CGV y su resiliencia, no su relocalización, que resultaría en pérdidas de eficiencia y reducción del bienestar global.
+
+Aunque en aquel momento no se registraban cambios en los flujos de nueva IED que respaladaran la hipótesis de que se estuvieran reconfigurando las CGV, algunos autores advirtieron que el fenómeno podía estar teniendo lugar por otros canales [@martínezgarciía2024].  Más allá de los **flujos** de inversión, que responden con rezago considerable a las decisione de inversión, los **anuncios** de nueva inversión sugerían un cambio en la dirección futura de la IED. No se puede esperar que los flujos de inversión respndan de manera inmediata a cambios en las condiciones comerciales, ni siquiera en el caso de que exista confianza en que esos cambios serán duraderos [@gaurav2024].  El tema de los anuncios de inversión, para el caso concreto de México, de hecho se aborda más adelante en este capítulo.
+
+
+La perspectiva de este reporte es distinta a la que ha prevalecido hasta el momento, como ya quedó claro desde el capítulo anterior. Argumentamos que existen por lo menos dos mecanismos que permiten la reorganización de las CGV con mayor rapidez que los cambios en los flujos de nueva IED.  Estos mecanismos permiten responder de manera rápida a cambios en el entorno económico y político y constituyen, por sí mismos, un primer paso en la reorganziación de las CGV:
+
+-   La reorganización de flujos comerciales, que puede apoyarse, a su vez, en cambios en la asignación de cuotas de producción entre plantas ubicadas en diversos países así como en cambios de la asignación de líneas de producción entre plantas [^1]
+
+-   La reinversión de utilidades de plantas ya existentes, es decir, de empresas que ya conocen el territorio y tiene una idea clara de plazos, procedimientos, disponibilidad de recursos humanos, energía y otros.
+
+[^1]: No disponemos de información que permita verificar directamente esta hipótesis, pero si las exportaciones crecen más aceleradamente que los flujos de inversión presentes y rezagados, esto podría considerarse evidencia de que este mecanismos de ajuste en efecto se utiliza y opera con más rapidez que el cambio en los flujos de nueva inversión
+
+En este capítulo mostramos que el examen de los flujos comerciales entre México y Estados Unidos arroja evidencia contundente de un proceso de reorganzación de CGV, favorable a México en muchos, pero no todos los casos. La evidencia econométrica, aunque por razones obvias no ha examinado aún los cambios más recientes en la política comercial de los EUA, confirma lo que las estadísticas descriptivas y la exploración visual de los datos sugieren.
+
+
+Si a pesar ello existe en círculos empresariales la impresión de que NS en México ha sido "mucho ruido y pocas nueces", ello quizá se deba a una mezcla de expectativas iniciales sobredimensionadas, y a que existen restricciones internas que impiden a México aprovechar plenamente las oportunidades que los cambios en la politica comercial de EUA, y los conflictos geopolíticos, le ofrecen. Algunas de estas restricciones se discuten en los capítulos siguientes de este informe.
+
+### 1.2 Tres períodos claramente diferenciados
+
+El examen de la evidencia estadística en este capítulo comprende el lapso que va desde 2010 hasta los últimos datos disponibles para 2025. Aunque la discusión sobre NS no se inicia sino hacia el año 2019, la elección de este lapso nos permite contrastar tres perídos distintos, y por lo tanto, ver con mayor claridad los cambios que conllevó la transición entre ellos:
+
+-   El período que llamaremos la "normalidad globalizadora", de 2010 a 2018, cuando la globalización parecía una fuerza imparable, que se concretaba en reducciones generales de las barreras al comercio en el marco de la OMC, así como en tratados bilaterales y regionales de libre comercio.
+
+-   El período de la primera guerra comercial entre Estados Unidos y China, que se inicia con los aranceles a las importaciones desde China que impuso el primer gobierno del presidente Trump, y que contrariamente a algunas expectativas, no fueron eliminados durante el gobierno del presidente Biden. En aras de la brevedad, nos referimos a este período, que va de 2018 a 2024 como "Trump 1".
+
+-   El período que se inicia con el segundo gobierno del presidente Trump - al que previsiblmente llamaremos "Trump 2" - en el que los cambios son más complejos y menos predecibles. Ya no se trata únicamente de aranceles a ciertas importaciones provenientes de China y consideraciones de seguridad nacional, sino del abandono de las reglas que hasta entonces habían regido las relaciones comerciales de Estados Unidos con sus socios, y su sustitución por una serie de instrumentos diversa, con tasas imprevisibles, que han sido revertidas en algunos casos por resoluciones judiciales, solo para ser sustituidas por nuevas tarifas, al amparo de normas distintas a las que justificaron las anteriores.
+
+El impacto de la política predominante en cada uno de estos períodos ha sido distinto tanto para México como para otros exportadores al mercado de EUA en términos tanto del volumen como de la composición de las exportaciones. 
+En México el impacto ha estado claramente diferenciado, en cada etapa, en términos de la composición de las exportaciones y de la participación de los diversos estados como porcentaje del total de exportaciones. 
+
+Sin embargo, hay una constante: mientras que algunos estados han sido ganadores o perdedores en períodos distintos, un pequeño conjunto de estados ha visto disminuir su participación en la economía exportadora en todos ellos, como se muestra en la Sección 4. La división entre "dos Méxicos", que ha sido objeto de amplia discusión en la literatura sobre el desarrollo mexicano [@chiquiar2005][@aroca2005][@gómez2009] se ha profundizado a lo largo de los tres períodos bajo análisis.
+
+### 1.3 Organización del capítulo
+
+El capitulo está organizado de la siguiente manera:
+
+-   En la Sección 2 se analiza el cambio en las importaciones de Estados Unidos por país de origen.
+-   En la Sección 3 se estudia con cierto detalle el cambio en las importaciones de Estados Unidos provenientes de México, tanto en términos de volumen como en términos de su composición.
+-   En la Sección 4 se explora el tema del impacto regional del NS en términos de la distribución de las exportaciones por Estado, dentro de los estrechos límites que la información disponible impone a este ejercicios, así como del empleo en el régimen IMMEX.
+-   En la Seccióin 5 se aborda el tema de los flujos de inversión. En la primera parte de esta sección se analiza la información disponible sobre flujos efectivos y demanda de suelo de uso industrial, mientras que en la segunda parte se aborda el tema desde la perspectiva de los anuncios de nueva inversión.
+
+## 2. Las importaciones de Estados Unidos por país de origen
+
+::: {.callout-note collapse="true" title="Metadatos: importaciones EUA por país"}
+```{r}
+#| label: load-imp-pais
+#| echo: false
+
+impPais     <- readRDS(here::here("RDS", "imp_por_pais.rds"))  
+metaImpPais <- readRDS(here::here("RDS", "meta_imp_por_pais.rds"))
+gt_meta(metaImpPais, titulo = "Metadatos: Importaciones EUA por país de origen")
+rm(metaImpPais)
+```
+:::
+
+### 2.1 Cambio en las posiciones relativas de México y China
+
+La manifestación más obvia de que los CGV centradas en Estados Unidos se están reorganizando, y de cómo México ha participado en esa reorganización, surge del examen de la evolución de las importaciones de ese país según su país de origen. Como la reducción de las importaciones provenientes de China, y el incremento de aquellas provenientes de México ha sido ampliamente reportada, empezamos por mostrar, en la @fig-ImpEUA-CHN-MEX, el cambio en la participacion de estos dos países en el mercado de los Estados Unidos. El gráfico permite, además, identificar el impacto de los cambios en la política comercial de los EUA sobre el comportamiento de las importaciones provenientes de uno y otro país en cada uno de los tres períodos en los que se organiza nuestro análisis:
+
+-   Durante la normalidad globalizadora, la tasa compuesta anual (TCAC en adelante) de las importaciones provenientes de México es de un respetable 4.2%, pero las importaciones proveniente de China crecen aún más rápidamente: TCAC de 5.1%..
+
+-   Los papeles se revierten durante Trump 1: el TCAC de las importaciones provenientes de México sube a 6.5%, mientras que el de China se vuelve negativo: -3.3%
+
+-   Trump 2 lleva al colapso de las importaciones provenientes de China, que disminuyen en un 43.8%, y a un crecimiento del 8% de las provenientes de México.
+
+```{r}
+#| label: save-fig-ImpEUA-CHN-MEX
+#| echo: false
+#| eval: false
+#| code-summary: "Código del gráfico"
+
+p <- local({
+  col_chn <- "#003399FF"
+  col_mex <- "#006600"
+
+  imp_chn_mex <- impPais |>
+    filter(País %in% c("China", "México")) |>
+    mutate(Imp_bn = Imp_mes / 1e9)
+
+  val_en <- function(df, pais_nombre, año, mes = "12") {
+    df |>
+      filter(
+        País == pais_nombre,
+        format(fecha, "%Y") == as.character(año),
+        format(fecha, "%m") == mes
+      ) |>
+      pull(Imp_bn)
+  }
+
+  cagr <- function(v_fin, v_ini, n) ((v_fin / v_ini)^(1 / n) - 1) * 100
+
+  mex_10 <- val_en(imp_chn_mex, "México", 2010)
+  mex_18 <- val_en(imp_chn_mex, "México", 2018)
+  mex_24 <- val_en(imp_chn_mex, "México", 2024)
+  mex_25 <- val_en(imp_chn_mex, "México", 2025)
+
+  chn_10 <- val_en(imp_chn_mex, "China", 2010)
+  chn_18 <- val_en(imp_chn_mex, "China", 2018)
+  chn_24 <- val_en(imp_chn_mex, "China", 2024)
+  chn_25 <- val_en(imp_chn_mex, "China", 2025)
+
+  etiquetas_mex <- tibble(
+    fecha = as.Date(c("2014-01-01", "2021-06-01", "2024-06-01")),
+    y_pos = c(mex_18 + 1.5, mex_24 - 9, mex_25 + 1.5),
+    label = c(
+      paste0("TCAC MEX 10-18: ", round(cagr(mex_18, mex_10, 8), 1), "%"),
+      paste0("TCAC MEX 18-24: ", round(cagr(mex_24, mex_18, 6), 1), "%"),
+      paste0("Var. MEX 24-25: ", round((mex_25 / mex_24 - 1) * 100, 1), "%")
+    )
+  )
+
+  etiquetas_chn <- tibble(
+    fecha = as.Date(c("2014-01-01", "2021-06-01", "2024-06-01")),
+    y_pos = c(chn_18 + 1.5, chn_24 + 6, chn_25 - 3),
+    label = c(
+      paste0("TCAC CHN 10-18: ", round(cagr(chn_18, chn_10, 8), 1), "%"),
+      paste0("TCAC CHN 18-24: ", round(cagr(chn_24, chn_18, 6), 1), "%"),
+      paste0("Var. CHN 24-25: ", round((chn_25 / chn_24 - 1) * 100, 1), "%")
+    )
+  )
+
+imp_chn_mex |>
+    filter(year(fecha) >= 2010) |>
+    ggplot(aes(x = fecha, y = Imp_bn, color = País)) +
+    geom_line(linewidth = 1) +
+    geom_vline(
+      xintercept = as.Date(c("2018-12-01", "2024-12-01")),
+      linetype = "dotted", color = "red", linewidth = 0.7
+    ) +
+    geom_label(
+      data = etiquetas_mex,
+      aes(x = fecha, y = y_pos, label = label),
+      inherit.aes = FALSE,
+      color = col_mex, fill = "white", fontface = "bold", size = 3.5, linewidth = 0.4
+    ) +
+    geom_label(
+      data = etiquetas_chn,
+      aes(x = fecha, y = y_pos, label = label),
+      inherit.aes = FALSE,
+      color = col_chn, fill = "white", fontface = "bold", size = 3.5, linewidth = 0.4
+    ) +
+    scale_color_manual(values = c("China" = col_chn, "México" = col_mex)) +
+    scale_x_date(date_labels = "%Y", date_breaks = "1 year") +
+    labs(x = NULL, y = NULL, color = "",
+         caption = "Elaboración propia con base en US Census Bureau.") +
+    theme_bw() +
+    theme(
+      legend.position  = "bottom",
+      panel.grid.minor = element_blank(),
+      axis.text.x      = element_text(angle = 90, vjust = 0.5)
+    )
+})
+
+ggsave(here::here("Plots", "fig-ImpEUA-CHN-MEX.pdf"),
+       plot = p, width = 10, height = 6, device = cairo_pdf)
+ggsave(here::here("Plots", "fig-ImpEUA-CHN-MEX.png"),
+       plot = p, width = 10, height = 6, dpi = 150)
+
+```
+
+```{r}
+#| label: fig-ImpEUA-CHN-MEX
+#| message: false
+#| warning: false
+#| echo: false
+#| code-summary: "Importaciones EUA desde China y México"
+#| fig-cap: |
+#|   EUA: importaciones mensuales desde China y México, 2010-2025
+#|   Miles de millones de dólares
+#| fig-cap-location: top
+
+knitr::include_graphics(here::here("Plots", "fig-ImpEUA-CHN-MEX.png"))
+
+```
+
+
+Ahora bien, es necesario hacer tres acotaciones para no dar un peso injustificadamente elevado a estos primeros datos de evidencia.
+
+En primer lugar, alguna evidencia sugiere que parte de la reducción en las importaciones de China corresponde a reducciones en el valor reportado, y no a reducciones en el monto físico de las importacones, como lo sugiere la discrepancia entre el valor de las importaciones reportadas por China y el valor de las importaciones provenientes de China reportado por Estados Unidos [@swanson2026][@clark2021].
+
+En segundo lugar, se ha discutido la posibilidad de que parte de la disminución de las importaciones de China refleje en realidad una triangulación de exportaciones de dicho país via México y Vietnam [@iyoha2025][@meltzer].
+
+En tercer lugar, los datos del último período no reflejan tanto el impacto de una nueva política comercial de EUA, sino más bien la incertidumbre asociada con esa política, que cambia día a día como resultado de negociaciones comerciales y resoluciones judiciales, así como la profundización del conflicto comercial y geopolítico entre EUA y China. Conforme - y si es que - la nueva política comercial se estabilice, el impacto sobre la competitividad de diversos exportadores al mercado de EUA, en diferentes productos, podría variar sustancialmente.
+
+Ninguna de estas acotaciones debe llevar a la conclusión de que el cambio en el origen de las importaciones norteamericanas no es real, pero señalan - de la misma manera que los datos sobre inversión china en México, que se discuten en un capítulo separado - que existe una considerable cantidad de "ruido" en la información de que disponemos, y que si bien es posible identificar tendencias claras, será necesario mucho trabajo adicional para elevar el grado de precisión de nuetros diagnósticos.
+
+```{r}
+#| label: origAnualPerc
+#| echo: false
+
+# Participaciones anuales: enero–diciembre (enero–noviembre para 2025)
+impPais_Perc <- map_dfr(2010:2025, function(año) {
+  fecha_fin <- if (año == 2025) as.Date("2025-11-01") else as.Date(paste0(año, "-12-01"))
+
+  impPais |>
+    filter(
+      fecha >= as.Date(paste0(año, "-01-01")),
+      fecha <= fecha_fin,
+      grupo %in% c("Top20", "Resto")
+    ) |>
+    group_by(País, rank) |>
+    summarise(Imp_anual = sum(Imp_mes, na.rm = TRUE), .groups = "drop") |>
+    mutate(año = año, share = Imp_anual / sum(Imp_anual))
+}) |>
+  select(año, País, rank, Imp_anual, share)
+```
+
+### 2.2  Los veinte orígenes más importantes
+
+Si ampliamos la mirada a los 20 orígenes más importantes de las importaciones de Estados Unidos, el cambio entre 2010 y 2025 es notorio, como se muestra en la @fig-DistImpEUA-pais:
+
+-   En primer lugar, es claro el aumento de la concentración de los orígenes: los 20 orígenes más importantes representaban el 78% de las importaciones de EUA en 2010, pero pasan a representar el 85% del total en 2025.
+-   En segundo lugar, es notoria, y hasta dramática, la disminución en la participación de China, que de un 19% en 2010 se reduce a apenas un 9% en 2025.
+-   En América, Canadá gana pierde cuatro puntos porcentuales, y México gana otros tantos.
+-   Los cambios proporcionalmente más dramáticos tienen lugar en Asia. La participación de Vietnam se sextuplica, la Taiwán se triplica, la de Malasia se duplica, la de India crece en un 50%, la de Corea del Sur crece un 25%.
+
+
+```{r}
+#| label: prep-fig-distImpEUA-pais
+#| include: false
+
+continentes <- tribble(
+    ~País,       ~Continente,
+    "México",    "América",
+    "China",     "Asia",
+    "Canadá",    "América",
+    "Alemania",  "Europa",
+    "Japón",     "Asia",
+    "Vietnam",   "Asia",
+    "Corea_S",   "Asia",
+    "Taiwán",    "Asia",
+    "India",     "Asia",
+    "Irlanda",   "Europa",
+    "Italia",    "Europa",
+    "R_Unido",   "Europa",
+    "Tailandia", "Asia",
+    "Suiza",     "Europa",
+    "Francia",   "Europa",
+    "Malasia",   "Asia",
+    "Brasil",    "América",
+    "P_Bajos",   "Europa",
+    "Indonesia", "Asia",
+    "Singapur",  "Asia",
+    "Resto",     "Resto"
+  )
+
+datos_dist_pais <- impPais |>
+    filter(year(fecha) %in% c(2010, 2025), grupo %in% c("Top20", "Resto")) |> # Top20 y Resto son grupos definidos en ImpPais
+    group_by(año = year(fecha), País, rank) |>
+    summarise(Imp_anual = sum(Imp_mes, na.rm = TRUE), .groups = "drop") |>
+    group_by(año) |>
+    mutate(share = Imp_anual / sum(Imp_anual)) |>
+    ungroup() |>
+    left_join(continentes, by = "País") |>
+    mutate(etiqueta = paste0(País, "\n", percent(share, accuracy = 1)))
+
+datos_dist_pais |> 
+  ggplot(aes(area = share, fill = Continente, label = etiqueta, subgroup = Continente)) +
+    geom_treemap(layout = "squarified", color = "white") +
+    geom_treemap_subgroup_border(layout = "squarified", color = "black", size = 3) +
+    geom_treemap_text(
+      layout = "squarified", place = "centre",
+      size = 11, colour = "black", reflow = TRUE, fontface = "bold", min.size = 3
+    ) +
+    facet_wrap(~ año) +
+    scale_fill_brewer(palette = "Paired") +
+    theme_bw() +
+    labs(fill = "Continente", caption = "Elaboración propia con base en US Census Bureau") +
+    theme(
+      legend.position  = "bottom",
+      strip.background = element_blank(),
+      strip.text       = element_text(size = 16, face = "plain")
+    )
+
+ggsave(here::here("Plots", "dist_imp_pais.pdf"), width = 8, height = 6, device = cairo_pdf)
+ggsave(here::here("Plots", "dist_imp_pais.png"), width = 8, height = 6, dpi = 150)
+
+rm(continentes, datos_dist_pais)
+```
+
+
+```{r}
+#| label: fig-DistImpEUA-pais
+#| message: false
+#| warning: false
+#| echo: false
+#| code-summary: "Distribución porcentual de importaciones por país, 2010 y 2025"
+#| fig-cap: |
+#|   Distribución porcentual de las importaciones de EUA por país
+#|   2010 y 2025
+#| fig-cap-location: top
+
+knitr::include_graphics(here::here("Plots", "dist_imp_pais.png"))
+```
+
+Como cabía esperarlo a la luz de la periodización establecida en la Sección 1, estos cambios no reflejan una tendencia lineal al incremento o reducción de la participación de los países incluidos en el gráfico: ganadores y perdedores han cambiado a lo largo de los tres períodos en que hemos dividido nuestro análisis, como se muestra en la @fig-imp-cambio-pais:
+
+-   Durante el período de la normalidad globalizadora, tanto China como México ganan participación en el mercado de EUA: 1.5 y 2.2 puntos porcentuales respectivamente, pero ya desde entonces Vietnam crece a un ritmo que se aproxima al de México.
+
+-   Durante Trump 2 hay una reducción de 7.8 puntos porcentuales (pp)en la participación de China, mientras que los ganadores, en orden ascendente, son Corea, Taiwán, México y Vietnam.
+
+-   Durante Trump 3 continúa la contracción de las importaciones provenientes de China, mientras que los principales ganadores son India, Tailandia, Irlanda, Suiza, Vietnam y, por importante diferencia, Taiwán.  Nótese que estos dos países también se posiciónaron como el primero y segundo en términos de incremento de su participación en el período anterior.  México, en cambio, apenas logra mantener su posición en este período.[^2].  
+
+[^2]: Por razones de tiempo, y para no hacer demasiado extenso este capítulo, no he analizado la composición de las importaciones provenientes de estos países,pero tenemos los datos para hacerlo si nos pareciera oportuno
+
+{{< pagebreak >}}
+
+```{r}
+#| label: fig-imp-cambio-pais
+#| code-fold: true
+#| code-summary: "Gráfico: cambio en participación por país, períodos seleccionados"
+#| fig-cap: "Cambios en pp en el origen de las importaciones de EUA por país"
+#| fig-cap-location: top
+#| warning: false
+#| fig-width: 8
+#| fig-height: 6
+local({
+  codigos_iso <- c(
+    "México"    = "MEX", "Canadá"    = "CAN", "China"     = "CHN",
+    "Vietnam"   = "VNM", "Taiwán"    = "TWN", "Alemania"  = "DEU",
+    "Japón"     = "JPN", "Corea_S"   = "KOR", "Irlanda"   = "IRL",
+    "India"     = "IND", "Suiza"     = "CHE", "Tailandia" = "THA",
+    "Italia"    = "ITA", "R_Unido"   = "GBR", "Francia"   = "FRA",
+    "Malasia"   = "MYS", "Brasil"    = "BRA", "Singapur"  = "SGP",
+    "P_Bajos"   = "NLD", "Indonesia" = "IDN", "Resto"     = "RoW"
+  )
+
+  hacer_divbar_paises <- function(ini, fin, datos) {
+    col_ini <- paste0("y", ini)
+    col_fin <- paste0("y", fin)
+    cambios <- datos |>
+      filter(año %in% c(ini, fin)) |>
+      select(País, año, share) |>
+      pivot_wider(names_from = año, values_from = share, names_prefix = "y") |>
+      mutate(
+        cambio_pp   = (.data[[col_fin]] - .data[[col_ini]]) * 100,
+        País_cod    = codigos_iso[País],
+        País_cod    = fct_reorder(País_cod, cambio_pp),
+        color_grupo = case_when(
+          País == "China"  ~ "china",
+          País == "México" ~ "mexico",
+          cambio_pp > 0    ~ "positivo",
+          TRUE             ~ "negativo"
+        )
+      )
+    
+    ggplot(cambios, aes(x = País_cod, y = cambio_pp, fill = color_grupo)) +
+      geom_col() +
+      geom_text(
+        aes(
+          label = sprintf("%.1f", cambio_pp),
+          y     = if_else(cambio_pp > 0, cambio_pp + 0.05, cambio_pp - 0.05),
+          vjust = 0.35,
+          hjust = if_else(cambio_pp > 0, 0, 1)
+        ),
+        angle    = 90,
+        size     = 2.5,
+        fontface = "plain"
+        ) +
+      geom_hline(yintercept = 0, linewidth = 0.4, color = "grey30") +
+      scale_y_continuous(labels = \(x) as.character(x), expand = expansion(mult = c(0.22, 0.22))) +
+      scale_fill_manual(values = c(
+        "china"    = "#8B0000", "mexico"   = "#B5651D",
+        "positivo" = "#1F78B4", "negativo" = "#41ab5d"
+      )) +
+      theme_bw() +
+      labs(x = NULL, y = NULL, title = glue("{ini} – {fin}")) +
+      theme(
+        plot.title = element_text(fontface = "plain"),
+        legend.position    = "none",
+        panel.grid.major.x = element_blank(),
+        axis.text.x        = element_text(angle = 90, vjust = 0.5, hjust = 1),
+        axis.text.y        = element_text(size = 9)
+      )
+  }
+  periodos      <- list(c(2010, 2025), c(2010, 2018), c(2018, 2024), c(2024, 2025))
+  divbar_paises <- map(periodos, \(p) hacer_divbar_paises(p[1], p[2], impPais_Perc))
+  p <- (divbar_paises[[1]] + divbar_paises[[2]]) /
+       (divbar_paises[[3]] + divbar_paises[[4]]) +
+    plot_annotation(caption = "Elaboración propia con base en US Census Bureau") &
+    theme(plot.caption = element_text(hjust = 1))
+  print(p)
+})
+```
+
+### 2.3 Estancamiento de México y surgimiento de nuevas estrellas exportadoras
+
+Una última mirada al cambio en las importaciones de EUA por país de origen se presenta en la @fig-ImpEUA-shares que muestra la evolución de las participaciones porcentuales de México, China, Taiwán y Vietnam, Irlanda y Suiza, es decir, de todos los países que, punta a punta, ganaron dos puntos porcentuales, o más, de participación en las importaciones de EUA. 
+
+Aunque la distancia entre México y las "estrellas emergentes" en el mercado de EUA es todavía considerable, el gráfico pone en evidencia que durante Trump 2, a pesar que de en términos de valor el crecimiento de las exportaciones mexicanas a EUA se acelera, en términos relativos su posición se estanca, mientras que otros países incrementan aceleradamente su participación.  Este estancamiento relativo puede ser el resultado, en parte, de que en algunos sectores importantes la posición competitiva de México se ha visto perjudicada por la nuetra estructura de las tarifas de EUA, y en parte de limites internos que no han permitido a México aprovechar plenamente las oportunidades que se le han presentado.
+
+Más adelante en este capítulo se presenta una discusión, exploratoria, del impacto de las nuevas tarifas sobre algunos sectores exportadores mexicanos, mientras que en los capítulos que siguen se abordan algunas de las restricciones internas que limitan la capacidad de México para aprovechar, de manera más completa y acelerada, las oportunidades que surgen del NS.
+
+```{r}
+#| label: save-impPais_perc_plot
+#| eval: false
+#| include: false
+
+impPais_Perc |>
+  filter(País %in% c("México", "China", "Taiwán", "Vietnam", "Suiza", "Irlanda")) |>
+  ggplot(aes(x = año, y = share, color = País)) +
+  geom_line(linewidth = 1) +
+  geom_point(size = 2) +
+  geom_vline(xintercept = c(2018, 2024), linetype = "dotted", color = "red", linewidth = 0.7) +
+  scale_x_continuous(breaks = 2010:2025) +
+  scale_y_continuous(labels = percent_format(accuracy = 1)) +
+  scale_color_brewer(palette = "Set1") +
+  labs(
+    x = NULL, y = NULL, color = "",
+    caption = "Elaboración propia con base en US Census Bureau.\nNota: períodos anuales diciembre–noviembre."
+  ) +
+  theme_bw() +
+  theme(
+    legend.position  = "bottom",
+    panel.grid.minor = element_blank(),
+    axis.text.x      = element_text(angle = 90, vjust = 0.5)
+  )
+
+ggsave(here::here("Plots", "imp_pais_perc.pdf"), width = 8, height = 6, device = cairo_pdf)
+ggsave(here::here("Plots", "imp_pais_perc.png"), width = 8, height = 6, dpi = 150)
+```
+
+```{r}
+#| label: fig-ImpEUA-shares
+#| message: false
+#| warning: false
+#| echo: false
+#| code-summary: "Importaciones EUA: México, China, Taiwán, Vietnam, Suiza e Irlanda"
+#| fig-cap: |
+#|   EUA: participación porcentual en las importaciones totales,
+#|   México, China, Taiwán y Vietnam, 2010-2025
+#| fig-cap-location: top
+
+knitr::include_graphics(here::here("Plots", "imp_pais_perc.png"))
+
+```
+
+```{r}
+#| label: cleanup-imp-pais
+#| include: false
+
+rm(impPais, metaImpPais, impPais_Perc)
+```
+
+## 3. Las importaciones de EUA provenientes de México
+
+En esta sección cambiamos de foco: en vez de analizar los patrones de las importaciones de EUA según su origen, examinamos en detalle la composición de las importaciones provenientes de México [^3].
+
+[^3]: Ernesto: en una iteración posterior, podríamos identificar los otros orígenes de los principales productos de exportación de México, así como la composición de las importaciones de EUA provenientes de las "nuevas estrellas", a saber, Taiwán, Vietnam, Irlanda y Suiza. Propongo no hacerlo todavía para no postergar aún más la finalización del texto de este capítulo.
+
+Aunque usaremos de manera indiferente las expresiones "importaciones de EUA provenientes de México" y "exportaciones mexicanas a Estados Unidos", todos los datos en esta sección provienen de fuentes oficiales de los EUA. La razón consiste en que, como bien lo advierte el Diccionario de Datos de Data México [^4], en los datos mexicanos no es posible, por razones de confidencialidad, reconstruir las categorías agregadas sumando los datos desagregados, es decir, la suma de las exportaciones por Capítulo de determinada Sección del SA no es igual a las exportaciones reportadas para la Sección.  Los datos de las fuentes oficiales de EUA son congruentes en todos los niveles de agregación^[Estas y otras discrepancias entre datos de diversas fuentes pueden ser, en sí mismas, un tema que merezca investigación, pero que se encuentra fuera del alcance de este capítulo]
+
+[^4]: Disponible en [Diccionario de Datos](https://www.economia.gob.mx/datamexico/es/vizbuilder)
+
+Presentaremos información detallada sobre las importaciones de EUA provenientes de México, en tres distintos niveles de agregación: Sección, Capítulo y Partida del SA.  La estrategia es de "acercamientos sucesivos": primero se identifican las Secciones de más peso en las exportaciones mexicanas.  En segundo lugar, pero únicamente para las Secciones de mayor importancia, se identificcan los Capítulos de mayor importancia, y finalmente, para esos capítulos, se examina la distribución de las exportaciones por Partida. 
+
+Como tendremos ocasión de ver en las sub secciones que siguen, tanto a nivel de Sección como de Capítulo los datos muestran una creciente concentración de las exportaciones mexicanas.  No se observa esa misma tendencia cuando los datos se desagregan a nivel de Partida, y el análisis de Partidas seleccionadas que aquí se presenta debe considerarse preliminar, ya que cubren un porcentaje relativamente bajo de sus respectivos capítulos.
+
+Estos patrones diferenciados tienen importancia para la política de desarrollo productivo mexicana:  si el incremento de las exportaciones a EUA se ha dado sobre todo en el margen intensivo, por lo menos cuando los datos se desagregan únicamente hasta el nivel de Capítulo, cabe sin embargo preguntarse si a nivel de Partidas existen mayores oportunidades para diversificación en el margen extensivo, que requieren de políticas específicas y diferentes de las requeridas en el margen intensivo.
+
+### 3.1 Por Sección del SA
+
+::: {.callout-note collapse="true" title="Carga datos y metadatos: importaciones desde México por Sección/Capítulo"}
+```{r}
+#| label: load-imp-mex
+#| echo: false
+
+impMex     <- readRDS(here::here("RDS", "imp_mex_sec_cap.rds"))
+metaImpMex <- readRDS(here::here("RDS", "meta_imp_mex_sec_cap.rds"))
+gt_meta(metaImpMex, titulo = "Metadatos: Importaciones EUA desde México por Sección y Capítulo")
+```
+:::
+
+
+```{r}
+#| label: prep-sec-pct
+#| include: false
+#| code-summary: "Preparación datos Sección: porcentajes anuales"
+
+# Participaciones anuales por Sección del SA (enero–noviembre para 2025)
+impMex_sec_pct <- map_dfr(2010:2025, function(año) {
+  fecha_fin <- if (año == 2025) as.Date("2025-11-01") else as.Date(paste0(año, "-12-01"))
+
+impMex |>
+  filter(fecha >= as.Date(paste0(año, "-01-01")), fecha <= fecha_fin) |>
+  group_by(año = year(fecha), Sección, Sección_corto, Sección_desc_es) |>
+  summarise(Val_anual = sum(Val_mes, na.rm = TRUE), .groups = "drop") |>
+  group_by(año) |>
+  mutate(pct = Val_anual / sum(Val_anual)) |>
+  ungroup()
+})
+```
+
+La distribución porcentual de las importaciones provenientes de México, por sector del SA en 2010 y 2025 se muestra en la @fig-tree-sec. Tres son los sectores de interés para nuestro análisis: Transporte, Maquinaria e Instrumentos, los cuales sumaban el 60% del total de importaciones provenientes de México en 2010, pero elevaron su participación a un 74% del total en 2025. La importancia de los dos primeros es obvia:  son los más grandes, y son precisamente sectores altamente sensibles a las politicas arancelarias tanto de Trump 1 como de Trump 2.  La relevancia de instrumentos es menos obvia:  a pesar de su crecimiento (pasan del 4 al 5% del total de exportaciones mexicanas) tiene un peso aún pequeño, pero su crecimiento se ha acelerado, y se trata de un sector en el que el NS parece ofrecer oportunidades importantes, tanto para México como para sus competidores regionales en este rubro, Costa Rica y República Dominicana.
+
+Aunque no corresponde al foco de nuestro documento, la reducción de Minerales es impactante: pasa de representar el 15% a representar tan solo el 2% de las importaciones de EUA provenientes de México.
+
+```{r}
+#| label: save-tree-sec
+#| include: false
+#| eval: false
+#| code-summary: "Treemaps: composición por Sección, años inicial y final"
+#| fig-cap: "Composición porcentual de las exportaciones provenientes de México"
+#| fig-cap-location: top
+#| fig-width: 6.5
+#| fig-height: 6
+
+año_ini   <- 2010
+año_fin   <- 2025
+n_sec     <- n_distinct(impMex_sec_pct$Sección_corto)
+mi_paleta <- colorRampPalette(RColorBrewer::brewer.pal(11, "Spectral"))(n_sec)
+  
+impMex_sec_pct |>
+    filter(año %in% c(año_ini, año_fin)) |>
+    mutate(etiqueta = paste0(Sección_corto, "\n", percent(pct, accuracy = 1))) |>
+    ggplot(aes(area = pct, fill = Sección_corto, label = etiqueta)) +
+    geom_treemap(layout = "squarified", color = "white", size = 1) +
+    geom_treemap_text(
+      place = "centre", size = 11, colour = "black",
+      reflow = TRUE, fontface = "bold", min.size = 7
+    ) +
+    facet_wrap(~ año, nrow = 1, ncol = 2) +
+    scale_fill_manual(values = mi_paleta) +
+    theme_bw() +
+    labs(
+      title   = "",
+      caption = "Elaboración propia con base en US Census Bureau"
+    ) +
+    theme(
+      legend.position  = "none",
+      strip.background = element_blank(),
+      strip.text       = element_text(size = 16, face = "plain")
+    )
+
+ggsave(here::here("Plots", "impMex_sec_perc.pdf"), width = 8, height = 6, device = cairo_pdf)
+ggsave(here::here("Plots", "impMex_sec_perc.png"), width = 8, height = 6, dpi = 150)
+
+rm(año_ini, año_fin, n_sec,mi_paleta)
+```
+
+```{r}
+#| label: fig-tree-sec
+#| code-fold: true
+#| code-summary: "Treemaps: composición por Sección, años inicial y final"
+#| fig-cap: "Composición porcentual de las exportaciones provenientes de México"
+#| fig-cap-location: top
+
+knitr::include_graphics(here::here("Plots", "impMex_sec_perc.png"))
+
+```
+
+Nuestro análisis sigue el patrón que ya para este momento resultará familiar al lector:  tras tomar nota de los cambios de punta a punta entre 2010 y 2025, procedemos a examinar los distintos patrones y ritmos de cambio en cada subperíodo, que se muestra en la @fig-imp-cambio-sec-mex.  Por razones de espacio en el gráfico se muestran únicamente los numerales romanos correspondientes a cada Sección, pero los nombres completos se pueden consultar en la tabla inmediatamente después del gráfico.  De todas maneras, en los gráficos se ha utilizado el color anaranjado para identificar a Transporte, rojo oscuro para Maquinaria, y morado oscuro para Instrumentos.
+
+De punta a punta, los grandes ganadores ^[Recuérdes que estamos examinando cambios en la participación porcentual dentro del total de exportaciones mexicanas a EUA, no del volumen de las exportaciones] los grandes ganadores son Transporte y Maquinaria, mientras que el avance de Instrumentos es casi insignificante, pero:
+
+- Durante la normalidad globalizadora, el gran ganador, el único ganador que muestra un cambio digno de notar, es Transporte, y el gran perdedor es Minerales.
+
+- Durante Trump 1, Transportes tiene una pequeña contracción, instrumentos crece modestamente, y sobre salen, por su expansión, Alimentos y Maquinaria.
+
+- Finalmente, furante Trump 3, el único ganador es Maquinaria, y Transportes retrocede casi 4 pp, lo que no es demasiado sorprendente, a pesar de la profunda integración de la industria automotriz en América del Norte, dada la desventaja relativa de México frente a sus competidores como resultado de los cambios en la política arancelaria de EUA en este período[^6].
+
+[^6]: En el índice original de este capítulo no estaba incluido el tema de las tarifas y su impacto sobre la posición competitiva de México en diversas industrias, pero ya tenemos la información y podríamos incluir el tema si nos pareciera conveniente
+
+{{< pagebreak >}}
+
+```{r}
+#| label: fig-imp-cambio-sec-mex
+#| code-fold: true
+#| code-summary: "Cambios en composición sectorial de las importaciones desde México"
+#| fig-cap: |
+#|   Cambios en la composición sectorial de las importaciones provenientes de México
+#|   2010-2025, 2010-2018, 2018-2024 y 2024-2025
+#| fig-cap-location: top
+#| fig-width: 9
+#| fig-height: 8
+
+local({
+  hacer_divbar_sec <- function(ini, fin, datos) {
+    col_ini <- paste0("y", ini)
+    col_fin <- paste0("y", fin)
+
+cambios <- datos |>
+  filter(año %in% c(ini, fin)) |>
+  select(Sección, Sección_corto, año, pct) |>   # añade Sección
+  pivot_wider(names_from = año, values_from = pct, names_prefix = "y") |>
+  mutate(
+    cambio_pp   = (.data[[col_fin]] - .data[[col_ini]]) * 100,
+    Sección     = fct_reorder(Sección, cambio_pp),   # ordena el romano
+    color_grupo = case_when(
+      Sección_corto == "Transporte"   ~ "transporte",
+      Sección_corto == "Maquinaria"   ~ "maquinaria",
+      Sección_corto == "Instrumentos" ~ "instrumentos",
+      cambio_pp > 0                   ~ "positivo",
+      TRUE                            ~ "negativo"
+    )
+  )
+
+ggplot(cambios, aes(x = Sección, y = cambio_pp, fill = color_grupo)) +
+      geom_col() +
+      geom_text(
+        aes(label = sprintf("%.1f", cambio_pp), vjust = if_else(cambio_pp > 0, -0.4, 1.4)),
+        size = 2.8, fontface = "bold"
+      ) +
+      geom_hline(yintercept = 0, linewidth = 0.4, color = "grey30") +
+      scale_y_continuous(
+        labels = \(x) paste0(x, " pp"),
+        expand = expansion(mult = c(0.18, 0.18))
+      ) +
+      scale_fill_manual(values = c(
+        "transporte"   = "#8B0000", "maquinaria"   = "#B5651D",
+        "instrumentos" = "#6A0DAD", "positivo"     = "#1F78B4",
+        "negativo"     = "#41ab5d"
+      )) +
+      theme_bw() +
+      labs(x = NULL, y = NULL, title = glue("{ini} – {fin}")) +
+      theme(
+        legend.position    = "none",
+        panel.grid.major.x = element_blank(),
+        axis.text.x        = element_text(angle = 90, vjust = 0.5, hjust = 1, size = 7),
+        axis.text.y        = element_text(size = 9)
+      )
+  }
+
+  periodos   <- list(c(2010, 2025), c(2010, 2018), c(2018, 2024), c(2024, 2025))
+  divbar_sec <- map(periodos, \(p) hacer_divbar_sec(p[1], p[2], impMex_sec_pct))
+
+  p <- (divbar_sec[[1]] + divbar_sec[[2]]) /
+       (divbar_sec[[3]] + divbar_sec[[4]]) +
+    plot_annotation(caption = "Elaboración propia con base en US Census Bureau") &
+    theme(plot.caption = element_text(hjust = 1))
+
+  print(p)
+})
+```
+
+
+::: {.callout-note collapse= "true" title="Nombres de las Secciones del SA"}
+```{r}
+#| label: tbl-secciones-romano
+#| echo: false
+#| code-fold: true
+
+impMex_sec_pct |>
+  distinct(Sección, Sección_corto, Sección_desc_es) |>
+  arrange(Sección) |>
+  gt() |>
+  cols_label(
+    Sección        = "N°",
+    Sección_corto  = "Abreviatura",
+    Sección_desc_es = "Descripción"
+  ) |>
+  tab_source_note("Clasificación del Sistema Armonizado (SA).")
+```
+:::
+
+
+
+### 3.2 Composición por capítulo de las secciones Maquinaria, Transporte e Instrumentos
+
+De la misma manera que las exportaciones están concentradas en tres secciones del SA, dentro de cada una de estas secciones, las exportaciones están concentradas en unos pocos capítulos lo que, de nuevo, apunta hacia un riesgo asociado con la concentración de las exportaciones, pero también hacia una oportunidad relacionada con economías de especialización y, potencialmente, economías de aglomeración [^7].
+
+[^7]: La concentración de las empresas exportadoras en parques industriales y, por lo menos en algunos casos, la proximidad de centros de capacitación y de formación universitaria, así como estrategias explicitas de "triple hélice" en algunos estados sugiere que este podría ser el caso, lo que crearía oportunidades para la expansión tanto en el margen intensivo como en el extensivo, pero este es un tema que aún no ha sido investigado en detalle
+
+La sección de Maquinaria (XVI) tiene dos capítulos, ambos con una participación importante en el total de exportaciones de esa sección, mientras que de los cuatro capìtulos en Transporte (XVII), el capítulo correspondiente a Vehículos concentra el 98% de las exportaciones de la Sección, y de los tres capítulos de Instrumentos (XVIII), el correspondiente a dispositivos médicos concentra el 99% de las exportaciones de la Sección [^8].
+
+[^8]: En general, en el texto se utilizan nombres abreviados para Secciones, Capítulos y Partidas del SA. La nomenclatura completa se puede consultar en [Nomenclatura SA](https://www.wcoomd.org/en/topics/nomenclature/instrument-and-tools/hs-nomenclature-2022-edition/hs-nomenclature-2022-edition.aspx)
+
+Procedemos, sin más detalle, a la desagregación de las exportaciones
+
+::: {.callout-note collapse="true" title="Selección capítulos de interés"}
+```{r}
+#| label: prep-caps
+secc_romano <- c(
+  "Maquinaria"   = "XVI",
+  "Transporte"   = "XVII",
+  "Instrumentos" = "XVIII"
+)
+
+secciones_interes <- c("Maquinaria", "Transporte", "Instrumentos")
+
+df_caps_2025 <- impMex |>
+  filter(Sección_corto %in% secciones_interes, year(fecha) == 2025) |>
+  group_by(Sección_corto, Capítulo, Cap_corto, Cap_desc_es) |>
+  summarise(Val_anual = sum(Val_mes, na.rm = TRUE), .groups = "drop") |>
+  group_by(Sección_corto) |>
+  mutate(
+    pct      = Val_anual / sum(Val_anual),
+    etiqueta = paste0("Cap. ", Capítulo, "\n", Cap_corto, "\n", percent(pct, accuracy = 1)),
+    strip_label = paste0(
+      "Sección ",
+      case_when(
+        Sección_corto == "Maquinaria"   ~ "XVI",
+        Sección_corto == "Transporte"   ~ "XVII",
+        Sección_corto == "Instrumentos" ~ "XVIII"
+      ),
+      "  —  ", Sección_corto
+    )
+  ) |>
+  ungroup()
+
+```
+:::
+
+```{r}
+#| label: fig-treemap-caps-seccion
+#| code-fold: true
+#| code-summary: "Treemap: capítulos por Sección, 2025"
+#| fig-cap: "México: distribución por capítulo de las exportaciones de Maquinaria, Transporte e Instrumentos, 2025"
+#| fig-cap-location: top
+#| fig-width: 12
+#| fig-height: 6
+# Mapa de números de capítulo por Cap_corto
+
+ggplot(df_caps_2025, aes(area = Val_anual, fill = Cap_corto, label = etiqueta)) +
+  geom_treemap(layout = "squarified", color = "white", size = 1.5) +
+  geom_treemap_text(
+    place = "centre", size = 13, colour = "black",
+    reflow = TRUE, fontface = "bold", min.size = 8
+  ) +
+  facet_wrap(~ strip_label, ncol = 3) +
+  scale_fill_brewer(palette = "Spectral") +
+  theme_bw() +
+  labs(caption = "Elaboración propia con base en US Census Bureau") +
+  theme(
+    legend.position  = "none",
+    strip.background = element_blank(),
+    strip.text       = element_text(size = 13, face = "plain")
+  )
+```
+
+```{r}
+#| label: cleanup-imp-mex-caps
+#| include: false
+
+rm(impMex, metaImpMex, df_caps_2025)
+```
+
+### 3.3 Distribución por partidas, Capítulos 84, 85, 87, 90
+
+::: {.callout-note collapse="true" title="Carga datos y metadatos: principales partidas HS4"}
+```{r}
+#| label: load-top-hs4
+imp_mex_top_hs4 <- readRDS(here::here("RDS", "imp_mex_top_hs4.rds"))
+```
+:::
+
+En la @fig-treemap-top-hs4 se presenta la descomposición por partidas de las exportaciones mexicanas a EUA [^9] correspondientes a los capítuluos 84,85,87 y 90 del sistema armonizado en 2010 y 2025.
+
+[^9]: Aunque nuestra fuente son los datos de EUA sobre importaciones provenientes de México, en el texto generalmente nos referimos a "exportaciones mexicanas" en vez de a "importaciones de EUA provenientes de México" en aras de la brevedad
+
+En el Capítulo 84, el cambio más evidente es el incremento de la participación de la partida de Computadoras (8471), que pasa de representar el 50% al 71% de las exportaciones de ese capítulo. Este es un cambio que sin duda está asociado a la expansión de las inversiones en centros de datos en EUA, expansión que también es, plausiblemente, la principal explicación del incremento de las exportaciones de Taiwán a ese país [^10].
+
+[^10]: No tengo claro si en alguna parte, quizá el Capítulo 1, vamos a analizar la evolución de la inversión en EUA y su impacto sobre la composición sectoria de la demanda de importaciones
+
+En el Capítulo 85, en contraste, la distribución tiene a atomizarse. Tanto Teléfonos como Televisores ven sus participaciones reducidas de manera sustancial, mientras que la participación de Cables Eléctricos sube en 11 puntos porcentuales en el primer caso y en 7 en el segundo.
+
+En el capitulo 87, la participación de los diversos capítulos casi no muestra cambios, mientras que en el Capítulo 90 es notoria la expansión de Instrumentos Mécios, que pasa del 52 al 64% del total de exportaciones correspondientes a este capítulo.
+
+En resumen, las partidas de interés parecen ser Computadoras (8471), Cables Eléctriocs (8544), Tableros (8537), Autos de pasajeros (8703), Partes de autos (8708) e Instrumentos Médicos (9018). Procedemos entonces a analizar la evolución de las exportaciones correspondientes a estas partidas en cada uno de los tres sub períodos en que hemos dividido nuestro análisis.
+
+{{< pagebreak >}}
+
+```{r}
+#| label: fig-treemap-top-hs4
+#| code-fold: true
+#| code-summary: "Treemaps: principales partidas HS4, capítulos 84, 85, 87, 90"
+#| fig-cap: "EUA: importaciones desde México, principales partidas (HS4), capítulos 84, 85, 87 y 90, 2010 y 2025"
+#| fig-cap-location: top
+#| message: false
+#| warning: false
+#| fig-width: 8
+#| fig-height: 8
+
+local({
+  top_hs4_tree <- imp_mex_top_hs4 |>
+    filter(year(fecha) %in% c(2010, 2025)) |>
+    group_by(Capítulo, Cap_corto, Cod_partida, Part_corto, Año = year(fecha)) |>
+    summarise(Val_total = sum(Val_mes, na.rm = TRUE), .groups = "drop") |>
+    group_by(Capítulo, Año) |>
+    mutate(
+      share    = Val_total / sum(Val_total),
+      etiqueta = paste0(Part_corto, "\n", Cod_partida, "\n", percent(share, accuracy = 1))
+    ) |>
+    ungroup()
+
+  treemap_cap <- function(cap_num) {
+    df        <- top_hs4_tree |> filter(Capítulo == cap_num)
+    cap_label <- unique(df$Cap_corto)
+
+    ggplot(df, aes(area = Val_total, fill = Part_corto, label = etiqueta)) +
+      geom_treemap(layout = "squarified", color = "white") +
+      geom_treemap_text(
+        place = "centre", size = 11, colour = "black",
+        reflow = TRUE, fontface = "plain", min.size = 6
+      ) +
+      facet_wrap(~ Año) +
+      scale_fill_brewer(palette = "Set3") +
+      theme_bw() +
+      labs(title = paste0("Cap. ", cap_num, " — ", cap_label, " (2010 izq. | 2025 der.)")) +
+      theme(
+        legend.position  = "none",
+        strip.background = element_blank(),
+        strip.text       = element_blank(),
+        plot.title       = element_text(size = 13, face = "plain")
+      )
+  }
+
+  treemaps <- map(c(84, 85, 87, 90), treemap_cap)
+
+  p <- (treemaps[[1]] + treemaps[[2]]) /
+       (treemaps[[3]] + treemaps[[4]]) +
+    plot_annotation(caption = "Elaboración propia con base en US Census Bureau") &
+    theme(plot.caption = element_text(hjust = 1))
+
+  print(p)
+})
+```
+
+Examinamos primero las partidas correspondientes a computadoras, autos y autopartes, cuya evolución se muestra en la @fig-partidas-maq-auto. El efecto de Trump 1 fue una moderada aceleración de la tasa de crecimiento correspondiente a computadoras, y una moderada reducción de las correspondientes a autos y autopartes. El impacto de Trump 2 es mucho más dramático. Un crecimiento de más del 100% en computadoras, y contracciones de 8.1 y 24.8%, respectivamente, para auto partes y autos de pasajeros.
+
+{{< pagebreak >}}
+
+```{r}
+#| label: fig-partidas-maq-auto
+#| code-fold: true
+#| code-summary: "Gráficas: Maquinaria y automotriz"
+#| fig-cap: |
+#|   EUA: importaciones mensuales desde México, partidas seleccionadas,
+#|   Maquinaria y automotriz. Miles de millones de dólares.
+#| fig-cap-location: top
+#| fig-width: 8.5
+#| fig-height: 11
+
+local({
+  col_linea <- "#1d3557"
+
+  etiq_partidas <- c(
+    "8471" = "Computadoras",
+    "8708" = "Partes autos",
+    "8703" = "Autos pasajeros"
+  )
+
+  # Preparar datos
+  df <- imp_mex_top_hs4 |>
+    filter(Cod_partida %in% names(etiq_partidas)) |>
+    mutate(
+      Val_bn       = Val_mes / 1e9,
+      nombre_corto = etiq_partidas[Cod_partida]
+    )
+
+  # Funciones auxiliares
+  val_en <- function(cod, año, mes = "11") {
+    df |>
+      filter(
+        Cod_partida == cod,
+        format(fecha, "%Y") == as.character(año),
+        format(fecha, "%m") == mes
+      ) |>
+      pull(Val_bn)
+  }
+
+  cagr <- function(v_fin, v_ini, n) ((v_fin / v_ini)^(1 / n) - 1) * 100
+
+  # Valores de anclaje por partida
+  anclajes <- tribble(
+    ~cod,   ~v10,              ~v18,              ~v24,              ~v25,
+    "8471", val_en("8471", 2010), val_en("8471", 2018), val_en("8471", 2024), val_en("8471", 2025),
+    "8708", val_en("8708", 2010), val_en("8708", 2018), val_en("8708", 2024), val_en("8708", 2025),
+    "8703", val_en("8703", 2010), val_en("8703", 2018), val_en("8703", 2024), val_en("8703", 2025)
+  )
+
+  # Etiquetas con offsets manuales en unidades del eje Y
+  # Ajustar los offsets (tercera columna) según lo que se vea
+  etiquetas <- tribble(
+    ~cod,   ~fecha,                    ~y_pos,                                        ~label,
+    "8471", as.Date("2013-06-01"), anclajes$v18[1] + 0.2, paste0("TCAC 10-18: ", round(cagr(anclajes$v18[1], anclajes$v10[1], 8), 1), "%"),
+    "8471", as.Date("2021-06-01"), anclajes$v24[1] + 0.3, paste0("TCAC 18-24: ", round(cagr(anclajes$v24[1], anclajes$v18[1], 6), 1), "%"),
+    "8471", as.Date("2024-01-01"), anclajes$v25[1] - 1.5, paste0("Var. 24-25: ",  round((anclajes$v25[1] / anclajes$v24[1] - 1) * 100, 1), "%"),
+
+    "8708", as.Date("2013-06-01"), anclajes$v18[2] + 0.2, paste0("TCAC 10-18: ", round(cagr(anclajes$v18[2], anclajes$v10[2], 8), 1), "%"),
+    "8708", as.Date("2021-06-01"), anclajes$v24[2] + 0.2, paste0("TCAC 18-24: ", round(cagr(anclajes$v24[2], anclajes$v18[2], 6), 1), "%"),
+    "8708", as.Date("2024-01-01"), anclajes$v25[2] - 0.5, paste0("Var. 24-25: ",  round((anclajes$v25[2] / anclajes$v24[2] - 1) * 100, 1), "%"),
+
+    "8703", as.Date("2013-06-01"), anclajes$v18[3] + 0.2, paste0("TCAC 10-18: ", round(cagr(anclajes$v18[3], anclajes$v10[3], 8), 1), "%"),
+    "8703", as.Date("2021-06-01"), anclajes$v24[3] + 0.2, paste0("TCAC 18-24: ", round(cagr(anclajes$v24[3], anclajes$v18[3], 6), 1), "%"),
+    "8703", as.Date("2024-01-01"), anclajes$v25[3] - 0.5, paste0("Var. 24-25: ",  round((anclajes$v25[3] / anclajes$v24[3] - 1) * 100, 1), "%")
+  )
+
+  # Función de gráfico individual
+  grafico_partida <- function(cod, mostrar_eje_x = FALSE, mostrar_caption = FALSE) {
+    df_p  <- df  |> filter(Cod_partida == cod)
+    etq_p <- etiquetas |> filter(cod == .env$cod)
+    nombre <- etiq_partidas[[cod]]
+
+    df_p |>
+      filter(year(fecha) >= 2010) |>
+      ggplot(aes(x = fecha, y = Val_bn)) +
+      geom_line(linewidth = 0.8, color = col_linea) +
+      geom_vline(
+        xintercept = as.Date(c("2018-11-01", "2024-11-01")),
+        linetype = "dotted", color = "red", linewidth = 0.6
+      ) +
+      geom_label(
+        data = etq_p,
+        aes(x = fecha, y = y_pos, label = label),
+        inherit.aes = FALSE,
+        color = col_linea, fill = "white",
+        fontface = "bold", size = 2.8, linewidth = 0.3
+      ) +
+      scale_x_date(date_labels = "%Y", date_breaks = "1 year") +
+      labs(
+      title   = paste0(nombre, " (", cod, ")"),
+      x       = NULL,
+      y       = NULL,
+      caption = if (mostrar_caption) "Elaboración propia con base en US Census Bureau - International Trade API" else NULL
+      ) +
+      #labs(title = paste0(nombre, " (", cod, ")"), x = NULL, y = NULL) +
+      
+      theme_bw() +
+      theme(
+        panel.grid.minor = element_blank(),
+        axis.text.x = if (mostrar_eje_x) {
+          element_text(angle = 0, vjust = 0.5, hjust = 0.5, size = 7)
+        } else {
+          element_blank()
+        },
+        axis.ticks.x  = if (mostrar_eje_x) element_line() else element_blank(),
+        plot.title    = element_text(size = 10, face = "bold")
+      )
+  }
+
+  p1 <- grafico_partida("8471") /
+        grafico_partida("8708") /
+        grafico_partida("8703", mostrar_eje_x = TRUE, mostrar_caption = TRUE)
+
+  print(p1)
+})
+```
+
+Las otras tres partidas de interés se muestran en @fig-partidas-elec-med. Instrumentos, que se benefició de Trump 1, se contrae con Trump 2. Cables, perjudicado por Trump 1, se recupera ligeramente con Trump 2, y los Tableros, que casi no se vieron impactados por Trump 1, se contraen ligeramente con Trump 2.
+
+{{< pagebreak >}}
+
+```{r}
+#| label: fig-partidas-elec-med
+#| code-fold: true
+#| code-summary: "Gráficas: Eléctrico y médico"
+#| fig-cap: |
+#|   EUA: importaciones mensuales desde México, partidas seleccionadas,
+#|   Eléctrico y médico. Miles de millones de dólares.
+#| fig-cap-location: top
+#| fig-width: 8.5
+#| fig-height: 11
+
+local({
+  col_linea <- "#1d3557"
+
+  etiq_partidas <- c(
+    "9018" = "Instr. médicos",
+    "8544" = "Cables eléctricos",
+    "8537" = "Tableros eléctricos"
+  )
+
+  df <- imp_mex_top_hs4 |>
+    filter(Cod_partida %in% names(etiq_partidas)) |>
+    mutate(
+      Val_bn       = Val_mes / 1e9,
+      nombre_corto = etiq_partidas[Cod_partida]
+    )
+
+  val_en <- function(cod, año, mes = "11") {
+    df |>
+      filter(
+        Cod_partida == cod,
+        format(fecha, "%Y") == as.character(año),
+        format(fecha, "%m") == mes
+      ) |>
+      pull(Val_bn)
+  }
+
+  cagr <- function(v_fin, v_ini, n) ((v_fin / v_ini)^(1 / n) - 1) * 100
+
+  anclajes <- tribble(
+    ~cod,   ~v10,                ~v18,                ~v24,                ~v25,
+    "9018", val_en("9018", 2010), val_en("9018", 2018), val_en("9018", 2024), val_en("9018", 2025),
+    "8544", val_en("8544", 2010), val_en("8544", 2018), val_en("8544", 2024), val_en("8544", 2025),
+    "8537", val_en("8537", 2010), val_en("8537", 2018), val_en("8537", 2024), val_en("8537", 2025)
+  )
+
+  etiquetas <- tribble(
+    ~cod,   ~fecha,                    ~y_pos,                                          ~label,
+    "9018", as.Date("2013-06-01"), anclajes$v18[1] + 0.05, paste0("TCAC 10-18: ", round(cagr(anclajes$v18[1], anclajes$v10[1], 8), 1), "%"),
+    "9018", as.Date("2021-06-01"), anclajes$v24[1] + 0.05, paste0("TCAC 18-24: ", round(cagr(anclajes$v24[1], anclajes$v18[1], 6), 1), "%"),
+    "9018", as.Date("2024-11-01"), anclajes$v25[1] - 0.3, paste0("Var. 24-25: ",  round((anclajes$v25[1] / anclajes$v24[1] - 1) * 100, 1), "%"),
+
+    "8544", as.Date("2013-06-01"), anclajes$v18[2] + 0.05, paste0("TCAC 10-18: ", round(cagr(anclajes$v18[2], anclajes$v10[2], 8), 1), "%"),
+    "8544", as.Date("2021-06-01"), anclajes$v24[2] + 0.05, paste0("TCAC 18-24: ", round(cagr(anclajes$v24[2], anclajes$v18[2], 6), 1), "%"),
+    "8544", as.Date("2024-11-01"), anclajes$v25[2] - 0.3, paste0("Var. 24-25: ",  round((anclajes$v25[2] / anclajes$v24[2] - 1) * 100, 1), "%"),
+
+    "8537", as.Date("2013-06-01"), anclajes$v18[3] + 0.05, paste0("TCAC 10-18: ", round(cagr(anclajes$v18[3], anclajes$v10[3], 8), 1), "%"),
+    "8537", as.Date("2021-06-01"), anclajes$v24[3] + 0.05, paste0("TCAC 18-24: ", round(cagr(anclajes$v24[3], anclajes$v18[3], 6), 1), "%"),
+    "8537", as.Date("2024-11-01"), anclajes$v25[3] - 0.3, paste0("Var. 24-25: ",  round((anclajes$v25[3] / anclajes$v24[3] - 1) * 100, 1), "%")
+  )
+
+  grafico_partida <- function(cod, mostrar_eje_x = FALSE, mostrar_caption = FALSE) {
+    df_p  <- df |> filter(Cod_partida == cod)
+    etq_p <- etiquetas |> filter(cod == .env$cod)
+    nombre <- etiq_partidas[[cod]]
+
+    df_p |>
+      filter(year(fecha) >= 2010) |>
+      ggplot(aes(x = fecha, y = Val_bn)) +
+      geom_line(linewidth = 0.8, color = col_linea) +
+      geom_vline(
+        xintercept = as.Date(c("2018-11-01", "2024-11-01")),
+        linetype = "dotted", color = "red", linewidth = 0.6
+      ) +
+      geom_label(
+        data = etq_p,
+        aes(x = fecha, y = y_pos, label = label),
+        inherit.aes = FALSE,
+        color = col_linea, fill = "white",
+        fontface = "bold", size = 2.8, linewidth = 0.3
+      ) +
+      scale_x_date(date_labels = "%Y", date_breaks = "1 year") +
+      labs(
+        title   = paste0(nombre, " (", cod, ")"),
+        x       = NULL,
+        y       = NULL,
+        caption = if (mostrar_caption) "Elaboración propia con base en US Census Bureau - International Trade API" else NULL
+      ) +
+      theme_bw() +
+      theme(
+        panel.grid.minor = element_blank(),
+        axis.text.x = if (mostrar_eje_x) {
+          element_text(angle = 0, vjust = 0.5, hjust = 0.5, size = 7)
+        } else {
+          element_blank()
+        },
+        axis.ticks.x = if (mostrar_eje_x) element_line() else element_blank(),
+        plot.title   = element_text(size = 10, face = "bold")
+      )
+  }
+
+  p2 <- grafico_partida("9018") /
+        grafico_partida("8544") /
+        grafico_partida("8537", mostrar_eje_x = TRUE, mostrar_caption = TRUE)
+
+  print(p2)
+})
+```
+
+```{r}
+#| label: tabla-decomp-jerarquica
+#| code-fold: true
+#| code-summary: "Descomposición jerárquica: Secciones, Capítulos y Partidas, 2025"
+#| echo: true
+
+rm(imp_mex_top_hs4)
+```
+
+### 3.4 En síntesis
+
+```{r}
+#| label: load-imp-mex6
+#| echo: false
+
+imp_mex_hs6     <- readRDS(here::here("RDS", "imp_mex_hs6.rds"))
+
+# ── 0. Parámetros del análisis ────────────────────────────────────────────────
+
+YEAR_FOCO      <- 2025
+
+SECCIONES_FOCO <- c("XVI", "XVII", "XVIII")         # Maquinaria, Transporte, Instrumentos
+CAPS_FOCO      <- c(84L, 85L, 87L, 90L)
+PARTIDAS_FOCO  <- c("8471", "8708", "8703", "9018", "8544", "8537")
+
+etiquetas_sec <- tribble(
+  ~Sección, ~Sec_label,
+  "XVI",    "XVI — Maquinaria y aparatos eléctricos",
+  "XVII",   "XVII — Material de transporte",
+  "XVIII",  "XVIII — Óptica e instrumentos"
+)
+
+etiquetas_cap <- tribble(
+  ~Capítulo, ~Cap_label,
+  84L, "Cap. 84 — Máquinas y aparatos mecánicos",
+  85L, "Cap. 85 — Aparatos y material eléctrico",
+  87L, "Cap. 87 — Vehículos y sus partes",
+  90L, "Cap. 90 — Óptica, instrumentos de medición"
+)
+
+etiquetas_part <- tribble(
+  ~Cod_partida, ~Part_label,
+  "8471", "8471 — Computadoras y procesadores",
+  "8708", "8708 — Partes y accesorios de vehículos",
+  "8703", "8703 — Automóviles y vehículos de pasajeros",
+  "9018", "9018 — Instrumentos médicos y quirúrgicos",
+  "8544", "8544 — Cables y conductores eléctricos",
+  "8537", "8537 — Tableros y paneles de control"
+)
+
+# ── 1. Filtrar al año de análisis y calcular el total de referencia ───────────
+
+# imp_mex_hs6 debe estar ya en el entorno global
+# (cargado desde RDS/imp_mex_hs6.rds o equivalente)
+
+stopifnot(exists("imp_mex_hs6"))
+
+base_2025 <- imp_mex_hs6 |>
+  filter(year(fecha) == YEAR_FOCO)
+
+# Usamos Val_mes para sumar; Val_acum acumula dentro del año y sobrecontaría
+# si hay varias filas por período. Si el tibble tiene una fila por mes × subpartida,
+# sumar Val_mes es correcto.
+total_imp <- base_2025 |>
+  summarise(valor = sum(Val_mes, na.rm = TRUE)) |>
+  pull(valor)
+
+message(glue("Total importaciones EUA desde México {YEAR_FOCO}: ",
+             "{dollar(total_imp, scale = 1e-9, suffix = ' MM USD')}"))
+
+# ── 2. Valores por nivel de agregación ───────────────────────────────────────
+
+# — 2a. Secciones de interés —
+val_sec <- base_2025 |>
+  filter(as.character(Sección) %in% SECCIONES_FOCO) |>
+  group_by(Sección = as.character(Sección)) |>
+  summarise(valor = sum(Val_mes, na.rm = TRUE), .groups = "drop") |>
+  left_join(etiquetas_sec, by = "Sección") |>
+  arrange(Sección)
+
+# — 2b. Capítulos de interés —
+val_cap <- base_2025 |>
+  filter(Capítulo %in% CAPS_FOCO) |>
+  group_by(Capítulo, Sección = as.character(Sección)) |>
+  summarise(valor = sum(Val_mes, na.rm = TRUE), .groups = "drop") |>
+  left_join(etiquetas_cap, by = "Capítulo") |>
+  arrange(Capítulo)
+
+# — 2c. Partidas de interés —
+val_part <- base_2025 |>
+  filter(Cod_partida %in% PARTIDAS_FOCO) |>
+  group_by(Cod_partida, Capítulo) |>
+  summarise(valor = sum(Val_mes, na.rm = TRUE), .groups = "drop") |>
+  left_join(etiquetas_part, by = "Cod_partida") |>
+  arrange(Capítulo, desc(valor))
+
+# ── 3. Armar tibble largo para la tabla gt ───────────────────────────────────
+
+fila_total <- tibble(
+  nivel    = "TOTAL",
+  codigo   = "—",
+  etiqueta = "Total importaciones EUA desde México",
+  valor    = total_imp,
+  pct      = 1
+)
+
+filas_sec <- val_sec |>
+  mutate(
+    nivel    = "Sección",
+    codigo   = Sección,
+    etiqueta = Sec_label,
+    pct      = valor / total_imp
+  ) |>
+  select(nivel, codigo, etiqueta, valor, pct)
+
+subtotal_sec <- tibble(
+  nivel    = "Sección",
+  codigo   = "Σ XVI+XVII+XVIII",
+  etiqueta = "Subtotal Secciones XVI, XVII y XVIII",
+  valor    = sum(val_sec$valor),
+  pct      = sum(val_sec$valor) / total_imp
+)
+
+filas_cap <- val_cap |>
+  mutate(
+    nivel    = "Capítulo",
+    codigo   = as.character(Capítulo),
+    etiqueta = Cap_label,
+    pct      = valor / total_imp
+  ) |>
+  select(nivel, codigo, etiqueta, valor, pct)
+
+subtotal_cap <- tibble(
+  nivel    = "Capítulo",
+  codigo   = "Σ 84+85+87+90",
+  etiqueta = "Subtotal Capítulos 84, 85, 87 y 90",
+  valor    = sum(val_cap$valor),
+  pct      = sum(val_cap$valor) / total_imp
+)
+
+filas_part <- val_part |>
+  mutate(
+    nivel    = "Partida",
+    codigo   = Cod_partida,
+    etiqueta = Part_label,
+    pct      = valor / total_imp
+  ) |>
+  select(nivel, codigo, etiqueta, valor, pct)
+
+subtotal_part <- tibble(
+  nivel    = "Partida",
+  codigo   = "Σ 6 partidas",
+  etiqueta = "Subtotal 6 partidas clave",
+  valor    = sum(val_part$valor),
+  pct      = sum(val_part$valor) / total_imp
+)
+
+tabla_df <- bind_rows(
+  fila_total,
+  filas_sec,
+  subtotal_sec,
+  filas_cap,
+  subtotal_cap,
+  filas_part,
+  subtotal_part
+) |>
+  mutate(
+    valor_mmd = valor / 1e9,          # Miles de millones USD
+    pct_fmt   = percent(pct, accuracy = 0.1)
+  )
+
+# ── 4. Tabla gt ──────────────────────────────────────────────────────────────
+
+# Paleta de fondo por nivel
+col_total   <- "#1d3557"
+col_sec     <- "#457b9d"
+col_subtot  <- "#a8dadc"
+col_cap     <- "#f1faee"
+col_part    <- "#ffffff"
+col_subtot2 <- "#e9c46a"
+
+gt_decomp <- tabla_df |>
+  select(nivel, codigo, etiqueta, valor_mmd, pct_fmt) |>
+  gt() |>
+  tab_header(
+    title    = md("**EUA: importaciones desde México, 2025**"),
+    subtitle = md("Descomposición jerárquica — Secciones, Capítulos y Partidas clave  \n*% respecto al total de importaciones*")
+  ) |>
+  cols_label(
+    nivel     = "Nivel",
+    codigo    = "Código",
+    etiqueta  = "Descripción",
+    valor_mmd = "Valor (MM USD)",
+    pct_fmt   = "% del total"
+  ) |>
+  fmt_number(columns = valor_mmd, decimals = 1) |>
+  cols_align(align = "right",  columns = c(valor_mmd, pct_fmt)) |>
+  cols_align(align = "center", columns = codigo) |>
+  # ── Estilos por tipo de fila ──
+  tab_style(
+    style = list(
+      cell_fill(color = col_total),
+      cell_text(color = "white", weight = "bold", size = px(13))
+    ),
+    locations = cells_body(rows = nivel == "TOTAL")
+  ) |>
+  tab_style(
+    style = list(
+      cell_fill(color = col_sec),
+      cell_text(color = "white", weight = "bold")
+    ),
+    locations = cells_body(rows = nivel == "Sección" & !str_starts(codigo, "Σ"))
+  ) |>
+  tab_style(
+    style = list(
+      cell_fill(color = col_subtot),
+      cell_text(weight = "bold", style = "italic")
+    ),
+    locations = cells_body(rows = str_starts(codigo, "Σ XVI"))
+  ) |>
+  tab_style(
+    style = list(cell_fill(color = col_cap)),
+    locations = cells_body(rows = nivel == "Capítulo" & !str_starts(codigo, "Σ"))
+  ) |>
+  tab_style(
+    style = list(
+      cell_fill(color = col_subtot2),
+      cell_text(weight = "bold", style = "italic")
+    ),
+    locations = cells_body(rows = str_starts(codigo, "Σ 84"))
+  ) |>
+  tab_style(
+    style = list(
+      cell_fill(color = "#f1faee"),
+      cell_text(weight = "bold", style = "italic")
+    ),
+    locations = cells_body(rows = str_starts(codigo, "Σ 6"))
+  ) |>
+  # ── Separadores visuales entre grupos ──
+  tab_style(
+    style = cell_borders(sides = "top", color = "#1d3557", weight = px(2)),
+    locations = cells_body(rows = nivel == "TOTAL")
+  ) |>
+  tab_style(
+    style = cell_borders(sides = "top", color = "#457b9d", weight = px(2)),
+    locations = cells_body(rows = nivel == "Sección" & codigo == "XVI")
+  ) |>
+  tab_style(
+    style = cell_borders(sides = "top", color = "#a8dadc", weight = px(1.5)),
+    locations = cells_body(rows = nivel == "Capítulo" & codigo == "84")
+  ) |>
+  tab_style(
+    style = cell_borders(sides = "top", color = "#e9c46a", weight = px(1.5)),
+    locations = cells_body(rows = nivel == "Partida" & codigo == "8703")
+  ) |>
+  tab_source_note(
+    md("*Elaboración propia con base en US Census Bureau — International Trade API.  \nNota: el total incluye todas las secciones; los subtotales muestran la cobertura acumulada de los niveles seleccionados.*")
+  ) |>
+  opt_table_font(font = google_font("IBM Plex Sans")) |>
+  tab_options(
+    table.width              = pct(95),
+    heading.background.color = "#1d3557",
+    heading.title.font.size  = px(16),
+    column_labels.background.color = "#e8edf2",
+    column_labels.font.weight      = "bold",
+    row.striping.include_table_body = FALSE
+  )
+
+gt_decomp
+
+rm(YEAR_FOCO, SECCIONES_FOCO, CAPS_FOCO, PARTIDAS_FOCO,
+   etiquetas_sec, etiquetas_cap, etiquetas_part,
+   base_2025, total_imp,
+   val_sec, val_cap, val_part,
+   fila_total, filas_sec, subtotal_sec,
+   filas_cap, subtotal_cap,
+   filas_part, subtotal_part,
+   tabla_df,
+   col_total, col_sec, col_subtot, col_cap, col_part, col_subtot2)
+
+```
+
+## 4. Dimensiones regionales del nearshoring
+
+### 4.1 Distribución territorial de las exportaciones
+
+::: {.callout-note collapse="true" title="Carga datos y metadatos: exportaciones por entidad federativa"}
+```{r}
+#| label: load-xmex-total-ef
+#| echo: false
+
+x_ef      <- readRDS(here::here("RDS", "xmex_total_ef.rds"))
+meta_x_ef <- readRDS(here::here("RDS", "meta_xmex_total_ef.rds"))
+gt_meta(meta_x_ef, titulo = "Metadatos: Exportaciones mexicanas por entidad federativa")
+```
+:::
+
+La evolución de las exportaciones por entidad federativa ha variado en cada uno de los tres períodos en los que hemos dividido nuestro análisis: normalidad globalizadora, Trump 1 y Trump 2. Cabe suponer que las ganancias o pérdidas de los estados en términos del volumen de sus exportaciones así como en términos de su participación dentro del total de las exportaciones está asociado con la especialización productiva de cada uno, ya que como vimos en la sección anterior, los sectores ganadores y perdedores han cambiado en cada uno de estos períodos.
+
+Como punto de partida, examinamos la distribución de las exportaciones totales por estado. La @fig-mapa-4periodos muestra gráficamente los cambios en esa participación tanto de punta a punta (2010-2025) como en cada uno de los tres períodos recién señalados.
+
+NOTA: el mapa con las etiquetas es un poco "ruidoso" visualmente. Sin las etiquetas se ve más elegante, pero puede resultar confuso para quien no se sepa de memoria la geografía de México
+
+{{< pagebreak >}}
+
+MAPA
+
+```{r}
+#| label: prep-xmex-mapas
+#| include: false
+
+xmex_pct <- x_ef |>
+  group_by(año) |>
+  mutate(total_anual = sum(val_miles, na.rm = TRUE)) |>
+  ungroup() |>
+  group_by(cve_geo, nombre, año) |>
+  summarise(
+    val_estado  = sum(val_miles, na.rm = TRUE),
+    total_anual = first(total_anual),
+    .groups     = "drop"
+  ) |>
+  mutate(pct = val_estado / total_anual)
+
+breaks_pp       <- c(-Inf, -2, -0.5, 0.5, 2, Inf)
+labels_pp       <- c("< −2 pp", "−2 a −0.5 pp", "±0.5 pp", "+0.5 a +2 pp", "> +2 pp")
+paleta_discreta <- c(
+  "< −2 pp"      = "#FF9900",
+  "−2 a −0.5 pp" = "#FFCC33",
+  "±0.5 pp"      = "#FFF999",
+  "+0.5 a +2 pp" = "#7AAAC8",
+  "> +2 pp"      = "#35678F"
+)
+```
+
+
+
+```{r}
+#| label: fig-mapa-4periodos
+#| code-fold: true
+#| code-summary: "Mapas: cambio en participación por entidad federativa, cuatro períodos"
+#| fig-cap: |
+#|   Cambio en la participación porcentual de las exportaciones por entidad
+#|   federativa, cuatro períodos seleccionados
+#| fig-cap-location: top
+#| fig-width: 12
+#| fig-height: 9
+#| message: false
+#| warning: false
+#| eval: false
+
+# ── Geometría ──────────────────────────────────────────────────────────────────
+mexico_sf <- geodata::gadm("MEX", level = 1, path = here::here("geodata")) |>
+  sf::st_as_sf() |>
+  mutate(
+    nombre_join = case_when(
+      NAME_1 == "México"           ~ "Estado de México",
+      NAME_1 == "Distrito Federal" ~ "Ciudad de México",
+      NAME_1 == "Michoacán"        ~ "Michoacán",
+      NAME_1 == "Nuevo León"       ~ "Nuevo León",
+      NAME_1 == "Querétaro"        ~ "Querétaro",
+      NAME_1 == "San Luis Potosí"  ~ "San Luis Potosí",
+      NAME_1 == "Yucatán"          ~ "Yucatán",
+      TRUE ~ NAME_1
+    )
+  )
+
+abreviaturas <- c(
+  "Aguascalientes"      = "AGS",   "Baja California"     = "BC",
+  "Baja California Sur" = "BCS",   "Campeche"            = "Camp.",
+  "Coahuila"            = "Coah.", "Colima"              = "Col.",
+  "Chiapas"             = "Chis.", "Chihuahua"           = "Chih.",
+  "Ciudad de México"    = "CDMX",  "Durango"             = "Dgo.",
+  "Guanajuato"          = "Gto.",  "Guerrero"            = "Gro.",
+  "Hidalgo"             = "Hgo.",  "Jalisco"             = "Jal.",
+  "Estado de México"    = "Méx.",  "Michoacán"           = "Mich.",
+  "Morelos"             = "Mor.",  "Nayarit"             = "Nay.",
+  "Nuevo León"          = "NL",    "Oaxaca"              = "Oax.",
+  "Puebla"              = "Pue.",  "Querétaro"           = "Qro.",
+  "Quintana Roo"        = "QRoo",  "San Luis Potosí"     = "SLP",
+  "Sinaloa"             = "Sin.",  "Sonora"              = "Son.",
+  "Tabasco"             = "Tab.",  "Tamaulipas"          = "Tamps.",
+  "Tlaxcala"            = "Tlax.", "Veracruz"            = "Ver.",
+  "Yucatán"             = "Yuc.",  "Zacatecas"           = "Zac."
+)
+
+centroides_sf <- suppressWarnings(
+  mexico_sf |>
+    sf::st_point_on_surface() |>
+    mutate(abrev = abreviaturas[nombre_join])
+)
+
+# ── Participaciones porcentuales anuales por entidad ──────────────────────────
+
+local({
+  cambio_periodo <- function(año_ini, año_fin) {
+    xmex_pct |>
+      filter(año %in% c(año_ini, año_fin)) |>
+      select(nombre, año, pct) |>
+      pivot_wider(names_from = año, values_from = pct, names_prefix = "y") |>
+      mutate(cambio_pp = (get(paste0("y", año_fin)) - get(paste0("y", año_ini))) * 100)
+  }
+
+  make_map <- function(año_ini, año_fin) {
+    mapa_data <- mexico_sf |>
+      left_join(cambio_periodo(año_ini, año_fin), by = c("nombre_join" = "nombre")) |>
+      mutate(
+        cat_cambio = cut(cambio_pp, breaks = breaks_pp, labels = labels_pp,
+                         include.lowest = TRUE, ordered_result = TRUE)
+      )
+
+    ggplot(mapa_data) +
+      geom_sf(aes(fill = cat_cambio), color = "grey25", linewidth = 0.35) +
+      ggrepel::geom_label_repel(
+        data               = centroides_sf,
+        aes(label          = abrev, geometry = geometry),
+        stat               = "sf_coordinates",
+        size               = 2.0,
+        label.size         = 0.15,
+        label.padding      = unit(0.12, "lines"),
+        min.segment.length = 0,
+        segment.color      = "grey40",
+        segment.size       = 0.3,
+        fill               = alpha("white", 0.7),
+        color              = "grey10",
+        fontface           = "plain",
+        max.overlaps       = Inf
+      ) +
+      scale_fill_manual(values = paleta_discreta, name = NULL,
+                        na.value = "grey80", drop = FALSE) +
+      labs(title = paste0(año_ini, " – ", año_fin)) +
+      guides(fill = guide_legend(nrow = 1, keywidth = unit(1.6, "cm"),
+                                 keyheight = unit(0.4, "cm"))) +
+      theme_void() +
+      theme(
+        plot.title      = element_text(face = "bold", size = 11, hjust = 0.5,
+                                       margin = margin(b = 4)),
+        legend.position = "none",
+        plot.margin     = margin(6, 6, 6, 6)
+      )
+  }                                              # ← cierra make_map()
+
+  leyenda <- cowplot::get_legend(
+    make_map(2010, 2025) +
+      theme(legend.position = "bottom", legend.text = element_text(size = 10),
+            legend.key.size = unit(0.6, "cm"))
+  )
+
+  periodos <- list(c(2010, 2025), c(2010, 2018), c(2018, 2024), c(2024, 2025))
+  plots    <- map(periodos, \(p) make_map(p[1], p[2]))
+
+  p_xmex_mapas <<- cowplot::plot_grid(
+    (plots[[1]] + plots[[2]]) / (plots[[3]] + plots[[4]]),
+    leyenda,
+    ncol        = 1,
+    rel_heights = c(1, 0.08)
+  )
+
+
+})                                               # ← cierra local()
+
+# ── Guardar ───────────────────────────────────────────────────────────────────
+ggsave(
+  filename = here::here("Plots", "mapa_xmex_4periodos.pdf"),
+  plot     = p_xmex_mapas,
+  width    = 7.5,
+  height   = 7.3,
+  device   = cairo_pdf
+)
+
+ggsave(
+  filename = here::here("Plots", "mapa_xmex_4periodos.png"),
+  plot     = p_xmex_mapas,
+  width    = 7.5,
+  height   = 7.3,
+  dpi      = 150
+)
+
+rm(p_xmex_mapas, mexico_sf, centroides_sf, abreviaturas, 
+   breaks_pp, labels_pp, paleta_discreta)
+
+```
+
+
+Los tres grandes perdedores son Tamaulipas, Campeche y Tabasco, seguidos por Baja California, México y Veracruz. Notablemente, estos seis estados pierden (o no ganan) participación en los tres períodos. Su rezago exportador con respecto al resto del país es cada vez más marcado.
+
+De punta a punta loo tres grandes ganadores son Chihuahua, Coahuila, San Luis Potosí y Querétaro, Sin embargo, cada uno de estos estados ha respondido de manera diferente a los cambios en el contexto de politica comercial en cada período. Nuevo León y Guanajato fueron los grandes ganadores en el período de normalidad globalizadora, pero Nuevo León se estanca y Guanajuato crece moderadamente en respuesta a Trump 1. Ambos estados pierden participación durante Trump 2.
+
+En el otro extremos se encuentran Chihuahua, Aguascalientes, Jalisco y Guanajuato, los grandes ganadores durante Trump 2, pero cuya participación se había reducido en los dos perídos anteriores.
+
+
+
+```{r}
+#| label: fig-mapa-xmex-4periodos-display
+#| echo: false
+#| fig-cap: |
+#|   Cambio en la participación porcentual de las exportaciones por entidad
+#|   federativa, cuatro períodos seleccionados
+#| fig-cap-location: top
+#| fig-width: 7.5
+#| fig-height: 7.3
+
+knitr::include_graphics(here::here("Plots", "mapa_xmex_4periodos.png"))
+```
+
+
+TABLA
+
+```{r}
+#| label: tbl-xmex-ganadores-perdedores
+#| code-fold: true
+#| code-summary: "Tabla: estados con cambio consistente en participación exportaciones"
+
+local({
+  periodos <- list(
+    c(2010, 2018),
+    c(2018, 2024),
+    c(2024, 2025)
+  )
+
+  cambios <- map(periodos, \(p) {
+    xmex_pct |>
+      filter(año %in% p) |>
+      select(nombre, año, pct) |>
+      pivot_wider(names_from = año, values_from = pct, names_prefix = "y") |>
+      mutate(
+        cambio_pp = (get(paste0("y", p[2])) - get(paste0("y", p[1]))) * 100,
+        periodo   = paste0(p[1], "–", p[2])
+      ) |>
+      select(nombre, periodo, cambio_pp)
+  }) |>
+    bind_rows()
+
+  clasificacion <- cambios |>
+    group_by(nombre) |>
+    summarise(
+      n_positivos = sum(cambio_pp > 0),
+      n_negativos = sum(cambio_pp < 0),
+      .groups     = "drop"
+    ) |>
+    mutate(
+      grupo = case_when(
+        n_positivos == 3 ~ "Ganó participación en los tres períodos",
+        n_negativos == 3 ~ "Perdió participación en los tres períodos",
+        TRUE             ~ NA_character_
+      )
+    ) |>
+    filter(!is.na(grupo))
+
+  tabla <- cambios |>
+    semi_join(clasificacion, by = "nombre") |>
+    pivot_wider(names_from = periodo, values_from = cambio_pp) |>
+    left_join(clasificacion |> select(nombre, grupo), by = "nombre") |>
+    arrange(grupo, nombre)
+
+  tabla |>
+    gt(groupname_col = "grupo") |>
+    tab_header(
+      title    = "Cambio consistente en participación de las exportaciones totales",
+      subtitle = "Entidades que ganaron o perdieron participación en los tres subperíodos"
+    ) |>
+    fmt_number(
+      columns  = where(is.double),
+      decimals = 2,
+      dec_mark = ".",
+      sep_mark = ","
+    ) |>
+    cols_label(
+      nombre      = "Entidad federativa",
+      `2010–2018` = "2010–2018",
+      `2018–2024` = "2018–2024",
+      `2024–2025` = "2024–2025"
+    ) |>
+    cols_align(align = "left",   columns = nombre) |>
+    cols_align(align = "center", columns = where(is.double)) |>
+    tab_spanner(
+      label   = "Cambio en participación (pp)",
+      columns = where(is.double)
+    ) |>
+    tab_style(
+      style     = cell_fill(color = "#e8f4ea"),
+      locations = cells_row_groups(groups = "Ganó participación en los tres períodos")
+    ) |>
+    tab_style(
+      style     = cell_fill(color = "#fdf0e0"),
+      locations = cells_row_groups(groups = "Perdió participación en los tres períodos")
+    ) |>
+    tab_source_note("Elaboración propia con base en INEGI — Exportaciones por Entidad Federativa (ETEF).") |>
+    tab_options(
+      row_group.font.weight = "bold",
+      table.font.size       = px(13)
+    )
+})
+
+
+```
+
+
+En resumen, hay un patrón irregular de estados ganadores [^11], un patron bastante claro de estados que ni ganan ni pierden participación (todos los que están en amarillo en los cuatro mapas) y finalmente, un conjunto de estados cuya participación se reduce, o en el mejor de los casos permanece estable en todos los períodos.
+
+[^11]: Recuérdese que estamos hablando de pérdidas o ganancias en términos de participación porcentual dentro del total de exportaciones mexicanas, no ten términos de las exportaciones de cada estado
+
+La identificación de los determinantes de ese desigual desempeño constituye una tarea en progreso, y los próximos capítulos de este informe arrojan luz sobre distintos aspectos de esta cuestión.
+
+
+```{r}
+#| label: cleanup-xmex-ef
+#| include: false
+
+rm(x_ef, meta_x_ef, mexico_sf, breaks_pp, labels_pp, paleta_discreta)
+```
+
+### 4.2 Exportaciones de los estados de la frontera, partidas seleccionadas
+
+::: {.callout-note collapse="true" title="Carga datos y metadatos: exportaciones por estado"}
+```{r}
+#| label: etef_tidy.rds
+#| echo: false
+
+etef     <- readRDS(here::here("RDS", "etef_tidy.rds"))
+meta_etef <- readRDS(here::here("RDS", "meta_etef.rds"))
+gt_meta(meta_etef, titulo = "Metadatos: Exprotaciones México por Estado")
+```
+:::
+
+El impacto territorial del NS en México, desde el punto de vista de las exportaciones, se ve limitado por dos factores:
+
+- La información por entidad federativa no está disponible utilizando el SA, sino únicamente el SCIAN a 3 dígitos, lo que nos da "sectores" más agregados que los que utilizamos en la sección 3 de este capítulo.  
+
+- En segundo lugar, en muchos casos la información está suprimida por razones de confidencialidad, como se aprecia en la @tbl-disponibilid-etef, en donde se destacan los estados para los cuales no existe ninguna supresión, y se indican, también, estados que en algunos sectores no tienen supresiones.  Los números en la tabla indican el porcentaje de observaciones suprimidas en cada combinación de estado y sector.
+
+De lo anterior se deriva que no podemos discutir la distribución de las exportaciones por sector en el territorio de México, pero aún así, podemos observar el impacto del NS sobre estados y sectores específicos.  Esta información se muestra en la @fig-etef-sectores-sa
+
+
+```{r}
+#| label: tbl-disponibilidad-etef
+#| code-fold: true
+#| code-summary: "Tabla de disponibilidad de información por sector y estado"
+
+supresion_ns_wide <- readRDS(here::here("RDS", "supresion_ns_wide.rds"))
+# Identificar las columnas de sectores (todas menos "Estado")
+cols_sec <- names(supresion_ns_wide)[names(supresion_ns_wide) != "Estado"]
+
+# Filas sin ninguna supresión: todas las celdas son 0 (no NA)
+filas_completas <- which(
+  rowSums(
+    sapply(cols_sec, function(col) {
+      x <- supresion_ns_wide[[col]]
+      !is.na(x) & x == 0
+    })
+  ) == length(cols_sec)
+)
+
+supresion_ns_wide |>
+  gt() |>
+  tab_header(
+    title = "Disponibilidad de información por sectores y estados, INEGI/ETEF"
+  ) |>
+  tab_style(
+    style     = cell_fill(color = "#c8e6c9"),   # verde claro, igual que imagen 3
+    locations = cells_body(rows = filas_completas)
+  ) |>
+  tab_style(
+    style     = cell_text(color = "#1b5e20"),   # texto verde oscuro en esas filas
+    locations = cells_body(rows = filas_completas)
+  ) |>
+  tab_source_note(
+    "Elaboración propia con base en INEGI — Exportaciones Trimestrales por Entidad Federativa (ETEF)."
+  ) |>
+  tab_options(
+    heading.align         = "left",
+    column_labels.font.weight = "bold",
+    table.font.size       = px(13)
+  )
+```
+
+
+```{r}
+#| label: fig-etef-sectores-sa
+#| code-fold: true
+#| code-summary: "Exportaciones trimestrales desestacionalizadas, sectores 333–336"
+#| fig-cap: "Exportaciones trimestrales desestacionalizadas por entidad federativa,
+#|   sectores SCIAN 333, 334, 335 y 336 <br> Miles de USD, solo estados sin datos suprimidos por confidencialidad"
+#| fig-cap-location: top
+#| fig-width: 11
+#| fig-height: 8.5
+#| warning: false
+#| message: false
+
+estados_limpios <- list(
+  "333" = c(
+    "Baja California", "Chihuahua", "Ciudad de México",
+    "Coahuila de Zaragoza", "Guanajuato", "Jalisco", "México",
+    "Nuevo León", "Puebla", "Querétaro", "San Luis Potosí",
+    "Sonora", "Tamaulipas"
+  ),
+  "334" = c(
+    "Baja California", "Chihuahua", "Ciudad de México",
+    "Coahuila de Zaragoza", "Jalisco", "México",
+    "Nuevo León", "Querétaro", "Sonora", "Tamaulipas"
+  ),
+  "335" = c(
+    "Baja California", "Chihuahua", "Ciudad de México",
+    "Coahuila de Zaragoza", "Guanajuato", "Jalisco", "México",
+    "Nuevo León", "Querétaro", "San Luis Potosí",
+    "Sonora", "Tamaulipas"
+  ),
+  "336" = c(
+    "Aguascalientes", "Baja California", "Chihuahua", "Ciudad de México",
+    "Coahuila de Zaragoza", "Durango", "Guanajuato", "Hidalgo",
+    "Jalisco", "México", "Morelos", "Nuevo León", "Puebla",
+    "Querétaro", "San Luis Potosí", "Sonora", "Tamaulipas",
+    "Tlaxcala", "Zacatecas"
+  )
+)
+
+umbrales <- c(
+  "333" =   250000,
+  "334" = 2500000,
+  "335" =   500000,
+  "336" = 2500000
+)
+
+
+
+etiquetas_cortas <- c(
+  "333" = "Maquinaria y equipo",
+  "334" = "Equipo de computación y comunicación",
+  "335" = "Accesorios y equipo eléctrico",
+  "336" = "Equipo de transporte"
+)
+
+grafica_sector <- function(sector_codigo) {
+  umbral  <- umbrales[[sector_codigo]]
+  estados <- estados_limpios[[sector_codigo]]
+
+  datos_sector <- etef |>
+    filter(
+      codigo_scian == sector_codigo,
+      entidad      %in% estados,
+      !es_total,
+      !es_no_especificado,
+      fecha  >= "2010-01-01"
+    )
+
+  ultimo_trimestre <- datos_sector |>
+    filter(!is.na(val_miles_usd)) |>
+    slice_max(fecha, n = 1, with_ties = FALSE) |>
+    pull(fecha)
+
+  ultimo_vals <- datos_sector |>
+    filter(fecha == ultimo_trimestre, !is.na(val_miles_usd)) |>
+    filter(val_miles_usd >= umbral) |>
+    select(entidad, val_final = val_miles_usd)
+
+  estados_sobre_umbral <- ultimo_vals$entidad
+  desc <- etiquetas_cortas[[sector_codigo]]
+
+  datos_plot <- datos_sector |>
+    filter(entidad %in% estados_sobre_umbral) |>
+    arrange(entidad, fecha) |>
+    group_by(entidad) |>
+    mutate(
+      val_sa = if (any(is.na(val_miles_usd))) {
+        val_miles_usd
+      } else {
+        sa_adj(val_miles_usd, fecha, freq = 4)
+      }
+    ) |>
+    ungroup()
+
+  etiquetas <- datos_plot |>
+    filter(!is.na(val_sa)) |>
+    group_by(entidad) |>
+    slice_max(fecha, n = 1, with_ties = FALSE) |>
+    ungroup() |>
+    left_join(ultimo_vals, by = "entidad") |>
+    arrange(desc(val_final))
+  
+  datos_plot |>
+    ggplot(aes(x = fecha, y = val_sa, color = entidad)) +
+    geom_vline(
+      xintercept = seq(as.Date("2010-01-01"), as.Date("2025-01-01"), by = "year"),
+      color      = "grey85",
+      linewidth  = 0.3
+    ) +
+    geom_line(linewidth = 0.7) +
+    geom_point(size = 1.2, alpha = 0.6) +
+    ggrepel::geom_text_repel(
+      data        = etiquetas,
+      aes(x = fecha, y = val_sa, label = entidad, color = entidad),
+      hjust       = 0,
+      size        = 2.8,
+      show.legend = FALSE,
+      direction   = "y",          # solo se mueve verticalmente
+      nudge_x     = 100,          # empuja las etiquetas a la derecha del último punto
+      segment.size = 0.3,         # línea de conexión delgada
+      segment.color = "grey60",
+      box.padding  = 0.2,
+      max.overlaps = Inf           # nunca suprime etiquetas
+    ) +
+    scale_y_continuous(labels = scales::comma) +
+    scale_x_date(expand = expansion(mult = c(0.02, 0.18))) +
+    labs(
+      title    = paste0("Sector ", sector_codigo, " — ", desc),
+      subtitle = paste0("≥ ", scales::comma(umbral), " miles USD, último trimestre"),
+      x        = NULL,
+      y        = NULL,
+      caption  = NULL
+    ) +
+    theme_bw() +
+    theme(
+      legend.position  = "none",
+      panel.grid.minor = element_blank(),
+      plot.title       = element_text(size = 10, face = "bold"),
+      plot.subtitle    = element_text(size = 8),
+      axis.text        = element_text(size = 7)
+    )
+}
+
+plots <- map(c("333", "334", "335", "336"), grafica_sector)
+
+(plots[[1]] + plots[[2]]) / (plots[[3]] + plots[[4]]) +
+  plot_annotation(
+    caption = "Elaboración propia con base en INEGI/ ETEF. Ajuste estacional: X-13ARIMA-SEATS."
+  )
+```
+
+Destacan, en primer lugar, el predominio de Nuevo León en Maquinaria y equipo (Sector 333) y en Accesorios y equipo eléctrico (Sector 335), así como la notable aceleración de las exportaciones de estos dos sectores poco después de 2020. En ambos sectores existe una "segunda división" de estados exportadores, que en ambos casos incluye a Chihuaha, Coahuila, Tamaulipas, Baja California, Querétaro y San Luis Potosí.  Las relaciones productivas entre estos estados, en estos dos sectores, son un tema pendiente de investigar.
+
+En Equipo de computación y comunicación (Sector 334) son notables el predominio de Chihuaha y Jalisco, y la aceleración que tiene lugar a partir de 2024.
+
+Finalmente, los problemas de Equipo de Transporte (Sección 336) quedan en evidencia, con efectos particularmente fuerntes en Coahuila y Guanajuato, los principales estados exportadores de este sector.
+
+
+```{r}
+#| label: cleanup-etef
+#| include: false
+
+rm(etef,meta_etef,estados_limpios)
+```
+
+### 4.3 Evolución del empleo IMMEX en manufactura
+
+::: {.callout-note collapse="true" title="Carga datos y metadatos: empleo IMMEX"}
+```{r}
+#| label: immex_empleo.rds
+#| echo: false
+
+immex     <- readRDS(here::here("RDS", "immex_empleo.rds"))
+meta_immex <- readRDS(here::here("RDS", "meta_immex_empleo.rds"))
+gt_meta(meta_immex, titulo = "Metadatos: Exprotaciones México por Estado")
+```
+:::
+
+
+
+```{r}
+#| code-fold: true
+local({
+  col_total <- "#003399FF"
+  col_zlfn  <- "#006600"
+  col_dif <-  "#8B6A9E"
+  
+# ── Datos: diciembre de cada año, Total y ZLFN ─────────────────────────────
+  emp_dic <- immex |>
+    filter(
+      CVE_ENT %in% c("TOT", "ZLF"),
+      ID_MES == 12,
+      año >= 2010, año <= 2025
+    ) |>
+    mutate(
+      serie     = if_else(CVE_ENT == "TOT", "Total", "ZLFN"),
+      emp_miles = emp_total / 1e3
+    )
+  
+# ── Serie DIF = Total - ZLFN ────────────────────────────────────────────────
+
+  emp_dif <- emp_dic |>
+    select(año, fecha, serie, emp_miles) |>
+    pivot_wider(names_from = serie, values_from = emp_miles) |>
+    mutate(
+      serie     = "Resto",
+      emp_miles = Total - ZLFN
+    ) |>
+    select(año, fecha, serie, emp_miles)
+
+  emp_plot <- bind_rows(emp_dic, emp_dif)
+  
+# ── Valor puntual ─────────────────────────────────────────────────────────
+
+  val_en <- function(serie_nombre, anio) {
+    emp_plot |>
+      filter(serie == serie_nombre, año == anio) |>
+      pull(emp_miles)
+  }
+
+  cagr <- function(v_fin, v_ini, n) ((v_fin / v_ini)^(1 / n) - 1) * 100
+
+  tot_10 <- val_en("Total", 2010);  tot_18 <- val_en("Total", 2018)
+  tot_24 <- val_en("Total", 2024);  tot_25 <- val_en("Total", 2025)
+
+  zlf_10 <- val_en("ZLFN",  2010);  zlf_18 <- val_en("ZLFN",  2018)
+  zlf_24 <- val_en("ZLFN",  2024);  zlf_25 <- val_en("ZLFN",  2025)
+
+  dif_10 <- val_en("Resto", 2010);  dif_18 <- val_en("Resto", 2018)
+  dif_24 <- val_en("Resto", 2024);  dif_25 <- val_en("Resto", 2025)
+
+  etiquetas_total <- tibble(
+    fecha = as.Date(c("2014-06-01", "2021-06-01", "2024-06-01")),
+    y_pos = c(tot_18 + 15, tot_24 - 30, tot_25 - 60),
+    label = c(
+      paste0("TCAC TotaZl 10-18: ", round(cagr(tot_18, tot_10, 8), 1), "%"),
+      paste0("TCAC Total 18-24: ", round(cagr(tot_24, tot_18, 6), 1), "%"),
+      paste0("Var. Total 24-25: ", round((tot_25 / tot_24 - 1) * 100, 1), "%")
+    )
+  )
+
+  etiquetas_zlfn <- tibble(
+    fecha = as.Date(c("2014-06-01", "2021-06-01", "2024-06-01")),
+    y_pos = c(zlf_18 - 40, zlf_24 + 130 , zlf_25 - 35),
+    label = c(
+      paste0("TCAC ZLFN 10-18: ",  round(cagr(zlf_18, zlf_10, 8), 1), "%"),
+      paste0("TCAC ZLFN 18-24: ",  round(cagr(zlf_24, zlf_18, 6), 1), "%"),
+      paste0("Var. ZLFN 24-25: ",  round((zlf_25 / zlf_24 - 1) * 100, 1), "%")
+    )
+  )
+
+  etiquetas_dif <- tibble(
+    fecha = as.Date(c("2014-06-01", "2021-06-01", "2024-06-01")),
+    y_pos = c(dif_18 - 20, dif_24 - 20 , dif_25 + 80),
+    label = c(
+      paste0("TCAC Resto 10-18: ", round(cagr(dif_18, dif_10, 8), 1), "%"),
+      paste0("TCAC Resto 18-24: ", round(cagr(dif_24, dif_18, 6), 1), "%"),
+      paste0("Var. Resto 24-25: ", round((dif_25 / dif_24 - 1) * 100, 1), "%")
+    )
+  )
+
+# --  plot, break al final de cada año -----
+
+  breaks_x <- as.Date(paste0(2010:2025, "-12-31"))
+  labels_x  <- as.character(2010:2025)
+  
+    p <- emp_plot |>
+    ggplot(aes(x = fecha, y = emp_miles, color = serie)) +
+    geom_line(linewidth = 1) +
+    geom_vline(
+      xintercept = as.Date(c("2018-12-31", "2024-12-31")),
+      linetype = "dotted", color = "red", linewidth = 0.7
+    ) +
+    geom_label(
+      data = etiquetas_total,
+      aes(x = fecha, y = y_pos, label = label),
+      inherit.aes = FALSE,
+      color = col_total, fill = "white", fontface = "bold", size = 3.5, linewidth = 0.4
+    ) +
+    geom_label(
+      data = etiquetas_zlfn,
+      aes(x = fecha, y = y_pos, label = label),
+      inherit.aes = FALSE,
+      color = col_zlfn, fill = "white", fontface = "bold", size = 3.5, linewidth = 0.4
+    ) +
+    geom_label(
+      data = etiquetas_dif,
+      aes(x = fecha, y = y_pos, label = label),
+      inherit.aes = FALSE,
+      color = col_dif, fill = "white", fontface = "bold", size = 3.5, linewidth = 0.4
+    ) +
+    scale_color_manual(
+      values = c("Total" = col_total, "ZLFN" = col_zlfn, "Resto" = col_dif)
+    ) +
+    scale_x_date(breaks = breaks_x, labels = labels_x) +
+    scale_y_continuous(labels = scales::comma) +
+    labs(
+      x = NULL, y = NULL, color = "",
+      caption = "Elaboración propia con base en INEGI — Estadística IMMEX."
+    ) +
+    theme_bw() +
+    theme(
+      legend.position  = "bottom",
+      panel.grid.minor = element_blank(),
+      axis.text.x      = element_text(angle = 90, vjust = 0.5)
+    )
+
+  print(p)
+})
+ 
+```
+
+
+
+MAPA
+
+
+
+```{r}
+#| label: prep-immex-mapas
+#| include: false
+
+immex_pct <- immex |>
+  filter(ID_MES == 12, !CVE_ENT %in% c("ZLF", "TOT")) |>
+  group_by(año) |>
+  mutate(total_anual = sum(emp_total, na.rm = TRUE)) |>
+  ungroup() |>
+  group_by(nombre, año) |>
+  summarise(
+    emp_estado  = sum(emp_total, na.rm = TRUE),
+    total_anual = first(total_anual),
+    .groups     = "drop"
+  ) |>
+  mutate(pct = emp_estado / total_anual)
+
+breaks_pp       <- c(-Inf, -2, -0.5, 0.5, 2, Inf)
+labels_pp       <- c("< −2 pp", "−2 a −0.5 pp", "±0.5 pp", "+0.5 a +2 pp", "> +2 pp")
+paleta_discreta <- c(
+  "< −2 pp"      = "#FF9900",
+  "−2 a −0.5 pp" = "#FFCC33",
+  "±0.5 pp"      = "#FFF999",
+  "+0.5 a +2 pp" = "#7AAAC8",
+  "> +2 pp"      = "#35678F"
+)
+```
+
+
+```{r}
+#| label: fig-mapa-immex-4periodos
+#| code-fold: true
+#| code-summary: "Mapas: cambio en participación IMMEX por entidad federativa, cuatro períodos"
+#| fig-cap: |
+#|   Cambio en la participación porcentual del empleo IMMEX por entidad
+#|   federativa, cuatro períodos seleccionados (diciembre de cada año)
+#| fig-cap-location: top
+#| fig-width: 7.5
+#| fig-height: 7.3
+#| eval: false
+
+# ── Geometría ──────────────────────────────────────────────────────────────────
+mexico_sf <- readRDS(here::here("geodata", "gadm41_MEX_1_pk.rds")) |>
+  sf::st_as_sf() |>
+  mutate(
+    nombre_join = case_when(
+      NAME_1 == "México"           ~ "Estado de México",
+      NAME_1 == "Distrito Federal" ~ "Ciudad de México",
+      NAME_1 == "Michoacán"        ~ "Michoacán",
+      NAME_1 == "Nuevo León"       ~ "Nuevo León",
+      NAME_1 == "Querétaro"        ~ "Querétaro",
+      NAME_1 == "San Luis Potosí"  ~ "San Luis Potosí",
+      NAME_1 == "Yucatán"          ~ "Yucatán",
+      TRUE ~ NAME_1
+    )
+  )
+
+abreviaturas <- c(
+  "Aguascalientes"      = "AGS",   "Baja California"     = "BC",
+  "Baja California Sur" = "BCS",   "Campeche"            = "Camp.",
+  "Coahuila"            = "Coah.", "Colima"              = "Col.",
+  "Chiapas"             = "Chis.", "Chihuahua"           = "Chih.",
+  "Ciudad de México"    = "CDMX",  "Durango"             = "Dgo.",
+  "Guanajuato"          = "Gto.",  "Guerrero"            = "Gro.",
+  "Hidalgo"             = "Hgo.",  "Jalisco"             = "Jal.",
+  "Estado de México"    = "Méx.",  "Michoacán"           = "Mich.",
+  "Morelos"             = "Mor.",  "Nayarit"             = "Nay.",
+  "Nuevo León"          = "NL",    "Oaxaca"              = "Oax.",
+  "Puebla"              = "Pue.",  "Querétaro"           = "Qro.",
+  "Quintana Roo"        = "QRoo",  "San Luis Potosí"     = "SLP",
+  "Sinaloa"             = "Sin.",  "Sonora"              = "Son.",
+  "Tabasco"             = "Tab.",  "Tamaulipas"          = "Tamps.",
+  "Tlaxcala"            = "Tlax.", "Veracruz"            = "Ver.",
+  "Yucatán"             = "Yuc.",  "Zacatecas"           = "Zac."
+)
+
+centroides_sf <- suppressWarnings(
+  mexico_sf |>
+    sf::st_point_on_surface() |>
+    mutate(abrev = abreviaturas[nombre_join])
+)
+
+p_immex_mapas <- local({
+  cambio_periodo <- function(año_ini, año_fin) {
+    immex_pct |>
+      filter(año %in% c(año_ini, año_fin)) |>
+      select(nombre, año, pct) |>
+      pivot_wider(names_from = año, values_from = pct, names_prefix = "y") |>
+      mutate(cambio_pp = (get(paste0("y", año_fin)) - get(paste0("y", año_ini))) * 100)
+  }
+
+  make_map <- function(año_ini, año_fin) {
+    mapa_data <- mexico_sf |>
+      left_join(cambio_periodo(año_ini, año_fin), by = c("nombre_join" = "nombre")) |>
+      mutate(
+        cat_cambio = cut(cambio_pp, breaks = breaks_pp, labels = labels_pp,
+                         include.lowest = TRUE, ordered_result = TRUE)
+      )
+
+    ggplot(mapa_data) +
+      geom_sf(aes(fill = cat_cambio), color = "grey25", linewidth = 0.35) +
+      ggrepel::geom_label_repel(
+        data               = centroides_sf,
+        aes(label          = abrev, geometry = geometry),
+        stat               = "sf_coordinates",
+        size               = 2.0,
+        label.size         = 0.15,
+        label.padding      = unit(0.12, "lines"),
+        min.segment.length = 0,
+        segment.color      = "grey40",
+        segment.size       = 0.3,
+        fill               = alpha("white", 0.7),
+        color              = "grey10",
+        fontface           = "plain",
+        max.overlaps       = Inf
+      ) +
+      scale_fill_manual(
+        values   = paleta_discreta,
+        name     = NULL,
+        na.value = "grey85",
+        drop     = FALSE
+      ) +
+      labs(title = paste0(año_ini, " – ", año_fin)) +
+      guides(fill = guide_legend(nrow = 1, keywidth = unit(1.6, "cm"),
+                                 keyheight = unit(0.4, "cm"))) +
+      theme_void() +
+      theme(
+        plot.title      = element_text(face = "bold", size = 11, hjust = 0.5,
+                                       margin = margin(b = 4)),
+        legend.position = "none",
+        plot.margin     = margin(6, 6, 6, 6)
+      )
+  }
+
+ leyenda <- cowplot::get_legend(
+    make_map(2010, 2025) +
+      theme(
+        legend.position  = "bottom",
+        legend.text      = element_text(size = 8),
+        legend.key.size  = unit(0.4, "cm"),   # controla alto
+        legend.key.width = unit(0.5, "cm")    # controla ancho
+      )
+  )
+
+  periodos <- list(c(2010, 2025), c(2010, 2018), c(2018, 2024), c(2024, 2025))
+  plots    <- map(periodos, \(p) make_map(p[1], p[2]))
+
+  cowplot::plot_grid(
+    (plots[[1]] + plots[[2]]) / (plots[[3]] + plots[[4]]),
+    leyenda,
+    ncol        = 1,
+    rel_heights = c(1, 0.08)
+  )
+})
+
+# ── Guardar ────────────────────────────────────────────────────────────────────
+ggsave(
+  filename = here::here("Plots", "mapa_immex_4periodos.pdf"),
+  plot     = p_immex_mapas,
+  width    = 7.5, height = 7.3,
+  device   = cairo_pdf
+)
+
+ggsave(
+  filename = here::here("Plots", "mapa_immex_4periodos.png"),
+  plot     = p_immex_mapas,
+  width    = 7.5, height = 7.3,
+  dpi      = 150
+)
+
+rm(p_immex_mapaa)
+```
+
+
+```{r}
+#| label: fig-mapa-immex-4periodos-display
+#| echo: false
+#| fig-width: 7.5
+#| fig-height: 7.3
+
+knitr::include_graphics(here::here("Plots", "mapa_immex_4periodos.png"))
+```
+
+
+TABLA
+```{r}
+#| label: tbl-immex-ganadores-perdedores
+#| code-fold: true
+#| code-summary: "Tabla: estados con cambio consistente en participación IMMEX"
+
+local({
+  periodos <- list(
+    c(2010, 2018),
+    c(2018, 2024),
+    c(2024, 2025)
+  )
+
+  # Cambio en pp para cada período, todos los estados
+  cambios <- map(periodos, \(p) {
+    immex_pct |>
+      filter(año %in% p) |>
+      select(nombre, año, pct) |>
+      pivot_wider(names_from = año, values_from = pct, names_prefix = "y") |>
+      mutate(
+        cambio_pp  = (get(paste0("y", p[2])) - get(paste0("y", p[1]))) * 100,
+        periodo    = paste0(p[1], "–", p[2])
+      ) |>
+      select(nombre, periodo, cambio_pp)
+  }) |>
+    bind_rows()
+
+  # Identificar ganadores (+ en los 3) y perdedores (- en los 3)
+  clasificacion <- cambios |>
+    group_by(nombre) |>
+    summarise(
+      n_positivos  = sum(cambio_pp > 0),
+      n_negativos  = sum(cambio_pp < 0),
+      .groups = "drop"
+    ) |>
+    mutate(
+      grupo = case_when(
+        n_positivos == 3 ~ "Ganó participación en los tres períodos",
+        n_negativos == 3 ~ "Perdió participación en los tres períodos",
+        TRUE             ~ NA_character_
+      )
+    ) |>
+    filter(!is.na(grupo))
+
+  # Tabla ancha: nombre + cambio por período + grupo
+  tabla <- cambios |>
+    semi_join(clasificacion, by = "nombre") |>
+    pivot_wider(names_from = periodo, values_from = cambio_pp) |>
+    left_join(clasificacion |> select(nombre, grupo), by = "nombre") |>
+    arrange(grupo, nombre)
+
+  tabla |>
+    gt(groupname_col = "grupo") |>
+    tab_header(
+      title    = "Cambio consistente en participación del empleo IMMEX",
+      subtitle = "Entidades que ganaron o perdieron participación en los tres subperíodos"
+    ) |>
+    fmt_number(
+      columns  = where(is.double),
+      decimals = 2,
+      dec_mark = ".",
+      sep_mark = ","
+    ) |>
+    cols_label(
+      nombre     = "Entidad federativa",
+      `2010–2018` = "2010–2018",
+      `2018–2024` = "2018–2024",
+      `2024–2025` = "2024–2025"
+    ) |>
+    cols_align(align = "left",   columns = nombre) |>
+    cols_align(align = "center", columns = where(is.double)) |>
+    tab_spanner(
+      label   = "Cambio en participación (pp)",
+      columns = where(is.double)
+    ) |>
+    tab_style(
+      style = cell_fill(color = "#e8f4ea"),
+      locations = cells_row_groups(groups = "Ganó participación en los tres períodos")
+    ) |>
+    tab_style(
+      style = cell_fill(color = "#fdf0e0"),
+      locations = cells_row_groups(groups = "Perdió participación en los tres períodos")
+    ) |>
+    tab_source_note("Elaboración propia con base en INEGI — Estadística IMMEX. Diciembre de cada año.") |>
+    tab_options(
+      row_group.font.weight = "bold",
+      table.font.size       = px(13)
+    )
+})
+```
+
+
+```{r}
+#| label: cleanup-immex
+#| include: false
+
+rm(immex, immex_empleo, immex_zlfn_bind, meta_immex, meta_immex_empleo)
+```
+
+### 4.4 Evolución del empleo exportador en manufactura en los censos 2019 y 2024
+
+
+
+## 5. La inversión extranjera directa
+
+### 5.1 Inversión por tipo, sector y país de origen
+
+### 5.2 Indicador indirecto: la demanda de suelo industrial
+
+## 6. Síntesis y conclusiones

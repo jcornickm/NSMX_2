@@ -1,0 +1,513 @@
+---
+title: "NSMX_C2 — Descripción de conjuntos de datos"
+format:
+  html:
+    embed-resources: true
+    toc: true
+    toc-depth: 2
+execute:
+  echo: false
+  warning: false
+  message: false
+---
+
+```{r setup}
+pacman::p_load(tidyverse, here, janitor, gt, glue)
+```
+
+# Query 1 — Importaciones de EUA por país de origen
+
+## `imp_por_pais_all`
+
+Contiene las importaciones mensuales de EUA desde **todos los países de origen** disponibles en la API del Census Bureau, para el periodo 2010–2025. Cada fila corresponde a un par país-mes. Adicionalmente, el data frame incluye —para cada mes— el total agregado de importaciones (`Imp_total`), descargado en una consulta separada sin desagregación por país. Los 20 países de mayor valor acumulado en 2024–2025 tienen además asignados un nombre en español (`País`) y un número de orden (`rank`); para el resto de los países estos campos quedan en `NA`.
+
+```{r imp_por_pais_all}
+imp_por_pais_all <- readRDS(here("RDS", "imp_por_pais_all.rds"))
+
+tibble(
+  Variable    = names(imp_por_pais_all),
+  Tipo        = map_chr(imp_por_pais_all, ~class(.x)[1]),
+  Descripción = c(
+    "Fecha (primer día del mes)",
+    "Código numérico del país de origen (Census CTY_CODE)",
+    "Nombre oficial del país en inglés (Census CTY_NAME)",
+    "Valor de importaciones del mes, en dólares corrientes",
+    "Nombre del país en español (Top 20 únicamente; NA para el resto)",
+    "Orden de importancia por valor acumulado 2024–2025 (Top 20 únicamente; NA para el resto)",
+    "Total mensual de importaciones de EUA, todas las fuentes, en dólares corrientes"
+  )
+) |>
+  gt() |>
+  tab_header(title = "Diccionario de variables: imp_por_pais_all") |>
+  cols_label(Variable = "Variable", Tipo = "Tipo", Descripción = "Descripción") |>
+  tab_style(
+    style = cell_text(font = "monospace"),
+    locations = cells_body(columns = Variable)
+  ) |>
+  tab_options(table.font.size = "small")
+```
+
+```{r dims_all}
+glue("Dimensiones: {format(nrow(imp_por_pais_all), big.mark = ',')} filas × {ncol(imp_por_pais_all)} columnas")
+```
+
+---
+
+## `imp_por_pais`
+
+Subconjunto de trabajo derivado de `imp_por_pais_all`. Conserva únicamente los **20 principales países de origen** (por valor acumulado enero 2024–noviembre 2025), más dos filas de agregados por mes: **Resto** (diferencia entre el total y la suma de los Top 20) y **Total** (importaciones agregadas de todos los orígenes). La variable `grupo` identifica estas tres categorías. Este data frame es el insumo principal para visualizaciones y análisis comparativos.
+
+```{r imp_por_pais}
+imp_por_pais <- readRDS(here("RDS", "imp_por_pais.rds"))
+
+tibble(
+  Variable    = names(imp_por_pais),
+  Tipo        = map_chr(imp_por_pais, ~class(.x)[1]),
+  Descripción = c(
+    "Fecha (primer día del mes)",
+    "Código del país ('REST' = Resto; 'TOT' = Total)",
+    "Nombre del país en español, o 'Resto' / 'Total'",
+    "Orden de importancia (0 = Total, 1–20 = Top 20, 21 = Resto)",
+    "Valor de importaciones del mes, en dólares corrientes",
+    "Total mensual de importaciones de EUA, todas las fuentes, en dólares corrientes",
+    "Categoría: 'Top20', 'Resto' o 'Total'"
+  )
+) |>
+  gt() |>
+  tab_header(title = "Diccionario de variables: imp_por_pais") |>
+  cols_label(Variable = "Variable", Tipo = "Tipo", Descripción = "Descripción") |>
+  tab_style(
+    style = cell_text(font = "monospace"),
+    locations = cells_body(columns = Variable)
+  ) |>
+  tab_options(table.font.size = "small")
+```
+
+```{r dims_sub}
+glue("Dimensiones: {format(nrow(imp_por_pais), big.mark = ',')} filas × {ncol(imp_por_pais)} columnas")
+```
+
+---
+
+## Metadatos
+
+```{r metadata}
+meta <- readRDS(here("RDS", "meta_imp_por_pais.rds"))
+
+tibble(
+  Campo  = names(meta),
+  Valor  = map_chr(meta, ~as.character(.x))
+) |>
+  gt() |>
+  tab_header(title = "Metadatos: imp_por_pais / imp_por_pais_all") |>
+  cols_label(Campo = "Campo", Valor = "Valor") |>
+  tab_style(
+    style = cell_text(font = "monospace"),
+    locations = cells_body(columns = Campo)
+  ) |>
+  tab_options(table.font.size = "small")
+```
+````
+
+````
+# Query 2 — Importaciones de EUA desde México por Sección y Capítulo SA
+
+## `imp_mex_sec_cap`
+
+Contiene las importaciones mensuales de EUA provenientes de **México**, desagregadas al nivel de **Capítulo del Sistema Armonizado (SA, 2 dígitos)**, para el periodo 2010–2025. Cada fila corresponde a un par Capítulo-mes. A cada Capítulo se le asigna la **Sección SA** correspondiente mediante una tabla de referencia elaborada para este proyecto. Las variables descriptivas de texto (nombres de Sección y Capítulo) se almacenan como **factores ordenados** según el orden natural del SA (Secciones I–XXI; Capítulos 1–99). No contiene filas de totales agregados; éstos se calculan bajo demanda con `group_by()` + `summarise()`.
+
+```{r imp_mex_sec_cap}
+imp_mex_sec_cap <- readRDS(here("RDS", "imp_mex_sec_cap.rds"))
+
+tibble(
+  Variable    = names(imp_mex_sec_cap),
+  Tipo        = map_chr(imp_mex_sec_cap, ~class(.x)[1]),
+  Descripción = c(
+    "Fecha (primer día del mes)",
+    "Sección del SA en numeral romano (factor ordenado I–XXI)",
+    "Nombre corto de la Sección, una palabra (factor ordenado)",
+    "Descripción de la Sección en español (factor ordenado)",
+    "Descripción oficial de la Sección en inglés",
+    "Número de Capítulo SA (entero, 1–99)",
+    "Nombre corto del Capítulo, una palabra (factor ordenado)",
+    "Descripción del Capítulo en español (factor ordenado)",
+    "Descripción del Capítulo devuelta por el API en inglés",
+    "Valor de importaciones del mes, en dólares corrientes",
+    "Valor acumulado en el año calendario, en dólares corrientes",
+    "Valor de importaciones del mes con ajuste estacional"
+  )
+) |>
+  gt() |>
+  tab_header(title = "Diccionario de variables: imp_mex_sec_cap") |>
+  cols_label(Variable = "Variable", Tipo = "Tipo", Descripción = "Descripción") |>
+  tab_style(
+    style = cell_text(font = "monospace"),
+    locations = cells_body(columns = Variable)
+  ) |>
+  tab_options(table.font.size = "small")
+```
+
+```{r dims_q2}
+glue("Dimensiones: {format(nrow(imp_mex_sec_cap), big.mark = ',')} filas × {ncol(imp_mex_sec_cap)} columnas")
+```
+
+---
+
+## Metadatos
+
+```{r metadata_q2}
+meta_q2 <- readRDS(here("RDS", "meta_imp_mex_sec_cap.rds"))
+
+tibble(
+  Campo = names(meta_q2),
+  Valor = map_chr(meta_q2, ~as.character(.x))
+) |>
+  gt() |>
+  tab_header(title = "Metadatos: imp_mex_sec_cap") |>
+  cols_label(Campo = "Campo", Valor = "Valor") |>
+  tab_style(
+    style = cell_text(font = "monospace"),
+    locations = cells_body(columns = Campo)
+  ) |>
+  tab_options(table.font.size = "small")
+```
+````
+
+
+---
+
+````
+# Query 3 — Importaciones de EUA desde México: Partidas (HS4) y Subpartidas (HS6)
+
+## `imp_mex_hs4_all`
+
+Contiene las importaciones mensuales de EUA provenientes de México, desagregadas al nivel de **Partida HS (4 dígitos)**, para **todos los capítulos del SA**, periodo 2010–2025. Se obtiene filtrando `nchar(I_COMMODITY) == 4` del archivo raw descargado sin `COMM_LVL`. Incluye etiquetas de Sección y Capítulo como factores ordenados.
+
+```{r hs4_all}
+imp_mex_hs4_all <- readRDS(here("RDS", "imp_mex_hs4.rds"))
+
+tibble(
+  Variable    = names(imp_mex_hs4_all),
+  Tipo        = map_chr(imp_mex_hs4_all, ~class(.x)[1]),
+  Descripción = c(
+    "Fecha (primer día del mes)",
+    "Sección del SA en numeral romano (factor ordenado I–XXI)",
+    "Nombre corto de la Sección, una palabra (factor ordenado)",
+    "Descripción de la Sección en español (factor ordenado)",
+    "Número de Capítulo SA (entero, 1–99)",
+    "Nombre corto del Capítulo, una palabra (factor ordenado)",
+    "Descripción del Capítulo en español (factor ordenado)",
+    "Código de partida HS a 4 dígitos",
+    "Descripción de la partida devuelta por el API en inglés",
+    "Valor de importaciones del mes, en dólares corrientes",
+    "Valor acumulado en el año calendario, en dólares corrientes"
+  )
+) |>
+  gt() |>
+  tab_header(title = "Diccionario de variables: imp_mex_hs4_all") |>
+  cols_label(Variable = "Variable", Tipo = "Tipo", Descripción = "Descripción") |>
+  tab_style(style = cell_text(font = "monospace"), locations = cells_body(columns = Variable)) |>
+  tab_options(table.font.size = "small")
+```
+
+```{r dims_hs4_all}
+glue("Dimensiones: {format(nrow(imp_mex_hs4_all), big.mark = ',')} filas × {ncol(imp_mex_hs4_all)} columnas")
+```
+
+---
+
+## `imp_mex_hs4_84858790`
+
+Subconjunto de `imp_mex_hs4_all` filtrado a los **cuatro capítulos de interés**: 84 (Maquinaria), 85 (Eléctrico), 87 (Automóviles) y 90 (Óptica). Comparte exactamente las mismas variables que `imp_mex_hs4_all`.
+
+```{r dims_hs4_caps}
+imp_mex_hs4_84858790 <- readRDS(here("RDS", "imp_mex_hs4_84858790.rds"))
+glue("Dimensiones: {format(nrow(imp_mex_hs4_84858790), big.mark = ',')} filas × {ncol(imp_mex_hs4_84858790)} columnas")
+```
+
+---
+
+## `imp_mex_hs6_all`
+
+Análogo a `imp_mex_hs4_all` pero al nivel de **Subpartida HS (6 dígitos)**. Añade `Cod_partida` (4 dígitos padre) y `Cod_subpartida` (6 dígitos) en lugar de `Cod_partida` y `Desc_api_partida`.
+
+```{r hs6_all}
+imp_mex_hs6_all <- readRDS(here("RDS", "imp_mex_hs6.rds"))
+
+tibble(
+  Variable    = names(imp_mex_hs6_all),
+  Tipo        = map_chr(imp_mex_hs6_all, ~class(.x)[1]),
+  Descripción = c(
+    "Fecha (primer día del mes)",
+    "Sección del SA en numeral romano (factor ordenado I–XXI)",
+    "Nombre corto de la Sección, una palabra (factor ordenado)",
+    "Descripción de la Sección en español (factor ordenado)",
+    "Número de Capítulo SA (entero, 1–99)",
+    "Nombre corto del Capítulo, una palabra (factor ordenado)",
+    "Descripción del Capítulo en español (factor ordenado)",
+    "Código de partida HS a 4 dígitos (primeros 4 dígitos de la subpartida)",
+    "Código de subpartida HS a 6 dígitos",
+    "Descripción de la subpartida devuelta por el API en inglés",
+    "Valor de importaciones del mes, en dólares corrientes",
+    "Valor acumulado en el año calendario, en dólares corrientes"
+  )
+) |>
+  gt() |>
+  tab_header(title = "Diccionario de variables: imp_mex_hs6_all") |>
+  cols_label(Variable = "Variable", Tipo = "Tipo", Descripción = "Descripción") |>
+  tab_style(style = cell_text(font = "monospace"), locations = cells_body(columns = Variable)) |>
+  tab_options(table.font.size = "small")
+```
+
+```{r dims_hs6_all}
+glue("Dimensiones: {format(nrow(imp_mex_hs6_all), big.mark = ',')} filas × {ncol(imp_mex_hs6_all)} columnas")
+```
+
+---
+
+## `imp_mex_hs6_84858790`
+
+Subconjunto de `imp_mex_hs6_all` filtrado a los capítulos 84, 85, 87 y 90. Mismas variables que `imp_mex_hs6_all`.
+
+```{r dims_hs6_caps}
+imp_mex_hs6_84858790 <- readRDS(here("RDS", "imp_mex_hs6_84858790.rds"))
+glue("Dimensiones: {format(nrow(imp_mex_hs6_84858790), big.mark = ',')} filas × {ncol(imp_mex_hs6_84858790)} columnas")
+```
+
+---
+
+## `imp_mex_top_hs4`
+
+Subconjunto de `imp_mex_hs4_84858790` que retiene únicamente las **partidas que concentran el 80% del valor importado** en 2024–2025, dentro de cada uno de los cuatro capítulos de interés. Añade `Part_corto` y `Part_desc_es` con nombres en español elaborados para el proyecto. Es el insumo principal para visualizaciones a nivel de partida.
+
+```{r top_hs4}
+imp_mex_top_hs4 <- readRDS(here("RDS", "imp_mex_top_hs4.rds"))
+
+tibble(
+  Variable    = names(imp_mex_top_hs4),
+  Tipo        = map_chr(imp_mex_top_hs4, ~class(.x)[1]),
+  Descripción = c(
+    "Fecha (primer día del mes)",
+    "Sección del SA en numeral romano (factor ordenado I–XXI)",
+    "Nombre corto de la Sección, una palabra (factor ordenado)",
+    "Descripción de la Sección en español (factor ordenado)",
+    "Número de Capítulo SA (entero, 1–99)",
+    "Nombre corto del Capítulo, una palabra (factor ordenado)",
+    "Descripción del Capítulo en español (factor ordenado)",
+    "Código de partida HS a 4 dígitos",
+    "Descripción de la partida devuelta por el API en inglés",
+    "Valor de importaciones del mes, en dólares corrientes",
+    "Valor acumulado en el año calendario, en dólares corrientes",
+    "Nombre corto de la partida en español (elaboración propia)",
+    "Descripción de la partida en español (elaboración propia)"
+  )
+) |>
+  gt() |>
+  tab_header(title = "Diccionario de variables: imp_mex_top_hs4") |>
+  cols_label(Variable = "Variable", Tipo = "Tipo", Descripción = "Descripción") |>
+  tab_style(style = cell_text(font = "monospace"), locations = cells_body(columns = Variable)) |>
+  tab_options(table.font.size = "small")
+```
+
+```{r dims_top_hs4}
+glue("Dimensiones: {format(nrow(imp_mex_top_hs4), big.mark = ',')} filas × {ncol(imp_mex_top_hs4)} columnas")
+```
+
+---
+
+## Metadatos
+
+```{r metadata_q3}
+meta_q3 <- readRDS(here("RDS", "meta_query3.rds"))
+
+tibble(
+  Campo = names(meta_q3),
+  Valor = map_chr(meta_q3, ~paste(as.character(.x), collapse = "; "))
+) |>
+  gt() |>
+  tab_header(title = "Metadatos: Query 3 — Partidas y Subpartidas HS") |>
+  cols_label(Campo = "Campo", Valor = "Valor") |>
+  tab_style(style = cell_text(font = "monospace"), locations = cells_body(columns = Campo)) |>
+  tab_options(table.font.size = "small")
+```
+
+---
+
+# Query 4 — Aranceles EUA: HTS 8703 (Automóviles), México y Corea del Sur
+
+## `aranceles`
+
+Contiene datos mensuales de aranceles aplicados por EUA a las importaciones del código HTS **8703** (vehículos para transporte de personas), para **México y Corea del Sur**, periodo 2010–2025. Proviene de la API USITC DataWeb. Incluye el valor importado, el valor sujeto a arancel y los derechos calculados, además de dos tasas arancelarias derivadas.
+
+```{r aranceles}
+aranceles <- readRDS(here("RDS", "aranceles_hts8703_mex_kor_mensual.rds"))
+
+tibble(
+  Variable    = names(aranceles),
+  Tipo        = map_chr(aranceles, ~class(.x)[1]),
+  Descripción = c(
+    "País de origen ('Mexico' o 'South Korea')",
+    "Código HTS a 4 dígitos ('8703')",
+    "Fecha (primer día del mes)",
+    "Valor de importaciones (CONS_CUSTOMS_VALUE), en dólares corrientes",
+    "Valor sujeto a arancel (CONS_CUSTOMS_VALUE_SUB_DUTY), en dólares corrientes",
+    "Derechos arancelarios calculados (CONS_CALC_DUTY), en dólares corrientes",
+    "Tasa efectiva = derechos / val_imp (proporción)",
+    "Tasa implícita = val_gravable / val_imp (proporción)"
+  )
+) |>
+  gt() |>
+  tab_header(title = "Diccionario de variables: aranceles") |>
+  cols_label(Variable = "Variable", Tipo = "Tipo", Descripción = "Descripción") |>
+  tab_style(style = cell_text(font = "monospace"), locations = cells_body(columns = Variable)) |>
+  tab_options(table.font.size = "small")
+```
+
+```{r dims_aranceles}
+glue("Dimensiones: {format(nrow(aranceles), big.mark = ',')} filas × {ncol(aranceles)} columnas")
+```
+
+---
+
+## Metadatos
+
+```{r metadata_q4}
+tibble(
+  Campo = c("Fuente", "Endpoint", "Código HTS", "Países", "Período", "Frecuencia", "Unidad"),
+  Valor = c(
+    "USITC DataWeb",
+    "https://datawebws.usitc.gov/dataweb/api/v2/report2/runReport",
+    "8703 — Motor vehicles for transport of persons",
+    "México (CTY_CODE 2010), Corea del Sur (CTY_CODE 5800)",
+    paste(range(aranceles$fecha), collapse = " – "),
+    "Mensual",
+    "Dólares corrientes; tasas en proporción (0–1)"
+  )
+) |>
+  gt() |>
+  tab_header(title = "Metadatos: aranceles HTS 8703") |>
+  cols_label(Campo = "Campo", Valor = "Valor") |>
+  tab_style(style = cell_text(font = "monospace"), locations = cells_body(columns = Campo)) |>
+  tab_options(table.font.size = "small")
+```
+
+---
+
+# Query 5 — Exportaciones mexicanas por entidad federativa (ETEF/BIE)
+
+## `xmex_total_ef`
+
+Contiene las **exportaciones totales trimestrales** de México desagregadas por **entidad federativa** (32 estados), para el periodo 2007 Q1 – 2025 Q4. Proviene de la Encuesta de Exportaciones Trimestrales por Entidad Federativa (ETEF) del INEGI, descargada mediante la API del Banco de Información Económica (BIE). Las exportaciones se asignan a la entidad de **origen de la producción**, no al punto de salida aduanal. No incluye desglose sectorial (ese nivel se cubre en Query 6).
+
+```{r xmex_total_ef}
+xmex_total_ef <- readRDS(here("RDS", "xmex_total_ef.rds"))
+
+tibble(
+  Variable    = names(xmex_total_ef),
+  Tipo        = map_chr(xmex_total_ef, ~class(.x)[1]),
+  Descripción = c(
+    "Clave INEGI de la entidad federativa (01–32)",
+    "Nombre de la entidad federativa",
+    "Año",
+    "Trimestre (1–4)",
+    "Fecha: primer día del trimestre (ene/abr/jul/oct)",
+    "Valor de exportaciones, en miles de dólares estadounidenses"
+  )
+) |>
+  gt() |>
+  tab_header(title = "Diccionario de variables: xmex_total_ef") |>
+  cols_label(Variable = "Variable", Tipo = "Tipo", Descripción = "Descripción") |>
+  tab_style(style = cell_text(font = "monospace"), locations = cells_body(columns = Variable)) |>
+  tab_options(table.font.size = "small")
+```
+
+```{r dims_xmex}
+glue("Dimensiones: {format(nrow(xmex_total_ef), big.mark = ',')} filas × {ncol(xmex_total_ef)} columnas")
+```
+
+---
+
+## Metadatos
+
+```{r metadata_q5}
+meta_q5 <- readRDS(here("RDS", "meta_xmex_total_ef.rds"))
+
+tibble(
+  Campo = names(meta_q5),
+  Valor = map_chr(meta_q5, ~as.character(.x))
+) |>
+  gt() |>
+  tab_header(title = "Metadatos: xmex_total_ef") |>
+  cols_label(Campo = "Campo", Valor = "Valor") |>
+  tab_style(style = cell_text(font = "monospace"), locations = cells_body(columns = Campo)) |>
+  tab_options(table.font.size = "small")
+```
+
+---
+
+# Query 6 — Exportaciones mexicanas por entidad federativa y subsector SCIAN (ETEF)
+
+## `etef_tidy`
+
+Contiene las **exportaciones trimestrales de México** desagregadas simultáneamente por **entidad federativa** (32 estados) y **subsector SCIAN 2018**, para el periodo cubierto por el archivo `ETEF_Entidad_Subsector.xlsx` publicado por el INEGI. Cada fila corresponde a una combinación entidad × subsector × trimestre. Incluye una fila de total por entidad (`es_total = TRUE`) y una fila de residual no especificado (`es_no_especificado = TRUE`). Los valores suprimidos por confidencialidad (`"C"`) y los no aplicables (`"-"`) se identifican con flags lógicos y se convierten a `NA` en `val_miles_usd`; el cero real se preserva como 0.
+
+```{r etef_tidy}
+etef_tidy <- readRDS(here("RDS", "etef_tidy.rds"))
+
+tibble(
+  Variable    = names(etef_tidy),
+  Tipo        = map_chr(etef_tidy, ~class(.x)[1]),
+  Descripción = c(
+    "Nombre de la entidad federativa (corresponde a la hoja del xlsx)",
+    "Código de subsector SCIAN 2018 (3 dígitos; NA en filas de total y residual)",
+    "Descripción del subsector SCIAN en español",
+    "TRUE si la fila corresponde al total de exportaciones de la entidad",
+    "TRUE si la fila corresponde al residual 'Subsectores no especificados'",
+    "Año",
+    "Trimestre (factor ordenado: I, II, III, IV)",
+    "Fecha: primer día del trimestre (ene/abr/jul/oct)",
+    "Valor de exportaciones, en miles de dólares estadounidenses (NA si suprimido o no aplica)",
+    "TRUE si el dato original era 'C' (suprimido por confidencialidad)",
+    "TRUE si el dato original era '-' (sin información / no aplica)"
+  )
+) |>
+  gt() |>
+  tab_header(title = "Diccionario de variables: etef_tidy") |>
+  cols_label(Variable = "Variable", Tipo = "Tipo", Descripción = "Descripción") |>
+  tab_style(style = cell_text(font = "monospace"), locations = cells_body(columns = Variable)) |>
+  tab_options(table.font.size = "small")
+```
+
+```{r dims_etef}
+glue("Dimensiones: {format(nrow(etef_tidy), big.mark = ',')} filas × {ncol(etef_tidy)} columnas")
+```
+
+---
+
+## Metadatos
+
+```{r metadata_q6}
+meta_q6 <- readRDS(here("RDS", "meta_etef.rds"))
+
+tibble(
+  Campo = names(meta_q6),
+  Valor = map_chr(meta_q6, ~as.character(.x))
+) |>
+  gt() |>
+  tab_header(title = "Metadatos: etef_tidy") |>
+  cols_label(Campo = "Campo", Valor = "Valor") |>
+  tab_style(style = cell_text(font = "monospace"), locations = cells_body(columns = Campo)) |>
+  tab_options(table.font.size = "small")
+```
+
+# Query 7 - IED por sector, tipo de inversión y país de origen
+
+En proceso. Datos SE
+
+# Query 8 - Cambios en la distribución del parque industrial en industrias de NS
+
+En proceso.  Datos Censos Economicos con indicación de participación extranjera
+
+# Query 9 - Empleo IMMEX por industria, entidad federativa y remuneracion
+
+En proceso.  Datos INEGI

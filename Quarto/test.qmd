@@ -1,25 +1,59 @@
 ---
-title: "test"
-format: html
+title: "Nearshoring en los datos"
+author: 
+  - name: Jorge Cornick
+    affiliations: 
+     - name: CEPCAN, Instituto Tecnológico de Monterrey
+    email: jcornick@tec.mx
+    corresponding: true
+  - name: Carlos Zafra
+format:
+  html:
+    embed-resources: true
+    theme:
+      light: flatly
+      dark: darkly 
+lang: es
+toc: true
+toc-depth: 3
+editor: source
+editor_options:
+  chunk_output_type: console
+bibliography: references.bib
+link-citations: true
 ---
 
-## Quarto
-
-Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>.
-
-## Running Code
-
-When you click the **Render** button a document will be generated that includes both content and the output of embedded code. You can embed code like this:
-
 ```{r}
-1 + 1
+#| label: loadlibs
+#| code-fold: true
+#| code-summary: "Carga de bibliotecas"
+
+pacman::p_load(
+  tidyverse, here, scales, knitr, gt,
+  treemapify, patchwork, glue,
+  geodata, sf, cowplot, ggrepel, WDI
+)
 ```
 
-You can add options to executable code like this 
+```{r}
+#| label: setup
+#| include: false
+
+source(here::here("Scripts", "funciones.R"))
+```
+
+## 1. Introducción
+
+### 1.1 ¿Nearshoring en México?
+
+El "nearshoring" fue un tema que se empezó a discutir tras el inicio de la guerra comercial entre Estados Unidos y China, pero que tomó fuerza a partir de la pandemia del COVID-19 en 2020; a partir de 2021, es un tema que se menciona cada vez con más frecuencia en las comunicaciones empresariales, como lo muestra la @fig-nearshoring.
 
 ```{r}
+#| label: fig-nearshoring
+#| fig-cap: "Menciones de Nearshoring por parte de CEOs" 
+#| cap-location: top
 #| echo: false
-2 * 2
-```
 
-The `echo: false` option disables the printing of code (only output is displayed).
+knitr::include_graphics(here::here("Images", "nearshoring.png"))
+```
+Fuente: <https://iot-analytics.com/what-ceos-talked-about-in-q4-2024-tariffs-reshoring-agentic-ai/>

@@ -1,0 +1,29 @@
+---
+title: ""
+format: docx
+---
+
+# Tarifas e indicadores tarifarios
+
+De USITC podemos descargar
+
+- Customs value, es decir, el valor de las importaciones
+- Customs value subject to duty, es decir el valor de las importaciones gravables
+- Calculated duty, es decir las tarifas efectivamente cobradas
+
+Por brevedad, llamémosles
+
+- Importaciones
+- Importaciones gravadas
+- Recaudación (tarifaria)
+
+
+Entonces
+
+- Importaciones gravadas / Importaciones = proporción de las importaciones que está sujeta al pago de tarifas
+- Recaudación / Importaciones = tarifa promedio (lo que pagan en promedio las importaciones de determinado bien)
+- Recaudación / Imoportaciones gravadas = tarifa efectiva (lo que pagan las importaciones de ese bien que están sujetas al pago de tarifas)
+
+La terminología que usa el tracker del IDB es poco clara.  En todo caso, me parece que esta no es una nomenclatura estandarizada, así que creo que podemos llamar a estas razones como nos parezca mejor.
+
+La tarifa efectiva, si la normativa se aplicara sin excepción ni error, debería ser igual a la tarifa legal o estatutoria, pero como sabemos que en la práctica hay excepciones, porque una norma no es aplicable en la práctica, o porque no se ha reglamentado, o cualquier otra razón, la tarifa efectiva no va a ser igual a la tarifa legal, y la diferencia en sí misma puede ser un tema de interés

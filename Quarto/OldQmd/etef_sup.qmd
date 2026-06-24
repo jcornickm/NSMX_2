@@ -1,0 +1,14 @@
+---
+title: "etef_suprimidos"
+format: docx
+---
+
+```{r}
+library(gt)
+sup <- readRDS(here::here("RDS", "supresion_ns_wide.rds"))
+```
+
+```{r}
+gt(sup)
+```
+

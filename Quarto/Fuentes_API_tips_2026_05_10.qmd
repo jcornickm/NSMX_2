@@ -1,0 +1,679 @@
+---
+title: "Fuentes de datos y Tips de API — NSMX"
+subtitle: "Guía de referencia práctica para adquisición de datos de comercio e inversión"
+lang: es
+toc: true
+toc-depth: 3
+number-sections: true
+format:
+  html:
+    embed-resources: true
+    theme: cosmo
+    code-fold: true
+    code-tools: true
+execute:
+  eval: false
+  echo: true
+---
+
+::: {.callout-note}
+**Propósito de este documento.** Centraliza todo el conocimiento práctico acumulado sobre fuentes de datos, estructuras de APIs, workarounds y gotchas descubiertos durante el desarrollo de los proyectos NSMX_C2 y NSMX_Tariffs. Incluye únicamente las conclusiones finales — si una práctica fue superada por una mejor solución, solo se documenta la solución final.
+:::
+
+---
+
+# US Census Bureau — International Trade API
+
+**Endpoint:** `timeseries/intltrade/imports/hs`\
+**URL base:** `https://api.census.gov/data/timeseries/intltrade/imports/hs`\
+**Paquete R:** `censusapi`\
+**Credencial:** Clave almacenada en `.Renviron` como `CENSUS_API_KEY`; recuperar con `Sys.getenv("CENSUS_API_KEY")`
+
+## Parámetros principales
+
+| Parámetro | Descripción | Notas |
+|---|---|---|
+| `CTY_CODE` | Código de país de origen | `"2010"` = México |
+| `COMM_LVL` | Nivel de agregación armonizado | Ver tabla de compatibilidad §1.2 |
+| `I_COMMODITY` | Código de capítulo/partida del SA | Permite filtrar por capítulo específico |
+| `GEN_VAL_MO` | Valor mensual de importaciones (USD) | |
+| `GEN_VAL_YR` | Valor acumulado en el año (USD) | |
+| `CTY_NAME` | Nombre del país en inglés, mayúsculas | p. ej., `"MEXICO"` |
+| `time` | Rango de fechas | Formato `"from AAAA to AAAA"` |
+
+## Compatibilidad: CTY_CODE × COMM_LVL × I_COMMODITY {#sec-compat}
+
+Confirmado en pruebas de abril 2026:
+
+| CTY_CODE | COMM_LVL | I_COMMODITY | Resultado |
+|---|---|---|---|
+| Omitido | Omitido | Omitido | ❌ Timeout (payload demasiado grande) |
+| Omitido | `"HS2"` | Omitido | ✅ Funciona — solo nivel Capítulo |
+| Omitido | `"HS4"` | Omitido | ❌ Error del servidor (500) |
+| Omitido | `"HS6"` | Omitido | ❌ Error del servidor (500) |
+| `"2010"` | Omitido | Omitido | ✅ Funciona — devuelve HS2+HS4+HS6+10 dígitos mezclados |
+| `"2010"` | `"HS2"` | Omitido | ✅ Funciona — solo nivel Capítulo |
+| `"2010"` | `"HS4"` | Omitido | ❌ Error del servidor (500) |
+| `"2010"` | `"HS6"` | Omitido | ❌ Error del servidor (500) |
+| `"2010"` | Omitido | `"84"` | ✅ Funciona — Capítulo 84, todos los niveles |
+
+**Conclusión clave:** La combinación `CTY_CODE` + `COMM_LVL = "HS4"` (o HS6) produce siempre error 500. Es un problema del servidor de Census, no del código. Este error persiste entre sesiones.
+
+## Workaround para obtener datos a nivel Partida (HS4) o Subpartida (HS6)
+
+Omitir `COMM_LVL` completamente, descargar con solo `CTY_CODE`, y separar niveles por `nchar(I_COMMODITY)` en la limpieza:
+
+```r
+# Descarga: omitir COMM_LVL intencionalmente
+getCensus(
+  name     = "timeseries/intltrade/imports/hs",
+  vars     = c("I_COMMODITY", "I_COMMODITY_LDESC", "GEN_VAL_MO", "GEN_VAL_YR"),
+  time     = paste0("from ", año, " to ", año),
+  key      = api_key,
+  CTY_CODE = "2010"
+)
+
+# Limpieza: separar niveles por longitud del código
+mutate(nivel = case_when(
+  I_COMMODITY == "-" ~ "total",
+  nchar(I_COMMODITY) == 2  ~ "HS2",
+  nchar(I_COMMODITY) == 4  ~ "HS4",
+  nchar(I_COMMODITY) == 6  ~ "HS6",
+  nchar(I_COMMODITY) == 10 ~ "HS10"
+))
+```
+
+## Filtrar por capítulo específico en la descarga
+
+Es posible filtrar por capítulo directamente en la llamada al API usando el parámetro `I_COMMODITY`. Esto devuelve HS2+HS4+HS6+10 dígitos solo para ese capítulo:
+
+```r
+getCensus(
+  name        = "timeseries/intltrade/imports/hs",
+  vars        = c("I_COMMODITY", "I_COMMODITY_LDESC", "GEN_VAL_MO"),
+  time        = "from 2024 to 2024",
+  key         = api_key,
+  CTY_CODE    = "2010",
+  I_COMMODITY = "84"   # devuelve Cap. 84 y todos sus niveles inferiores
+)
+```
+
+**Implicación práctica:** Para proyectos multi-país × multi-capítulo, especificar `I_COMMODITY` produce descargas mucho más ligeras que bajar el universo completo.
+
+## Códigos de países vs. agregados regionales
+
+El API devuelve en la misma consulta países individuales y agregados regionales (OECD, NATO, APEC, USMCA, etc.).
+
+**Regla:** Los códigos de agregados regionales son todos **menores a 1000**; los de países individuales son **1000 o mayores**.
+
+```r
+# Conservar solo países individuales:
+filter(as.integer(CTY_CODE) >= 1000)
+```
+
+::: {.callout-warning}
+Un filtro por expresión regular como `^[0-9]{4}$` **no funciona** porque los códigos de agregados también son numéricos de 4 dígitos.
+:::
+
+## Cálculo correcto de totales y participaciones
+
+**Regla crítica:** El total de importaciones **nunca debe calcularse** sumando los valores de los países. Siempre hay países que no aparecen en la consulta desagregada.
+
+**Estrategia:**
+
+1. Descargar el total en una consulta separada (sin `CTY_CODE`)
+2. Descargar los países en otra consulta (con `CTY_CODE`)
+3. Calcular `Resto = Total − Suma de Top N`
+
+```r
+# Paso 1: Total sin filtro de país
+imp_total <- getCensus(
+  name = "timeseries/intltrade/imports/hs",
+  vars = c("GEN_VAL_MO", "GEN_VAL_YR"),
+  time = paste0("from ", año, " to ", año),
+  key  = api_key
+)
+
+# Paso 2: Por país (agrega CTY_CODE)
+# Paso 3: Resto = Total − Top N
+```
+
+Esta misma regla aplica a Data México (ver §2).
+
+## Parseo de fechas
+
+El API devuelve `time` en formato `"AAAA-MM"`. No hay columnas separadas `YEAR` y `MONTH`.
+
+```r
+mutate(fecha = as.Date(paste0(time, "-01")))
+```
+
+## Descarga año por año y robustez
+
+El API tiene timeouts frecuentes con rangos largos. Iterar año por año y guardar cada resultado como `.rds` inmediatamente:
+
+```r
+descargar_año <- function(año) {
+  message("  Año: ", año)
+  tryCatch({
+    getCensus(...)
+  }, error = function(e) {
+    message("  ERROR: ", conditionMessage(e))
+    NULL
+  })
+}
+
+raw_list <- map(2010:2025, descargar_año)
+```
+
+Si un año falla después de varias descargas exitosas consecutivas, **reiniciar la sesión de R** (no usar `Sys.sleep()`) resuelve el problema — se trata de conexiones HTTP rancias.
+
+## Patrón de retry con `purrr` (para descargas más robustas)
+
+```r
+safe_download <- purrr::insistently(
+  purrr::slowly(descargar_año, rate = rate_delay(10)),
+  rate = rate_backoff(max_times = 5)
+)
+
+raw_list <- map(2010:2025, safe_download)
+```
+
+---
+
+# INEGI — Data México (exportaciones mexicanas)
+
+**URL:** `https://www.economia.gob.mx/datamexico`\
+**Acceso:** API REST; respuesta en JSON\
+**Paquete R:** `httr` + `jsonlite` (función personalizada `fetch_and_save_data()`)
+
+## Problema de consistencia interna: datos desagregados ≠ total
+
+::: {.callout-warning}
+En Data México, la suma de los datos desagregados a cualquier nivel (Sección, Capítulo o Partida) difiere sustancialmente del total reportado en el nivel superior. En pruebas realizadas, la suma por Sección representa aproximadamente el **25 % del total** agregado.
+
+**Consecuencia:** Los datos desagregados de Data México **no son confiables** para análisis de composición sectorial. El proyecto NSMX_C2 migró a datos del US Census Bureau como fuente principal para exportaciones mexicanas a EUA.
+:::
+
+El Diccionario de Datos del INEGI advierte que, para proteger el anonimato, se suprimen datos desagregados que permitirían identificar empresas individuales — esto explica parte de la discrepancia.
+
+## Estructura de la respuesta JSON
+
+```r
+data_list$data    # tibble con los datos
+data_list$source  # metadatos (fuente, fecha, URL, notas)
+```
+
+Al igual que con el Census API, **no calcular el total sumando los datos desagregados**. Descargar siempre el total en una consulta separada.
+
+---
+
+# USITC DataWeb
+
+**URL interfaz:** `https://dataweb.usitc.gov`\
+**Endpoint API (POST):** `https://datawebws.usitc.gov/dataweb/api/v2/report2/runReport`\
+**Paquete R:** `httr2` (preferido) o `httr`
+
+DataWeb es la **única fuente** que expone simultáneamente:
+
+- Valor de importación (`CONS_CUSTOMS_VALUE`)
+- Valor sujeto a arancel (`CONS_CUSTOMS_VALUE_SUB_DUTY`)
+- Derechos calculados (`CONS_CALC_DUTY`)
+
+Esto permite calcular las tasas arancelarias de interés:
+
+$$\text{Tasa efectiva} = \frac{\text{Calculated Duties}}{\text{Customs Value}}$$
+$$\text{Tasa implícita} = \frac{\text{Dutiable Value}}{\text{Customs Value}}$$
+
+## Autenticación
+
+El API usa un **Bearer token JWT**. Es considerablemente más largo que claves API convencionales porque codifica identidad y fecha de expiración.
+
+**Obtención:**
+
+1. Crear cuenta en `dataweb.usitc.gov` (se puede usar login.gov)
+2. Dentro de la cuenta, ir a la pestaña "API" y generar el token
+
+**Almacenamiento:**
+
+```r
+# En .Renviron (nunca en el script):
+DATAWEB_TOKEN=eyJ...
+
+# En el script:
+api_token <- Sys.getenv("DATAWEB_TOKEN")
+stopifnot("DATAWEB_TOKEN no encontrado" = nchar(api_token) > 0)
+```
+
+::: {.callout-important}
+**El token tiene fecha de expiración.** Después de esa fecha todas las consultas fallan con error de autenticación. Hay que generar un token nuevo desde la pestaña API de la cuenta.
+:::
+
+## Método HTTP y llamada con `httr2`
+
+El API usa **POST** con body JSON — diferente al GET del Census Bureau.
+
+```r
+library(httr2)
+library(jsonlite)
+
+respuesta <- request(
+    "https://datawebws.usitc.gov/dataweb/api/v2/report2/runReport"
+  ) |>
+  req_headers(
+    "Content-Type"  = "application/json; charset=utf-8",
+    "Authorization" = paste("Bearer", api_token)
+  ) |>
+  req_body_raw(
+    toJSON(query_body, auto_unbox = TRUE, null = "null"),
+    "application/json"    # ← segundo argumento POSICIONAL, NO nombrado
+  ) |>
+  req_error(is_error = \(r) FALSE) |>
+  req_perform()
+```
+
+::: {.callout-warning}
+**Gotcha `httr2`:** `req_body_raw()` acepta `content_type` como segundo argumento posicional. Escribir `content_type = "application/json"` genera error. La forma correcta es `req_body_raw(body, "application/json")`.
+:::
+
+## Estructura del query body
+
+```r
+query_body <- list(
+
+  reportOptions = list(
+    tradeType            = "Import",
+    classificationSystem = "HTS"
+  ),
+
+  searchOptions = list(
+
+    componentSettings = list(
+      dataToReport = list(
+        "CONS_CUSTOMS_VALUE",
+        "CONS_CUSTOMS_VALUE_SUB_DUTY",
+        "CONS_CALC_DUTY"
+      ),
+      scale               = "1",
+      timeframeSelectType = "fullYears",
+      years               = as.list(as.character(2010:2025)),
+      yearsTimeline       = "Annual",
+      startDate           = NULL,
+      endDate             = NULL,
+      startMonth          = NULL,
+      endMonth            = NULL
+    ),
+
+    countries = list(
+      aggregation         = "Break Out Countries",
+      countriesSelectType = "list",
+      countryGroups       = list(systemGroups = list(), userGroups = list()),
+      countries           = list("2010", "5830"),
+      countriesExpanded   = list(
+        list(name = "Mexico - MX - MEX", value = "2010"),
+        list(name = "Taiwan - TW - TWN", value = "5830")
+      )
+    ),
+
+    # IMPORTANTE: estos cuatro campos son obligatorios para que el filtro aplique
+    commodities = list(
+      aggregation         = "Break Out Commodities",   # ← obligatorio
+      codeDisplayFormat   = "YES",
+      commoditySelectType = "list",                    # ← obligatorio
+      granularity         = "6",                       # 4, 6, 8 o 10 dígitos
+      groupGranularity    = NULL,
+      searchGranularity   = NULL,
+      showHTSValidDetails = "",
+      commoditiesManual   = "847150",                  # ← obligatorio (sin puntos)
+      commodityGroups     = list(systemGroups = list(), userGroups = list()),
+      commodities         = list("847150"),            # ← obligatorio
+      commoditiesExpanded = list(
+        list(name = "DIGITAL PROCESSING UNITS...", value = "847150")
+      )
+    ),
+
+    MiscGroup = list(
+      importPrograms = list(
+        aggregation        = NULL,
+        importPrograms     = list(),
+        programsSelectType = "all"
+      ),
+      provisionCodes = list(
+        aggregation              = "Aggregate RPCODE",
+        provisionCodesSelectType = "all",
+        rateProvisionCodes       = list()
+      ),
+      districts = list(
+        aggregation    = "Aggregate District",
+        districtGroups = list(userGroups = list()),
+        districts      = list()
+      )
+    )
+  ),
+
+  sortingAndDataFormat = list(
+    DataSort = list(
+      columnOrder = list("COUNTRY", "HTS6 & DESCRIPTION")
+    ),
+    reportCustomizations = list(
+      exportCombineTables = FALSE,
+      totalRecords        = "20000",
+      exportRawData       = FALSE
+    )
+  )
+)
+```
+
+## Campos `dataToReport` confirmados
+
+| Código de campo | Variable de salida |
+|---|---|
+| `CONS_CUSTOMS_VALUE` | `import_value_usd` |
+| `CONS_CUSTOMS_VALUE_SUB_DUTY` | `dutiable_value_usd` |
+| `CONS_CALC_DUTY` | `duties_collected_usd` |
+
+::: {.callout-warning}
+El API devuelve **ceros** (no un error) cuando recibe un código de `dataToReport` que no reconoce. Si `dutiable_value` y `duties_collected` son cero para todos los registros, verificar que los nombres de campo sean exactamente los anteriores.
+:::
+
+## Códigos de países en DataWeb
+
+DataWeb usa códigos numéricos propios, distintos de los ISO:
+
+| País | Código DataWeb |
+|---|---|
+| México | `"2010"` |
+| Taiwán | `"5830"` |
+
+Para encontrar el código de otro país: construir la consulta en el UI, capturar el payload POST con DevTools (ver §3.7) y buscar el campo `countries`.
+
+## Especificación de productos (HTS)
+
+- El código HTS se escribe **sin puntos**: `"847150"`, no `"8471.50"`
+- El parámetro `granularity` controla el nivel de desagregación: `"4"`, `"6"`, `"8"` o `"10"`
+- Los campos `aggregation = "Break Out Commodities"`, `commoditySelectType = "list"`, `commoditiesManual` y `granularity` son **obligatorios** — sin ellos el API ignora el filtro de producto y devuelve todos los capítulos (01–99)
+
+::: {.callout-caution}
+**Error frecuente:** Si `hts2Selections` en la respuesta devuelve `"01", "02", "03"...` (todos los capítulos), el filtro de producto no aplicó. La causa casi siempre es que faltan uno o más de los cuatro campos obligatorios en `commodities`.
+:::
+
+## Estructura de la respuesta JSON y parseo
+
+La respuesta tiene la forma `resp_json$dto$tables` — una lista de tablas, **una por variable** solicitada en `dataToReport`, en el mismo orden.
+
+Los **años aparecen como columnas**. Detectarlos por patrón (`^[0-9]{4}$`) en lugar de hardcodear el año:
+
+```r
+parse_table <- function(tabla, var_name) {
+
+  col_labels <- tabla$column_groups |>
+    map(\(g) map_chr(g$columns, \(c) c$label)) |>
+    unlist()
+
+  filas <- tabla$row_groups[[1]]$rowsNew
+
+  wide <- map_dfr(filas, function(fila) {
+    vals <- map_chr(fila$rowEntries, \(e) as.character(e$value))
+    set_names(as.list(vals), col_labels) |> as_tibble()
+  })
+
+  year_cols <- col_labels[grepl("^[0-9]{4}$", col_labels)]
+
+  wide |>
+    pivot_longer(
+      cols      = all_of(year_cols),
+      names_to  = "year",
+      values_to = var_name
+    ) |>
+    rename(
+      country  = any_of(c("Country", "COUNTRY")),
+      hts_code = any_of(c("HTS Number", "HTS NUMBER"))
+    ) |>
+    select(country, hts_code, year, all_of(var_name)) |>
+    mutate(
+      year        = as.integer(year),
+      # Los valores vienen con comas de miles — remover antes de convertir
+      !!var_name := as.numeric(str_remove_all(.data[[var_name]], ","))
+    )
+}
+```
+
+## Unir las tres tablas
+
+```r
+var_names <- c("import_value_usd", "dutiable_value_usd", "duties_collected_usd")
+
+df_final <- map2(resp_json$dto$tables, var_names, parse_table) |>
+  reduce(left_join, by = c("country", "hts_code", "year")) |>
+  mutate(
+    effective_tariff_rate = duties_collected_usd / import_value_usd,
+    implied_tariff_rate   = dutiable_value_usd   / import_value_usd
+  ) |>
+  arrange(country, hts_code, year)
+```
+
+## Captura del payload con DevTools {#sec-devtools}
+
+Técnica para verificar el formato exacto que el API acepta cuando los resultados son incorrectos:
+
+1. Abrir `dataweb.usitc.gov` en Chrome/Firefox
+2. **Antes de ejecutar la consulta**, abrir DevTools (`F12`) → pestaña **Network**
+3. Limpiar la lista de llamadas
+4. Construir la consulta en el UI y hacer clic en "View Results"
+5. En Network, buscar la llamada `runReport` (tipo POST)
+6. Clic en esa llamada → pestaña **Payload** → **"view source"**
+7. Copiar el JSON completo
+
+## Diagnóstico de respuestas
+
+```r
+cat("HTTP status:", resp_status(respuesta), "\n")
+
+resp_json <- resp_body_string(respuesta) |>
+  fromJSON(simplifyVector = FALSE)
+
+n_tables <- length(resp_json$dto$tables)
+cat("Tablas recibidas:", n_tables, "\n")
+
+# Verificar que el filtro de producto aplicó
+cat("hts2Selections:",
+    paste(unlist(resp_json$dto$hts2Selections), collapse = ", "), "\n")
+# Si devuelve "01", "02", "03"... → el filtro no funcionó
+```
+
+---
+
+# INEGI — Exportaciones Trimestrales por Entidad Federativa (ETEF)
+
+**URL:** `https://www.inegi.org.mx/temas/exportacionesef/`\
+**Metadatos:** `https://www.inegi.org.mx/rnm/index.php/catalog/1108`
+
+## Características principales
+
+| Atributo | Detalle |
+|---|---|
+| Clasificación sectorial | **SCIAN** (no SA) |
+| Cobertura geográfica | 32 entidades federativas |
+| Subsectores | 26 subsectores SCIAN (3 agropecuarios desde Q1 2018; 2 mineros; 21 manufactureros) |
+| Frecuencia | Trimestral y anual |
+| Unidad | Miles de dólares estadounidenses |
+| Serie anual | 2007 en adelante |
+| Serie trimestral | Q1 2007 en adelante |
+| Datos más recientes | Q3 2025 (publicados diciembre 2025) |
+
+::: {.callout-warning}
+A partir del 30 de septiembre de 2025, la información desagregada por sector y subsector SCIAN está disponible **únicamente** en los tabulados interactivos y en el BIE — ya no se distribuye en archivos de descarga masiva directa.
+:::
+
+**Metodología clave:** Las exportaciones se asignan a la entidad de **origen de la producción**, no al punto de salida aduanal. Esto la distingue de los datos de la SE (que asigna al domicilio fiscal, concentrando artificialmente en CDMX).
+
+## Concordancia SCIAN ↔ SA (aproximada)
+
+| Sección SA | Cap. SA | Descripción SA | Subsector SCIAN aprox. |
+|---|---|---|---|
+| XVI | 84 | Maquinaria no eléctrica | 333 Fabricación de maquinaria y equipo |
+| XVI | 85 | Equipo eléctrico y electrónico | 334 (cómputo y electrónico) + 335 (generación eléctrica) |
+| XVII | 87 | Vehículos y autopartes | 336 Fabricación de equipo de transporte |
+| XVIII | 90 | Instrumentos de óptica y médicos | 3345 Fabricación de instrumentos de medición |
+
+Para el análisis general, los subsectores **331–339** de Industrias Manufactureras son los más relevantes en conjunto.
+
+---
+
+# Secretaría de Economía (SE) — IED por Entidad Federativa
+
+**URL:** `https://www.gob.mx/se/acciones-y-programas/competitividad-y-normatividad-inversion-extranjera-directa`\
+**Clasificación sectorial:** SCIAN 2018
+
+## Lo que provee
+
+Flujos de IED por entidad federativa, sector SCIAN, país de origen y tipo de inversión (nuevas inversiones, reinversión de utilidades, cuentas entre compañías). Frecuencia trimestral, desde 2006.
+
+## ⚠️ Sesgo de domicilio fiscal
+
+El RNIE registra la IED según el **domicilio fiscal** de la empresa receptora, no la ubicación de la planta. La gran mayoría de empresas con IED tienen domicilio en CDMX, por lo que la capital absorbe sistemáticamente entre el 44 % y el 56 % del total nacional. Este sesgo es ampliamente reconocido en la literatura y en los análisis oficiales.
+
+**Los datos de SE/RNIE son adecuados para:**
+
+- Evolución temporal de los flujos nacionales
+- Composición por tipo de inversión (nuevas inversiones, reinversión, cuentas entre compañías)
+- Distribución por país de origen
+- Composición sectorial a nivel nacional
+
+**No deben usarse** para inferir la distribución geográfica real de la inversión. El capítulo debe documentar explícitamente esta limitación y justificar el uso de fuentes alternativas.
+
+---
+
+# INEGI — Censos Económicos (2019 y 2024)
+
+**URL:** `https://www.inegi.org.mx/app/saic/`
+
+| Censo | Levantamiento | Año de referencia |
+|---|---|---|
+| Censos Económicos 2019 | 2019 | 2018 |
+| Censos Económicos 2024 | 2024 | 2023 |
+
+## Por qué son la fuente preferida para IED territorial
+
+No existe una fuente oficial única que resuelva el sesgo de domicilio del RNIE. Los CE son la mejor aproximación disponible porque capturan información estructural de **todos los establecimientos del país**, desagregada por entidad federativa, municipio y clase de actividad SCIAN, en la **ubicación real** de la planta — no el domicilio fiscal.
+
+## Variables más útiles
+
+- Valor agregado censal bruto
+- Activos fijos
+- Personal ocupado
+- Remuneraciones
+- **Participación de capital extranjero** — captada a nivel de establecimiento; permite distinguir establecimientos con IED de los puramente domésticos
+
+## Estrategia recomendada
+
+Comparar las variables anteriores en los subsectores SCIAN 331–339 (manufactura relevante para NS) entre CE 2019 y CE 2024, a nivel de entidad federativa. La variación entre ambos censos es la mejor aproximación oficial para identificar dónde creció la capacidad productiva manufacturera y, por extensión, dónde se materializó la IED vinculada al NS. Filtrar adicionalmente por participación de capital extranjero agrega precisión.
+
+**Acceso:** tabulados interactivos (SAIC) y descarga masiva desde `https://www.inegi.org.mx/app/saic/`
+
+## Limitación
+
+Periodicidad quinquenal. El CE 2024 (año de referencia 2023) es el más reciente — deja fuera los desarrollos de 2024–2025.
+
+## Fuentes complementarias
+
+**Estadística IMMEX (INEGI/SE):** el empleo en el régimen IMMEX por entidad federativa y subsector es un proxy sólido de la manufactura de exportación con participación extranjera. Frecuencia mensual.
+
+**Bienes raíces industriales (referencia cualitativa):** CBRE, JLL y la Asociación Mexicana de Parques Industriales Privados (AMPIP) publican datos de absorción y ocupación de espacio industrial por mercado/ciudad, con periodicidad trimestral. No son datos de IED, pero son geográficamente precisos y capturan la materialización física de las decisiones de inversión. Útiles como validación o para secciones cualitativas del capítulo.
+
+---
+
+# Fuentes de referencia y contraste
+
+## USA Trade Online
+
+**URL:** `https://usatrade.census.gov`
+
+Interfaz web del Census Bureau con los mismos datos que el API. Útil para descargas manuales puntuales y para verificar resultados.
+
+## IADB Tariff Tracker (Ángel Espinoza)
+
+**URL:** `https://angelespinozae.github.io/tariff-tracker.html`
+
+::: {.callout-note}
+Alojado en una página personal de GitHub Pages, no en el dominio institucional del BID. Guardar el enlace directo.
+:::
+
+Benchmark de metodología para las tasas arancelarias. Sus definiciones son las adoptadas en el proyecto:
+
+| Medida | Definición |
+|---|---|
+| Tasa arancelaria efectiva | Derechos pagados / Valor total de importación |
+| Tasa arancelaria implícita | Valor gravable / Valor total de importación |
+
+## USITC HTS Portal
+
+**URL:** `https://hts.usitc.gov`
+
+Referencia para tasas arancelarias **estatutarias** (antes de exenciones o programas preferenciales). Solo interfaz web; no hay API programática documentada.
+
+## UN Comtrade
+
+**URL:** `https://comtrade.un.org`
+
+Fuente alternativa si el Census API presenta errores persistentes. Para datos equivalentes a los del Census, usar **Reporter = United States, Partner = Mexico**. Acceso gratuito para consultas básicas; los datos de 2025 pueden tener rezago de algunos meses.
+
+## Observatory of Economic Complexity (OEC)
+
+**URL:** `https://oec.world`
+
+Herramienta para identificar dinámicamente los países competidores de México en cada línea arancelaria. Los competidores varían por producto, por lo que se determinan por consulta y no usando una lista predefinida.
+
+---
+
+# Reglas generales de trabajo con APIs
+
+1. **Siempre descargar el total en consulta separada.** No reconstruir sumando los datos desagregados — siempre habrá observaciones faltantes (aplica a Census y a Data México).
+
+2. **Iterar año por año.** Rangos temporales largos producen timeouts. Guardar cada año como `.rds` inmediatamente para poder retomar desde cualquier punto.
+
+3. **Filtrar agregados regionales** en el Census API: `filter(as.integer(CTY_CODE) >= 1000)`.
+
+4. **Separar niveles de agregación por `nchar(I_COMMODITY)`**, no por `COMM_LVL`, cuando se descarga con `CTY_CODE`.
+
+5. **Reiniciar la sesión de R** cuando una descarga falla tras varias exitosas consecutivas — no agregar `Sys.sleep()`.
+
+6. **Serialización JSON para DataWeb:** `toJSON(query_body, auto_unbox = TRUE, null = "null")`.
+
+7. **Documentar inmediatamente** cualquier workaround o combinación de parámetros que funcione o falle. Añadir a `Entorno_NSMX_C2.md` antes de cerrar la sesión.
+
+8. **Ningún token o credencial** se escribe directamente en el código. Siempre vía `Sys.getenv()`.
+
+```r
+# Patrón estándar al inicio de cualquier script que usa APIs
+api_token  <- Sys.getenv("DATAWEB_TOKEN")
+census_key <- Sys.getenv("CENSUS_API_KEY")
+
+stopifnot("DATAWEB_TOKEN no encontrado"   = nchar(api_token)  > 0)
+stopifnot("CENSUS_API_KEY no encontrado"  = nchar(census_key) > 0)
+```
+
+Para editar `.Renviron`:
+```r
+usethis::edit_r_environ()   # agregar KEY=valor y reiniciar R
+```
+
+---
+
+## Columnas estándar del data frame de salida (proyecto Tariffs)
+
+| Columna | Descripción |
+|---|---|
+| `hts_code` | Código HTS al nivel de dígitos correspondiente |
+| `country_iso3` | Código ISO 3 letras del país |
+| `year` | Año calendario |
+| `import_value_usd` | Valor total de importación CIF, USD |
+| `duties_collected_usd` | Derechos calculados, USD |
+| `dutiable_value_usd` | Valor gravable, USD |
+| `effective_tariff_rate` | `duties_collected / import_value` |
+| `implied_tariff_rate` | `dutiable_value / import_value` |
+
+---
+
+
+*Archivo actualizado el 10 de mayo 2026*

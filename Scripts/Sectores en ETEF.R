@@ -1,0 +1,37 @@
+# Tabla de referencia: subsectores SCIAN disponibles en ETEF / BIE
+# Fuente: Constructor de consultas BIE — rama "Exportaciones por entidad federativa"
+
+subsectores_etef <- tribble(
+  ~cod_scian, ~tipo,          ~nombre_bie,                                                                                          ~nombre_corto,
+  "00",       "total",        "Exportaciones Trimestrales por Entidad Federativa. Exportaciones totales. Valores absolutos",         "Total",
+  "11",       "sector",       "Agricultura, cría y explotación de animales, aprovechamiento forestal, pesca y caza",                 "Agropecuario",
+  "111",      "subsector",    "Agricultura",                                                                                         "Agricultura",
+  "112",      "subsector",    "Cría y explotación de animales",                                                                      "Ganadería",
+  "114",      "subsector",    "Pesca, caza y captura",                                                                               "Pesca",
+  "21",       "sector",       "Minería",                                                                                             "Minería",
+  "211",      "subsector",    "Extracción de petróleo y gas",                                                                        "Petróleo_Gas",
+  "212",      "subsector",    "Minería de minerales metálicos y no metálicos, excepto petróleo y gas",                               "Minería_NoP",
+  "31-33",    "sector",       "Industrias manufactureras",                                                                           "Manufactura",
+  "311",      "subsector",    "Industria alimentaria",                                                                               "Alimentos",
+  "312",      "subsector",    "Industria de las bebidas y del tabaco",                                                               "Bebidas",
+  "313",      "subsector",    "Fabricación de insumos textiles y acabado de textiles",                                               "Textiles_Ins",
+  "314",      "subsector",    "Fabricación de productos textiles, excepto prendas de vestir",                                        "Textiles_Prod",
+  "315",      "subsector",    "Fabricación de prendas de vestir",                                                                    "Vestir",
+  "316",      "subsector",    "Curtido y acabado de cuero y piel, y fabricación de productos de cuero, piel y materiales sucedáneos","Cuero",
+  "321",      "subsector",    "Industria de la madera",                                                                              "Madera",
+  "322",      "subsector",    "Industria del papel",                                                                                 "Papel",
+  "323",      "subsector",    "Impresión e industrias conexas",                                                                      "Impresión",
+  "324",      "subsector",    "Fabricación de productos derivados del petróleo y del carbón",                                        "Petroquímica",
+  "325",      "subsector",    "Industria química",                                                                                   "Química",
+  "326",      "subsector",    "Industria del plástico y del hule",                                                                   "Plástico_Hule",
+  "327",      "subsector",    "Fabricación de productos a base de minerales no metálicos",                                           "MineralesNoMet",
+  "331",      "subsector",    "Industrias metálicas básicas",                                                                        "MetálicasBás",
+  "332",      "subsector",    "Fabricación de productos metálicos",                                                                  "ProdMetálicos",
+  "333",      "subsector",    "Fabricación de maquinaria y equipo",                                                                  "Maquinaria",
+  "334",      "subsector",    "Fabricación de equipo de computación, comunicación, medición y de otros equipos, componentes y accesorios electrónicos", "Electrónico",
+  "335",      "subsector",    "Fabricación de accesorios, aparatos eléctricos y equipo de generación de energía eléctrica",          "Eléctrico",
+  "336",      "subsector",    "Fabricación de equipo de transporte",                                                                 "Transporte",
+  "337",      "subsector",    "Fabricación de muebles, colchones y persianas",                                                       "Muebles",
+  "339",      "subsector",    "Otras industrias manufactureras",                                                                     "OtrasManuf",
+  "00_anual", "total_anual",  "Exportaciones anuales por entidad federativa. Exportaciones totales. Valores absolutos",              "Total_anual"
+)

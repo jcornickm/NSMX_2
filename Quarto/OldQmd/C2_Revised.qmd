@@ -1,0 +1,913 @@
+---
+title: "Nearshoring en los datos"
+author: "Jorge Cornick y Carlos Zafra, abril - mayo 2026"
+format:
+  html:
+    embed-resources: true
+lang: es
+toc: true
+toc-depth: 3
+editor: source
+editor_options:
+  chunk_output_type: console
+---
+
+```{r}
+#| label: loadlibs
+#| code-fold: true
+#| code-summary: "Carga de bibliotecas"
+pacman::p_load(tidyverse, here, forcats, zoo, scales, knitr, gt, strucchange, seasonal, treemapify, patchwork, glue, geodata, sf, cowplot)
+```
+
+```{r}
+#| label: setup
+#| include: false
+
+source(here::here("Scripts", "funciones.R"))   
+```
+
+## Introducción
+
+## Las importaciones de Estados Unidos por pais de origen
+
+::: {.callout-note collapse = "true" title= "Carga datos y metadatos"}
+```{r}
+#| label: load_imp_pais
+#| echo: false
+
+impPais <- readRDS(here::here("RDS", "imp_por_pais.rds"))
+metaImpPais <- readRDS(here::here("RDS", "meta_imp_por_pais.rds"))
+gt_meta(metaImpPais, titulo = "Metadatos: Importaciones EUA por país de origen")
+```
+:::
+
+La evolución de las importaciones de EUA provenientes de China y de México se muestra en la @fig-ImpEUA_CHN_MEX
+
+```{r}
+#| message: false
+#| warning: false
+#| code-fold: true
+#| code-summary: "Importaciones EUA desde China y México"
+#| label: fig-ImpEUA_CHN_MEX
+#| fig-cap: |
+#|   EUA: importaciones mensuales desde China y México, 2010-2025
+#|   Miles de millones de dólares
+#| fig-cap-location: top
+
+
+col_chn <- "#F8766D"
+col_mex <- "#00BFC4"
+
+# 1. Filtrar y escalar --------------------------------------------------------
+imp_chn_mex <- impPais |>
+  filter(País %in% c("China", "México")) |>
+  mutate(Imp_bn = Imp_mes / 1e9)
+
+# 2. Valor en un mes específico -----------------------------------------------
+val_en <- function(df, pais_nombre, año, mes = "12") {
+  df |>
+    filter(País == pais_nombre,
+           format(fecha, "%Y") == as.character(año),
+           format(fecha, "%m") == mes) |>
+    pull(Imp_bn)
+}
+
+# 3. CAGR ---------------------------------------------------------------------
+cagr <- function(v_fin, v_ini, n) ((v_fin / v_ini)^(1 / n) - 1) * 100
+
+# 4. Valores de referencia (diciembre de cada año umbral) ---------------------
+mex_10 <- val_en(imp_chn_mex, "México", 2010)
+mex_18 <- val_en(imp_chn_mex, "México", 2018)
+mex_24 <- val_en(imp_chn_mex, "México", 2024)
+mex_25 <- val_en(imp_chn_mex, "México", 2025)
+
+chn_10 <- val_en(imp_chn_mex, "China", 2010)
+chn_18 <- val_en(imp_chn_mex, "China", 2018)
+chn_24 <- val_en(imp_chn_mex, "China", 2024)
+chn_25 <- val_en(imp_chn_mex, "China", 2025)
+
+# 5. Etiquetas ----------------------------------------------------------------
+etiquetas_mex <- tibble(
+  fecha = as.Date(c("2014-01-01", "2021-06-01", "2024-06-01")),
+  y_pos = c(mex_18 + 1.5, mex_24 - 9, mex_25 + 1.5),
+  label = c(
+    paste0("TCAC MEX 10-18: ", round(cagr(mex_18, mex_10, 8), 1), "%"),
+    paste0("TCAC MEX 18-24: ", round(cagr(mex_24, mex_18, 6), 1), "%"),
+    paste0("Var. MEX 24-25: ", round((mex_25 / mex_24 - 1) * 100, 1), "%")
+  )
+)
+
+etiquetas_chn <- tibble(
+  fecha = as.Date(c("2014-01-01", "2021-06-01", "2024-06-01")),
+  y_pos = c(chn_18 + 1.5, chn_24 + 6, chn_25 - 3),
+  label = c(
+    paste0("TCAC CHN 10-18: ", round(cagr(chn_18, chn_10, 8), 1), "%"),
+    paste0("TCAC CHN 18-24: ", round(cagr(chn_24, chn_18, 6), 1), "%"),
+    paste0("Var. CHN 24-25: ", round((chn_25 / chn_24 - 1) * 100, 1), "%")
+  )
+)
+
+# 6. Gráfico ------------------------------------------------------------------
+imp_chn_mex |>
+  filter(lubridate::year(fecha) >= 2010) |>
+  ggplot(aes(x = fecha, y = Imp_bn, color = País)) +
+  geom_line(linewidth = 1) +
+  geom_vline(
+    xintercept = as.Date(c("2018-12-01", "2024-12-01")),
+    linetype = "dotted", color = "red", linewidth = 0.7
+  ) +
+  geom_label(
+    data = etiquetas_mex,
+    aes(x = fecha, y = y_pos, label = label),
+    inherit.aes = FALSE,
+    color = col_mex, fill = "white", fontface = "bold", size = 3.5,
+    linewidth = 0.4
+  ) +
+  geom_label(
+    data = etiquetas_chn,
+    aes(x = fecha, y = y_pos, label = label),
+    inherit.aes = FALSE,
+    color = col_chn, fill = "white", fontface = "bold", size = 3.5,
+    linewidth = 0.4
+  ) +
+  scale_color_manual(values = c("China" = col_chn, "México" = col_mex)) +
+  scale_x_date(date_labels = "%Y", date_breaks = "1 year") +
+  labs(
+    x = NULL, y = NULL, color = "",
+    caption = "Elaboración propia con base en US Census Bureau."
+  ) +
+  theme_bw() +
+  theme(
+    legend.position = "bottom",
+    panel.grid.minor = element_blank(),
+    axis.text.x = element_text(angle = 90, vjust = 0.5)
+  )
+```
+
+
+
+::: {.callout-note collapse="true" title= "Cálculo distribución importaciones por país de origen"}
+```{r}
+#| label: origAnualPerc
+#| echo: false
+ 
+impPais_Perc <- map_dfr(2010:2025, function(año) {
+  fecha_ini <- as.Date(paste0(año, "-01-01"))
+  fecha_fin <- if (año == 2025) {
+    as.Date("2025-11-01")          # 11 months: Jan–Nov
+  } else {
+    as.Date(paste0(año, "-12-01")) # 12 months: Jan–Dec
+  }
+  
+  impPais |>
+    filter(
+      fecha >= fecha_ini,
+      fecha <= fecha_fin,
+      grupo %in% c("Top20", "Resto")
+    ) |>
+    group_by(País, rank) |>
+    summarise(Imp_anual = sum(Imp_mes, na.rm = TRUE), .groups = "drop") |>
+    mutate(
+      año   = año,
+      share = Imp_anual / sum(Imp_anual)
+    )
+}) |>
+  select(año, País, rank, Imp_anual, share)
+
+
+```
+:::
+
+En la @fig-ImpEUA_shares se incluyen dos países más, y se muestra la participación porcentual de cada uno dentro del total de importaciones de EUA.
+
+
+```{r}
+#| message: false
+#| warning: false
+#| code-fold: true
+#| code-summary: "Importaciones EUA: México, China, Taiwán y Vietnam"
+#| label: fig-ImpEUA_shares
+#| fig-cap: |
+#|   EUA: participación porcentual en las importaciones totales,
+#|   México, China, Taiwán y Vietnam, 2010-2025
+#| fig-cap-location: top
+
+paises_sel <- c("México", "China", "Taiwán", "Vietnam")
+
+impPais_Perc |>
+  filter(País %in% paises_sel) |>
+  ggplot(aes(x = año, y = share, color = País)) +
+  geom_line(linewidth = 1) +
+  geom_point(size = 2) +
+  geom_vline(
+    xintercept = c(2018, 2024),
+    linetype = "dotted", color = "red", linewidth = 0.7
+  ) +
+  scale_x_continuous(breaks = 2010:2025) +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
+  scale_color_brewer(palette = "Set1") +
+  labs(
+    x = NULL, y = NULL, color = "",
+    caption = "Elaboración propia con base en US Census Bureau.
+    Nota: períodos anuales diciembre–noviembre."
+  ) +
+  theme_bw() +
+  theme(
+    legend.position = "bottom",
+    panel.grid.minor = element_blank(),
+    axis.text.x = element_text(angle = 90, vjust = 0.5)
+  )
+```
+
+
+La @fig-DistImpEUA_pais muestra el cambio en la participación de los principales orígenes de las importaciones de EUA entre 2010 y 2025.
+
+
+```{r}
+#| message: false
+#| warning: false
+#| code-fold: true
+#| code-summary: "DistImpPais"
+#| label: fig-DistImpEUA_pais
+#| fig-cap: |
+#|   Distribución porcentual de las importaciones de EUA por pais
+#|   2010 y 2025
+#| fig-cap-location: top
+
+# 1. Tabla de continentes para los 20 países + Resto
+continentes <- tibble::tribble(
+  ~País,          ~Continente,
+  "México",       "América",
+  "China",        "Asia",
+  "Canadá",       "América",
+  "Alemania",     "Europa",
+  "Japón",        "Asia",
+  "Vietnam",      "Asia",
+  "Corea_S",      "Asia",
+  "Taiwán",       "Asia",
+  "India",        "Asia",
+  "Irlanda",      "Europa",
+  "Italia",       "Europa",
+  "R_Unido",      "Europa",
+  "Tailandia",    "Asia",
+  "Suiza",        "Europa",
+  "Francia",      "Europa",
+  "Malasia",      "Asia",
+  "Brasil",       "América",
+  "P_Bajos",      "Europa",
+  "Indonesia",    "Asia",
+  "Singapur",     "Asia",
+  "Resto",        "Resto"
+)
+
+
+# 2. Preparar datos — usar el tibble calculado en el chunk anterior
+imp_treemap <- impPais |>
+  filter(
+    year(fecha) %in% c(2010, 2025),
+    grupo %in% c("Top20", "Resto")
+  ) |>
+  group_by(año = year(fecha), País, rank) |>
+  summarise(Imp_anual = sum(Imp_mes, na.rm = TRUE), .groups = "drop") |>
+  group_by(año) |>
+  mutate(share = Imp_anual / sum(Imp_anual)) |>
+  ungroup() |>
+  left_join(continentes, by = "País") |>
+  mutate(
+    etiqueta = paste0(País, "\n", percent(share, accuracy = 1))
+  )
+
+# 3. Gráfico
+ggplot(imp_treemap, aes(
+    area     = share,
+    fill     = Continente,
+    label    = etiqueta,
+    subgroup = Continente
+  )) +
+  geom_treemap(layout = "squarified", color = "white") +
+  geom_treemap_subgroup_border(
+    layout = "squarified",
+    color  = "black",
+    size   = 3
+  ) +
+  geom_treemap_text(
+    layout   = "squarified",
+    place    = "centre",
+    size     = 11,
+    colour   = "black",
+    reflow   = TRUE,
+    fontface = "bold",
+    min.size = 3
+  ) +
+  facet_wrap(~ año) +
+  scale_fill_brewer(palette = "Paired") +
+  theme_bw() +
+  labs(
+    fill    = "Continente",
+    caption = "Elaboración propia con base en US Census Bureau"
+  ) +
+  theme(
+    legend.position  = "bottom",
+    strip.background = element_blank(),
+    strip.text       = element_text(size = 16, face = "plain")
+  )
+```
+
+Sin embargo, la politica comercial de EUA ha variado considerablemente a lo largo de este período, que por lo tanto divideremos en cuatro sub períodos:
+
+- De 2010 a 2018, un período de liberalización de la política comercial de Estados Unidos con todos sus socios.
+- De 2018 a 2024, en el que se refleja el impacto de la guerra comercial entre Estados Unidos y China (Trump1)
+- De 2024 a 2025, en el que se refleja el cambio en la politica comercial de Estados Unidos (Trump2)
+
+
+```{r}
+#| label: fig-imp-cambio-pais
+#| code-fold: true
+#| code-summary: "Gráfico: cambio en participación por país, períodos seleccionados"
+#| fig-cap: "Cambios en pp en el origen de las importaciones de EUA por país <br> 2010-2025, 2010-2018, 2018-2024, 2024-2025"
+#| fig-cap-location: top
+#| fig-width: 14
+#| fig-height: 10
+
+
+# — Períodos de comparación ---------------------------------------------------
+periodos <- list(
+  c(2010, 2025),
+  c(2010, 2018),
+  c(2018, 2024),
+  c(2024, 2025)
+)
+
+# — Función: un gráfico por período -------------------------------------------
+hacer_divbar_paises <- function(ini, fin, datos) {
+  
+  col_ini <- paste0("y", ini)
+  col_fin <- paste0("y", fin)
+  
+  cambios <- datos |>
+    filter(año %in% c(ini, fin)) |>
+    select(País, año, share) |>
+    pivot_wider(names_from = año, values_from = share, names_prefix = "y") |>
+    mutate(
+      cambio_pp   = (.data[[col_fin]] - .data[[col_ini]]) * 100,
+      País        = fct_reorder(País, cambio_pp),
+      color_grupo = case_when(
+        País == "China"  ~ "china",
+        País == "México" ~ "mexico",
+        cambio_pp > 0    ~ "positivo",
+        TRUE             ~ "negativo"
+      )
+    )
+  
+  ggplot(cambios, aes(x = País, y = cambio_pp, fill = color_grupo)) +
+    geom_col() +
+    geom_text(
+      aes(
+        label = sprintf("%.1f", cambio_pp),
+        vjust = if_else(cambio_pp > 0, -0.4, 1.4)
+      ),
+      size     = 2.8,
+      fontface = "bold"
+    ) +
+    geom_hline(yintercept = 0, linewidth = 0.4, color = "grey30") +
+    scale_y_continuous(
+      labels = \(x) as.character(x),
+      expand = expansion(mult = c(0.18, 0.18))
+    ) +
+    scale_fill_manual(
+      values = c(
+        "china"    = "#8B0000",
+        "mexico"   = "#B5651D",
+        "positivo" = "#1F78B4",
+        "negativo" = "#41ab5d"
+      )
+    ) +
+    theme_bw() +
+    labs(x = NULL, y = NULL, title = glue::glue("{ini} – {fin}")) +
+    theme(
+      legend.position    = "none",
+      panel.grid.major.x = element_blank(),
+      axis.text.x        = element_text(angle = 90, vjust = 0.5, hjust = 1),
+      axis.text.y        = element_text(size = 9)
+    )
+}
+
+# — Generar y componer --------------------------------------------------------
+divbar_paises <- map(periodos, \(p) hacer_divbar_paises(p[1], p[2], impPais_Perc))
+names(divbar_paises) <- map_chr(periodos, \(p) paste0("p", p[1], "_", p[2])) 
+
+
+(divbar_paises$p2010_2025 + divbar_paises$p2010_2018) /
+(divbar_paises$p2018_2024 + divbar_paises$p2024_2025)+
+     plot_annotation(
+    caption = "Elaboración propia con base en US Census Bureau"
+  ) &
+  theme(plot.caption = element_text(hjust = 1))
+```
+
+
+## Las importaciones de EUA provenientes de México
+
+### Por Sección del SA
+
+::: {.callout-note collapse = "true" title= "Carga datos y metadatos"}
+```{r}
+#| label: load_imp_mex
+#| echo: false
+
+impMex <- readRDS(here::here("RDS", "imp_mex_sec_cap.rds"))
+metaimpMex <- readRDS(here::here("RDS", "meta_imp_mex_sec_cap.rds"))
+gt_meta(metaimpMex)
+# tab <- impMex |> distinct(Sección, Sección_corto) produces a table with Secion Numbers and Short Names
+```
+:::
+
+::: {.callout-note collapse = "true" title = "Calculo distribución importaciones desde Mexico, por Sección"}
+```{r}
+#| label: prep-sec-pct
+#| code-fold: true
+#| code-summary: "Preparación datos Sección: porcentajes anuales"
+
+impMex_sec_pct <- map_dfr(2010:2025, function(año) {
+  fecha_ini <- as.Date(paste0(año, "-01-01"))
+  fecha_fin <- if (año == 2025) {
+    as.Date("2025-11-01")          # 11 months: Jan–Nov
+  } else {
+    as.Date(paste0(año, "-12-01")) # 12 months: Jan–Dec
+  }
+  
+  impMex |>
+    filter(
+      fecha >= fecha_ini,
+      fecha <= fecha_fin
+    ) |>
+    mutate(año = year(fecha)) |> 
+    group_by(año, Sección, Sección_corto, Sección_desc_es) |>
+    summarise(Val_anual = sum(Val_mes, na.rm = TRUE), .groups = "drop") |>
+    group_by(año) |>
+    mutate(pct = Val_anual / sum(Val_anual)) |>
+    ungroup()
+})
+
+#saveRDS(impMex_sec_pct, here("RDS", "impMex_sec_pct.rds"))
+
+```
+:::
+
+La distribución porcentual de las importaciones provenientes de México, por sector del SA, se muestra en la @fig-tree-sec.  
+
+
+```{r}
+#| label: fig-tree-sec
+#| code-fold: true
+#| code-summary: "Treemaps: composición por Sección, años inicial y final"
+#| fig-cap: "Composición porcentual de las exportaciones provenientes de México"
+#| fig-cap-location: top
+
+año_ini <- 2010
+año_fin <- 2025
+
+n_sec <- n_distinct(impMex_sec_pct$Sección_corto)
+mi_paleta <- colorRampPalette(RColorBrewer::brewer.pal(11, "Spectral"))(n_sec)
+
+
+impMex_sec_pct |> 
+  filter(año %in% c(as.character(año_ini), as.character(año_fin))) |>
+  mutate(etiqueta = paste0(Sección_corto, "\n", scales::percent(pct, accuracy = 1))) |>
+  ggplot(aes(area = pct, fill = Sección_corto, label = etiqueta)) +
+  geom_treemap(layout = "squarified", color = "white", size = 1) +
+  geom_treemap_text(
+    place    = "centre",
+    size     = 11,
+    colour   = "black",
+    reflow   = TRUE,
+    fontface = "bold",
+    min.size = 7
+  ) +
+  facet_wrap(~ año, nrow = 1, ncol = 2) +
+  scale_fill_manual(values = mi_paleta) +
+  theme_bw() +
+  labs(
+    caption = "Elaboración propia con base en US Census Bureau",
+    title   = glue::glue("{año_ini} - {año_fin}")
+  ) +
+  theme(
+    legend.position  = "none",
+    strip.background = element_blank(),
+    strip.text       = element_text(size = 16, face = "plain")
+  )
+```
+
+Sin embargo, al igual que en el caso de las importaciones por país de origen, como se muestra en la @fig-imp-cambio-sec-mex, la dinámica de cambio es muy distinta en TRES SUBPERIODOS DECIR ALGO SOBRE ESTO AL INICIO DEL DOCUMENTO
+
+```{r}
+#| label: fig-imp-cambio-sec-mex
+#| code-fold: true
+#| code-summary: "cambios composición sectorial"
+#| fig-cap: |
+#|      Cambios en la composición sectorial de las importaciones provenientes de México
+#|      2010-2025, 2010-2018, 2018-2024 y 2024-2025
+#| fig-cap-location: top
+#| fig-width: 14
+#| fig-height: 10
+
+hacer_divbar_sec <- function(ini, fin, datos) {
+  col_ini <- paste0("y", ini)
+  col_fin <- paste0("y", fin)
+  
+  cambios <- datos |>
+    filter(año %in% c(ini, fin)) |>
+    select(Sección_corto, año, pct) |>
+    pivot_wider(names_from = año, values_from = pct, names_prefix = "y") |>
+    mutate(
+      cambio_pp     = (.data[[col_fin]] - .data[[col_ini]]) * 100,
+      Sección_corto = fct_reorder(Sección_corto, cambio_pp),
+      color_grupo   = case_when(
+        Sección_corto == "Transporte"   ~ "transporte",
+        Sección_corto == "Maquinaria"   ~ "maquinaria",
+        Sección_corto == "Instrumentos" ~ "instrumentos",
+        cambio_pp > 0                   ~ "positivo",
+        TRUE                            ~ "negativo"
+      )
+    )
+  
+  ggplot(cambios, aes(x = Sección_corto, y = cambio_pp, fill = color_grupo)) +
+    geom_col() +
+    geom_text(
+      aes(label = sprintf("%.1f", cambio_pp),
+          vjust = if_else(cambio_pp > 0, -0.4, 1.4)),
+      size = 2.8, fontface = "bold"
+    ) +
+    geom_hline(yintercept = 0, linewidth = 0.4, color = "grey30") +
+    scale_y_continuous(
+      labels = \(x) paste0(x, " pp"),
+      expand = expansion(mult = c(0.18, 0.18))
+    ) +
+    scale_fill_manual(values = c(
+      "transporte"   = "#8B0000",
+      "maquinaria"   = "#B5651D",
+      "instrumentos" = "#6A0DAD",
+      "positivo"     = "#1F78B4",
+      "negativo"     = "#41ab5d"
+    )) +
+    theme_bw() +
+    labs(x = NULL, y = NULL, title = glue::glue("{ini} – {fin}")) +
+    theme(
+      legend.position    = "none",
+      panel.grid.major.x = element_blank(),
+      axis.text.x        = element_text(angle = 90, vjust = 0.5, hjust = 1),
+      axis.text.y        = element_text(size = 9)
+    )
+}
+
+# —— Líneas que faltaban ——————————————————————————————————————————————————————
+periodos <- list(c(2010, 2025), c(2010, 2018), c(2018, 2024), c(2024, 2025))
+
+divbar_sec <- map(periodos, \(p) hacer_divbar_sec(p[1], p[2], impMex_sec_pct))
+names(divbar_sec) <- map_chr(periodos, \(p) paste0("p", p[1], "_", p[2]))
+# —————————————————————————————————————————————————————————————————————————————
+
+(divbar_sec$p2010_2025 + divbar_sec$p2010_2018) /
+(divbar_sec$p2018_2024 + divbar_sec$p2024_2025) +
+  plot_annotation(caption = "Elaboración propia con base en US Census Bureau") &
+  theme(plot.caption = element_text(hjust = 1))
+```
+
+
+### Composición por capítulo de las secciones Maquinaria, Transporte e Instrumentos
+
+::: {.callout-note collapse = "true" title= "Carga datos y metadatos"}
+```{r}
+#| label: load_imp_mex_sec
+#| echo: false
+
+impMex <- readRDS(here::here("RDS", "imp_mex_sec_cap.rds"))
+metaimpMex <- readRDS(here::here("RDS", "meta_imp_mex_sec_cap.rds"))
+gt_meta(metaimpMex)
+# tab <- impMex |> distinct(Sección, Sección_corto) produces a table with Secion Numbers and Short Names
+```
+:::
+
+::: {.callout-note collapse= "true" title= "Selección capítulos de interés"}
+```{r}
+
+# 1. Filtrar y calcular porcentajes por Sección para 2025
+secciones_interes <- c("Maquinaria", "Transporte", "Instrumentos","Eléctrico")
+
+df_caps_2025 <- impMex |>
+  filter(
+    Sección_corto %in% secciones_interes,
+    lubridate::year(fecha) == 2025
+  ) |>
+  group_by(Sección_corto, Capítulo, Cap_corto, Cap_desc_es) |>
+  summarise(Val_anual = sum(Val_mes, na.rm = TRUE), .groups = "drop") |>
+  group_by(Sección_corto) |>
+  mutate(
+    pct = Val_anual / sum(Val_anual),
+    etiqueta = paste0(Cap_corto, "\n", scales::percent(pct, accuracy = 1))
+  ) |>
+  ungroup()
+
+# 2. Diagnóstico: número de capítulos por sección
+df_caps_2025 |>
+  count(Sección_corto, name = "n_capitulos") |>
+  print()
+```
+:::
+
+
+```{r}
+#| label: fig-imp-cambio-sec-mex_v1
+#| code-fold: true
+#| code-summary: "treemp_caps_Sec848590l"
+#| fig-cap: "Distribución por capítulo de las importaciones de Maquinaria, Transporte e Instrumentos, 2025"
+#| fig-cap-location: top
+#| fig-width: 12
+#| fig-height: 6
+
+ggplot(df_caps_2025, aes(area = Val_anual, fill = Cap_corto, label = etiqueta)) +
+  geom_treemap(layout = "squarified", color = "white", size = 1.5) +
+  geom_treemap_text(
+    place = "centre",
+    size = 13,
+    colour = "black",
+    reflow = TRUE,
+    fontface = "bold",
+    min.size = 8
+  ) +
+  facet_wrap(~ Sección_corto, ncol = 3) +
+  scale_fill_brewer(palette = "Spectral") +
+  theme_bw() +
+  labs(
+      caption = "Elaboración propia con base en US Census Bureau"
+  ) +
+  theme(
+    legend.position = "none",
+    strip.background = element_blank(),
+    strip.text = element_text(size = 14, face = "plain"),
+    plot.title = element_text(hjust = 0.5, size = 14, face = "bold"),
+    plot.subtitle = element_text(hjust = 0.5, size = 11)
+  )
+```
+
+### Distribución por partidas, Capítulos 84, 85, 87, 90
+
+::: {.callout-note collapse = "true" title= "Carga datos y metadatos"}
+
+```{r}
+#| label: load_top_hs4
+#| echo: false
+
+imp_mex_top_hs4 <- readRDS(here::here("RDS", "imp_mex_top_hs4.rds"))
+
+```
+
+:::
+
+Distribución principales capítulos por sección
+
+
+```{r}
+#| label: fig-treemap-top-hs4
+#| fig-cap: "EUA: importaciones desde México, principales partidas (HS4), capítulos 84, 85, 87 y 90, 2010 y 2025"
+#| fig-cap-location: top
+#| code-fold: true
+#| message: false
+#| warning: false
+#| fig-width: 12
+#| fig-height: 10
+
+# 1. Calcular porcentajes dentro de cada Capítulo × Año
+top_hs4_tree <- imp_mex_top_hs4 |>
+  filter(year(fecha) %in% c(2010, 2025)) |>
+  group_by(Capítulo, Cap_corto, Cod_partida, Part_corto, Año = year(fecha)) |>
+  summarise(Val_total = sum(Val_mes, na.rm = TRUE), .groups = "drop") |>
+  group_by(Capítulo, Año) |>
+  mutate(
+    share    = Val_total / sum(Val_total),
+    etiqueta = paste0(Part_corto, "\n", Cod_partida, "\n", percent(share, accuracy = 1))
+  ) |>
+  ungroup()
+
+# 2. Función: un treemap por capítulo (sin caption — va en plot_annotation)
+treemap_cap <- function(cap_num) {
+  df        <- top_hs4_tree |> filter(Capítulo == cap_num)
+  cap_label <- unique(df$Cap_corto)
+
+  ggplot(df, aes(area = Val_total, fill = Part_corto, label = etiqueta)) +
+    geom_treemap(layout = "squarified", color = "white") +
+    geom_treemap_text(
+      place = "centre", size = 11, colour = "black",
+      reflow = TRUE, fontface = "plain", min.size = 6
+    ) +
+    facet_wrap(~ Año) +
+    scale_fill_brewer(palette = "Set3") +
+    theme_bw() +
+    labs(title = paste0("Cap. ", cap_num, " — ", cap_label,"(2010 izq. | 2025 der.)")) +
+    theme(
+      legend.position  = "none",
+      strip.background = element_blank(),
+      strip.text       = element_blank(),
+      plot.title       = element_text(size = 13, face = "plain")
+    )
+}
+
+# 3. Generar lista nombrada — igual que en los diverging bars
+treemaps <- map(c(84, 85, 87, 90), treemap_cap)
+names(treemaps) <- paste0("cap", c(84, 85, 87, 90))
+
+# 4. Componer con operadores patchwork + plot_annotation
+(treemaps$cap84 + treemaps$cap85) /
+(treemaps$cap87 + treemaps$cap90) +
+  plot_annotation(
+    caption = "Elaboración propia con base en US Census Bureau"
+  ) &
+  theme(plot.caption = element_text(hjust = 1))
+```
+
+### Dimensiones regionales del NS
+
+::: {.callout-note collapse = "true" title= "Carga datos y metadatos"}
+```{r}
+#| label: load_xmex_total.ef
+#| echo: false
+
+x_ef <- readRDS(here::here("RDS", "xmex_total_ef.rds"))
+meta_xf <- readRDS(here::here("RDS", "meta_imp_mex_sec_cap.rds"))
+gt_meta(meta_xf)
+# tab <- impMex |> distinct(Sección, Sección_corto) produces a table with Secion Numbers and Short Names
+```
+:::
+
+
+```{r}
+
+
+
+# — Datos: exportaciones 2025 anuales por entidad ----------------------------
+xmex_2025 <- xmex_total_ef |>
+  filter(año == 2025) |>
+  group_by(cve_geo, nombre) |>
+  summarise(val_anual_mmd = sum(val_miles, na.rm = TRUE) / 1e6, .groups = "drop")
+
+# — Geografía -----------------------------------------------------------------
+mexico_sf <- geodata::gadm("MEX", level = 1, path = tempdir()) |>
+  sf::st_as_sf() |>
+  mutate(
+    nombre_join = case_when(
+      NAME_1 == "México"           ~ "Estado de México",
+      NAME_1 == "Distrito Federal" ~ "Ciudad de México",
+      NAME_1 == "Michoacán"        ~ "Michoacán",
+      NAME_1 == "Nuevo León"       ~ "Nuevo León",
+      NAME_1 == "Querétaro"        ~ "Querétaro",
+      NAME_1 == "San Luis Potosí"  ~ "San Luis Potosí",
+      NAME_1 == "Yucatán"          ~ "Yucatán",
+      TRUE ~ NAME_1
+    )
+  )
+
+# — Join ----------------------------------------------------------------------
+mapa_data <- mexico_sf |>
+  left_join(xmex_2025, by = c("nombre_join" = "nombre"))
+
+# — Verificar joins fallidos --------------------------------------------------
+sin_datos <- mapa_data |> filter(is.na(val_anual_mmd)) |> pull(NAME_1)
+if (length(sin_datos) > 0) {
+  cat("⚠ Sin datos:", paste(sin_datos, collapse = ", "), "\n")
+}
+
+# — Mapa ----------------------------------------------------------------------
+ggplot(mapa_data) +
+  geom_sf(aes(fill = val_anual_mmd), color = "white", linewidth = 0.3) +
+  scale_fill_distiller(
+    palette   = "Blues",
+    direction = 1,
+    labels    = \(x) paste0("$", x, "B"),
+    name      = "Miles de millones USD",
+    na.value  = "grey85"
+  ) +
+  labs(
+    title   = "Exportaciones mexicanas por entidad federativa, 2025",
+    caption = "Elaboración propia con base en INEGI — ETEF.\nUnidad: miles de millones de dólares estadounidenses."
+  ) +
+  theme_void() +
+  theme(
+    plot.title       = element_text(face = "bold", size = 14, hjust = 0.5,
+                                    margin = margin(b = 8)),
+    plot.caption     = element_text(size = 8, color = "grey40", hjust = 0.5,
+                                    margin = margin(t = 10)),
+    legend.position  = "bottom",
+    legend.key.width = unit(2.5, "cm"),
+    legend.title     = element_text(size = 9),
+    legend.text      = element_text(size = 8),
+    plot.margin      = margin(10, 10, 10, 10)
+  )
+```
+
+
+```{r}
+#| label: fig-mapa-4periodos
+#| fig-cap: |
+#|   Cambio en la participación porcentual de las exportaciones por entidad
+#|   federativa, cuatro períodos seleccionados
+#| fig-cap-location: top
+#| fig-width: 12
+#| fig-height: 9
+#| message: false
+#| warning: false
+
+# xmex_pct, mexico_sf, breaks_pp, labels_pp y paleta_discreta
+# ya existen del chunk fig-mapa-cambio-pct — no se reconstruyen aquí.
+
+pacman::p_load(cowplot)
+
+# ── 1. Función: cambio en pp entre dos años ----------------------------------
+
+cambio_periodo <- function(año_ini, año_fin) {
+  xmex_pct |>
+    filter(año %in% c(año_ini, año_fin)) |>
+    select(nombre, año, pct) |>
+    pivot_wider(names_from = año, values_from = pct, names_prefix = "y") |>
+    mutate(
+      cambio_pp = (get(paste0("y", año_fin)) - get(paste0("y", año_ini))) * 100
+    )
+}
+
+# ── 2. Función: un mapa por período (sin leyenda) ----------------------------
+
+make_map <- function(año_ini, año_fin) {
+
+  datos <- cambio_periodo(año_ini, año_fin)
+
+  mapa_data <- mexico_sf |>
+    left_join(datos, by = c("nombre_join" = "nombre")) |>
+    mutate(
+      cat_cambio = cut(cambio_pp, breaks = breaks_pp, labels = labels_pp,
+                       include.lowest = TRUE, ordered_result = TRUE)
+    )
+
+  ggplot(mapa_data) +
+    geom_sf(aes(fill = cat_cambio), color = "grey25", linewidth = 0.35) +
+    scale_fill_manual(
+      values   = paleta_discreta,
+      name     = NULL,
+      na.value = "grey80",
+      drop     = FALSE
+    ) +
+    labs(title = paste0(año_ini, " – ", año_fin)) +
+    guides(
+      fill = guide_legend(
+        nrow      = 1,
+        keywidth  = unit(1.6, "cm"),
+        keyheight = unit(0.4, "cm")
+      )
+    ) +
+    theme_void() +
+    theme(
+      plot.title      = element_text(face = "bold", size = 11, hjust = 0.5,
+                                     margin = margin(b = 4)),
+      legend.position = "none",
+      plot.margin     = margin(6, 6, 6, 6)
+    )
+}
+
+# ── 3. Extraer leyenda como elemento independiente --------------------------
+# Se construye un mapa auxiliar con leyenda visible solo para extraerla
+
+mapa_leyenda <- make_map(2010, 2025) +
+  theme(
+    legend.position  = "bottom",
+    legend.text      = element_text(size = 10),
+    legend.key.size  = unit(0.6, "cm")
+  )
+
+leyenda <- cowplot::get_legend(mapa_leyenda)
+
+# ── 4. Generar los cuatro mapas ---------------------------------------------
+
+periodos <- list(
+  c(2010, 2025),
+  c(2010, 2018),
+  c(2018, 2024),
+  c(2024, 2025)
+)
+
+plots <- map(periodos, \(p) make_map(p[1], p[2]))
+
+# ── 5. Componer: 2×2 arriba + leyenda abajo ---------------------------------
+
+grid_mapas <- (plots[[1]] + plots[[2]]) / (plots[[3]] + plots[[4]])
+
+cowplot::plot_grid(
+  grid_mapas,
+  leyenda,
+  ncol        = 1,
+  rel_heights = c(1, 0.08)
+)
+```
+
+
+
+
+
+

@@ -1,0 +1,958 @@
+---
+title: "Nearshoring en los datos"
+author: "Jorge Cornick y Carlos Zafra, abril"
+format:
+  html:
+    embed-resources: true
+lang: es
+toc: true
+toc-depth: 3
+editor: source
+editor_options:
+  chunk_output_type: console
+bibliography: refsMXNS25.bib
+---
+
+```{r}
+#| label: loadlibs
+#| code-fold: true
+#| code-summary: "Carga de bibliotecas"
+pacman::p_load(tidyverse, here, forcats, zoo, scales, knitr, gt, strucchange, seasonal, treemapify, patchwork)
+```
+
+## Introducción
+
+La reconfiguración de las cadenas globales de valor (CGV), y en particular, la reducción de la distancia entre los centros de manufactura y los de consumo final, conocida como "Nearshoring" (NS) pueden tener lugar mediante diversos mecanismos
+
+-   Reasignación de producción entre plantas
+-   Ampliación capacidad plantas ya existentes
+-   Establecimiento de nuevas plantas
+
+De estos tres mecanismos, el primero es el más rápido, y el último el que puede demorar más tiempo, por lo que cabe cabe esperar que NS se exprese primero en cambios en los flujos comerciales y solo con un rezago considerable en cambios en los flujos de inversión. Puede expresarse, asimismo, en cambios en la distribución sectorial de la IED, y cambios en el origen nacional de la IED.
+
+Como se discutió en la sección anterior, resulta indiferente si esta transformación de las CGV se financia mediante inversiones nuevas o mediante reinversión de utilidades.
+
+El proceso puede incluir un cuarto mecanismo, que ha sido poco estudiado: la profundización de las cadenas de suministro locales. Es decir, una EMN puede trasladar una línea de producción del país A al país B, pero puede además tratar de sustituir, al menos en parte, la cadena de suministro que estba ubicada en A y sus países vecinos, por una cadena de suministro centrada en B. Como veremos en el Capítulo 3, México tiene oportunidades importantes asociadas precisamente a este mecanismo, aunque por ahora resulta difícil cuantificar su impacto [^1].
+
+[^1]: Creo que no hay estadísticas sobre ventas de empresas domésticas a EMNs exportadoras, pero no es un tema que hayamos investigado aún. Si no las hubiera, y como parte de los objetivos del CPCV es contribuir a que más Pymes mexicanas participen del NS, quizá podríamos ser pioneros en este tema, en colaboración con asociaciones empresariales y autoridades públicas
+
+En este capítulo examinaremos la evoluación de las exportaciones mexicanas, particularmente lae exportaciones a los Estados Unidos (EUA) en el período 2010 - 2020, que incluye la imposición de aranceles a las importaciones de EUA provenientes de China en el primero gobierno de Trump, la política industrial durante el gobierno de Biden, y la turbulenta política comercial del segundo gobierno de Trump.
+
+El capítulo se divide en cuatro secciones principales
+
+-   La evolución de exportaciones de México a Estados Unidos (EUA)[^2]
+-   La evolución de la IED en México y de los anuncios de inversión
+-   La evolución del empleo IMMEX[^3]
+-   La evolución de la demanda de desarrollo inmobiliario industrial
+
+[^2]: Los cambios en el origen de las importaciones de los Estados Unidos fueron examinados en el capítulo anterior.
+
+[^3]: Como una aproximación al empleo directamente vinculado a la actividad exportadora
+
+Tanto en el caso de las exportaciones como en el de las inversiones procederemos mediante una serie de aproximaciones sucesivas, cada una con mayor nivel de detalle y granularidad.  En el caso de las exportaciones, se examinan primero las exportaciones totales a Estados Unidos, y luego se descomponen según Secciones del Sistema Armonizado (SA).  Una vez identificadas las Secciones más importantes, se identifican los Capítulos de más peso dentro de cada una de ellas, y finalmente, se identifican las Partidas más importantes dentro de cada Sección.  En general, trabajamos con cifras anuales, pero para los dos últimos años se presentan, además, datos mensuales para las Partidas más importantes previamente identificadas.
+
+Adicionalmente, esta sección incorpora los resultados de estudios econométricos recientes que han intentado evaluar el impacto sobre México de las tarifas a las importaciones chinas del primer gobierno de Trump. Por razones obvias, no existen aún estudios econométricos sobre el impacto de la política  comercial del segundo gobierno de Trump:  en primer lugar no ha pasado suficiente tiempo como para medir ese impacto, y en segundo lugar, y de mayor importancia, esa política no tiene aún una configuración estable. La incertidumbre es en este momento el principal disruptor de los flujos comerciales ^[Este texto fue redactado antes del inicio de la guerra en Irán], aunque el examen de los datos mensuales también permite identificar fluctuaciones que responden claramente a cambios recientes en la estructura tarifaria de los EUA
+
+## Evolución de las exportaciones de México: 2010 - 2025
+
+### Exportaciones totales
+
+::: {.callout-note collapse="true" title= "Carga datos y metadatos"}
+
+```{r}
+#| label: loadMexXMPaisINEGI
+#| code-fold: true
+xm <- readRDS(here::here("RDS", "MexXMPaisINEGI.rds"))
+
+```
+
+:::
+
+La @fig-XUSAresto muestra la evolución de las exportaciones mexicanas a Estados Unidos y el resto del mundo, de 2010 a 2025. El paquete \``` strucchange` `` fue utilizado para evaluar puntos de cambio estructural usando el Criterio de Información Bayesiano (BIC por sus siglas en inglés) [^4], que permitió identificar un punto de quiebre para las exportaciones a Estados Unidos en 2021, de manera que en el gráfico se muestra la tendencia lineal para cada uno de los dos sub períodos resultantes. El mismo paquete permitió identificar dos puntos de quiebre en las exportaciones a otros destinos: 2006 y 2021 (que no se muestran en el gráfico). El lector interesado en el código y los resultados los puede visualizar haciendo "click" en la Nota siguiente.
+
+Aunque por las diferencias en magnitud puede parecer que las exportaciones al resto del mundo tiene un crecimiento apenas moderado, el cálculo del cambio porcentual entre 2025 y 2010 es notable tanto para las exportaciones que se destinan a los Estados Unidos, que se incrementan en un 110.2%, como las que se dirigen al resto del mundo, que se incrementan en un 71.5% ^[El incremento será aún mayor una vez que se disponga de los datos de exportaciones de diciembre 2025, aún no incluidos en el gráfico].  El rápido incremento de las exportaciones a Estados Unidos a partir de 2021 es congruente con la hipótesis de que existe un rezago entre el cambio en los aranceles (Trump 2018) y el cambio en los flujos comerciales, que se explica porque en un primer momento las empresas no saben si los nuevos aranceles se van a mantener o si serán efímeros, y en segundo lugar porque una vez que las empresas llegan a la conclusión de que los nuevos aranceles representan un cambio duradero en la política comercial de los EUA, deben tomar una serie de decisiones que no se pueden ejecutar de manra inmediata.
+
+[^4]: Ver [Strucchange](file:///Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/library/strucchange/doc/strucchange-intro.pdf) para los detalles.
+
+::: {.callout-note collapse="true" title= "Puntos de quiebre"}
+
+```{r}
+#| label: strchange
+#| code-fold: true
+aggregated_df <- xm |>
+  select(-Importaciones
+    ) |>
+  mutate(Pais = if_else(Pais == "USA", "USA", "Otros")
+    ) |>
+  group_by(Año, Pais
+    ) |>
+  summarise(Exportaciones = sum(Exportaciones), .groups = 'drop')
+
+usa_data <- aggregated_df |>
+  filter(Pais == "USA")
+
+otros_data <- aggregated_df |> 
+  filter(Pais == "Otros")
+
+bp_usa <- breakpoints(Exportaciones ~ Año, data = usa_data)
+bp_otros <- breakpoints(Exportaciones ~ Año, data = otros_data)
+
+# Años de cambio de tendencia exportaciones a otros destinos
+bp_usa
+usa_data$Año[bp_usa$breakpoints]
+bp_otros
+otros_data$Año[bp_otros$breakpoints]
+```
+
+:::
+
+```{r}
+#| message: false
+#| warning: false
+#| code-fold: true
+#| code-summary: "Exportaciones USA y resto"
+#| label: fig-XUSAresto
+#| fig-cap: "México: distribución de las exportaciones, USA y resto del mundo, 2010-2025 <br> (miles de millones de US $)"
+#| fig-cap-location: top
+
+# 1. Preparación de los datos y cálculo de incrementos
+data_plot <- xm |> 
+  select(-Importaciones) |> 
+  filter(Año > 2009) |> 
+  mutate(Pais = if_else(Pais == "USA", "USA", "Otros")) |> 
+  group_by(Año, Pais) |> 
+  summarize(Exportaciones = sum(Exportaciones / 1000000000), .groups = 'drop')
+
+# Calcular el % de incremento para las etiquetas
+
+incrementos <- data_plot |> 
+  filter(Año %in% c(2010, 2025)) |> 
+  group_by(Pais) |> 
+  summarize(
+    pct = (Exportaciones[Año == 2025] / Exportaciones[Año == 2010] - 1) * 100,
+    val_2025 = Exportaciones[Año == 2025]
+  )
+
+# 2. Generación del gráfico con etiquetas
+
+ggplot(data_plot, aes(Año, Exportaciones, color = Pais)) +
+  theme_bw() +
+  scale_color_brewer(palette = "Paired") +
+  scale_x_continuous(breaks = seq(2010, 2025, 1), expand = c(0, 0)) +
+  scale_y_continuous(breaks = seq(0, 600, 100), limits = c(0, 550)) +
+  geom_line(linewidth = 1) +
+  # Tendencias (Tus geom_smooth originales)
+  geom_smooth(data = \(x) x |> filter(Año < 2022, Pais == "USA"), 
+              method = "lm", se = TRUE, fill = "steelblue1", alpha = 0.2, linetype = 3) +
+  geom_smooth(data = \(x) x |> filter(Año > 2020, Pais == "USA"), 
+              method = "lm", se = TRUE, fill = "steelblue1", alpha = 0.2, linetype = 3) +
+  geom_vline(xintercept = 2021, linetype = "dotted", color = "red", linewidth = 0.75) +
+  # Cuadros de texto con los incrementos
+  geom_label(
+    data = incrementos,
+    aes(x = 2025, y = val_2025, 
+        label = paste0("Δ 2010-2025: ", round(pct, 1), "%")),
+    hjust = 1.1, vjust = -0.5,
+    show.legend = FALSE,
+    fill = "white",
+    fontface = "bold"
+  ) +
+  labs(x = "", y = "Miles de millones de USD", color = NULL, 
+       caption = "Elaboración propia con base en INEGI") +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
+        legend.position = "bottom")
+```
+
+Una visualización alternativa se presenta en la @fig-xporc93_24, en la que se identifican los 6 principales destinos de las exportaciones mexicanas, aparte de los Estados Unidos, y una categoría residual. En 2025, las exportaciones mexicanas a Estados Unidos, Canadá, China, Alemania, Corea del Sur, España y Brasil representan el 91.5% del total de las exportaciones mexicanas.  
+
+```{r}
+#| label: porcX
+#| code-fold: true
+#| code-summary: "Calculo distribución porcentual exportaciones por destino"
+
+# En el gráfico anterior ggplot() calcula los porcentajes "detrás de bambalinas" y aunque la representación gráfica es correcta, no podemos acceder a los números propiamente dichos.  por esta razón, aquí se calcula porcentajes de manera explícita, y en el próximo bloque de código se utilizan para calcular los porcentajes de exportación correspondientes a Estdos unidos en años específicos
+
+xm_percentages <- xm |>
+  filter( Año > 2009) |> 
+  mutate(
+    lump_weight = if_else(Año >= 2020, Exportaciones, 0),
+    Pais = fct_lump_n(
+      f = Pais,
+      n = 7,
+      w = lump_weight,
+      other_level = "Otros")
+  ) |>
+  group_by(Año, Pais) |> 
+  summarise(
+    Exportaciones = sum(Exportaciones, na.rm = TRUE),
+    .groups = "drop"
+  ) |> 
+  group_by(Año) |>
+  mutate(percent_valor = Exportaciones / sum(Exportaciones, na.rm = TRUE)) |>
+  ungroup() |> 
+  mutate(Pais = fct_reorder(Pais, percent_valor, .fun = last))
+```
+
+```{r}
+#| message: false
+#| code-fold: true
+#| code-summary: "Distribución exportaciones"
+#| label: fig-xporc93_24
+#| fig-cap: "Mexico, distribucion porcentual de las exportaciones, 2010 - 2025"
+#| fig-cap-location: top
+
+ggplot(xm_percentages, aes(x = Año, y = percent_valor, fill = Pais)) +
+  theme_bw() + 
+  scale_fill_brewer(palette = "Spectral") +
+  geom_col(position = "stack") + 
+  scale_x_continuous(
+    breaks = seq(from = 2010, to = 2025, by = 1),
+    expand = c(0,0)) + 
+  scale_y_continuous(
+    breaks = seq(0, 1, by = 0.1), 
+    labels = scales::percent,
+    expand = c(0,0)) +
+  geom_hline(
+    yintercept = seq(0.1, 0.9, by = 0.1), 
+    color = "white",
+    linetype = "dotted",
+    linewidth = 0.25) +
+  labs(
+    x = "",
+    y = "",
+    fill = "",
+    caption = "Elaboración propia con base en INEGI") +
+  annotate(
+    "text",
+    x = c(2018), 
+    y = c(0.45, 0.45, 0.45), 
+    label = c("Tarifas Trump 1"),
+    color = "white",
+    angle = 90, 
+    fontface = "bold",
+    size = 3.5
+      ) +
+  annotate(
+    "text",
+    x = c(2025), 
+    y = c(0.45, 0.45, 0.45), 
+    label = c("Tarifas Trump 2"),
+    color = "white",
+    angle = 90, 
+    fontface = "bold",
+    size = 3.5
+    ) +
+  theme(
+    legend.position = "bottom",
+    axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)
+    ) 
+```
+
+Sin embargo, el comportamiento de los destinos menores ha sido desigual, como lo muestra la @tbl-XprincPais: mientras que las exportaciones a Canadá apenas recuperan en 2025 la participación porcentual que tenìan en 2010, la participación de Alemania se reduce ligeramente mientras que las de España y Brasil se reducen a poco más de la mitad de la participación que tuvieron en 2010.  Las exportacones a China aumentan lingeramente, y las exportaciones a Corea del Sur se triplican, pero apenas representan un 1% del total en 2025.
+
+```{r}
+#| message: false
+#| echo: false
+#| label: tbl-XprincPais
+#| tbl-cap: "México, exportaciones a principales socios comericales <br> Porcentaje del total de exportaciones, años seleccionados"
+xm_percentages |>
+  filter(Pais %in% c("USA","Brasil","Canadá", "China", "Alemania", "CoreaS", "España", "Japón"), Año %in% c(2010,2017,2021,2025)) |>
+  select(Pais, Año, percent_valor) |> 
+  pivot_wider(names_from = Año, values_from = percent_valor) |>
+  arrange(desc(`2025`)) |>
+  gt() |>
+  fmt_percent(
+    columns = everything(),
+    decimals = 1
+  ) |>
+  cols_label(
+    Pais = "País"
+  ) |>
+  cols_align(
+    align = "left",
+    columns = Pais
+  ) |>
+  tab_options(
+    table.width = pct(50)
+  )
+```
+
+Una última visualización se presenta en @fig-xpor_tree, que permite comparar fácilmente el cambio en la importancia relativa de los distintos destinos comparando únicamente los años 2010 y 2025
+
+```{r}
+#| message: false
+#| code-fold: true
+#| code-summary: "Distribución exportaciones"
+#| label: fig-xpor_tree
+#| fig-cap: "Mexico, distribucion porcentual de las exportaciones por destino, 2010 y 2025"
+#| fig-cap-location: top
+# 1. Preparar los datos con la etiqueta combinada
+xm_treemap <- xm_percentages |> 
+  filter(Año %in% c(2010, 2025)) |> 
+  mutate(
+    etiqueta = paste0(Pais, "\n", percent(percent_valor, accuracy = 1))
+  )
+
+# 2. Generar el gráfico con los ajustes de diseño
+ggplot(xm_treemap, aes(area = percent_valor, fill = Pais, label = etiqueta)) +
+  geom_treemap(layout = "squarified", color = "white") +
+  geom_treemap_text(
+    place = "centre", 
+    size = 12, 
+    colour = "black", 
+    reflow = TRUE,
+    fontface = "bold" # Mantiene negrita en el contenido para legibilidad
+  ) +
+  facet_wrap(~ Año) +
+  scale_fill_brewer(palette = "Spectral") +
+  theme_bw() +
+  labs(
+    caption = "Elaboración propia con base en INEGI",
+    x = NULL,
+    y = NULL
+  ) +
+  theme(
+    legend.position = "none",
+    # Elimina el cuadro gris de los años
+    strip.background = element_blank(),
+    # Quita la negrita de los años y ajusta el tamaño
+    strip.text = element_text(size = 16, face = "plain"),
+    # Centra el título
+    plot.title = element_text(hjust = 0.5, size = 16)
+  )
+```
+
+### Las exportaciones totales a Estados Unidos [^5]
+
+[^5]: Los datos de 2025 incluyen las exportaciones acumuladas a noviembre de ese año, pero es probable que esta información pueda actulizarse antes de la publicación de este informe.
+
+::: {.callout-note title = "Análisis de datos desagregados de exportaciones de México"}
+
+El Diccionario de Datos de Data México advierte que para proteger el anonimato de la información, la suma de los datos de un determinado nivel de agregación, como Partida, no necesariamente es igual al total del Capítulo, que se visualiza a un nivel de mayor agregación: cuando suministrar información en el nivel más desagregado permite identificar a empresas individuales, esa información se suprime al consultar los datos desagregados
+
+:::
+
+::: {.callout-note collapse="true" title= "Carga datos y metadatos"}
+
+```{r}
+#| label: loadxusasec
+#| code-fold: true
+xusasec <- readRDS(here::here("RDS", "Mex_X_USA_Sec.rds"))
+
+```
+
+:::
+
+En esta sección el foco pasa de las exportaciones totales a las exportaciones específicamente destinadas a los Estados Unidos. El incremento de las exportaciones totales a ese país fue presentado en la sección anterior de este documento, y ahora procedemos a realizar un acercamiento ("zoom") que nos permite entender este comportamiento de manera más granular. En primer lugar, se identifican las exportaciones más importantes a nivel de Sección del SA. En segundo lugar, para esas secciones, se desagrega el comportamiento de las exportaciones por Capítulo. Finalmente, para los Capítulos más importantes, la información se examina a nivel de Partida.
+
+### Exportaciones por Sección del SA
+
+Empezamos comparando la distribución de las exportaciones mexicanas por Sección del SA en 2010 y 2025. La @fig-treeSec presenta esta información. Los tres sectores dominantes en 2025, Maquinaria, Equipo de Transporte e Instrumentos, son al mismo tiempo los más relevantes desde el punto de vista del NS.
+
+```{r}
+#| message: false
+#| code-fold: true
+#| label: fig-treeSec
+#| tbl-cap: "México, composición porcentual de las exportaciones a EE.UU. por sección, 2010 y 2025"
+#| fig-cap-location: top
+# 1. Preparar los datos y las etiquetas con los años solicitados
+Mex_top10 <- xusasec |> 
+  mutate(Sec = fct_lump_n(Sec, n = 10, w = Exportaciones, other_level = "Otros")) |> 
+  group_by(Año, Sec) |> 
+  summarize(Exportaciones = sum(Exportaciones), .groups = "drop") |> 
+  group_by(Año) |> 
+  mutate(percent_valor = Exportaciones / sum(Exportaciones)) |> 
+  ungroup()
+
+Mex_tree_top <- Mex_top10 |> 
+  filter(Año %in% c(2010, 2025)) |> 
+  mutate(
+    etiqueta = paste0(Sec, "\n", percent(percent_valor, accuracy = 1))
+  )
+
+# 2. Generar la visualización
+ggplot(Mex_tree_top, aes(area = percent_valor, fill = Sec, label = etiqueta)) +
+  geom_treemap(layout = "squarified", color = "white") +
+  # Etiquetas internas centradas y ajustables
+  geom_treemap_text(
+    place = "centre", 
+    size = 12, 
+    colour = "black", 
+    reflow = TRUE,
+    fontface = "bold"
+  ) +
+  facet_wrap(~ Año) +
+  scale_fill_brewer(palette = "Spectral") +
+  theme_bw() +
+  labs(
+    caption = "Elaboración propia con base en Secretaría de Economía"
+  ) +
+  theme(
+    legend.position = "none",
+    # Estética limpia para las facetas (sin cuadros grises y texto normal)
+    strip.background = element_blank(),
+    strip.text = element_text(size = 16, face = "plain"),
+    plot.title = element_text(hjust = 0.5, size = 14, face = "bold"),
+    plot.subtitle = element_text(hjust = 0.5)
+  )
+```
+
+El volumen anual, y el incremento porcentual 2010-2025 para cada una de estas Secciones se muestra en @fig-sec-lineas
+
+```{r}
+#| message: false
+#| code-fold: true
+#| label: fig-sec-lineas
+#| fig-cap: "México, exportaciones a EUA por Sección: 16 (Maquinaria), 17 (Equipo de Transporte) y 18 (Instrumentos),  2010-2025"
+#| fig-cap-location: top
+#| fig-width: 7
+#| fig-height: 9.5
+
+# 1. Filtro y preparación
+sectores_interes <- c("Maquinaria", "Instrumentos", "Equip_Transp")
+
+data_lineas <- xusasec |> 
+  filter(Sec %in% sectores_interes, Año >= 2010) |> 
+  group_by(Año, Sec) |> 
+  summarize(Exportaciones = sum(Exportaciones / 1000000000), .groups = 'drop')
+
+# 2. Incrementos para las etiquetas
+incrementos_sec <- data_lineas |> 
+  filter(Año %in% c(2010, 2025)) |> 
+  group_by(Sec) |> 
+  summarize(
+    pct = (Exportaciones[Año == 2025] / Exportaciones[Año == 2010] - 1) * 100,
+    val_2025 = Exportaciones[Año == 2025]
+  )
+
+# 3. Etiquetas y flechas (Corregido)
+labels_data <- data.frame(
+  Sec = rep(sectores_interes, each = 2),
+  Año = rep(c(2016.5, 2019.5), 3), 
+  Exportaciones = c(150, 110,  # 1&2: Maquinaria (Tarifas alto, Cambio en 110)
+                    18, 5,     # 3&4: Instrumentos
+                    33, 17),   # 5&6: Equip_Transp (Valores originales)
+  txt = rep(c("Tarifas 2018", "Cambio tendencia"), 3)
+)
+
+arrows_data <- data.frame(
+  Sec = rep(sectores_interes, each = 2),
+  x_start = rep(c(2016.7, 2019.7), 3),
+  x_end = rep(c(2017.9, 2020.9), 3),
+  y = c(150, 110, 18, 5, 33, 17) # Deben coincidir con labels_data
+)
+
+# 4. Gráfico con Facet Wrap (3x1 vertical)
+ggplot(data_lineas, aes(x = Año, y = Exportaciones, color = Sec)) +
+  theme_bw() +
+  scale_color_brewer(palette = "Set1") +
+  scale_x_continuous(breaks = seq(2010, 2025, 1), expand = c(0, 0)) +
+  # 'free_y' es la clave para manejar las distintas magnitudes
+  scale_y_continuous(expand = expansion(mult = c(0.1, 0.2))) + 
+  geom_line(linewidth = 1, show.legend = FALSE) +
+  facet_wrap(~ Sec, ncol = 1, scales = "free_y") +
+  geom_label(
+    data = incrementos_sec,
+    aes(x = 2025, y = val_2025, 
+        label = paste0("Δ 2010-2025: ", round(pct, 1), "%")),
+    hjust = 1.1, vjust = 1.1,
+    show.legend = FALSE,
+    fill = "white",
+    fontface = "bold",
+    size = 3.5
+  ) +
+  labs(
+    x = "", 
+    y = "Miles de millones de USD", 
+    caption = "Elaboración propia con base en Secretaría de Economía"
+  ) +
+  geom_vline(xintercept = c(2018, 2021), linetype = "dotted") +
+  geom_text(data = labels_data, aes(x = Año, y = Exportaciones, label = txt), 
+            hjust = 1, size = 3.5, color = "black") +
+  geom_segment(data = arrows_data, 
+               aes(x = x_start, xend = x_end, y = y, yend = y),
+               arrow = arrow(length = unit(0.2, "cm")), color = "black") +
+  theme(
+    strip.background = element_blank(),
+    panel.border = element_rect(color = "black", fill = NA, linewidth = 0.5),
+    axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
+    strip.text = element_text(face = "plain", size = 12),
+    panel.spacing = unit(1, "lines")
+  )
+```
+
+### Exportaciones por Capítulo, secciones 16 (Máquinas), 17 (Transporte) y 18 (Instrumentos)
+
+::: {.callout-note collapse="true" title= "Carga datos y metadatos"}
+
+```{r}
+#| label: loadxusacap
+#| code-fold: true
+xusacap <- readRDS(here::here("RDS", "Mex_X_USA_Cap.rds"))
+```
+
+:::
+
+```{r}
+#| message: false
+#| warning: false
+#| code-fold: true
+#| label: fig-XSec16
+#| fig-cap: "México: Exportaciones por Capítulo, Sección 16, 2010-2025 (miles de millones de US $)"
+#| fig-cap-location: top
+
+# 1. Preparación de datos
+df_16 <- xusacap |> 
+  filter(ID_Sección == 16, Año >= 2010, Año <= 2025) |> 
+  mutate(Exportaciones_bn = Exportaciones / 1000000000)
+
+incrementos_16 <- df_16 |> 
+  filter(Año %in% c(2010, 2025)) |> 
+  group_by(Cap) |> 
+  summarize(
+    pct = (Exportaciones_bn[Año == 2025] / Exportaciones_bn[Año == 2010] - 1) * 100,
+    val_2025 = Exportaciones_bn[Año == 2025],
+    .groups = 'drop'
+  )
+
+# 2. Gráfico
+ggplot(df_16, aes(x = Año, y = Exportaciones_bn, color = Cap)) +
+  geom_line(linewidth = 1.1)+
+  geom_label(
+    data = incrementos_16,
+    aes(x = 2025, y = val_2025, label = paste0("Δ: ", round(pct, 1), "%")),
+    hjust = 1.1, vjust = -0.5, show.legend = FALSE, fontface = "bold", size = 3
+  ) +
+  scale_x_continuous(
+    breaks = seq(2010, 2025, 1),
+    expand = c(0,0)) +
+  scale_y_continuous(expand = expansion(mult = c(0.05, 0.2))) + # Espacio para etiquetas
+  scale_color_brewer(palette = "Set1") +
+  labs(x = NULL, y = "Miles de millones de USD", color = NULL, 
+       caption = "Elaboración propia con base en INEGI") +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
+        legend.position = "bottom")
+
+```
+
+```{r}
+#| message: false
+#| warning: false
+#| code-fold: true
+#| label: fig-XSec17
+#| fig-cap: "México: evolución y tendencia de las exportaciones por Capítulo, Sección 17, 2010-2025 (miles de millones de US $)"
+#| fig-cap-location: top
+
+# 1. Preparación de datos
+df_17 <- xusacap |> 
+  filter(ID_Sección == 17, Año >= 2010, Año <= 2025) |> 
+  mutate(Exportaciones_bn = Exportaciones / 1000000000)
+
+incrementos_17 <- df_17 |> 
+  filter(Año %in% c(2010, 2025)) |> 
+  group_by(Cap) |> 
+  # FILTRO CLAVE: Solo procesar capítulos que tengan datos en los dos años solicitados
+  filter(any(Año == 2010) & any(Año == 2025)) |> 
+  summarize(
+    pct = (Exportaciones_bn[Año == 2025] / Exportaciones_bn[Año == 2010] - 1) * 100,
+    val_2025 = Exportaciones_bn[Año == 2025],
+    .groups = 'drop'
+  )
+
+# 2. Gráfico
+ggplot(df_17, aes(x = Año, y = Exportaciones_bn, color = Cap)) +
+  geom_line(linewidth = 1.1) +
+  geom_label(
+    data = incrementos_17,
+    aes(x = 2025, y = val_2025, label = paste0("Δ: ", round(pct, 1), "%")),
+    hjust = 1.1, vjust = -0.5, show.legend = FALSE, fontface = "bold", size = 3
+  ) +
+  scale_x_continuous(breaks = seq(2010, 2025, 1), expand = c(0,0)) +
+  scale_y_continuous(expand = expansion(mult = c(0.05, 0.2))) +
+  scale_color_brewer(palette = "Set1") +
+  labs(x = NULL, y = "Miles de millones de USD", color = NULL, 
+       caption = "Elaboración propia con base en INEGI") +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
+        legend.position = "bottom")
+```
+
+```{r}
+#| message: false
+#| warning: false
+#| code-fold: true
+#| label: fig-XSec18
+#| fig-cap: "México: evolución y tendencia de las exportaciones por Capítulo, Sección 18, 2010-2025 (miles de millones de US $)"
+#| fig-cap-location: top
+
+# 1. Preparación de datos
+df_18 <- xusacap |> 
+  filter(ID_Sección == 18, Año >= 2010, Año <= 2025) |> 
+  mutate(Exportaciones_bn = Exportaciones / 1000000000)
+
+incrementos_18 <- df_18 |> 
+  filter(Año %in% c(2010, 2025)) |> 
+  group_by(Cap) |> 
+  summarize(
+    pct = (Exportaciones_bn[Año == 2025] / Exportaciones_bn[Año == 2010] - 1) * 100,
+    val_2025 = Exportaciones_bn[Año == 2025],
+    .groups = 'drop'
+  )
+
+# 2. Gráfico
+ggplot(df_18, aes(x = Año, y = Exportaciones_bn, color = Cap)) +
+  geom_line(linewidth = 1.1) +
+  geom_label(
+    data = incrementos_18,
+    aes(x = 2025, y = val_2025, label = paste0("Δ: ", round(pct, 1), "%")),
+    hjust = 1.1, vjust = -0.5, show.legend = FALSE, fontface = "bold", size = 3
+  ) +
+  scale_x_continuous(breaks = seq(2010, 2025, 1)) +
+  scale_y_continuous(expand = expansion(mult = c(0.05, 0.2))) +
+  scale_color_brewer(palette = "Paired") +
+  labs(x = NULL, y = "Miles de millones de USD", color = NULL, 
+       caption = "Elaboración propia con base en INEGI") +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
+        legend.position = "bottom")
+```
+
+### Exportaciones por Partida, principales capìtulos de las secciones 16, 17 y 18
+
+::: {.callout-note collapse="true" title= "Carga datos y metadatos"}
+
+```{r}
+#| label: loadtopart
+#| code-fold: true
+xpart <- readRDS(here::here("RDS", "Mex_X_USA_Part.rds"))
+
+```
+:::
+
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+#| label: PartTreePrep
+
+df_tree_prep <- xpart |> 
+  filter(Año %in% c(2010, 2025)) |> 
+  group_by(Año, HS2) |> 
+  mutate(percent_valor = Exportaciones / sum(Exportaciones, na.rm = TRUE)) |> 
+  ungroup() |> 
+  mutate(
+    # Agregamos un salto de línea extra para dar aire al texto
+    etiqueta = paste0(Partida, "\n", `HS4 ID`, "\n(", percent(percent_valor, accuracy = 1), ")")
+  )
+```
+
+#### Maquinaria y calderas
+```{r}
+#| label: fig-tree-maquinaria
+#| fig-cap: "Distribución de exportaciones: Maquinaria y Calderas (2010 vs 2025)"
+#| fig-width: 12
+#| fig-height: 7
+
+df_tree_prep |> 
+  filter(HS2 == "Maquinaria") |> 
+  ggplot(aes(area = Exportaciones, fill = Partida, label = etiqueta)) +
+  geom_treemap(layout = "squarified", color = "white", size = 1) + # Bordes más gruesos
+  geom_treemap_text(
+    place = "centre", 
+    size = 12,            # Texto más grande
+    colour = "black", 
+    reflow = TRUE, 
+    fontface = "bold",
+    min.size = 8          # Evita que el texto desaparezca en cuadros pequeños
+  ) +
+  facet_wrap(~ Año) +
+  scale_fill_brewer(palette = "Set3") + # Colores más claros y legibles
+  theme_bw() +
+  theme(
+    legend.position = "none", 
+    strip.background = element_blank(), 
+    strip.text = element_text(size = 16, face = "bold"),
+    panel.spacing = unit(2, "lines") # Más espacio entre los dos años
+  )
+```
+
+```{r}
+#| label: fig-computacion-line
+#| fig-cap: "Evolución de Exportaciones: Máquinas de Procesamiento de Datos (HS 168471)"
+#| message: false
+#| warning: false
+#| code-fold: true
+
+# 1. Preparación de datos (Filtro por ID específico)
+data_comp <- xpart |> 
+  filter(`HS4 ID` == 168471, Año >= 2010) |> 
+  mutate(Val_Billion = Exportaciones / 1e9)
+
+# 2. Cálculo de incremento total para la etiqueta
+inc_comp <- data_comp |> 
+  filter(Año %in% c(2010, 2025)) |> 
+  summarize(
+    pct = (Val_Billion[Año == 2025] / Val_Billion[Año == 2010] - 1) * 100,
+    val_2025 = Val_Billion[Año == 2025]
+  )
+
+# 3. Definición de etiquetas y flechas adaptadas a la escala de este producto
+# Nota: Ajusta los valores de 'y' si la línea de datos queda muy cerca de las etiquetas
+max_val <- max(data_comp$Val_Billion, na.rm = TRUE)
+
+labels_comp <- data.frame(
+  Año = c(2016.5, 2019.5),
+  # Posicionamos las etiquetas un poco por encima de la mitad del máximo
+  Val_Billion = c(max_val * 0.8, max_val * 0.6),
+  txt = c("Tarifas 2018", "Cambio tendencia")
+)
+
+
+arrows_comp <- data.frame(
+  x_start = c(2016.7, 2019.7),
+  x_end = c(2017.9, 2020.9),
+  y = c(max_val * 0.8, max_val * 0.6)
+)
+
+# 4. Gráfico
+ggplot(data_comp, aes(x = Año, y = Val_Billion)) +
+  geom_line(color = "#377eb8", linewidth = 1.2) + # Color azul del Set1
+  geom_vline(xintercept = c(2018, 2021), linetype = "dotted", color = "grey40") +
+  
+  # Etiquetas de eventos
+  geom_text(data = labels_comp, aes(x = Año, y = Val_Billion, label = txt), 
+            hjust = 1, size = 3.5, color = "black") +
+  geom_segment(data = arrows_comp, 
+               aes(x = x_start, xend = x_end, y = y, yend = y),
+               arrow = arrow(length = unit(0.2, "cm")), color = "black") +
+  
+  # Etiqueta de incremento total
+  geom_label(
+    data = inc_comp,
+    aes(x = 2025, y = val_2025, 
+        label = paste0("Δ 2010-2025: ", round(pct, 1), "%")),
+    hjust = 1.1, vjust = -0.5,
+    fill = "white", fontface = "bold", size = 3.5
+  ) +
+  
+  # Estética y Escalas
+  scale_x_continuous(breaks = seq(2010, 2025, 1), expand = c(0, 0)) +
+  scale_y_continuous(expand = expansion(mult = c(0.1, 0.3))) + 
+  theme_bw() +
+  labs(
+    x = NULL, 
+    y = "Miles de millones de USD",
+    caption = "Elaboración propia con base en Secretaría de Economía"
+  ) +
+  theme(
+    panel.grid.minor = element_blank(),
+    axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
+    plot.title = element_text(face = "bold", size = 14)
+  )
+```
+
+#### Vehículos
+
+esto sobra jjj
+```{r}
+#| label: fig-tree-vehiculos
+#| fig-cap: "Distribución de exportaciones: Vehículos y Autopartes (2010 vs 2025)"
+#| fig-width: 10
+#| fig-height: 6
+
+df_tree_prep |> 
+  filter(HS2 == "Vehiculos") |> 
+  ggplot(aes(area = Exportaciones, fill = Partida, label = etiqueta)) +
+  geom_treemap(layout = "squarified", color = "white") +
+  geom_treemap_text(place = "centre", size = 11, colour = "black", reflow = TRUE, fontface = "bold") +
+  facet_wrap(~ Año) +
+  scale_fill_brewer(palette = "Set3") +
+  theme_bw() +
+  theme(legend.position = "none", strip.background = element_blank(), 
+        strip.text = element_text(size = 14), plot.title = element_blank())
+```
+
+```{r}
+#| label: fig-vehiculos-tendencia
+#| fig-cap: "Evolución de Exportaciones: Vehículos y Autopartes (HS 178703, 178704, 178708)"
+#| code-fold: true
+#| message: false
+#| warning: false
+
+# 1. Filtro y preparación de datos
+ids_vehiculos <- c(178708, 178703, 178704)
+
+data_lineas_veh <- xpart |> 
+  filter(`HS4 ID` %in% ids_vehiculos, Año >= 2010) |> 
+  mutate(Val_Billion = Exportaciones / 1e9)
+
+# 2. Cálculo de incrementos para etiquetas (por faceta)
+incrementos_veh <- data_lineas_veh |> 
+  filter(Año %in% c(2010, 2025)) |> 
+  group_by(Partida) |> 
+  summarize(
+    pct = (Val_Billion[Año == 2025] / Val_Billion[Año == 2010] - 1) * 100,
+    val_2025 = Val_Billion[Año == 2025],
+    .groups = 'drop'
+  )
+
+# 3. Etiquetas y flechas para las facetas
+# Calculamos un máximo global para que las etiquetas no se encimen en ninguna faceta
+max_global <- max(data_lineas_veh$Val_Billion, na.rm = TRUE)
+
+labels_data_veh <- data.frame(
+  Partida = rep(unique(data_lineas_veh$Partida), each = 2),
+  Año = rep(c(2016.5, 2019.5), 3),
+  Val_Billion = rep(c(max_global * 0.85, max_global * 0.65), 3),
+  txt = rep(c("Tarifas 2018", "Cambio tendencia"), 3)
+)
+
+arrows_data_veh <- data.frame(
+  Partida = rep(unique(data_lineas_veh$Partida), each = 2),
+  x_start = rep(c(2016.7, 2019.7), 3),
+  x_end = rep(c(2017.9, 2020.9), 3),
+  y = rep(c(max_global * 0.85, max_global * 0.65), 3)
+)
+
+# 4. Gráfico con Facet Wrap (3x1 vertical)
+ggplot(data_lineas_veh, aes(x = Año, y = Val_Billion, color = Partida)) +
+  geom_line(linewidth = 1.2, show.legend = FALSE) +
+  geom_vline(xintercept = c(2018, 2021), linetype = "dotted", color = "grey40") +
+  
+  # Usamos escala fija para facilitar la comparación de magnitudes
+  facet_wrap(~ Partida, ncol = 1) + 
+  
+  scale_color_brewer(palette = "Set1") +
+  
+  # Etiquetas de eventos (Tarifas y Cambio de tendencia)
+  geom_text(data = labels_data_veh, aes(x = Año, y = Val_Billion, label = txt), 
+            hjust = 1, size = 3.5, color = "black") +
+  geom_segment(data = arrows_data_veh, 
+               aes(x = x_start, xend = x_end, y = y, yend = y),
+               arrow = arrow(length = unit(0.2, "cm")), color = "black") +
+  
+  # Etiqueta de incremento total 2010-2025
+  geom_label(
+    data = incrementos_veh,
+    aes(x = 2025, y = val_2025, 
+        label = paste0("Δ 2010-2025: ", round(pct, 1), "%")),
+    hjust = 1.1, vjust = -0.3,
+    fill = "white", fontface = "bold", size = 3.5, show.legend = FALSE
+  ) +
+  
+  # Estética de ejes y tema
+  scale_x_continuous(breaks = seq(2010, 2025, 1), expand = c(0, 0)) +
+  scale_y_continuous(expand = expansion(mult = c(0.1, 0.4))) + 
+  theme_bw() +
+  labs(
+    x = NULL, 
+    y = "Miles de millones de USD",
+    caption = "Elaboración propia con base en Secretaría de Economía"
+  ) +
+  theme(
+    strip.background = element_blank(),
+    strip.text = element_text(size = 12, face = "bold"),
+    panel.grid.minor = element_blank(),
+    axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
+    panel.spacing = unit(1.5, "lines")
+  )
+```
+
+
+#### Instrumentos
+
+```{r}
+#| label: fig-tree-instrumentos
+#| fig-cap: "Distribución de exportaciones: Instrumentos y Óptica (2010 vs 2025)"
+#| fig-width: 10
+#| fig-height: 6
+
+df_tree_prep |> 
+  filter(HS2 == "Instrumentos") |> 
+  ggplot(aes(area = Exportaciones, fill = Partida, label = etiqueta)) +
+  geom_treemap(layout = "squarified", color = "white") +
+  geom_treemap_text(place = "centre", size = 11, colour = "black", reflow = TRUE, fontface = "bold") +
+  facet_wrap(~ Año) +
+  scale_fill_brewer(palette = "Set3") +
+  theme_bw() +
+  theme(legend.position = "none", strip.background = element_blank(), 
+        strip.text = element_text(size = 14), plot.title = element_blank())
+```
+
+```{r}
+#| label: fig-instrumentos-tendencia-ajustada
+#| fig-cap: "Evolución de Exportaciones: Instrumentos Médicos y de Rayos X (Ajuste de Etiquetas)"
+#| code-fold: true
+#| message: false
+#| warning: false
+
+# 1. Filtro y preparación (Se mantiene igual)
+ids_instrumentos <- c(189018, 189021)
+data_lineas_inst <- xpart |> 
+  filter(`HS4 ID` %in% ids_instrumentos, Año >= 2010) |> 
+  mutate(Val_Billion = Exportaciones / 1e9)
+
+# 2. Incrementos (Se mantiene igual)
+incrementos_inst <- data_lineas_inst |> 
+  filter(Año %in% c(2010, 2025)) |> 
+  group_by(Partida) |> 
+  summarize(
+    pct = (Val_Billion[Año == 2025] / Val_Billion[Año == 2010] - 1) * 100,
+    val_2025 = Val_Billion[Año == 2025],
+    .groups = 'drop'
+  )
+
+# 3. AJUSTE DE ETIQUETAS: Bajamos ApRayosX al nivel de 2
+labels_data_inst <- data.frame(
+  Partida = rep(c("DispMédicos", "ApRayosX"), each = 2),
+  Año = rep(c(2016.5, 2019.5), 2),
+  # DispMédicos se queda en su escala, ApRayosX baja a 2.0 y 1.5
+  Val_Billion = c(15 * 0.8, 15 * 0.6, 
+                  2.0, 1.5), 
+  txt = rep(c("Tarifas 2018", "Cambio tendencia"), 2)
+)
+
+arrows_data_inst <- data.frame(
+  Partida = rep(c("DispMédicos", "ApRayosX"), each = 2),
+  x_start = rep(c(2016.7, 2019.7), 2),
+  x_end = rep(c(2017.9, 2020.9), 2),
+  y = c(15 * 0.8, 15 * 0.6, 2.0, 1.5)
+)
+
+# 4. Gráfico
+ggplot(data_lineas_inst, aes(x = Año, y = Val_Billion, color = Partida)) +
+  geom_line(linewidth = 1.2, show.legend = FALSE) +
+  geom_vline(xintercept = c(2018, 2021), linetype = "dotted", color = "grey40") +
+  facet_wrap(~ Partida, ncol = 1, scales = "free_y") + 
+  scale_color_brewer(palette = "Set1") +
+  
+  # Etiquetas de eventos
+  geom_text(data = labels_data_inst, aes(x = Año, y = Val_Billion, label = txt), 
+            hjust = 1, size = 3.5, color = "black") +
+  geom_segment(data = arrows_data_inst, 
+               aes(x = x_start, xend = x_end, y = y, yend = y),
+               arrow = arrow(length = unit(0.2, "cm")), color = "black") +
+  
+  # Etiqueta de incremento
+  geom_label(
+    data = incrementos_inst,
+    aes(x = 2025, y = val_2025, 
+        label = paste0("Δ 2010-2025: ", round(pct, 1), "%")),
+    hjust = 1.1, vjust = -0.3,
+    fill = "white", fontface = "bold", size = 3.5, show.legend = FALSE
+  ) +
+  
+  scale_x_continuous(breaks = seq(2010, 2025, 1), expand = c(0, 0)) +
+  scale_y_continuous(expand = expansion(mult = c(0.1, 0.2))) + 
+  theme_bw() +
+  labs(x = NULL, y = "Miles de millones de USD", caption = "Elaboración propia") +
+  theme(
+    strip.background = element_blank(),
+    strip.text = element_text(size = 12, face = "bold"),
+    axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)
+  )
+```
+
+## Evoluciòn de la IED
