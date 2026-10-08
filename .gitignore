@@ -4,3 +4,8 @@
 .Ruserdata
 .positai
 .Renviron
+.posit/assistant
+.posit
+.httr-oauth
+.DS_Store
+.quarto

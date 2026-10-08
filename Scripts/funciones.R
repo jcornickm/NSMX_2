@@ -38,13 +38,19 @@ sa_adj <- function(x, dates, freq = NULL) {
     stop("Instala el paquete 'seasonal' para usar esta función.")
   
   # — Detectar frecuencia si no se pasa explícitamente --------------------
+  # Nota: antes esto usaba dplyr::case_when() con stop() en la rama ~TRUE,
+  # pero case_when() evalúa todas las ramas de forma eager, así que el
+  # stop() se disparaba siempre, sin importar el intervalo real. Se
+  # reemplaza por if/else, que sí evalúa de forma perezosa.
   if (is.null(freq)) {
     intervalo_dias <- as.numeric(median(diff(sort(dates)), na.rm = TRUE))
-    freq <- dplyr::case_when(
-      intervalo_dias < 45  ~ 12L,   # mensual  (~30 días)
-      intervalo_dias < 120 ~ 4L,    # trimestral (~91 días)
-      TRUE                 ~ stop("Frecuencia no reconocida. Pasa freq = 4 o freq = 12.")
-    )
+    freq <- if (intervalo_dias < 45) {
+      12L   # mensual  (~30 días)
+    } else if (intervalo_dias < 120) {
+      4L    # trimestral (~91 días)
+    } else {
+      stop("Frecuencia no reconocida. Pasa freq = 4 o freq = 12.")
+    }
   }
   
   # — Calcular start desde la fecha mínima --------------------------------
