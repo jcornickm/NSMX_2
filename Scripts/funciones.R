@@ -1,27 +1,3 @@
-# Format metadata
-
-gt_meta <- function(meta_list, titulo = "Metadatos") {
-  
-  meta_list |>
-    map_chr(~ paste(.x, collapse = " ")) |>  # collapse in case any element is a vector
-    stringr::str_squish() |>                 # collapses internal whitespace in notas
-    enframe(name = "Campo", value = "Valor") |>
-    gt() |>
-    tab_header(title = titulo) |>
-    cols_align(align = "left", columns = everything()) |>
-    cols_width(Campo ~ px(150), Valor ~ px(500)) |>
-    opt_row_striping() |>
-    tab_style(
-      style = cell_text(weight = "bold"),
-      locations = cells_column_labels()
-    ) |>
-    tab_options(
-      table.font.size = "small",
-      table.border.top.style = "hidden"
-    )
-}
-
-
 # En Scripts/funciones.R
 # ── sa_adj(): ajuste estacional genérico ──────────────────────────────────────
 # Acepta cualquier vector + columna fecha Date.

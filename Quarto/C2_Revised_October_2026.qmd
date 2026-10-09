@@ -34,13 +34,13 @@ link-citations: true
 pacman::p_load(
   tidyverse, here, scales, knitr, gt, flextable,
   treemapify, patchwork, glue,
-  geodata, sf, cowplot, ggrepel, WDI
+  geodata, sf, cowplot, ggrepel, WDI, ggh4x
 )
 
 # flextable produce tablas Word (docx) con <w:tblGrid> y anchos de columna
 # explícitos; gt() NO lo hace en esta versión y sus tablas se ven con texto
 # partido letra por letra al abrir el documento en Word. Por eso las tablas
-# con color (tbl-tcac-estados, tbl-partidas-cap, tbl-disponibilidad-estado-sector)
+# con color (tbl-tcac-estados, prep-tablas-cap, tbl-disponibilidad-estado-sector)
 # usan flextable, y las tablas simples sin color usan kable().
 set_flextable_defaults(fonts_ignore = TRUE)
 ```
@@ -430,8 +430,8 @@ p <- local({
 })
 
 print(p)
-ggsave(here::here("Plots", "fig-imp-cambio-pais.pdf"), plot = p, width = 11, height = 10, device = cairo_pdf)
-ggsave(here::here("Plots", "fig-imp-cambio-pais.png"), plot = p, width = 11, height = 10, dpi = 150)
+ggsave(here::here("Plots", "fig-imp-cambio-pais.pdf"), plot = p, width = 8, height = 10.5, device = cairo_pdf)
+ggsave(here::here("Plots", "fig-imp-cambio-pais.png"), plot = p, width = 8, height = 10.5, dpi = 150)
 ```
 
 ```{r}
@@ -660,8 +660,8 @@ p <- local({
     theme(plot.caption = element_text(hjust = 1))
 })
 
-ggsave(here::here("Plots", "fig-imp-cambio-sec-mex.pdf"), plot = p, width = 11, height = 10, device = cairo_pdf)
-ggsave(here::here("Plots", "fig-imp-cambio-sec-mex.png"), plot = p, width = 11, height = 10, dpi = 150)
+ggsave(here::here("Plots", "fig-imp-cambio-sec-mex.pdf"), plot = p, width = 8, height = 10.5, device = cairo_pdf)
+ggsave(here::here("Plots", "fig-imp-cambio-sec-mex.png"), plot = p, width = 8, height = 10.5, dpi = 150)
 
 rm(p)
 ```
@@ -671,34 +671,46 @@ rm(p)
 #| echo: false
 #| fig-cap: "Cambios en la participación porcentual por Secciones de las exportaciones mexicanas a EUA, 2010-2018, 2018-2024, y 2024-2025"
 #| fig-cap-location: top
-#| fig-width: 9
-#| fig-height: 10
+#| out-width: 100%
 
 knitr::include_graphics(here::here("Plots", "fig-imp-cambio-sec-mex.png"))
 ```
 
 ### Por Capítulo y Partida del SA
 
-La Sección XVI se divide en dos capítulos: Capitulo 84, cuyo nombre oficial, Reactores nucleares, calderas, máquinas, aparatos y artefactos mecánicos, no describe bien su contenido, como veremos en un momento, y Capítulo 85, Máquinas aparatos y material eléctrico que en 2025 representaron, respectivamente, el 62 y el 38% de las exportaciones Mexicanas dentro de esta Sección..
+La Sección XVI se divide en dos capítulos: Capitulo 84, cuyo nombre oficial, Reactores nucleares, calderas, máquinas, aparatos y artefactos mecánicos, no describe bien su contenido, como veremos en un momento, y Capítulo 85, Máquinas aparatos y material eléctrico. Estos dos capítulos representaron el 62 y el 38% de las exportaciones Mexicanas dentro de esta Sección en 2025.
 
-La Sección XVII, Material de Transporte, tiene cuatro capítulos, pero uno de ellos, el Capítulo 87, Vehículos automóviles, tractores y otros, representa el 98% de las exportaciones correspondientes a esta Sección.
+La Sección XVII, Material de Transporte, tiene cuatro capítulos, pero uno de ellos, el 87, Vehículos automóviles, tractores y otros, representa el 98% de las exportaciones correspondientes a esta Sección.
 
 Por último, la Sección XVIII, Instrumentos y Aparatos, tiene cuatro capítulos, pero uno de ellos, el Capítulo 90, Instrumentos y Aparatos, concentra el 99% de las exportaciones de la Sección.[^7].
 
 [^7]: Porcentajes calculados por los autores con base en US Census Bureau.
 
-Dada esta concentración, en vez de analizar el comportamiento de las exportaciones por Capítulo para cada una de las tres secciones indicadas
+Dada esta concentración, en vez de analizar el comportamiento de las exportaciones por Capítulo para cada una de las tres secciones indicadas, pasamos directamente al análisis de las principales Partidas (Encabezados) dentro de cada Capítulo..
 
-, aparatComo ya vimos, las exportaciones mexicanas a EUA de interés desde el punto de vista del NS se concentran en las Seccioones XVI (Maquinaria eléctrica), XVII (Material de Transporte) y XVIII (Instrumentos). El próximo nivel de desagregación sería el de Capítulos, pero estas tres secciones tiene en común que están compuestas por muy pocos capítulos, y en caso de la Sección XVIII, casi todas las exportaciones se concentran en uno solo de ellos. Por esta razón, pasamos directamente al análisis en el nivel de Partida (Encabezado) del SA.
-
-Con ese propósito se procedió de la siguiente manera: se identificaron las 50 partidas de exportación de México más importantes de México en 2024-2025. Se eliminaron las que correspondían a Secciones que no son de interés desde el punto de vista de NS, con el resultado de una lista de 30 partidas, distribuidas en cuatro capítulos del SA: Maquinaria, Eléctrico, Automóviles y Óptica.
+Se procedió de la siguiente manera: se identificaron las 50 partidas de exportación de México más importantes de México en 2024-2025. Se eliminaron las que correspondían a Secciones que no son de interés desde el punto de vista de NS, con el resultado de una lista de 30 partidas, distribuidas en cuatro capítulos del SA: Maquinaria, Eléctrico, Automóviles y Óptica.
 
 Se identificaron además las 50 partidas que mostraron el mayor crecimiento entre 2010 y 2025. En todos los casos, el punto de partida era muy baja, y el volumen aún en 2025 aún muy pequeño, por lo que ninguna de ellas se incluyó en el análisis.
 
-Los resultados de este proceso de selección se resumen en las tablas siguientes, una por capítulo. Las Partidas seleccionadas representan casi el 90% de las exportaciones de Maquinaria, el 83% de las de Eléctrico, 99% de Automóviles y 53% de Óptica. En conjunto representan aproximadamente el 63% de las exportaciones mexicanas a EUA en 2024-2025.
+Los resultados de este proceso de selección se resumen en las tablas siguientes, una por capítulo. Las Partidas identificadas de manera individual representan el 83.9% de las exportaciones del capitulo 85, el 82.5% de las exportaciones del Capítulo 85, el 91.9% de las exportaciones del Capítulo 87, y el 83.3% de las exportaciones del Capítulo 90. Sumadas, equivalen al 64.5% de las exportaciones mexicanas a EUA en 2025.
+
+En las tablas se destacan en amarillo las partidas que crecieron más rápidamente en 2024-2025 que en 2018-2024. Solo seis partidas tienen este atributo:
+
+- 8471, Computadoras
+- 8418, Equipo de refrigeración
+- 8407, Motores
+- 8517, Teléfonos
+- 8543, Maquinaria Eléctrica
+- 8544, Cables eléctricos
+
+Las tres primeras partidas equivalen al 18.8% de las exportaciones mexicanas a EUA en 2025, y las tres últimas al 6.8%. Las demás partidas, equivalentes al 38.9% de las exportaciones mexicanas en 2025, vieron su crecimiento **reducirse** en 2024-2025 con respecto a 2018-2024. casi el 90% de las exportaciones de Maquinaria, el 83% de las de Eléctrico, 99% de Automóviles y 53% de Óptica. En conjunto representan aproximadamente el 63% de las exportaciones mexicanas a EUA en 2024-2025.
+
+Una acotación importante es que en este capítulo nos limitamos a registrar los cambios en las exportaciones por Partida, y si bien se identifican los casos en que esos cambios están correlacionados con cambios en la política comercial de los EUA, no se identifican los cambios en las tarifas específicas enfrentadas por cada producto.  Esa tarea se aborda en el Capítulo 3.
+
+<!--   Los code-chunk que siguen se usan para genear plots que se introducen más adelante en el texto  -->
 
 ```{r}
-#| label: tbl-partidas-cap
+#| label: prep-tablas-cap
 #| echo: false
 #| code-fold: true
 #| code-summary: "Tablas por partida, Capítulos 84, 85, 87 y 90"
@@ -800,50 +812,6 @@ tab90 <- tabla_cap(90)
 ```
 
 ```{r}
-#| label: tbl-cap84
-#| echo: false
-#| tbl-cap: "Capítulo 84: Maquinaria y equipo mecánico"
-#| tbl-cap-location: top
-
-tab84
-```
-
-```{r}
-#| label: tbl-cap85
-#| echo: false
-#| tbl-cap: "Capítulo 84: Maquinaria y equipo mecánico"
-#| tbl-cap-location: top
-
-tab85
-```
-
-```{r}
-#| label: tbl-cap87
-#| echo: false
-#| tbl-cap: "Capítulo 84: Maquinaria y equipo mecánico"
-#| tbl-cap-location: top
-
-tab87
-```
-
-```{r}
-#| label: tbl-cap90
-#| echo: false
-#| tbl-cap: "Capítulo 84: Maquinaria y equipo mecánico"
-#| tbl-cap-location: top
-
-tab90
-```
-
-Empezamos con el Capítulo 84, Maquinaria, del cual hemos seleccionado 13 partidas con los criterios anteriormente descritos. Las líneas azules corresponden al índice (enero 2018 = 100) de las exportaciones mensuales, y las líneas rojas las tendencias lineales y sus puntos de quiebre.
-
-- En todas las partidas hay un claro punto de quiebre alrededor de 2019-2020, salvo en el caso de la partida 8471 (equipo de procesamiento de datos), en la que el cambio de tendencia tiene lugar en 2024.
-
-- El valor de las exportaciones de las partidas 8415 (equipo de climatización), 8418 (equipo de refrigeración) y 8421 (centrífugas) se duplica, o más, entre 2018 y 2025. A pesar de su rápido crecimiento, son partidas relativamente pequeñas dentro de la Sección (5.9, 4.9 y 3.4%, respectivamente) y dentro del total de exportaciones mexicanas.
-
-- El valor de las exportaciones de la partida 8471 (equipo de procesamiento de datos) se quintuplica, y casi todo el crecimiento tienen lugar entre 2024 y 2025. Esta partida es además la de más peso dentro de la Sección 84: representa el 54.1% de las exportaciones de la Sección y el 13.3% de las exportaciones mexicanas a EUA en 2024-2025.
-
-```{r}
 #| label: prep-top-partidas-quiebres
 #| include: false
 #| eval: false
@@ -851,7 +819,7 @@ Empezamos con el Capítulo 84, Maquinaria, del cual hemos seleccionado 13 partid
 # Detección de quiebres estructurales (Bai-Perron, paquete strucchange) para
 # las partidas presentadas INDIVIDUALMENTE (es decir, Cod_partida != "Resto")
 # en las tablas de los Capítulos 84, 85, 87 y 90 (tcac_shares, chunk
-# tbl-partidas-cap). A diferencia de la versión anterior (chunk
+# prep-tablas-cap). A diferencia de la versión anterior (chunk
 # prep-top-partidas-quiebres-old-v1), que usaba el top-30 global de
 # partidas_valor_depurado.rds, aquí el universo de partidas graficadas queda
 # alineado con el de las tablas: solo se incluyen las que superan el criterio
@@ -866,7 +834,7 @@ pacman::p_load(strucchange)
 
 imp_mex_hs4 <- readRDS(here::here("RDS", "imp_mex_hs4.rds"))
 
-# tcac_shares ya existe en el entorno (chunk tbl-partidas-cap); se vuelve a
+# tcac_shares ya existe en el entorno (chunk prep-tablas-cap); se vuelve a
 # leer aquí por si este chunk se ejecuta de forma aislada.
 tcac_shares <- readRDS(here::here("RDS", "TCAC_y_shares_84858790.rds"))
 
@@ -988,44 +956,33 @@ rm(imp_mex_hs4, partidas_individuales, partidas_panel, partidas_sa, partidas_ind
 #| eval: false
 #| code-summary: "Construcción y guardado de los paneles (Capítulos 84, 85, 87+90)"
 
-# El ancho total de página (ANCHO_PAGINA) y el número de columnas (NCOL_FACET)
-# se mantienen fijos para los cuatro capítulos, de modo que el ancho de cada
-# columna de faceta (ANCHO_PAGINA / NCOL_FACET) es idéntico en todas las
-# figuras. La altura del lienzo YA NO es fija: se calcula a partir del número
-# de filas de faceta que requiere cada capítulo (ceiling(n_partidas /
-# NCOL_FACET)) multiplicado por una altura de fila constante (ALTO_FILA), más
-# un margen fijo para título/subtítulo arriba y ejes/caption abajo. Esto hace
-# que cada celda individual (una partida) tenga el mismo tamaño físico en los
-# cuatro paneles, en vez de comprimirse o expandirse según cuántas partidas
-# tenga cada capítulo. El panel combinado 87+90 usa patchwork::plot_layout()
-# para que las dos sub-figuras compartan esa misma altura de fila.
+# NCOL_FACET y ANCHO_COL (ancho de cada columna de faceta, en pulgadas) se
+# mantienen fijos para los cuatro capítulos; ALTO_FILA se deriva de ANCHO_COL
+# con un pequeño factor FACTOR_ALTO > 1 para que cada celda sea cuadrada o
+# ligeramente más alta que ancha. A diferencia de la versión anterior, el
+# tamaño de celda no se consigue tratando de adivinar cuánto espacio ocupan
+# título/subtítulo/ejes/caption y descontándolo de un lienzo de ancho fijo
+# (eso dejaba franjas en blanco o recortaba el caption cuando la estimación
+# fallaba). En su lugar, ggh4x::force_panelsizes() fija el tamaño físico real
+# de cada panel de faceta (filas y columnas, en pulgadas) sin importar cuánto
+# espacio requieran los elementos circundantes, y luego medimos el gtable ya
+# construido (medir_panel()) para saber exactamente qué ancho y alto de
+# lienzo se necesitan — sin sobrantes ni recortes. Capítulos 87 y 90 se
+# guardan como figuras separadas (antes se combinaban con patchwork).
 
 NCOL_FACET    <- 3
-ANCHO_PAGINA  <- 6.5
-ANCHO_COL     <- ANCHO_PAGINA / NCOL_FACET   # ancho de columna, igual en los 4 paneles
-ALTO_FILA     <- 2.15   # alto de fila de faceta, igual en los 4 paneles
-MARGEN_SUP    <- 1.00   # título + subtítulo
-MARGEN_INF    <- 0.90   # eje x (etiquetas rotadas) + leyenda inferior
-ALTO_CAPTION  <- 0.30   # línea de caption compartida (solo panel 87+90)
+ANCHO_COL     <- 2.1667   # ancho de columna de faceta, igual en los 4 paneles (pulgadas)
+FACTOR_ALTO   <- 1.08     # > 1 hace la celda un poco más alta que ancha
+ALTO_FILA     <- ANCHO_COL * FACTOR_ALTO   # alto de fila de faceta (≈ cuadrada)
 CAPTION_PANEL <- "Elaboración propia con base en US Census Bureau. Serie mensual ajustada por estacionalidad (X-13ARIMA-SEATS)"
-
-n_filas_panel <- function(num_cap_obj, ncol_facet = NCOL_FACET) {
-  n_partidas <- partidas_tendencia |>
-    filter(num_cap == num_cap_obj) |>
-    pull(Cod_partida) |>
-    n_distinct()
-  ceiling(n_partidas / ncol_facet)
-}
-
-alto_panel <- function(num_cap_obj, ncol_facet = NCOL_FACET) {
-  MARGEN_SUP + n_filas_panel(num_cap_obj, ncol_facet) * ALTO_FILA + MARGEN_INF
-}
 
 construir_panel <- function(num_cap_obj, ncol_facet = NCOL_FACET, incluir_caption = TRUE) {
   datos_cap    <- partidas_tendencia |> filter(num_cap == num_cap_obj)
   quiebres_cap <- quiebres_partida   |> filter(num_cap == num_cap_obj)
-  nombre_cap   <- datos_cap$Cap_corto[[1]]
 
+  # Sin título: el capítulo y rango de años ya están en el fig-cap de Quarto
+  # (ver @fig-capXX-partidas). Sin mención de "ajustado por estacionalidad"
+  # en el subtítulo: ya se indica en el caption inferior (CAPTION_PANEL).
   datos_cap |>
     ggplot(aes(x = fecha, y = Indice)) +
     geom_line(color = "#457b9d", na.rm = TRUE) +
@@ -1040,8 +997,7 @@ construir_panel <- function(num_cap_obj, ncol_facet = NCOL_FACET, incluir_captio
     facet_wrap(~ label_partida, scales = "free_y", ncol = ncol_facet) +
     scale_x_date(date_breaks = "2 years", date_labels = "%Y") +
     labs(
-      title    = paste0("Capítulo ", sprintf("%02d", num_cap_obj), ": ", nombre_cap),
-      subtitle = "Índice, enero 2018 = 100 (ajustado por estacionalidad). Línea roja: tendencia continua con quiebres detectados (strucchange, Bai-Perron)",
+      subtitle = "Enero 2018 = 100. Línea roja: tendencia con quiebres detectados (strucchange, Bai-Perron)",
       x = NULL, y = "Índice (ene-2018 = 100)",
       caption  = if (incluir_caption) CAPTION_PANEL else NULL
     ) +
@@ -1049,66 +1005,102 @@ construir_panel <- function(num_cap_obj, ncol_facet = NCOL_FACET, incluir_captio
     theme(
       axis.text.x = element_text(angle = 90, vjust = 0.5),
       strip.text  = element_text(size = 9)
-    )
+    ) +
+    # Tamaño físico absoluto de cada panel de faceta: inmune a cuánto
+    # espacio consuman las etiquetas del eje Y por panel (scales = "free_y")
+    # o cualquier otro elemento circundante.
+    force_panelsizes(rows = unit(ALTO_FILA, "in"), cols = unit(ANCHO_COL, "in"))
 }
 
-panel_84 <- construir_panel(84, incluir_caption = TRUE)
-panel_85 <- construir_panel(85, incluir_caption = TRUE)
-panel_87 <- construir_panel(87, incluir_caption = FALSE)
-panel_90 <- construir_panel(90, incluir_caption = FALSE)
+# Mide el ancho y alto reales (pulgadas) que necesita el gtable ya construido
+# -- título, subtítulo, ejes, paneles y caption -- para que ggsave() no deje
+# sobrantes en blanco ni recorte nada.
+medir_panel <- function(p) {
+  g <- ggplotGrob(p)
+  list(
+    ancho = sum(grid::convertWidth(g$widths, "in", valueOnly = TRUE)),
+    alto  = sum(grid::convertHeight(g$heights, "in", valueOnly = TRUE))
+  )
+}
 
-alto_84 <- alto_panel(84)
-alto_85 <- alto_panel(85)
-alto_87 <- alto_panel(87)
-alto_90 <- alto_panel(90)
+guardar_panel <- function(num_cap_obj) {
+  panel <- construir_panel(num_cap_obj, incluir_caption = TRUE)
+  dim_panel <- medir_panel(panel)
+  archivo_base <- paste0("panel_partidas_cap", num_cap_obj)
 
-panel_87_90 <- panel_87 / panel_90 +
-  patchwork::plot_layout(heights = c(alto_87, alto_90)) +
-  patchwork::plot_annotation(caption = CAPTION_PANEL)
+  ggsave(here::here("Plots", paste0(archivo_base, ".pdf")), plot = panel,
+         width = dim_panel$ancho, height = dim_panel$alto, units = "in",
+         device = cairo_pdf)
+  ggsave(here::here("Plots", paste0(archivo_base, ".png")), plot = panel,
+         width = dim_panel$ancho, height = dim_panel$alto, units = "in",
+         dpi = 150)
+}
 
-alto_87_90 <- alto_87 + alto_90 + ALTO_CAPTION
+walk(c(84, 85, 87, 90), guardar_panel)
 
-ggsave(here::here("Plots", "panel_partidas_cap84.pdf"), plot = panel_84,
-       width = ANCHO_PAGINA, height = alto_84, units = "in", device = cairo_pdf)
-ggsave(here::here("Plots", "panel_partidas_cap84.png"), plot = panel_84,
-       width = ANCHO_PAGINA, height = alto_84, units = "in", dpi = 150)
-
-ggsave(here::here("Plots", "panel_partidas_cap85.pdf"), plot = panel_85,
-       width = ANCHO_PAGINA, height = alto_85, units = "in", device = cairo_pdf)
-ggsave(here::here("Plots", "panel_partidas_cap85.png"), plot = panel_85,
-       width = ANCHO_PAGINA, height = alto_85, units = "in", dpi = 150)
-
-ggsave(here::here("Plots", "panel_partidas_cap87_90.pdf"), plot = panel_87_90,
-       width = ANCHO_PAGINA, height = alto_87_90, units = "in", device = cairo_pdf)
-ggsave(here::here("Plots", "panel_partidas_cap87_90.png"), plot = panel_87_90,
-       width = ANCHO_PAGINA, height = alto_87_90, units = "in", dpi = 150)
-
-rm(panel_84, panel_85, panel_87, panel_90, panel_87_90, construir_panel,
-   n_filas_panel, alto_panel, alto_84, alto_85, alto_87, alto_90, alto_87_90,
-   NCOL_FACET, ANCHO_PAGINA, ANCHO_COL, ALTO_FILA, MARGEN_SUP, MARGEN_INF,
-   ALTO_CAPTION, CAPTION_PANEL)
+rm(construir_panel, medir_panel, guardar_panel,
+   NCOL_FACET, ANCHO_COL, FACTOR_ALTO, ALTO_FILA, CAPTION_PANEL)
 ```
+
+Empezamos con el **Capítulo 84**, Maquinaria.
+
+- Tres partidas individuales, más la partida residual (Resto), que en conjunto representan el 83.1% de las exportaciones del Capítulo, crecen más rápidamente en 2024-2025 que en el período anterior. Este Capítulo es el gran ganador de la nueva politica arancelaria de EUA. La estructura arancelaria que facilita este crecimiento se examina con detalla en el Capítulo 3 de este libro.
+
+- Las exportaciones del capítulo están altamente concentradas: la partida 8471 representa prácticamente el 60% de las exportaciones del Capítulo, y tuvo un crecimiento extraordinario, del 86%, en el último período.
+
+- Las partidas 8481 y 8409, aunque de menor preso, tienen un crecimiento superior al 4%, y al igual que las tres primeras partidas y la categoría residual, crecen en los tres períodos incluidos en la tabla.
+
+```{r}
+#| label: tbl-cap84
+#| echo: false
+#| tbl-cap: "Capítulo 84: Maquinaria y equipo mecánico"
+#| tbl-cap-location: top
+
+tab84
+```
+
+Una forma alternativa de analizar el comportamiento del capítulo se presenta en la @fig-cap84-partidas. En esta figura, se utilizan índices en vez de valores absolutos de las exportaciones y además se identifican estadísticamente los puntos de quiebre de tendencias de cada una de las partidas.
+
+La figura pone en evidencia que prácticamente en todos los casos hubo un punto de quiebre de tendencia en o poco después de 2018 y que únicamente en dos casos, las partidas 8415 y 8421 hay suficiente información para identificar un cambio de tendencia negativo a partir de 2024.
+
+- El valor de las exportaciones de las partidas 8415 (equipo de climatización), 8418 (equipo de refrigeración) y 8421 (centrífugas) se duplica, o más, entre 2018 y 2025. A pesar de su rápido crecimiento, son partidas relativamente pequeñas dentro de la Sección (5.9, 4.9 y 3.4%, respectivamente) y dentro del total de exportaciones mexicanas.
+
+- El valor de las exportaciones de la partida 8471 (equipo de procesamiento de datos) se quintuplica, y casi todo el crecimiento tienen lugar entre 2024 y 2025. Esta partida es además la de más peso dentro de la Sección 84: representa el 54.1% de las exportaciones de la Sección y el 13.3% de las exportaciones mexicanas a EUA en 2024-2025.
 
 ```{r}
 #| label: fig-cap84-partidas
 #| echo: false
 #| fig-cap: "México. Exportaciones Capítulo 84, Partidas Seleccionadas, 2010-2025"
 #| fig-cap-location: top
+#| out-width: 100%
 
 knitr::include_graphics(here::here("Plots", "panel_partidas_cap84.png"))
 ```
 
-En el Capítulo 85, cuya información se presenta en la @fig-cap85-partidas, el comportamiento es más diverso y, cuando responde positivamente al cambio de la política arancelaria de 2018, lo hace con mayor rezago que el Capítulo 84: el cambio tiene lugar alrededor de 2020–2021.
+Continuamos con el **Capítulo 85**, Maquinaria y equipo eléctrico.
 
-- Las tres partidas cuyo índice crece de 100 a 200[^8] o más son 8504 (transformadores), 8516 (Calefacción) y 8537 (tableros)
+- Aunque el peso de las partidas individuales es relativamente bajo, el capítulo representó el 17% de las exportaciones mexicanas a EUA en 2025.
 
-[^8]: Excluyendo 8543 (misceláneos)
+- Es un Capitulo cuyas exportaciones por Partida están mucho menos concentradas que las del Capítulo 84.  Solo hay tres Partidas con uns participación mayor al 10% del total del Capítulo y ninguna de ellas alcanza el 20% del total.
 
-<!-- -->
+- Tres partidas exhiben un crecimiento notable en 2024-2025: 8517, Teléfonos; 8543, Maquinaria eléctrica especial, un 17.5%, y Cables eléctricos, un 9.1%.
 
-- Las siguen 8536 (conmutación) y 8544 (cableado). El cambio de tendencia en Baterías tiene lugar en 2016.
+- El 83% de las exportaciones del Capítulo muestran una tasa de crecimiento positiva en 2024-2025.
 
-- Las demás partidas tienen crecimiento modesto, que en el caso de 8528 (televisores) es muy bajo, y en el de 8512 (iluminación) negativo
+```{r}
+#| label: tbl-cap85
+#| echo: false
+#| tbl-cap: "Capítulo 85: Maquinaria y equipo eléctrico"
+#| tbl-cap-location: top
+
+tab85
+```
+
+La @fig-cap85-partidas presenta gráficamente la evolución de las exportaciones por partida.  Al igual que en el caso anterior, se usan índices en vez de valores absolutos, y se identifican puntos de quiebre de tendencia.
+
+- Dos partidas, la 8512 y la 8528 muestran un cambio de tendencia negativo, pero se da en 2022, por lo que ese cambio no se pued atribuir a la nueva política arancelaria de EUA, mientras que una partida, la 8517, tiene un comportamiento inestable, con cambios de tendendia frecuentes, u un volumn de exportaciones al final del período prácticamente igual al de el inicio del período.
+
+- En todos los demás casos las tendencias son uniformemente positivas, y curiosamente, en todos los casos en los que el ritmo de crecimiento se atenúa hacia el final de la serie, el cambio de tendencia tiene lugar en 2022, de manera que esa desaceleración tampoco puede atribuirse al cambio en la política arancelaria de EUA a partir de 2025.
 
 ```{r}
 #| label: fig-cap85-partidas
@@ -1119,17 +1111,61 @@ En el Capítulo 85, cuya información se presenta en la @fig-cap85-partidas, el 
 knitr::include_graphics(here::here("Plots", "panel_partidas_cap85.png"))
 ```
 
-Finalmente examinamos el comportamiento de las exportaciones correspondientes a los Capítulos 87, Automóviles, y 90, Óptica.
 
-Como se mostró en la sección anterior, equipo de Transporte fue la Sección que más creció entre 2010 y 2018, es decir, el período previo al primer gobierno de Trump y el inicio de la discusión sobre NS y la reestructuración geográfica de las cadenas de valor. La integración productiva de América del Norte tiene raíces más tempranas y es más profunda en este sector. No resulta entonces del todo sorprendente que en las tres Partidas más importantes del Capítulo 87, a saber, Camiones, Automóviles y Autopartes, la tendencia creciente que se observa entre 2010 y 2018 se incrementa, pero solo ligeramente, a partir de 2018. Nótese que aunque en las tres Partidas hay una caída en 2025 (asociada con una estructura tarifaria para México y sus competidores que se examina en el capítulo 3), no hay observaciones suficientes para concluir que hay un cambio de tendencia. En cambio, en Tractores es clara la tendencia a la baja a partir de 2023 y en Remolques a partir de 2024. Estos datos se muestran en la @fig-cap87-90-partidas, que también muestra la evolución de Instrumentos Médicos, cuyo ritmo de crecimiento se incrementa a partir de 2021, y que a pesar de una moderación a partir de 2023 sigue siendo superior a lo observado entre 2010 y 2018.
+El panorama es muy distinto para el **Capitulo 87**.  Como vimos antes, la Sección XVII, Material de Transporte, fue la de más rápido crecimiento en el período 2010-2018, y el Capítulo 87, que comprende autopartes, cambios y automóviles, representa casi la totalidad de las exportaciones de esta Sección. En contraste con lo sucedido en 2010-2018, todas las partidas del Capítulo 87 se contraen en 2024 - 2025. 
 
 ```{r}
-#| label: fig-cap87-90-partidas
+#| label: tbl-cap87
 #| echo: false
-#| fig-cap: "México. Exportaciones Capítulos 87 y 90, Partidas seleccionadas, 2010-2025"
+#| tbl-cap: "Capítulo 87: Maquinaria y equipo mecánico"
+#| tbl-cap-location: top
+
+tab87
+```
+
+```{r}
+#| label: tbl-cap90
+#| echo: false
+#| tbl-cap: "Capítulo 90: Maquinaria y equipo mecánico"
+#| tbl-cap-location: top
+
+tab90
+```
+
+En el Capítulo 85, cuya información se presenta en la @fig-cap85-partidas, el comportamiento es más diverso y, cuando responde positivamente al cambio de la política arancelaria de 2018, lo hace con mayor rezago que el Capítulo 84: el cambio tiene lugar alrededor de 2020–2021.
+
+
+
+
+
+- Las siguen 8536 (conmutación) y 8544 (cableado). El cambio de tendencia en Baterías tiene lugar en 2016.
+
+- Las demás partidas tienen crecimiento modesto, que en el caso de 8528 (televisores) es muy bajo, y en el de 8512 (iluminación) negativo
+
+
+
+Finalmente examinamos el comportamiento de las exportaciones correspondientes a los Capítulos 87, Automóviles, y 90, Óptica.
+
+Como se mostró en la sección anterior, equipo de Transporte fue la Sección que más creció entre 2010 y 2018, es decir, el período previo al primer gobierno de Trump y el inicio de la discusión sobre NS y la reestructuración geográfica de las cadenas de valor. La integración productiva de América del Norte tiene raíces más tempranas y es más profunda en este sector. No resulta entonces del todo sorprendente que en las tres Partidas más importantes del Capítulo 87, a saber, Camiones, Automóviles y Autopartes, la tendencia creciente que se observa entre 2010 y 2018 se incrementa, pero solo ligeramente, a partir de 2018. Nótese que aunque en las tres Partidas hay una caída en 2025 (asociada con una estructura tarifaria para México y sus competidores que se examina en el capítulo 3), no hay observaciones suficientes para concluir que hay un cambio de tendencia. En cambio, en Tractores es clara la tendencia a la baja a partir de 2023 y en Remolques a partir de 2024. Estos datos se muestran en la @fig-cap87-partidas.
+
+```{r}
+#| label: fig-cap87-partidas
+#| echo: false
+#| fig-cap: "México. Exportaciones Capítulo 87, Partidas seleccionadas, 2010-2025"
 #| fig-cap-location: top
 
-knitr::include_graphics(here::here("Plots", "panel_partidas_cap87_90.png"))
+knitr::include_graphics(here::here("Plots", "panel_partidas_cap87.png"))
+```
+
+La @fig-cap90-partidas muestra, entre otras partidas, la evolución de Instrumentos Médicos, cuyo ritmo de crecimiento se incrementa a partir de 2021, y que a pesar de una moderación a partir de 2023 sigue siendo superior a lo observado entre 2010 y 2018.
+
+```{r}
+#| label: fig-cap90-partidas
+#| echo: false
+#| fig-cap: "México. Exportaciones Capítulo 90, Partidas seleccionadas, 2010-2025"
+#| fig-cap-location: top
+
+knitr::include_graphics(here::here("Plots", "panel_partidas_cap90.png"))
 ```
 
 ### La evidencia econométrica
@@ -1477,7 +1513,7 @@ tabla_tcac |>
   fontsize(i = 1, size = 13, part = "header") |>
   theme_booktabs() |>
   autofit() |>
-  # Ver nota en tbl-partidas-cap: fit_to_width() evita que la tabla se
+  # Ver nota en prep-tablas-cap: fit_to_width() evita que la tabla se
   # desborde del área imprimible de reference-doc.docx (6" de ancho útil).
   fit_to_width(max_width = 6, unit = "in") |>
   add_footer_lines("Elaboración propia con base en datos de comercio exterior.") |>
@@ -2888,7 +2924,7 @@ supresion_ns_wide |>
   fontsize(i = 1, size = 13, part = "header") |>
   theme_booktabs() |>
   autofit() |>
-  # Ver nota en tbl-partidas-cap: fit_to_width() evita que la tabla se
+  # Ver nota en prep-tablas-cap: fit_to_width() evita que la tabla se
   # desborde del área imprimible de reference-doc.docx (6" de ancho útil).
   fit_to_width(max_width = 6, unit = "in") |>
   add_footer_lines(
