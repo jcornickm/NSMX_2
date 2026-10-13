@@ -1,0 +1,1018 @@
+<!-- ============================================================
+     INFOGRAFÍAS DE ARANCELES (ggplot2 + patchwork)
+     1) Pegue el bloque "setup-infografias" UNA sola vez, antes del primer gráfico.
+     2) Cada sección (gráfico + tabla de hitos + fuentes) es independiente.
+     Requiere: ggplot2, patchwork, knitr (y ragg para el PNG).
+     ============================================================ -->
+
+```{r}
+#| label: setup-infografias
+#| include: false
+#| warning: false
+#| message: false
+library(ggplot2)
+library(patchwork)
+library(knitr)
+
+# ---- Paleta (de las infografías HTML) -------------------------------------
+pal <- c(bg = "#FFFFFF", ink = "#141F2B", ink2 = "#4C5661", ink3 = "#7A8189",
+         line = "#CCD0C4", gold = "#B87A1E", fenta = "#7A4A21", green = "#2F7C4A",
+         plum = "#9C4177", crimson = "#A23327")
+
+wrap_txt <- function(x, n) paste(strwrap(x, width = n), collapse = "\n")
+n_lines  <- function(x) lengths(regmatches(x, gregexpr("\n", x))) + 1
+
+# ---- Título alineado con la franja ---------------------------------------
+panel_titulo <- function(sp) {
+  tt <- sp$title
+  fs <- min(15, 6.2 / (sum(nchar(tt$txt)) * 0.0078))
+  gp <- function(col) grid::gpar(fontsize = fs, fontface = "bold", col = col)
+  grobs <- list(); prev <- grid::unit(0, "npc")
+  for (i in seq_len(nrow(tt))) {
+    grobs[[i]] <- grid::textGrob(tt$txt[i], x = prev, y = 0.5, hjust = 0,
+                                 gp = gp(pal[[tt$col[i]]]))
+    prev <- prev + grid::grobWidth(grid::textGrob(tt$txt[i], gp = gp("black")))
+  }
+  ggplot() +
+    annotation_custom(do.call(grid::gTree, list(children = do.call(grid::gList, grobs)))) +
+    theme_void()
+}
+
+# ---- Franja de cifras clave ----------------------------------------------
+panel_cifras <- function(sp) {
+  st <- sp$stats; k <- nrow(st); st$i <- seq_len(k) - 1
+  ggplot(st) +
+    annotate("segment", x = 0, xend = k, y = 1, yend = 1, colour = pal[["ink"]], linewidth = 0.9) +
+    annotate("segment", x = 0, xend = k, y = 0.02, yend = 0.02, colour = pal[["ink3"]], linewidth = 0.3) +
+    geom_segment(data = data.frame(x = seq_len(k - 1)), aes(x = x, xend = x, y = 0.12, yend = 0.92),
+                 colour = pal[["line"]], linewidth = 0.3) +
+    geom_point(aes(x = i + 0.03, y = 0.84, colour = pal[col]), shape = 15, size = 1.3) +
+    geom_text(aes(x = i + 0.07, y = 0.84, label = lab), hjust = 0, size = 1.8,
+              colour = pal[["ink2"]], fontface = "bold") +
+    geom_text(aes(x = i + 0.03, y = 0.55, label = num), hjust = 0, size = 5.6,
+              colour = pal[["ink"]], fontface = "bold") +
+    geom_text(aes(x = i + 0.03, y = 0.30, label = sub), hjust = 0, vjust = 0.5,
+              size = 1.9, colour = pal[["ink2"]]) +
+    scale_colour_identity() +
+    coord_cartesian(xlim = c(0, k), ylim = c(-0.25, 1), expand = FALSE, clip = "off") +
+    theme_void()
+}
+
+# ---- Leyenda (se acomoda en filas) ---------------------------------------
+sym_lab <- c(cambio = "cambio de tasa", hito = "hito sin cambio de tasa",
+             amenaza = "amenaza no vigente", fallo = "fallo judicial")
+panel_leyenda <- function(sp) {
+  cw <- 0.78                               # unidades (de 100) por caracter
+  it <- rbind(
+    data.frame(kind = "line", key = sp$leg_lines$col, lab = sp$leg_lines$lab, grp = 1),
+    data.frame(kind = "sym",  key = sp$leg_syms, lab = sym_lab[sp$leg_syms], grp = 2))
+  it$w <- ifelse(it$kind == "line", 5.5, 3) + nchar(it$lab) * cw + 4
+  x <- 0; r <- 1; it$x <- NA; it$r <- NA
+  for (i in seq_len(nrow(it))) {
+    if (i > 1 && (it$grp[i] != it$grp[i - 1] || x + it$w[i] > 100)) { r <- r + 1; x <- 0 }
+    it$x[i] <- x; it$r[i] <- r; x <- x + it$w[i]
+  }
+  nr <- max(it$r); it$y <- nr - it$r + 0.5
+  L <- subset(it, kind == "line"); S <- subset(it, kind == "sym")
+  p <- ggplot() +
+    annotate("segment", x = L$x, xend = L$x + 4, y = L$y, yend = L$y,
+             colour = pal[L$key], linewidth = 1.3) +
+    annotate("text", x = L$x + 5, y = L$y, label = L$lab, hjust = 0, size = 2.3, colour = pal[["ink2"]])
+  sx <- S$x + 1; sy <- S$y
+  if (any(S$key == "cambio"))  p <- p + annotate("point", x = sx[S$key == "cambio"],  y = sy[S$key == "cambio"],  shape = 16, size = 2, colour = pal[["ink2"]])
+  if (any(S$key == "hito"))    p <- p + annotate("point", x = sx[S$key == "hito"],    y = sy[S$key == "hito"],    shape = 21, size = 2, fill = "white", colour = pal[["ink3"]], stroke = 0.9)
+  if (any(S$key == "amenaza")) p <- p + annotate("point", x = sx[S$key == "amenaza"], y = sy[S$key == "amenaza"], shape = 24, size = 2, fill = "white", colour = pal[["crimson"]], stroke = 0.8)
+  if (any(S$key == "fallo"))   p <- p + annotate("point", x = sx[S$key == "fallo"],   y = sy[S$key == "fallo"],   shape = 4, size = 1.8, colour = pal[["crimson"]], stroke = 1)
+  p <- p + annotate("text", x = S$x + 3, y = S$y, label = S$lab, hjust = 0, size = 2.3, colour = pal[["ink2"]]) +
+    coord_cartesian(xlim = c(0, 100), ylim = c(0, nr), expand = FALSE, clip = "off") +
+    theme_void()
+  attr(p, "filas") <- nr
+  p
+}
+
+# ---- Serie principal ------------------------------------------------------
+panel_serie <- function(sp, h_in = 3.75) {
+  ev <- sp$events; n <- nrow(ev); mk <- sp$marks
+  banda <- isTRUE(sp$notas_banda)
+  ymax <- max(sp$ticks)
+  pan_h <- h_in - 0.45                                  # alto aprox. del panel (pulgadas)
+  ytop <- ymax / (1 - 0.42 / pan_h)                     # 0.42 in de holgura sobre la marca superior
+  ymin <- if (banda) -0.16 * ytop else 0
+  u <- (ytop - ymin) / pan_h                            # unidades de datos por pulgada
+  # --- etiquetas de tasa
+  lab <- subset(mk, !is.na(lab))
+  seg_v <- subset(sp$segs, x == xend)
+  lab$desde_arriba <- vapply(seq_len(nrow(lab)), function(i) {
+    v <- subset(seg_v, abs(x - lab$x[i]) < 1e-6)
+    any(pmax(v$y, v$yend) > lab$y[i] + 1e-6 & (abs(v$y - lab$y[i]) < 1e-6 | abs(v$yend - lab$y[i]) < 1e-6))
+  }, logical(1))
+  izq <- lab$labpos == "above" & lab$desde_arriba          # etiqueta a la izquierda del marcador
+  lab$ly <- ifelse(izq, lab$y, lab$y + ifelse(lab$labpos == "above", 0.23, -0.10) * u)
+  lab$vj <- ifelse(izq, 0.5, ifelse(lab$labpos == "above", 0.5, 1))
+  lab$hj <- ifelse(izq, 1, 0.5)
+  lab$lx <- ifelse(izq, lab$x - 0.12, lab$x)
+  # --- notas
+  nt <- data.frame(x = mk$x, y = mk$y, nota = ev$nota, lab = !is.na(mk$lab),
+                   labpos = mk$labpos)
+  nt$arriba <- vapply(seq_len(n), function(i) {
+    v <- subset(seg_v, abs(x - i) < 1e-6)
+    any(pmin(v$y, v$yend) < mk$y[i] - 1e-6 & (abs(v$y - mk$y[i]) < 1e-6 | abs(v$yend - mk$y[i]) < 1e-6))
+  }, logical(1))
+  if (banda) {
+    nt$ny <- -0.025 * ytop; nt$vj <- 1
+  } else {
+    below <- !nt$arriba
+    avail <- (nt$y - ymin) / u - 0.30
+    gap   <- pmin(0.55, pmax(0.25, avail))
+    nt$ny <- ifelse(below, nt$y - gap * u,
+                    nt$y + ifelse(nt$lab & nt$labpos == "above", 0.34, 0.14) * u)
+    nt$vj <- ifelse(below, 1, 0)
+  }
+  trazos <- sp$segs; trazos$hex <- pal[trazos$col]
+  mk$hex <- pal[mk$col]
+  p <- ggplot() +
+    geom_segment(data = trazos, aes(x = x, y = y, xend = xend, yend = yend, colour = hex),
+                 linewidth = 1.6, lineend = "square") +
+    geom_vline(xintercept = n + 0.6, linetype = "22", colour = pal[["ink3"]], linewidth = 0.4) +
+    annotate("text", x = n + 0.6, y = ytop * 0.975, label = "hoy", size = 2.2, colour = pal[["ink3"]]) +
+    geom_point(data = subset(mk, tipo == "amenaza"), aes(x, y), shape = 24, size = 3.2,
+               fill = "white", colour = pal[["crimson"]], stroke = 0.9) +
+    geom_point(data = subset(mk, tipo == "hito"), aes(x, y), shape = 21, size = 2.8,
+               fill = "white", colour = pal[["ink3"]], stroke = 0.9) +
+    geom_point(data = subset(mk, tipo == "fallo"), aes(x, y), shape = 4, size = 3,
+               colour = pal[["crimson"]], stroke = 1.3) +
+    geom_point(data = subset(mk, tipo == "cambio"), aes(x, y, fill = hex, colour = hex),
+               shape = 21, size = 3.2) +
+    geom_text(data = lab, aes(lx, ly, label = lab, colour = pal[ifelse(col == "crimson", "gold", col)], vjust = vj, hjust = hj), size = 3.4, fontface = "bold") +
+    geom_text(data = nt, aes(x, ny, label = nota, vjust = vj), size = if (n > 9) 1.9 else 2.0,
+              colour = pal[["ink2"]], lineheight = 0.9) +
+    scale_colour_identity() + scale_fill_identity() +
+    scale_x_continuous(breaks = seq_len(n), labels = sub(" (\\d{4})$", "\n\\1", ev$fecha),
+                       limits = c(0.5, n + 1), expand = c(0, 0)) +
+    scale_y_continuous(breaks = sp$ticks, labels = function(v) paste0(v, "%"),
+                       limits = c(ymin, ytop), expand = c(0, 0)) +
+    labs(x = NULL, y = sp$ytitle) +
+    theme_minimal(base_size = 8) +
+    theme(plot.background = element_rect(fill = NA, colour = NA),
+          panel.grid.major.x = element_blank(), panel.grid.minor = element_blank(),
+          panel.grid.major.y = element_line(colour = pal[["line"]], linetype = "13", linewidth = 0.4),
+          axis.text.x = element_text(colour = pal[["ink"]], size = if (n > 9) 6 else 6.5, lineheight = 0.9),
+          axis.text.y = element_text(colour = pal[["ink3"]], size = 7),
+          axis.title.y = element_text(colour = pal[["ink3"]], size = 6.5),
+          axis.line.x = if (banda) element_blank() else element_line(colour = pal[["ink2"]], linewidth = 0.5))
+  if (banda) p <- p + annotate("segment", x = 0.5, xend = n + 1, y = 0, yend = 0,
+                               colour = pal[["ink2"]], linewidth = 0.5)
+  p
+}
+
+# ---- Recuadro informativo -------------------------------------------------
+panel_nota <- function(sp) {
+  cols <- sp$foot
+  cols <- lapply(cols, function(cc) list(
+    h = wrap_txt(cc$h, 42), p = paste(vapply(cc$p, wrap_txt, "", n = 56), collapse = "\n\n")))
+  hh <- vapply(cols, function(cc) 0.13 + n_lines(cc$h) * 0.16 + 0.05 + n_lines(cc$p) * 0.118 + 0.12, 0)
+  H <- max(hh)
+  p <- ggplot() +
+    annotate("rect", xmin = 0, xmax = 100, ymin = 0, ymax = H, fill = "#FBFBF8",
+             colour = pal[["ink3"]], linewidth = 0.3) +
+    annotate("rect", xmin = 0, xmax = 0.9, ymin = 0, ymax = H, fill = pal[["gold"]], colour = NA)
+  xs <- c(3, 53)
+  for (i in seq_along(cols)) {
+    p <- p +
+      annotate("text", x = xs[i], y = H - 0.13, hjust = 0, vjust = 1, size = 2.9, fontface = "bold",
+               lineheight = 0.95, colour = if (i == 1) pal[["gold"]] else pal[["ink"]], label = cols[[i]]$h) +
+      annotate("text", x = xs[i], y = H - 0.13 - n_lines(cols[[i]]$h) * 0.16 - 0.05, hjust = 0, vjust = 1,
+               size = 2.3, lineheight = 1.05, colour = pal[["ink2"]], label = cols[[i]]$p)
+  }
+  p <- p + coord_cartesian(xlim = c(0, 100), ylim = c(0, H), expand = FALSE) + theme_void()
+  attr(p, "alto") <- H
+  p
+}
+
+# ---- Figura completa ------------------------------------------------------
+infografia <- function(sp, h_main = 3.75) {
+  pl <- panel_leyenda(sp); pn <- panel_nota(sp)
+  hts <- c(0.35, 0.85, attr(pl, "filas") * 0.17 + 0.10, h_main, attr(pn, "alto"))
+  fig <- (panel_titulo(sp) / panel_cifras(sp) / pl / panel_serie(sp, h_main) / pn) +
+    plot_layout(heights = hts)
+  attr(fig, "alto_total") <- sum(hts)
+  fig
+}
+
+fuentes_md <- function(sp) cat("*Fuentes:*", sp$fuentes, "\n")
+
+tabla_hitos <- function(sp, caption) {
+  kable(data.frame(Fecha = sp$events$fecha, Hito = sp$events$texto),
+        format = "pipe", align = c("l", "l"), caption = caption)
+}
+
+# ---- Comparativos "pendiente": Panel A (impacto inicial) y Panel B (alivio negociado)
+col_pais <- c(japon = "#B8871E", corea = "#1F6FA8", ue = "#A23327", mx30 = "#5B8A3A", mx40 = "#8A3B7A", mx = "#5B8A3A")
+
+panel_slope <- function(sp, h_in = 4.1) {
+  s <- sp$series; ns <- nrow(s)
+  xA0 <- 165; xA1 <- 275; xB0 <- 307; xB1 <- 417
+  ytop <- 27.5; ybot <- -13
+  s$hex <- col_pais[s$id]
+  s$lt  <- ifelse(s$dash, "dashed", "solid")
+  rg <- rbind(
+    data.frame(x = xA0, xend = xA1, y = s$a0, yend = s$a1, hex = s$hex, lt = s$lt, id = s$id),
+    data.frame(x = xB0, xend = xB1, y = s$b0, yend = s$b1, hex = s$hex, lt = s$lt, id = s$id))
+  pts <- rbind(data.frame(x = xA0, y = s$a0, hex = s$hex), data.frame(x = xA1, y = s$a1, hex = s$hex),
+               data.frame(x = xB0, y = s$b0, hex = s$hex), data.frame(x = xB1, y = s$b1, hex = s$hex))
+  ticks <- seq(0, 25, 5)
+  p <- ggplot() +
+    annotate("segment", x = 160, xend = xB1, y = ticks, yend = ticks, colour = pal[["line"]],
+             linetype = "13", linewidth = 0.4) +
+    annotate("text", x = 156, y = ticks, label = paste0(ticks, "%"), hjust = 1, size = 2.2,
+             colour = pal[["ink3"]]) +
+    annotate("segment", x = c(xA0, xB0), xend = c(xA1, xB1), y = 0, yend = 0, colour = pal[["ink3"]], linewidth = 0.4) +
+    annotate("text", x = c((xA0 + xA1) / 2, (xB0 + xB1) / 2), y = 26.8, vjust = 0.5, size = 2.4, fontface = "bold",
+             colour = pal[["ink2"]], label = c("PANEL A — impacto inicial", "PANEL B — alivio negociado")) +
+    annotate("text", x = c(xA0, xA1, xB0, xB1), y = c(-1.0, -1.0, -1.0, -1.0), vjust = 1, size = 1.9,
+             colour = pal[["ink2"]], lineheight = 0.9,
+             hjust = c(0, 1, 0, 1), label = sp$xlab) +
+    geom_segment(data = rg, aes(x = x, xend = xend, y = y, yend = yend, colour = hex, linetype = lt),
+                 linewidth = 1.0) +
+    geom_point(data = pts, aes(x, y, colour = hex), size = 1.6)
+  # etiquetas izquierda
+  L <- s
+  p <- p +
+    annotate("text", x = xA0 - 8, y = L$ll + 0.55, label = L$nombre, hjust = 1, vjust = 0.5, size = 2.1,
+             fontface = "bold", colour = L$hex) +
+    annotate("text", x = xA0 - 8, y = L$ll - 0.75, label = L$vini, hjust = 1, vjust = 0.5, size = 2.0,
+             colour = pal[["ink3"]])
+  Ll <- subset(L, lead_l)
+  if (nrow(Ll)) p <- p + annotate("segment", x = xA0 - 5, xend = xA0 - 1, y = Ll$ll + 0.6, yend = Ll$a0,
+                                  colour = Ll$hex, linewidth = 0.25, linetype = "13", alpha = 0.6)
+  # etiquetas derecha
+  p <- p +
+    annotate("text", x = xB1 + 10, y = L$lr + 0.55, label = L$rtxt, hjust = 0, vjust = 0.5, size = 2.1,
+             fontface = "bold", colour = L$hex) +
+    annotate("text", x = xB1 + 10, y = L$lr - 0.75, label = L$rsub, hjust = 0, vjust = 0.5, size = 2.0,
+             colour = pal[["ink3"]])
+  Lr <- subset(L, lead_r)
+  if (nrow(Lr)) p <- p + annotate("segment", x = xB1 + 7, xend = xB1 + 1, y = Lr$lr, yend = Lr$b1,
+                                  colour = Lr$hex, linewidth = 0.25, linetype = "13", alpha = 0.6)
+  p +
+    scale_colour_identity() + scale_linetype_identity() +
+    coord_cartesian(xlim = c(0, 650), ylim = c(ybot, ytop), expand = FALSE, clip = "off") +
+    theme_void()
+}
+
+leyenda_slope <- function(sp) {
+  s <- sp$series; cw <- 0.78
+  s$w <- 5.5 + nchar(s$leg) * cw + 4
+  x <- 0; r <- 1; s$x <- NA; s$r <- NA
+  for (i in seq_len(nrow(s))) {
+    if (i > 1 && x + s$w[i] > 100) { r <- r + 1; x <- 0 }
+    s$x[i] <- x; s$r[i] <- r; x <- x + s$w[i]
+  }
+  nr <- max(s$r); s$y <- nr - s$r + 0.5; s$hex <- col_pais[s$id]
+  p <- ggplot() +
+    geom_segment(data = s, aes(x = x, xend = x + 4, y = y, yend = y, colour = hex,
+                               linetype = ifelse(dash, "dashed", "solid")), linewidth = 1.3) +
+    geom_text(data = s, aes(x = x + 5, y = y, label = leg), hjust = 0, size = 2.3, colour = pal[["ink2"]]) +
+    scale_colour_identity() + scale_linetype_identity() +
+    coord_cartesian(xlim = c(0, 100), ylim = c(0, nr), expand = FALSE, clip = "off") + theme_void()
+  attr(p, "filas") <- nr
+  p
+}
+
+panel_titulo_sl <- function(sp) {
+  tt <- paste(strwrap(sp$title, 62), collapse = "\n")
+  sub <- paste(strwrap(sp$subtitle, 112), collapse = "\n")
+  ggplot() +
+    annotate("text", x = 0, y = 1, hjust = 0, vjust = 1, label = tt, size = 4.6, fontface = "bold",
+             colour = pal[["ink"]], lineheight = 0.95) +
+    annotate("text", x = 0, y = 0, hjust = 0, vjust = 0, label = sub, size = 2.2, colour = pal[["ink2"]], lineheight = 1.0) +
+    coord_cartesian(xlim = c(0, 100), ylim = c(0, 1), expand = FALSE, clip = "off") + theme_void()
+}
+
+panel_nota_sl <- function(sp) {
+  txt <- vapply(sp$foot, function(f) paste0(wrap_txt(f$h, 128), "\n", wrap_txt(f$p, 128)), "")
+  nl <- sum(n_lines(txt)) + 0.9 * length(txt)
+  H <- 0.28 + nl * 0.118
+  yy <- H - 0.14
+  p <- ggplot() +
+    annotate("rect", xmin = 0, xmax = 100, ymin = 0, ymax = H, fill = "#FBFBF8", colour = pal[["ink3"]], linewidth = 0.3) +
+    annotate("rect", xmin = 0, xmax = 0.9, ymin = 0, ymax = H, fill = "#B8871E", colour = NA)
+  for (i in seq_along(sp$foot)) {
+    f <- sp$foot[[i]]; hh <- wrap_txt(f$h, 128); pp <- wrap_txt(f$p, 128)
+    p <- p + annotate("text", x = 3, y = yy, hjust = 0, vjust = 1, size = 2.5, fontface = "bold", colour = pal[["ink"]], label = hh) +
+      annotate("text", x = 3, y = yy - 0.14, hjust = 0, vjust = 1, size = 2.3, lineheight = 1.05, colour = pal[["ink2"]], label = pp)
+    yy <- yy - 0.14 - n_lines(pp) * 0.118 - 0.13
+  }
+  p <- p + coord_cartesian(xlim = c(0, 100), ylim = c(0, H), expand = FALSE) + theme_void()
+  attr(p, "alto") <- H
+  p
+}
+
+comparativo <- function(sp, h_main = 4.1) {
+  pl <- leyenda_slope(sp); pn <- panel_nota_sl(sp)
+  hts <- c(0.62, attr(pl, "filas") * 0.17 + 0.10, h_main, attr(pn, "alto"))
+  fig <- (panel_titulo_sl(sp) / pl / panel_slope(sp, h_main) / pn) + plot_layout(heights = hts)
+  attr(fig, "alto_total") <- sum(hts)
+  fig
+}
+
+# ---- Comparativos "pendiente": Panel A (impacto inicial) y Panel B (alivio negociado)
+col_pais <- c(japon = "#B8871E", corea = "#1F6FA8", ue = "#A23327", mx30 = "#5B8A3A", mx40 = "#8A3B7A", mx = "#5B8A3A")
+
+panel_slope <- function(sp, h_in = 4.1) {
+  s <- sp$series; ns <- nrow(s)
+  xA0 <- 165; xA1 <- 275; xB0 <- 307; xB1 <- 417
+  ytop <- 27.5; ybot <- -13
+  s$hex <- col_pais[s$id]
+  s$lt  <- ifelse(s$dash, "dashed", "solid")
+  rg <- rbind(
+    data.frame(x = xA0, xend = xA1, y = s$a0, yend = s$a1, hex = s$hex, lt = s$lt, id = s$id),
+    data.frame(x = xB0, xend = xB1, y = s$b0, yend = s$b1, hex = s$hex, lt = s$lt, id = s$id))
+  pts <- rbind(data.frame(x = xA0, y = s$a0, hex = s$hex), data.frame(x = xA1, y = s$a1, hex = s$hex),
+               data.frame(x = xB0, y = s$b0, hex = s$hex), data.frame(x = xB1, y = s$b1, hex = s$hex))
+  ticks <- seq(0, 25, 5)
+  p <- ggplot() +
+    annotate("segment", x = 160, xend = xB1, y = ticks, yend = ticks, colour = pal[["line"]],
+             linetype = "13", linewidth = 0.4) +
+    annotate("text", x = 156, y = ticks, label = paste0(ticks, "%"), hjust = 1, size = 2.2,
+             colour = pal[["ink3"]]) +
+    annotate("segment", x = c(xA0, xB0), xend = c(xA1, xB1), y = 0, yend = 0, colour = pal[["ink3"]], linewidth = 0.4) +
+    annotate("text", x = c((xA0 + xA1) / 2, (xB0 + xB1) / 2), y = 26.8, vjust = 0.5, size = 2.4, fontface = "bold",
+             colour = pal[["ink2"]], label = c("PANEL A — impacto inicial", "PANEL B — alivio negociado")) +
+    annotate("text", x = c(xA0, xA1, xB0, xB1), y = c(-1.0, -1.0, -1.0, -1.0), vjust = 1, size = 1.9,
+             colour = pal[["ink2"]], lineheight = 0.9,
+             hjust = c(0, 1, 0, 1), label = sp$xlab) +
+    geom_segment(data = rg, aes(x = x, xend = xend, y = y, yend = yend, colour = hex, linetype = lt),
+                 linewidth = 1.0) +
+    geom_point(data = pts, aes(x, y, colour = hex), size = 1.6)
+  # etiquetas izquierda
+  L <- s
+  p <- p +
+    annotate("text", x = xA0 - 8, y = L$ll + 0.55, label = L$nombre, hjust = 1, vjust = 0.5, size = 2.1,
+             fontface = "bold", colour = L$hex) +
+    annotate("text", x = xA0 - 8, y = L$ll - 0.75, label = L$vini, hjust = 1, vjust = 0.5, size = 2.0,
+             colour = pal[["ink3"]])
+  Ll <- subset(L, lead_l)
+  if (nrow(Ll)) p <- p + annotate("segment", x = xA0 - 5, xend = xA0 - 1, y = Ll$ll + 0.6, yend = Ll$a0,
+                                  colour = Ll$hex, linewidth = 0.25, linetype = "13", alpha = 0.6)
+  # etiquetas derecha
+  p <- p +
+    annotate("text", x = xB1 + 10, y = L$lr + 0.55, label = L$rtxt, hjust = 0, vjust = 0.5, size = 2.1,
+             fontface = "bold", colour = L$hex) +
+    annotate("text", x = xB1 + 10, y = L$lr - 0.75, label = L$rsub, hjust = 0, vjust = 0.5, size = 2.0,
+             colour = pal[["ink3"]])
+  Lr <- subset(L, lead_r)
+  if (nrow(Lr)) p <- p + annotate("segment", x = xB1 + 7, xend = xB1 + 1, y = Lr$lr, yend = Lr$b1,
+                                  colour = Lr$hex, linewidth = 0.25, linetype = "13", alpha = 0.6)
+  p +
+    scale_colour_identity() + scale_linetype_identity() +
+    coord_cartesian(xlim = c(0, 650), ylim = c(ybot, ytop), expand = FALSE, clip = "off") +
+    theme_void()
+}
+
+leyenda_slope <- function(sp) {
+  s <- sp$series; cw <- 0.78
+  s$w <- 5.5 + nchar(s$leg) * cw + 4
+  x <- 0; r <- 1; s$x <- NA; s$r <- NA
+  for (i in seq_len(nrow(s))) {
+    if (i > 1 && x + s$w[i] > 100) { r <- r + 1; x <- 0 }
+    s$x[i] <- x; s$r[i] <- r; x <- x + s$w[i]
+  }
+  nr <- max(s$r); s$y <- nr - s$r + 0.5; s$hex <- col_pais[s$id]
+  p <- ggplot() +
+    geom_segment(data = s, aes(x = x, xend = x + 4, y = y, yend = y, colour = hex,
+                               linetype = ifelse(dash, "dashed", "solid")), linewidth = 1.3) +
+    geom_text(data = s, aes(x = x + 5, y = y, label = leg), hjust = 0, size = 2.3, colour = pal[["ink2"]]) +
+    scale_colour_identity() + scale_linetype_identity() +
+    coord_cartesian(xlim = c(0, 100), ylim = c(0, nr), expand = FALSE, clip = "off") + theme_void()
+  attr(p, "filas") <- nr
+  p
+}
+
+panel_titulo_sl <- function(sp) {
+  tt <- paste(strwrap(sp$title, 62), collapse = "\n")
+  sub <- paste(strwrap(sp$subtitle, 112), collapse = "\n")
+  ggplot() +
+    annotate("text", x = 0, y = 1, hjust = 0, vjust = 1, label = tt, size = 4.6, fontface = "bold",
+             colour = pal[["ink"]], lineheight = 0.95) +
+    annotate("text", x = 0, y = 0, hjust = 0, vjust = 0, label = sub, size = 2.2, colour = pal[["ink2"]], lineheight = 1.0) +
+    coord_cartesian(xlim = c(0, 100), ylim = c(0, 1), expand = FALSE, clip = "off") + theme_void()
+}
+
+panel_nota_sl <- function(sp) {
+  txt <- vapply(sp$foot, function(f) paste0(wrap_txt(f$h, 128), "\n", wrap_txt(f$p, 128)), "")
+  nl <- sum(n_lines(txt)) + 0.9 * length(txt)
+  H <- 0.28 + nl * 0.118
+  yy <- H - 0.14
+  p <- ggplot() +
+    annotate("rect", xmin = 0, xmax = 100, ymin = 0, ymax = H, fill = "#FBFBF8", colour = pal[["ink3"]], linewidth = 0.3) +
+    annotate("rect", xmin = 0, xmax = 0.9, ymin = 0, ymax = H, fill = "#B8871E", colour = NA)
+  for (i in seq_along(sp$foot)) {
+    f <- sp$foot[[i]]; hh <- wrap_txt(f$h, 128); pp <- wrap_txt(f$p, 128)
+    p <- p + annotate("text", x = 3, y = yy, hjust = 0, vjust = 1, size = 2.5, fontface = "bold", colour = pal[["ink"]], label = hh) +
+      annotate("text", x = 3, y = yy - 0.14, hjust = 0, vjust = 1, size = 2.3, lineheight = 1.05, colour = pal[["ink2"]], label = pp)
+    yy <- yy - 0.14 - n_lines(pp) * 0.118 - 0.13
+  }
+  p <- p + coord_cartesian(xlim = c(0, 100), ylim = c(0, H), expand = FALSE) + theme_void()
+  attr(p, "alto") <- H
+  p
+}
+
+comparativo <- function(sp, h_main = 4.1) {
+  pl <- leyenda_slope(sp); pn <- panel_nota_sl(sp)
+  hts <- c(0.62, attr(pl, "filas") * 0.17 + 0.10, h_main, attr(pn, "alto"))
+  fig <- (panel_titulo_sl(sp) / pl / panel_slope(sp, h_main) / pn) + plot_layout(heights = hts)
+  attr(fig, "alto_total") <- sum(hts)
+  fig
+}
+
+
+# ---------------- Datos de cada gráfico ----------------
+spec_mexico <- list(
+  ytitle = "Arancel adicional sobre México",
+  title = data.frame(txt = c("México: del arancel por fentanilo ", "a la Sección 301"), col = c("ink", "green")),
+  stats = data.frame(
+    col = c("gold", "crimson", "plum", "green"),
+    lab = c("PICO HISTÓRICO", "VIGENTE HASTA EL FALLO", "SECCIÓN 122", "SECCIÓN 301 (VIGENTE HOY)"),
+    num = c("25%", "25%", "10%", "10%"),
+    sub = c("4 mar. 2025 – 20 feb. 2026", "hasta 20 feb. 2026", "24 feb.–24 jul. 2026", "exento T-MEC · desde 24 jul. 2026")),
+  leg_lines = data.frame(col = c("gold", "plum", "green"), lab = c("IEEPA", "Sección 122", "Sección 301")),
+  leg_syms = c("cambio", "hito", "amenaza", "fallo"),
+  ticks = c(0, 10, 20, 30),
+  events = data.frame(
+    fecha = c("1 feb. 2025", "3 feb. 2025", "4 mar. 2025", "6 mar. 2025", "12 jul. 2025", "31 jul. 2025", "20 feb. 2026", "24 feb. 2026", "24 jul. 2026"),
+    texto = c("Anuncio E.O. 14194 (25%)", "Pausado (iba a regir el 4 feb.)", "Entra en vigor: 25%", "Excepción T-MEC (bienes calificados)", "Amenaza: 30% desde 1 ago.", "Suspendido 90 días (se mantiene 25%)", "Corte Suprema: IEEPA ilegal", "Sección 122: 10% (Proc. 11012)", "Sección 301: 10% (exento T-MEC)"),
+    nota = c("Anuncio\nE.O. 14194", "Pausado", "Entra en\nvigor", "Excepción\nT-MEC", "Amenaza:\n30%", "Suspendido\n90 días", "Corte\nSuprema", "Sec. 122\n(Proc. 11012)", "Sec. 301\n(exento T-MEC)")),
+  segs = data.frame(
+    x    = c(3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 8.0),
+    y    = c(25.0, 25.0, 25.0, 25.0, 25.0, 25.0, 10.0),
+    xend = c(4.0, 5.0, 6.0, 7.0, 8.0, 8.0, 9.0),
+    yend = c(25.0, 25.0, 25.0, 25.0, 25.0, 10.0, 10.0),
+    col  = c("gold", "gold", "gold", "gold", "gold", "gold", "plum")),
+  marks = data.frame(
+    x = c(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0),
+    y = c(25.0, 25.0, 25.0, 25.0, 25.0, 25.0, 25.0, 10.0, 10.0),
+    tipo = c("amenaza", "amenaza", "cambio", "hito", "amenaza", "hito", "fallo", "cambio", "cambio"),
+    col = c("crimson", "crimson", "gold", "ink3", "crimson", "ink3", "crimson", "plum", "green"),
+    lab = c("25%", NA, "25%", NA, NA, NA, NA, "10%", "10%"),
+    labpos = c("above", NA, "above", NA, NA, NA, NA, "above", "above")),
+  hoy = 9.32,
+  foot = list(
+    list(h = "Qué muestra este carril", p = c("Carril general/horizontal: arancel que decide cuánto paga casi todo lo importado.", "Los tres colores marcan la base legal vigente en cada tramo: dorado = IEEPA (feb. 2025–20 feb. 2026, declarado ilegal por la Corte Suprema); ciruela = recargo temporal Sección 122 (24 feb.–24 jul. 2026); verde = Sección 301 por trabajo forzado, vigente desde el 24 de julio de 2026.")),
+    list(h = "Nota del caso", p = c("México es el contraste directo con Canadá: la misma amenaza de subir la tasa (esta vez a 30%, anunciada el 12 de julio de 2025) no llegó a implementarse — un acuerdo bilateral del 31 de julio de 2025 la suspendió 90 días y la tasa se mantuvo en 25% hasta la reorganización judicial de 2026."))),
+  fuentes = "Federal Register (2025, 2026) · The White House (2025a-f) · *Learning Resources, Inc. v. Trump* (2026), Corte Suprema de EUA · Global Trade Alert (2026) · CRS (2026), R48549."
+)
+
+spec_canada <- list(
+  ytitle = "Arancel adicional sobre Canadá",
+  title = data.frame(txt = c("Canadá: del arancel por fentanilo ", "a la Sección 301"), col = c("ink", "green")),
+  stats = data.frame(
+    col = c("gold", "crimson", "plum", "green"),
+    lab = c("PICO HISTÓRICO", "VIGENTE HASTA EL FALLO", "SECCIÓN 122", "SECCIÓN 301 (VIGENTE HOY)"),
+    num = c("35%", "35%", "10%", "10%"),
+    sub = c("1 ago. 2025 (E.O. 14325)", "hasta 20 feb. 2026", "24 feb.–24 jul. 2026", "exento T-MEC · desde 24 jul. 2026")),
+  leg_lines = data.frame(col = c("gold", "plum", "green"), lab = c("IEEPA", "Sección 122", "Sección 301")),
+  leg_syms = c("cambio", "hito", "amenaza", "fallo"),
+  ticks = c(0, 15, 30, 45),
+  events = data.frame(
+    fecha = c("1 feb. 2025", "3 feb. 2025", "4 mar. 2025", "6 mar. 2025", "1 ago. 2025", "20 feb. 2026", "24 feb. 2026", "24 jul. 2026"),
+    texto = c("Anuncio E.O. 14193 (25%)", "Pausado (iba a regir el 4 feb.)", "Entra en vigor: 25%", "Excepción T-MEC (bienes calificados)", "Sube a 35% (E.O. 14325)", "Corte Suprema: IEEPA ilegal", "Sección 122: 10% (Proc. 11012)", "Sección 301: 10% (exento T-MEC)"),
+    nota = c("Anuncio\nE.O. 14193", "Pausado", "Entra en\nvigor", "Excepción\nT-MEC", "Sube a 35%\n(E.O. 14325)", "Corte\nSuprema", "Sec. 122\n(Proc. 11012)", "Sec. 301\n(exento T-MEC)")),
+  segs = data.frame(
+    x    = c(3.0, 4.0, 5.0, 5.0, 6.0, 7.0, 7.0),
+    y    = c(25.0, 25.0, 25.0, 35.0, 35.0, 35.0, 10.0),
+    xend = c(4.0, 5.0, 5.0, 6.0, 7.0, 7.0, 8.0),
+    yend = c(25.0, 25.0, 35.0, 35.0, 35.0, 10.0, 10.0),
+    col  = c("gold", "gold", "gold", "gold", "gold", "gold", "plum")),
+  marks = data.frame(
+    x = c(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0),
+    y = c(25.0, 25.0, 25.0, 25.0, 35.0, 35.0, 10.0, 10.0),
+    tipo = c("amenaza", "amenaza", "cambio", "hito", "cambio", "fallo", "cambio", "cambio"),
+    col = c("crimson", "crimson", "gold", "ink3", "gold", "crimson", "plum", "green"),
+    lab = c("25%", NA, "25%", NA, "35%", NA, "10%", "10%"),
+    labpos = c("above", NA, "above", NA, "above", NA, "above", "above")),
+  hoy = 8.32,
+  foot = list(
+    list(h = "Qué muestra este carril", p = c("Carril general/horizontal: arancel que decide cuánto paga casi todo lo importado.", "Los tres colores marcan la base legal vigente en cada tramo: dorado = IEEPA (feb. 2025–20 feb. 2026, declarado ilegal por la Corte Suprema); ciruela = recargo temporal Sección 122 (24 feb.–24 jul. 2026); verde = Sección 301 por trabajo forzado, vigente desde el 24 de julio de 2026.")),
+    list(h = "Nota del caso", p = c("Canadá es, junto con México, el caso donde una amenaza sí se convirtió en tasa vigente sin mediar acuerdo marco: el recargo por fentanilo subió de 25% a 35% el 1 de agosto de 2025 (E.O. 14325) y se mantuvo así hasta que el fallo de la Corte Suprema lo dejó sin base legal."))),
+  fuentes = "Federal Register (2025, 2026) · The White House (2025a-f) · *Learning Resources, Inc. v. Trump* (2026), Corte Suprema de EUA · Global Trade Alert (2026) · CRS (2026), R48549."
+)
+
+spec_china <- list(
+  ytitle = "Arancel adicional sobre China",
+  notas_banda = TRUE,
+  title = data.frame(txt = c("China bajo IEEPA: ", "recíproco, fentanilo", " ", "y Sección 301"), col = c("ink", "gold", "ink", "green")),
+  stats = data.frame(
+    col = c("gold", "fenta", "crimson", "green"),
+    lab = c("PICO — ARANCEL RECÍPROCO", "PICO — ARANCEL FENTANILO", "ANULACIÓN IEEPA", "SECCIÓN 301 (VIGENTE HOY)"),
+    num = c("125%", "20%", "0%", "12,5%"),
+    sub = c("9 abr. 2025", "3 mar.–4 nov. 2025", "20 feb. 2026 (Corte Suprema)", "grupo general · desde 24 jul. 2026")),
+  leg_lines = data.frame(col = c("gold", "fenta", "plum", "green"), lab = c("Arancel \"recíproco\" (E.O. 14257 y sucesoras)", "Arancel por fentanilo (E.O. 14195 y sucesoras)", "Sección 122", "Sección 301")),
+  leg_syms = c("cambio", "hito", "fallo"),
+  ticks = c(0, 25, 50, 75, 100, 125),
+  events = data.frame(
+    fecha = c("1 feb. 2025", "3 mar. 2025", "2 abr. 2025", "8 abr. 2025", "9 abr. 2025", "12 may. 2025", "11 ago. 2025", "4 nov. 2025", "20 feb. 2026", "24 feb. 2026", "24 jul. 2026"),
+    texto = c("E.O. 14195 — 10% por fentanilo", "Sube a 20%", "\"Liberation Day\" — E.O. 14257: 34%", "Represalia china — sube a 84%", "Pico — sube a 125%", "Acuerdo de Ginebra — baja a 10% (tregua 90 días)", "E.O. 14334 — extiende tregua 90 días más", "E.O. 14358 extiende 1 año · E.O. 14357 baja fentanilo a 10%", "Corte Suprema anula los aranceles IEEPA", "Sección 122: 10% (no específico a China)", "Sección 301: 12,5% (grupo general, no preferencial)"),
+    nota = c("E.O. 14195\n10%", "Sube\na 20%", "E.O. 14257\n34%", "Represalia\n84%", "Pico\n125%", "Ginebra\n10%", "Tregua\n+90 días", "E.O. 14357/8\nfent. 10%", "Corte\nSuprema", "Sec. 122\n10%", "Sec. 301\n12,5%")),
+  segs = data.frame(
+    x    = c(1.0, 2.0, 2.0, 8.0, 8.0, 3.0, 4.0, 4.0, 5.0, 5.0, 6.0, 6.0, 7.0, 9.0, 10.0, 11.0),
+    y    = c(10.02, 10.02, 20.0, 20.0, 10.02, 34.0, 34.0, 84.0, 84.0, 125.0, 125.0, 10.02, 10.02, 10.02, 10.02, 10.02),
+    xend = c(2.0, 2.0, 8.0, 8.0, 9.0, 4.0, 4.0, 5.0, 5.0, 6.0, 6.0, 7.0, 9.0, 10.0, 11.0, 11.0),
+    yend = c(10.02, 20.0, 20.0, 10.02, 10.02, 34.0, 84.0, 84.0, 125.0, 125.0, 10.02, 10.02, 10.02, 10.02, 10.02, 12.49),
+    col  = c("fenta", "fenta", "fenta", "fenta", "fenta", "gold", "gold", "gold", "gold", "gold", "gold", "gold", "gold", "gold", "plum", "plum")),
+  marks = data.frame(
+    x = c(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0),
+    y = c(10.02, 20.0, 34.0, 84.0, 125.0, 10.02, 10.02, 10.02, 10.02, 10.02, 12.49),
+    tipo = c("cambio", "cambio", "cambio", "cambio", "cambio", "cambio", "hito", "cambio", "fallo", "cambio", "cambio"),
+    col = c("fenta", "fenta", "gold", "gold", "gold", "gold", "ink3", "fenta", "crimson", "plum", "green"),
+    lab = c("10%", "20%", "34%", "84%", "125%", "10%", NA, "10%", NA, "10%", "12,5%"),
+    labpos = c("above", "above", "above", "above", "above", "below", NA, "below", NA, "above", "above")),
+  hoy = 11.32,
+  foot = list(
+    list(h = "Qué vino después: Sección 122", p = c("El mismo día del fallo (20 feb. 2026), la administración impuso, vía Sección 122 (no IEEPA), un recargo temporal universal del 10% — no específico a China — que por límite estatutario (150 días) expiró el 24 de julio de 2026.", "Desde esa fecha rige un arancel global bajo Sección 301 (investigación por trabajo forzado, 60 países). China no está entre las 17 economías con tasa preferencial del 10%, sino en el grupo general del 12,5%.")),
+    list(h = "Apilamiento: por qué 12,5% no es la tasa real pagada", p = c("Ese 12,5% se apila sobre los aranceles Sección 301 de 2018-2019 (7,5%-25% según lista de producto, primer mandato Trump, aún vigentes) y sobre Sección 232 sectorial (acero/aluminio 50%, autos 25%, semiconductores 25%, etc.), ninguno afectado por el fallo IEEPA.", "La tasa efectiva varía mucho por producto: en semiconductores chinos el apilamiento ronda el ~70% combinado (301 original 50% + 301 trabajo forzado 12,5% + capa de sobrecapacidad ~7,5% esperada para sep. 2026)."))),
+  fuentes = "Federal Register — E.O. 14195 (2025c), E.O. 14256 (2025i), E.O. 14257 (2025j), E.O. 14334 (2025s), E.O. 14357/14358 (2025w) · *Learning Resources, Inc. v. Trump* (2026), Corte Suprema de EUA · Congressional Research Service (2026), R48549 · Global Trade Alert (2026), \"From IEEPA to Section 122\" · Holland & Knight (2026), \"Supreme Court Strikes Down IEEPA Tariffs\" · China Briefing (2026), \"US-China Tariff Rates\"."
+)
+
+spec_corea <- list(
+  ytitle = "Arancel adicional sobre Corea del Sur",
+  title = data.frame(txt = c("Corea del Sur: del arancel recíproco ", "a la Sección 301"), col = c("ink", "green")),
+  stats = data.frame(
+    col = c("gold", "crimson", "plum", "green"),
+    lab = c("PICO HISTÓRICO", "VIGENTE HASTA EL FALLO", "SECCIÓN 122", "SECCIÓN 301 (VIGENTE HOY)"),
+    num = c("25%", "15%", "10%", "12,5%"),
+    sub = c("2 abr. 2025 (\"Liberation Day\")", "acuerdo marco, hasta 20 feb. 2026", "24 feb.–24 jul. 2026", "neto de NMF · desde 24 jul. 2026")),
+  leg_lines = data.frame(col = c("gold", "plum", "green"), lab = c("IEEPA", "Sección 122", "Sección 301")),
+  leg_syms = c("cambio", "hito", "amenaza", "fallo"),
+  ticks = c(0, 10, 20, 30),
+  events = data.frame(
+    fecha = c("2 abr. 2025", "9 abr. 2025", "8 jul. 2025", "4 dic. 2025", "27 ene. 2026", "20 feb. 2026", "24 feb. 2026", "24 jul. 2026"),
+    texto = c("\"Liberation Day\": 25%", "Pausa global: baja a 10%", "Amenaza: 25% desde 1 ago.", "Acuerdo marco (retroactivo a 1 nov.)", "Amenaza: sube a 25% (incumplimiento alegado)", "Corte Suprema: IEEPA ilegal", "Sección 122: 10%", "Sección 301: 12,5% (neto de NMF)"),
+    nota = c("Liberation\nDay", "Pausa\nglobal", "Amenaza:\n25%", "Acuerdo\nmarco", "Amenaza:\n25%", "Corte\nSuprema", "Sec. 122", "Sec. 301\n(neto de NMF)")),
+  segs = data.frame(
+    x    = c(1.0, 2.0, 2.0, 3.0, 4.0, 4.0, 5.0, 6.0, 7.0, 7.0, 8.0),
+    y    = c(25.0, 25.0, 10.0, 10.0, 10.0, 15.0, 15.0, 15.0, 15.0, 10.0, 10.0),
+    xend = c(2.0, 2.0, 3.0, 4.0, 4.0, 5.0, 6.0, 7.0, 7.0, 8.0, 8.0),
+    yend = c(25.0, 10.0, 10.0, 10.0, 15.0, 15.0, 15.0, 15.0, 10.0, 10.0, 12.5),
+    col  = c("gold", "gold", "gold", "gold", "gold", "gold", "gold", "gold", "gold", "plum", "plum")),
+  marks = data.frame(
+    x = c(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0),
+    y = c(25.0, 10.0, 10.0, 15.0, 15.0, 15.0, 10.0, 12.5),
+    tipo = c("cambio", "cambio", "amenaza", "cambio", "amenaza", "fallo", "cambio", "cambio"),
+    col = c("gold", "gold", "crimson", "gold", "crimson", "crimson", "plum", "green"),
+    lab = c("25%", "10%", NA, "15%", NA, NA, "10%", "12,5%"),
+    labpos = c("above", "above", NA, "above", NA, NA, "above", "above")),
+  hoy = 8.32,
+  foot = list(
+    list(h = "Qué muestra este carril", p = c("Carril general/horizontal: arancel que decide cuánto paga casi todo lo importado.", "Los tres colores marcan la base legal vigente en cada tramo: dorado = IEEPA (feb. 2025–20 feb. 2026, declarado ilegal por la Corte Suprema); ciruela = recargo temporal Sección 122 (24 feb.–24 jul. 2026); verde = Sección 301 por trabajo forzado, vigente desde el 24 de julio de 2026.")),
+    list(h = "Nota del caso", p = c("Corea del Sur es el único de los cinco países con una amenaza de reversión después de haber alcanzado su acuerdo marco: en enero de 2026, ya con el techo de 15% vigente desde diciembre de 2025, Trump amenazó con subirlo a 25% alegando incumplimiento legislativo — estatus incierto según la prensa, superado semanas después por el fallo de la Corte Suprema."))),
+  fuentes = "Federal Register (2025, 2026) · The White House (2025a-f) · *Learning Resources, Inc. v. Trump* (2026), Corte Suprema de EUA · Global Trade Alert (2026) · CRS (2026), R48549."
+)
+
+spec_japon <- list(
+  ytitle = "Arancel adicional sobre Japón",
+  title = data.frame(txt = c("Japón: del arancel recíproco ", "a la Sección 301"), col = c("ink", "green")),
+  stats = data.frame(
+    col = c("gold", "crimson", "plum", "green"),
+    lab = c("PICO HISTÓRICO", "VIGENTE HASTA EL FALLO", "SECCIÓN 122", "SECCIÓN 301 (VIGENTE HOY)"),
+    num = c("24%", "15%", "10%", "12,5%"),
+    sub = c("2 abr. 2025 (\"Liberation Day\")", "acuerdo marco, hasta 20 feb. 2026", "24 feb.–24 jul. 2026", "neto de NMF · desde 24 jul. 2026")),
+  leg_lines = data.frame(col = c("gold", "plum", "green"), lab = c("IEEPA", "Sección 122", "Sección 301")),
+  leg_syms = c("cambio", "hito", "amenaza", "fallo"),
+  ticks = c(0, 10, 20, 30),
+  events = data.frame(
+    fecha = c("2 abr. 2025", "9 abr. 2025", "8 jul. 2025", "23 jul. 2025", "4 sep. 2025", "20 feb. 2026", "24 feb. 2026", "24 jul. 2026"),
+    texto = c("\"Liberation Day\": 24%", "Pausa global: baja a 10%", "Amenaza: 25% desde 1 ago.", "Anuncio de acuerdo (15%)", "Vigencia formal: techo 15% (E.O. 14345)", "Corte Suprema: IEEPA ilegal", "Sección 122: 10%", "Sección 301: 12,5% (neto de NMF)"),
+    nota = c("Liberation\nDay", "Pausa\nglobal", "Amenaza:\n25%", "Anuncio\nacuerdo", "Vigencia\n(E.O. 14345)", "Corte\nSuprema", "Sec. 122", "Sec. 301\n(neto de NMF)")),
+  segs = data.frame(
+    x    = c(1.0, 2.0, 2.0, 3.0, 4.0, 5.0, 5.0, 6.0, 7.0, 7.0, 8.0),
+    y    = c(24.0, 24.0, 10.0, 10.0, 10.0, 10.0, 15.0, 15.0, 15.0, 10.0, 10.0),
+    xend = c(2.0, 2.0, 3.0, 4.0, 5.0, 5.0, 6.0, 7.0, 7.0, 8.0, 8.0),
+    yend = c(24.0, 10.0, 10.0, 10.0, 10.0, 15.0, 15.0, 15.0, 10.0, 10.0, 12.5),
+    col  = c("gold", "gold", "gold", "gold", "gold", "gold", "gold", "gold", "gold", "plum", "plum")),
+  marks = data.frame(
+    x = c(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0),
+    y = c(24.0, 10.0, 10.0, 10.0, 15.0, 15.0, 10.0, 12.5),
+    tipo = c("cambio", "cambio", "amenaza", "hito", "cambio", "fallo", "cambio", "cambio"),
+    col = c("gold", "gold", "crimson", "ink3", "gold", "crimson", "plum", "green"),
+    lab = c("24%", "10%", NA, NA, "15%", NA, "10%", "12,5%"),
+    labpos = c("above", "above", NA, NA, "above", NA, "above", "above")),
+  hoy = 8.32,
+  foot = list(
+    list(h = "Qué muestra este carril", p = c("Carril general/horizontal: arancel que decide cuánto paga casi todo lo importado.", "Los tres colores marcan la base legal vigente en cada tramo: dorado = IEEPA (feb. 2025–20 feb. 2026, declarado ilegal por la Corte Suprema); ciruela = recargo temporal Sección 122 (24 feb.–24 jul. 2026); verde = Sección 301 por trabajo forzado, vigente desde el 24 de julio de 2026.")),
+    list(h = "Nota del caso", p = c("Japón muestra con más claridad que ningún otro caso la brecha entre anuncio político y vigencia formal: el acuerdo se anunció el 23 de julio de 2025, pero la tasa de 10% (pausa global) siguió aplicándose hasta que la proclamación formal (E.O. 14345) entró en vigor recién el 4 de septiembre — mes y medio después."))),
+  fuentes = "Federal Register (2025, 2026) · The White House (2025a-f) · *Learning Resources, Inc. v. Trump* (2026), Corte Suprema de EUA · Global Trade Alert (2026) · CRS (2026), R48549."
+)
+
+spec_ue <- list(
+  ytitle = "Arancel adicional sobre la Unión Europea",
+  title = data.frame(txt = c("Unión Europea: del arancel recíproco ", "a la Sección 301"), col = c("ink", "green")),
+  stats = data.frame(
+    col = c("gold", "crimson", "plum", "green"),
+    lab = c("PICO HISTÓRICO", "VIGENTE HASTA EL FALLO", "SECCIÓN 122", "SECCIÓN 301 (VIGENTE HOY)"),
+    num = c("20%", "15%", "10%", "10%"),
+    sub = c("2 abr. 2025 (\"Liberation Day\")", "acuerdo marco, hasta 20 feb. 2026", "24 feb.–24 jul. 2026", "neto de NMF · desde 24 jul. 2026")),
+  leg_lines = data.frame(col = c("gold", "plum", "green"), lab = c("IEEPA", "Sección 122", "Sección 301")),
+  leg_syms = c("cambio", "hito", "amenaza", "fallo"),
+  ticks = c(0, 5, 10, 15, 20, 25),
+  events = data.frame(
+    fecha = c("2 abr. 2025", "9 abr. 2025", "12 jul. 2025", "21 ago. 2025", "20 feb. 2026", "24 feb. 2026", "24 jul. 2026"),
+    texto = c("\"Liberation Day\": 20%", "Pausa global: baja a 10%", "Amenaza: 30% desde 1 ago.", "Acuerdo marco: techo 15%", "Corte Suprema: IEEPA ilegal", "Sección 122: 10%", "Sección 301: 10% (neto de NMF)"),
+    nota = c("Liberation\nDay", "Pausa\nglobal", "Amenaza:\n30%", "Acuerdo\nmarco", "Corte\nSuprema", "Sec. 122", "Sec. 301\n(neto de NMF)")),
+  segs = data.frame(
+    x    = c(1.0, 2.0, 2.0, 3.0, 4.0, 4.0, 5.0, 6.0, 6.0),
+    y    = c(20.0, 20.0, 10.0, 10.0, 10.0, 15.0, 15.0, 15.0, 10.0),
+    xend = c(2.0, 2.0, 3.0, 4.0, 4.0, 5.0, 6.0, 6.0, 7.0),
+    yend = c(20.0, 10.0, 10.0, 10.0, 15.0, 15.0, 15.0, 10.0, 10.0),
+    col  = c("gold", "gold", "gold", "gold", "gold", "gold", "gold", "gold", "plum")),
+  marks = data.frame(
+    x = c(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0),
+    y = c(20.0, 10.0, 10.0, 15.0, 15.0, 10.0, 10.0),
+    tipo = c("cambio", "cambio", "amenaza", "cambio", "fallo", "cambio", "cambio"),
+    col = c("gold", "gold", "crimson", "gold", "crimson", "plum", "green"),
+    lab = c("20%", "10%", NA, "15%", NA, "10%", "10%"),
+    labpos = c("above", "above", NA, "above", NA, "above", "above")),
+  hoy = 7.32,
+  foot = list(
+    list(h = "Qué muestra este carril", p = c("Carril general/horizontal: arancel que decide cuánto paga casi todo lo importado.", "Los tres colores marcan la base legal vigente en cada tramo: dorado = IEEPA (feb. 2025–20 feb. 2026, declarado ilegal por la Corte Suprema); ciruela = recargo temporal Sección 122 (24 feb.–24 jul. 2026); verde = Sección 301 por trabajo forzado, vigente desde el 24 de julio de 2026.")),
+    list(h = "Nota del caso", p = c("La UE recibió la misma amenaza de 30% que México (12 jul. 2025) pero la resolvió por la vía de un acuerdo marco (21 ago. 2025, techo de 15%) en lugar de una simple suspensión temporal."))),
+  fuentes = "Federal Register (2025, 2026) · The White House (2025a-f) · *Learning Resources, Inc. v. Trump* (2026), Corte Suprema de EUA · Global Trade Alert (2026) · CRS (2026), R48549."
+)
+
+spec_vietnam <- list(
+  ytitle = "Arancel adicional sobre Vietnam",
+  title = data.frame(txt = c("Vietnam: del arancel recíproco ", "a la Sección 301"), col = c("ink", "green")),
+  stats = data.frame(
+    col = c("gold", "crimson", "plum", "green"),
+    lab = c("PICO HISTÓRICO", "VIGENTE HASTA EL FALLO", "SECCIÓN 122", "SECCIÓN 301 (VIGENTE HOY)"),
+    num = c("46%", "20%", "10%", "12,5%"),
+    sub = c("2 abr. 2025 (\"Liberation Day\")", "desde 7 ago. 2025, hasta 20 feb. 2026", "24 feb.–24 jul. 2026", "sin TRQ textil · desde 24 jul. 2026")),
+  leg_lines = data.frame(col = c("gold", "plum", "green"), lab = c("IEEPA", "Sección 122", "Sección 301")),
+  leg_syms = c("cambio", "hito", "amenaza", "fallo"),
+  ticks = c(0, 10, 20, 30, 40, 50),
+  events = data.frame(
+    fecha = c("2 abr. 2025", "9 abr. 2025", "2 jul. 2025", "31 jul. 2025", "7 ago. 2025", "26 oct. 2025", "20 feb. 2026", "24 feb. 2026", "24 jul. 2026"),
+    texto = c("\"Liberation Day\": 46% (Anexo I, E.O. 14257)", "Pausa global: baja a 10%", "Anuncio preliminar: 20% + 40% transbordo", "E.O. 14326 firmada: confirma 20%", "Entra en vigor: 20% (E.O. 14326)", "Acuerdo marco: confirma 20%, 0% p/Anexo III", "Corte Suprema: IEEPA ilegal", "Sección 122: 10%", "Sección 301: 12,5% (sin TRQ textil)"),
+    nota = c("Liberation\nDay", "Pausa\nglobal", "Anuncio\npreliminar", "E.O. 14326\nfirmada", "Entra en\nvigor", "Acuerdo\nmarco", "Corte\nSuprema", "Sec. 122", "Sec. 301\n(sin TRQ)")),
+  segs = data.frame(
+    x    = c(1.0, 2.0, 2.0, 3.0, 4.0, 5.0, 5.0, 6.0, 7.0, 8.0, 8.0, 9.0),
+    y    = c(46.01, 46.01, 10.01, 10.01, 10.01, 10.01, 20.0, 20.0, 20.0, 20.0, 10.01, 10.01),
+    xend = c(2.0, 2.0, 3.0, 4.0, 5.0, 5.0, 6.0, 7.0, 8.0, 8.0, 9.0, 9.0),
+    yend = c(46.01, 10.01, 10.01, 10.01, 10.01, 20.0, 20.0, 20.0, 20.0, 10.01, 10.01, 12.51),
+    col  = c("gold", "gold", "gold", "gold", "gold", "gold", "gold", "gold", "gold", "gold", "plum", "plum")),
+  marks = data.frame(
+    x = c(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0),
+    y = c(46.01, 10.01, 10.01, 10.01, 20.0, 20.0, 20.0, 10.01, 12.51),
+    tipo = c("cambio", "cambio", "hito", "hito", "cambio", "hito", "fallo", "cambio", "cambio"),
+    col = c("gold", "gold", "ink3", "ink3", "gold", "ink3", "crimson", "plum", "green"),
+    lab = c("46%", "10%", NA, NA, "20%", NA, NA, "10%", "12,5%"),
+    labpos = c("above", "above", NA, NA, "above", NA, NA, "above", "above")),
+  hoy = 9.32,
+  foot = list(
+    list(h = "Qué muestra este carril", p = c("Carril general/horizontal: arancel que decide cuánto paga casi todo lo importado.", "Los tres colores marcan la base legal vigente en cada tramo: dorado = IEEPA (feb. 2025–20 feb. 2026, declarado ilegal por la Corte Suprema); ciruela = recargo temporal Sección 122 (24 feb.–24 jul. 2026); verde = Sección 301 por trabajo forzado, vigente desde el 24 de julio de 2026.")),
+    list(h = "Nota del caso", p = c("Vietnam tuvo la escalada más pronunciada de los seis países documentados en este proyecto: 46% el 2 de abril —el segundo más alto de toda la tabla de “Liberation Day”, solo detrás de Camboya (49%)— reducido a 10% en la pausa global, y renegociado a 20%, más del doble del 10% de México/Canadá o el 15% de Japón/Corea/UE, más una tasa punitiva del 40% para transbordo, pensada para desalentar el uso de Vietnam como ruta de desvío de mercancía china. El acuerdo marco de octubre no cambió la tasa recíproca, pero sí eliminó el arancel a “casi todos” los bienes estadounidenses de parte de Vietnam y añadió una lista Anexo III con arancel 0%."))),
+  fuentes = "Federal Register (2025, 2026) · The White House (2025a-f) · *Learning Resources, Inc. v. Trump* (2026), Corte Suprema de EUA · Global Trade Alert (2026) · CRS (2026), R48549 · USTR (2025), Fact Sheet: US-Vietnam Framework · Global Trade Alert (2026), S301-FL Vietnam economy report."
+)
+
+spec_taiwan <- list(
+  ytitle = "Arancel adicional sobre Taiwán",
+  title = data.frame(txt = c("Taiwán: del arancel recíproco ", "a la Sección 301"), col = c("ink", "green")),
+  stats = data.frame(
+    col = c("gold", "crimson", "plum", "green"),
+    lab = c("PICO HISTÓRICO", "VIGENTE HASTA EL FALLO", "SECCIÓN 122", "SECCIÓN 301 (VIGENTE HOY)"),
+    num = c("32%", "20%", "10%", "10%"),
+    sub = c("2 abr. 2025 (\"Liberation Day\")", "desde 7 ago. 2025, hasta 20 feb. 2026", "24 feb.–24 jul. 2026", "neto de NMF · desde 24 jul. 2026")),
+  leg_lines = data.frame(col = c("gold", "plum", "green"), lab = c("IEEPA", "Sección 122", "Sección 301")),
+  leg_syms = c("cambio", "hito", "amenaza", "fallo"),
+  ticks = c(0, 10, 20, 30, 40),
+  events = data.frame(
+    fecha = c("2 abr. 2025", "9 abr. 2025", "31 jul. 2025", "7 ago. 2025", "15 ene. 2026", "12 feb. 2026", "20 feb. 2026", "24 feb. 2026", "24 jul. 2026"),
+    texto = c("\"Liberation Day\": 32% (Anexo I, E.O. 14257)", "Pausa global: baja a 10%", "E.O. 14326 firmada: 20%", "Entra en vigor: 20% (E.O. 14326)", "Memorando de inversión (US$250 mil millones)", "Acuerdo de Comercio Recíproco firmado: 15% pendiente", "Corte Suprema: IEEPA ilegal", "Sección 122: 10%", "Sección 301: 10% (neto de NMF)"),
+    nota = c("Liberation\nDay", "Pausa\nglobal", "E.O. 14326\nfirmada", "Entra en\nvigor", "Memorando\ninversión", "Acuerdo\nfirmado", "Corte\nSuprema", "Sec. 122", "Sec. 301\n(neto de NMF)")),
+  segs = data.frame(
+    x    = c(1.0, 2.0, 2.0, 3.0, 4.0, 4.0, 5.0, 6.0, 7.0, 8.0, 8.0),
+    y    = c(32.0, 32.0, 10.0, 10.0, 10.0, 20.0, 20.0, 20.0, 20.0, 20.0, 10.0),
+    xend = c(2.0, 2.0, 3.0, 4.0, 4.0, 5.0, 6.0, 7.0, 8.0, 8.0, 9.0),
+    yend = c(32.0, 10.0, 10.0, 10.0, 20.0, 20.0, 20.0, 20.0, 20.0, 10.0, 10.0),
+    col  = c("gold", "gold", "gold", "gold", "gold", "gold", "gold", "gold", "gold", "gold", "plum")),
+  marks = data.frame(
+    x = c(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0),
+    y = c(32.0, 10.0, 10.0, 20.0, 20.0, 20.0, 20.0, 10.0, 10.0),
+    tipo = c("cambio", "cambio", "hito", "cambio", "hito", "hito", "fallo", "cambio", "cambio"),
+    col = c("gold", "gold", "ink3", "gold", "ink3", "ink3", "crimson", "plum", "green"),
+    lab = c("32%", "10%", NA, "20%", NA, NA, NA, "10%", "10%"),
+    labpos = c("above", "above", NA, "above", NA, NA, NA, "above", "above")),
+  hoy = 9.32,
+  foot = list(
+    list(h = "Qué muestra este carril", p = c("Carril general/horizontal: arancel que decide cuánto paga casi todo lo importado.", "Los tres colores marcan la base legal vigente en cada tramo: dorado = IEEPA (feb. 2025–20 feb. 2026, declarado ilegal por la Corte Suprema); ciruela = recargo temporal Sección 122 (24 feb.–24 jul. 2026); verde = Sección 301 por trabajo forzado, vigente desde el 24 de julio de 2026.")),
+    list(h = "Nota del caso", p = c("Taiwán es el caso donde un acuerdo firmado no alcanzó a cambiar la tasa: el Acuerdo de Comercio Recíproco del 12 de febrero de 2026 fijaba un arancel de 15% (el mayor entre la tasa NMF y 15%) en lugar del 20% vigente desde el 7 de agosto de 2025, pero su entrada en vigor quedó condicionada a la aprobación del Yuan Legislativo, así que la tasa efectiva se mantuvo en 20% hasta el fallo de la Corte Suprema. Acompañaba al acuerdo el memorando del 15 de enero de 2026, con inversión de US$250 mil millones de empresas taiwanesas de semiconductores y tecnología, y otros US$250 mil millones en garantías de crédito del gobierno, a cambio de trato preferencial en la investigación de Sección 232 sobre semiconductores. Bajo la Sección 301, Taiwán paga 10% neto de la tasa NMF de cada producto, con su propia lista de exclusiones por producto."))),
+  fuentes = "Federal Register (2025, 2026) · The White House (2025a-f) · *Learning Resources, Inc. v. Trump* (2026), Corte Suprema de EUA · Global Trade Alert (2026) · CRS (2026), R48549 · USTR (2026), Fact Sheet: US-Taiwan Agreement on Reciprocal Trade · Global Trade Alert (2026), Forced-Labour Section 301 Final Action · Holland & Knight (2026), \"And the (Tariff) Beat Goes On\"."
+)
+
+spec_autos <- list(
+  title = "Autos: arancel de Sección 232 (EUA) por socio comercial — cómo se movió cada uno",
+  subtitle = "HS 8703, vehículos de pasajeros · dos tramos: el golpe inicial de la Sección 232 (izquierda) y el alivio negociado después (derecha)",
+  xlab = c("ene. 2025", "3 abr. 2025\n(pico, Secc. 232)", "3 abr. 2025\n(pico)", "tasa vigente\n(acuerdo bilateral)"),
+  series = data.frame(
+    id     = c("japon", "ue", "corea", "mx30", "mx40"),
+    leg    = c("Japón", "Unión Europea", "Corea del Sur", "México — 30% contenido EUA", "México — 40% contenido EUA"),
+    dash   = c(FALSE, FALSE, FALSE, FALSE, TRUE),
+    nombre = c("Japón", "Unión Europea", "Corea del Sur", "México — 30% cont. EUA", "México — 40% cont. EUA"),
+    vini   = c("2.5%", "2.5%", "0%", "0%", "0%"),
+    a0 = c(2.65, 2.35, 0, 0, 0), a1 = c(25.15, 24.85, 25, 17.5, 15),
+    b0 = c(25.32, 24.68, 25, 17.5, 14.36), b1 = c(15.3, 14.68, 15, 17.5, 14.36),
+    ll = c(-1.9, -4.2, -6.5, -8.8, -11.1),
+    lead_l = c(TRUE, TRUE, TRUE, TRUE, TRUE),
+    lr = c(14.9, 12.2, 9.5, 17.5, 6.8),
+    lead_r = c(FALSE, TRUE, TRUE, FALSE, TRUE),
+    rtxt = c("Japón · 15%", "Unión Europea · 15%", "Corea del Sur · 15%",
+             "México — 30% cont. EUA · 17.5%", "México — 40% cont. EUA · 15%"),
+    rsub = c("16 sep. 2025", "25 sep. 2025", "1 nov. 2025", "sin acuerdo", "sin acuerdo")),
+  foot = list(
+    list(h = "Panel A — impacto inicial",
+         p = "nivel de partida (enero de 2025, sin cambios relevantes respecto a la década previa) hasta el pico común de 25% que impuso la Proclamación 10908 el 3 de abril de 2025 para Japón, Corea del Sur y la Unión Europea. México no pasa por ese pico: al ser un vehículo calificado bajo el T-MEC, el descuento por contenido estadounidense certificado se aplica desde el primer día, así que salta directo a su arancel efectivo (17.5% con 30% de contenido EUA, 15% con 40%)."),
+    list(h = "Panel B — alivio negociado",
+         p = "desde ese pico de 25%, Japón, Corea del Sur y la Unión Europea bajan a un techo de 15% mediante acuerdos bilaterales, cada uno en su propia fecha de 2025 (ver nota junto a cada línea). México no tiene un acuerdo bilateral negociado que sustituya la Proclamación 10908 — su arancel efectivo no cambia entre paneles, sigue determinado únicamente por el contenido estadounidense certificado de cada vehículo.")),
+  fuentes = "Federal Register (2025-04-03, 2025-09-25, 2025-12-04) · The White House (2025, O.E. 4 sep.)"
+)
+
+spec_autopartes <- list(
+  title = "Autopartes: arancel de Sección 232 (EUA) por socio comercial — cómo se movió cada uno",
+  subtitle = "Partidas HTS bajo el Anexo de la Proclamación 10908 (mayormente cap. 8708) · dos tramos: el golpe inicial de la Sección 232 (izquierda) y el alivio negociado después (derecha)",
+  xlab = c("ene. 2025", "3 may. 2025\n(pico, Secc. 232)", "3 may. 2025\n(pico)", "tasa vigente\n(acuerdo bilateral)"),
+  series = data.frame(
+    id     = c("japon", "ue", "corea", "mx"),
+    leg    = c("Japón", "Unión Europea", "Corea del Sur", "México — T-MEC calificado"),
+    dash   = c(FALSE, FALSE, FALSE, FALSE),
+    nombre = c("Japón", "Unión Europea", "Corea del Sur", "México — T-MEC calificado"),
+    vini   = c("2.5%", "2.5%", "0%", "0%"),
+    a0 = c(2.65, 2.35, 0, 0), a1 = c(25.15, 24.85, 25, 0),
+    b0 = c(25.26, 24.74, 25, 0), b1 = c(15.26, 14.74, 15, 0),
+    ll = c(-1.9, -4.2, -6.5, -8.8),
+    lead_l = c(TRUE, TRUE, TRUE, TRUE),
+    lr = c(14.9, 12.2, 9.5, 0),
+    lead_r = c(FALSE, TRUE, TRUE, FALSE),
+    rtxt = c("Japón · 15%", "Unión Europea · 15%", "Corea del Sur · 15%", "México — T-MEC calificado · 0%"),
+    rsub = c("16 sep. 2025", "25 sep. 2025", "1 nov. 2025", "exento (9903.94.06)")),
+  foot = list(
+    list(h = "Panel A — impacto inicial",
+         p = "nivel de partida (enero de 2025) hasta el pico común de 25% que impuso la Proclamación 10908 el 3 de mayo de 2025 (un mes después que vehículos) para Japón, Corea del Sur y la Unión Europea. México no pasa por ese pico en absoluto: a diferencia de los vehículos, las autopartes que califican como originarias bajo el T-MEC (umbrales de 65-75% de RVC según categoría de parte) quedan exentas de la Sección 232 vía la línea arancelaria 9903.94.06 — no hay descuento proporcional por contenido EUA como en vehículos, es exención completa o arancel pleno."),
+    list(h = "Panel B — alivio negociado",
+         p = "desde ese pico de 25%, Japón, Corea del Sur y la Unión Europea bajan a un techo de 15% en las mismas fechas bilaterales que autos (la cobertura de sus acuerdos incluye autopartes por igual). México se mantiene exento en 0% durante todo el período. No graficado: una autoparte mexicana que no califica bajo el T-MEC paga el 25% pleno sobre el valor total — pero hacia enero de 2026 cerca del 85% de las autopartes mexicanas importadas reclamaban la exención T-MEC, por lo que se omite del gráfico por poco representativa del comercio efectivo.")),
+  fuentes = "Federal Register (2025-04-03, 2025-09-25, 2025-12-04) · The White House (2025, O.E. 4 sep.) · GingerControl (s.f.) · International Trade Insights (2025) · BLG (2018)"
+)
+
+```
+
+
+<!-- ========== MÉXICO ========== -->
+
+```{r}
+#| label: fig-mexico-ieepa
+#| echo: false
+#| warning: false
+#| message: false
+#| fig-width: 6.5
+#| fig-height: 6.912
+#| fig-dpi: 300
+#| dev: ragg_png
+infografia(spec_mexico)
+```
+
+```{r}
+#| label: tbl-mexico-hitos
+#| echo: false
+tabla_hitos(spec_mexico, "Hitos de la política arancelaria de EUA hacia México, 2025–2026")
+```
+
+*Fuentes:* Federal Register (2025, 2026) · The White House (2025a-f) · *Learning Resources, Inc. v. Trump* (2026), Corte Suprema de EUA · Global Trade Alert (2026) · CRS (2026), R48549.
+
+
+<!-- ========== CANADÁ ========== -->
+
+```{r}
+#| label: fig-canada-ieepa
+#| echo: false
+#| warning: false
+#| message: false
+#| fig-width: 6.5
+#| fig-height: 6.912
+#| fig-dpi: 300
+#| dev: ragg_png
+infografia(spec_canada)
+```
+
+```{r}
+#| label: tbl-canada-hitos
+#| echo: false
+tabla_hitos(spec_canada, "Hitos de la política arancelaria de EUA hacia Canadá, 2025–2026")
+```
+
+*Fuentes:* Federal Register (2025, 2026) · The White House (2025a-f) · *Learning Resources, Inc. v. Trump* (2026), Corte Suprema de EUA · Global Trade Alert (2026) · CRS (2026), R48549.
+
+
+<!-- ========== CHINA ========== -->
+
+```{r}
+#| label: fig-china-ieepa
+#| echo: false
+#| warning: false
+#| message: false
+#| fig-width: 6.5
+#| fig-height: 7.596
+#| fig-dpi: 300
+#| dev: ragg_png
+infografia(spec_china)
+```
+
+```{r}
+#| label: tbl-china-hitos
+#| echo: false
+tabla_hitos(spec_china, "Hitos de la política arancelaria de EUA hacia China, 2025–2026")
+```
+
+*Fuentes:* Federal Register — E.O. 14195 (2025c), E.O. 14256 (2025i), E.O. 14257 (2025j), E.O. 14334 (2025s), E.O. 14357/14358 (2025w) · *Learning Resources, Inc. v. Trump* (2026), Corte Suprema de EUA · Congressional Research Service (2026), R48549 · Global Trade Alert (2026), "From IEEPA to Section 122" · Holland & Knight (2026), "Supreme Court Strikes Down IEEPA Tariffs" · China Briefing (2026), "US-China Tariff Rates".
+
+
+<!-- ========== COREA DEL SUR ========== -->
+
+```{r}
+#| label: fig-corea-ieepa
+#| echo: false
+#| warning: false
+#| message: false
+#| fig-width: 6.5
+#| fig-height: 6.912
+#| fig-dpi: 300
+#| dev: ragg_png
+infografia(spec_corea)
+```
+
+```{r}
+#| label: tbl-corea-hitos
+#| echo: false
+tabla_hitos(spec_corea, "Hitos de la política arancelaria de EUA hacia Corea del Sur, 2025–2026")
+```
+
+*Fuentes:* Federal Register (2025, 2026) · The White House (2025a-f) · *Learning Resources, Inc. v. Trump* (2026), Corte Suprema de EUA · Global Trade Alert (2026) · CRS (2026), R48549.
+
+
+<!-- ========== JAPÓN ========== -->
+
+```{r}
+#| label: fig-japon-ieepa
+#| echo: false
+#| warning: false
+#| message: false
+#| fig-width: 6.5
+#| fig-height: 6.912
+#| fig-dpi: 300
+#| dev: ragg_png
+infografia(spec_japon)
+```
+
+```{r}
+#| label: tbl-japon-hitos
+#| echo: false
+tabla_hitos(spec_japon, "Hitos de la política arancelaria de EUA hacia Japón, 2025–2026")
+```
+
+*Fuentes:* Federal Register (2025, 2026) · The White House (2025a-f) · *Learning Resources, Inc. v. Trump* (2026), Corte Suprema de EUA · Global Trade Alert (2026) · CRS (2026), R48549.
+
+
+<!-- ========== LA UNIÓN EUROPEA ========== -->
+
+```{r}
+#| label: fig-ue-ieepa
+#| echo: false
+#| warning: false
+#| message: false
+#| fig-width: 6.5
+#| fig-height: 6.912
+#| fig-dpi: 300
+#| dev: ragg_png
+infografia(spec_ue)
+```
+
+```{r}
+#| label: tbl-ue-hitos
+#| echo: false
+tabla_hitos(spec_ue, "Hitos de la política arancelaria de EUA hacia la Unión Europea, 2025–2026")
+```
+
+*Fuentes:* Federal Register (2025, 2026) · The White House (2025a-f) · *Learning Resources, Inc. v. Trump* (2026), Corte Suprema de EUA · Global Trade Alert (2026) · CRS (2026), R48549.
+
+
+<!-- ========== VIETNAM ========== -->
+
+```{r}
+#| label: fig-vietnam-ieepa
+#| echo: false
+#| warning: false
+#| message: false
+#| fig-width: 6.5
+#| fig-height: 7.266
+#| fig-dpi: 300
+#| dev: ragg_png
+infografia(spec_vietnam)
+```
+
+```{r}
+#| label: tbl-vietnam-hitos
+#| echo: false
+tabla_hitos(spec_vietnam, "Hitos de la política arancelaria de EUA hacia Vietnam, 2025–2026")
+```
+
+*Fuentes:* Federal Register (2025, 2026) · The White House (2025a-f) · *Learning Resources, Inc. v. Trump* (2026), Corte Suprema de EUA · Global Trade Alert (2026) · CRS (2026), R48549 · USTR (2025), Fact Sheet: US-Vietnam Framework · Global Trade Alert (2026), S301-FL Vietnam economy report.
+
+
+<!-- ========== TAIWÁN ========== -->
+
+```{r}
+#| label: fig-taiwan-ieepa
+#| echo: false
+#| warning: false
+#| message: false
+#| fig-width: 6.5
+#| fig-height: 7.738
+#| fig-dpi: 300
+#| dev: ragg_png
+infografia(spec_taiwan)
+```
+
+```{r}
+#| label: tbl-taiwan-hitos
+#| echo: false
+tabla_hitos(spec_taiwan, "Hitos de la política arancelaria de EUA hacia Taiwán, 2025–2026")
+```
+
+*Fuentes:* Federal Register (2025, 2026) · The White House (2025a-f) · *Learning Resources, Inc. v. Trump* (2026), Corte Suprema de EUA · Global Trade Alert (2026) · CRS (2026), R48549 · USTR (2026), Fact Sheet: US-Taiwan Agreement on Reciprocal Trade · Global Trade Alert (2026), Forced-Labour Section 301 Final Action · Holland & Knight (2026), "And the (Tariff) Beat Goes On".
+
+
+<!-- ========== AUTOS: COMPARATIVO SECCIÓN 232 ========== -->
+
+```{r}
+#| label: fig-autos-232
+#| echo: false
+#| warning: false
+#| message: false
+#| fig-width: 6.5
+#| fig-height: 6.832
+#| fig-dpi: 300
+#| dev: ragg_png
+comparativo(spec_autos)
+```
+
+*Fuentes:* Federal Register (2025-04-03, 2025-09-25, 2025-12-04) · The White House (2025, O.E. 4 sep.)
+
+
+<!-- ========== AUTOPARTES: COMPARATIVO SECCIÓN 232 ========== -->
+
+```{r}
+#| label: fig-autopartes-232
+#| echo: false
+#| warning: false
+#| message: false
+#| fig-width: 6.5
+#| fig-height: 6.898
+#| fig-dpi: 300
+#| dev: ragg_png
+comparativo(spec_autopartes)
+```
+
+*Fuentes:* Federal Register (2025-04-03, 2025-09-25, 2025-12-04) · The White House (2025, O.E. 4 sep.) · GingerControl (s.f.) · International Trade Insights (2025) · BLG (2018)
+
+
+<!-- ========== GUARDAR TODOS LOS GRÁFICOS (PDF + PNG) EN PLOTS/ ========== -->
+
+```{r}
+#| label: guardar-graficos
+#| echo: false
+#| eval: true
+#| warning: false
+#| message: false
+library(here)
+dir.create(here::here("PLOTS"), showWarnings = FALSE, recursive = TRUE)
+
+graficos <- list(
+  infografia_mexico       = infografia(spec_mexico),
+  infografia_canada       = infografia(spec_canada),
+  infografia_china        = infografia(spec_china),
+  infografia_corea        = infografia(spec_corea),
+  infografia_japon        = infografia(spec_japon),
+  infografia_ue           = infografia(spec_ue),
+  infografia_vietnam      = infografia(spec_vietnam),
+  infografia_taiwan       = infografia(spec_taiwan),
+  comparativo_autos       = comparativo(spec_autos),
+  comparativo_autopartes  = comparativo(spec_autopartes)
+)
+
+for (nm in names(graficos)) {
+  g <- graficos[[nm]]
+  h <- attr(g, "alto_total")                      # alto calculado de cada figura (pulgadas)
+  ggplot2::ggsave(here::here("PLOTS", paste0(nm, ".pdf")), g, width = 6.5, height = h,
+                  device = grDevices::cairo_pdf)
+  ggplot2::ggsave(here::here("PLOTS", paste0(nm, ".png")), g, width = 6.5, height = h,
+                  dpi = 300, device = ragg::agg_png)
+}
+```

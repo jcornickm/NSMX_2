@@ -9,7 +9,7 @@ author:
     corresponding: true
   - name: Ernesto Stein
   - name: Carlos Zafra
-date: "2026-07-01"
+date: "2026-10-1o"
 format:
   docx:
     reference-doc: reference-doc.docx
@@ -17,7 +17,7 @@ format:
     number-depth: 3
 lang: es
 toc: true
-toc-depth: 3
+toc-depth: 1
 toc-title: "Índice"
 editor: source
 editor_options:
@@ -26,16 +26,22 @@ bibliography: references.bib
 link-citations: true
 ---
 
+<!-- quarto::quarto_render("Quarto/C2_Revised_October_2026.qmd") -->
+
 ```{r}
 #| label: loadlibs
 #| echo: false
 #| code-summary: "Carga de bibliotecas"
 
-pacman::p_load(
-  tidyverse, here, scales, knitr, gt, flextable,
-  treemapify, patchwork, glue,
-  geodata, sf, cowplot, ggrepel, WDI, ggh4x
-)
+# Solo los paquetes que se usan durante `quarto render` (chunks eval: true)
+# se cargan aquí. Los paquetes usados únicamente para generar y guardar las
+# figuras (chunks eval: false, que no corren en un render normal) se cargan
+# de forma perezosa dentro de esos mismos chunks -- patchwork, sf, cowplot,
+# ggrepel, treemapify, glue, WDI -- para no pagar su costo de carga (y, en
+# el caso de sf, las librerías GDAL/PROJ que trae consigo) en cada render.
+# geodata se eliminó por completo: nunca se invoca como paquete, solo
+# aparece como nombre de carpeta en rutas de archivo (here::here("geodata", ...)).
+pacman::p_load(tidyverse, here, scales, knitr, flextable)
 
 # flextable produce tablas Word (docx) con <w:tblGrid> y anchos de columna
 # explícitos; gt() NO lo hace en esta versión y sus tablas se ven con texto
@@ -54,7 +60,7 @@ source(here::here("Scripts", "funciones.R"))
 
 ## Introducción
 
-### ¿Nearshoring en México?
+### ¿Nearshoring? ¿En México?
 
 La reconfiguración de las cadenas globales de valor fue un fue un tema que se empezó a discutir tras el inicio de la guerra comercial entre Estados Unidos y China: para ciertos productos, el cálculo económico que había llevado a establecer operaciones de manufactura en China y exportar desde allí hacia los EUA se modificó con los nuevos aranceles. La pandemia del COVID-19 en 2020 añadió urgencia a la discusión, ya que la fragilidad de las cadenas de suministro que se extendían por todo el planeta y concentraban las operaciones de manufactura en China quedó en evidencia, como un factor de riesgo adicional e independiente de los conflictos meramente comerciales. A todo esto se sumaron pronto consideraciones de seguridad nacional como argumento en favor de "acercar" las cadenas de valor ("nearshoring", en adelante NS) o incluso de traer ciertas actividades de manufactura de vuelta a los EUA ("reshoring"). No es de sorprender, entonces, que las menciones sobre estos dos temas se hicieran cada vez más frecuentes en las comunicaciones entre los gerentes generales (CEOs) de las empresas globalesa partir de 2021, como lo muestra la @fig-nearshoring.
 
@@ -108,17 +114,34 @@ Por todo lo anterior cabe esperar que el NS se manifieste primero en cambios en 
 
 En este capítulo mostramos que el examen de los flujos comerciales entre México y Estados Unidos arroja evidencia contundente de un proceso de reorganización de CGV, favorable a México en muchos casos, aunque no en todos. Este cambio no es, quizás, de la magnitud que se hubiera podido esperar, y tal vez las expectativas desmedidas iniciales son una de las razones por las que se ha reducido la prominencia del tema.
 
-Aun así, la evidencia que resulta tanto del examen descriptivo como del análisis econométrico coinciden en señalar un cambio claro en la organización geográfica de las CGV.
+Aun así, la evidencia que resulta tanto del examen descriptivo como del análisis econométrico coincide en señalar un cambio claro en la organización geográfica de las CGV.
 
 Si a pesar de ello existe en círculos empresariales la impresión de que NS en México ha sido "mucho ruido y pocas nueces", ello quizá se deba a una mezcla de expectativas iniciales sobredimensionadas, y a que existen restricciones internas que impiden a México aprovechar plenamente las oportunidades que los cambios en la política comercial de EUA, y los conflictos geopolíticos, le ofrecen. Algunas de estas restricciones se discuten en los capítulos siguientes de este informe.
 
-### Dos períodos claramente diferenciados, y un marco de referencia
+### Alcance del capítulo
+
+En este capítulo se presenta, con bastante detalle, la evidencia disponible sobre el NS en México.  Temáticamente, el capítulo se organiza en cuatro secciones:
+
+- El cambio en la composición de las importaciones de EUA por país de origen, que lleva a México a convertirse en el principal proveedor de ese mercado a partir de 2024.
+
+
+El análisis de los flujos comerciales se divide en tres partes:
+
+- El cambio en la composición de las importaciones de EUA por país de origen, que lleva a México a desplazar a China y convertirse en el primer suplidor de ese mercado.
+- El cambio en la composición de las exportaciones mexicanas a EUA, en tres aproximaciones sucesivas:  por Sección, Capítulo y Partida del SA.  En los dos últimos casos, el análisis se enfoca en los 
+Conforme se avanza en la desagregación, se y luego por los principales Capítulos y Partidasconvertirse en el origen más importante de imortacones de sescuyo resultado es que México se convierte en el p y el ascnso de Méxcioecenso de se enfoca en los cambios en los flujos comerciales y los de IED
 
 El examen de la evidencia estadística en este capítulo se concentra en dos períodos:
 
-- 2018 -- 2024, que corresponde al inicio de la primera guerra comercial entre Estados Unidos y China durante el primero gobierno del presidente Trump, así como el gobierno del presidente Biden, que mantuvo los aranceles a las importaciones provenientes de China y lanzó además la Inflation Reduction Act y la Chips and Science Act, ambas con el propósito expreso de acercar (nearshoring) o retornar a EUA (reshoring) actividades industriales críticas
+- 2018 - 2024, que corresponde al inicio de la primera guerra comercial entre Estados Unidos y China durante el primero gobierno del presidente Trump, así como el gobierno del presidente Biden, que mantuvo los aranceles a las importaciones provenientes de China y lanzó además la Inflation Reduction Act y la Chips and Science Act, ambas con el propósito expreso de acercar (nearshoring) o retornar a EUA (reshoring) actividades industriales críticas
 
 - 2024-2025, el período de "turbulencia" que da su título a este libro, durante el cual se lanza una nueva política comercial en EUA, todavía volátil e impredecible, y cuya configuración final dista aún de estar claramente definida.
+
+Un período anterior, 2010 - 2018, que corresponde a los últimos años de la globalización ascendente, se incluye como punto de referencia:  nos permite identificar los cambios que tuvieron lugar a partir de 2018.
+
+El análisis se divide en cuatro secciones, además de esta .
+
+En 
 
 El análisis de las exportaciones mexicanas a EUA se realiza en tres niveles de agregación y dos ámbitos geográficos.
 
@@ -361,6 +384,8 @@ impPais_Perc <- impPais |>
 #| include: false
 #| eval: false
 
+pacman::p_load(patchwork, glue)
+
 p <- local({
   codigos_iso <- c(
     "México"    = "MEX", "Canadá"    = "CAN", "China"     = "CHN",
@@ -501,7 +526,7 @@ knitr::include_graphics(here::here("Plots", "imp_pais_perc.png"))
 #| include: false
 #| eval: false
 
-rm(impPais)
+rm(impPais, impPais_Perc)
 ```
 
 ## Las exportaciones mexicanas a EUA
@@ -540,12 +565,16 @@ impMex_sec_pct <- map_dfr(2010:2025, function(año) {
     mutate(pct = Val_anual / sum(Val_anual)) |>
     ungroup()
 })
+
+rm(impMex)
 ```
 
 ```{r}
 #| label: save-tree-sec
 #| include: false
 #| eval: false
+
+pacman::p_load(treemapify)
 
 p <- local({
   n_sec     <- n_distinct(impMex_sec_pct$Sección_corto)
@@ -605,6 +634,8 @@ Quizá el dato más sorprendente de este período sea la evolución de las expor
 #| include: false
 #| eval: false
 
+pacman::p_load(patchwork, glue)
+
 p <- local({
   hacer_divbar_sec <- function(ini, fin, datos) {
     col_ini <- paste0("y", ini)
@@ -663,7 +694,7 @@ p <- local({
 ggsave(here::here("Plots", "fig-imp-cambio-sec-mex.pdf"), plot = p, width = 8, height = 10.5, device = cairo_pdf)
 ggsave(here::here("Plots", "fig-imp-cambio-sec-mex.png"), plot = p, width = 8, height = 10.5, dpi = 150)
 
-rm(p)
+rm(p, impMex_sec_pct)
 ```
 
 ```{r}
@@ -756,12 +787,6 @@ tabla_cap <- function(cap_num, datos = tcac_shares) {
 
   filas_resaltar <- which(df$Crec_2425 > df$TCAC_1824)
 
-  titulo    <- paste0("Capítulo ", cap_num, " — ", cap_label)
-  subtitulo <- paste0(
-    "Importaciones EUA desde México por partida, 2025 | Total capítulo: USD ",
-    format(round(total_2025 / 1e9, 1), nsmall = 1), " mil millones"
-  )
-
   df |>
     flextable() |>
     set_header_labels(
@@ -790,10 +815,6 @@ tabla_cap <- function(cap_num, datos = tcac_shares) {
     bold(i = filas_resaltar) |>
     flextable::align(j = 3:9, align = "center", part = "all") |>
     flextable::align(i = 1, align = "center", part = "header") |>
-    add_header_lines(subtitulo) |>
-    add_header_lines(titulo) |>
-    bold(i = 1, part = "header") |>
-    fontsize(i = 1, size = 13, part = "header") |>
     theme_booktabs() |>
     autofit() |>
     # autofit() dimensiona columnas solo por contenido, lo que produce tablas
@@ -809,6 +830,8 @@ tab84 <- tabla_cap(84)
 tab85 <- tabla_cap(85)
 tab87 <- tabla_cap(87)
 tab90 <- tabla_cap(90)
+
+rm(tcac_shares, tabla_cap)
 ```
 
 ```{r}
@@ -947,7 +970,8 @@ quiebres_partida <- map_dfr(resultados_quiebre, "quiebres") |>
     by = "Cod_partida"
   )
 
-rm(imp_mex_hs4, partidas_individuales, partidas_panel, partidas_sa, partidas_indices, resultados_quiebre)
+rm(imp_mex_hs4, tcac_shares, partidas_individuales, partidas_panel, partidas_sa,
+   partidas_indices, resultados_quiebre, fit_quiebre, H_MIN_SEGMENTO)
 ```
 
 ```{r}
@@ -956,24 +980,23 @@ rm(imp_mex_hs4, partidas_individuales, partidas_panel, partidas_sa, partidas_ind
 #| eval: false
 #| code-summary: "Construcción y guardado de los paneles (Capítulos 84, 85, 87+90)"
 
-# NCOL_FACET y ANCHO_COL (ancho de cada columna de faceta, en pulgadas) se
-# mantienen fijos para los cuatro capítulos; ALTO_FILA se deriva de ANCHO_COL
-# con un pequeño factor FACTOR_ALTO > 1 para que cada celda sea cuadrada o
-# ligeramente más alta que ancha. A diferencia de la versión anterior, el
-# tamaño de celda no se consigue tratando de adivinar cuánto espacio ocupan
-# título/subtítulo/ejes/caption y descontándolo de un lienzo de ancho fijo
-# (eso dejaba franjas en blanco o recortaba el caption cuando la estimación
-# fallaba). En su lugar, ggh4x::force_panelsizes() fija el tamaño físico real
-# de cada panel de faceta (filas y columnas, en pulgadas) sin importar cuánto
-# espacio requieran los elementos circundantes, y luego medimos el gtable ya
-# construido (medir_panel()) para saber exactamente qué ancho y alto de
-# lienzo se necesitan — sin sobrantes ni recortes. Capítulos 87 y 90 se
-# guardan como figuras separadas (antes se combinaban con patchwork).
+# Ya no se fija el tamaño físico de cada panel de faceta (antes vía
+# ggh4x::force_panelsizes()) ni se mide el gtable resultante para inferir el
+# lienzo necesario (medir_panel()). En su lugar, ggplot/facet_wrap reparten
+# libremente el lienzo que se les da: el ancho es fijo e igual en los cuatro
+# capítulos (ANCHO_PANEL, con NCOL_FACET columnas siempre), y el alto se
+# calcula a partir del número de filas de faceta de cada capítulo
+# (ALTO_BASE + ALTO_POR_FILA * n_filas), para que capítulos con más partidas
+# (más filas) reciban un lienzo más alto en vez de inflar cada panel
+# individual. ALTO_BASE es una estimación fija del espacio que ocupan
+# subtítulo, ejes y caption; si el caption se corta o sobra espacio en algún
+# capítulo, ajustar ALTO_BASE o ALTO_POR_FILA. Capítulos 87 y 90 se guardan
+# como figuras separadas (antes se combinaban con patchwork).
 
 NCOL_FACET    <- 3
-ANCHO_COL     <- 2.1667   # ancho de columna de faceta, igual en los 4 paneles (pulgadas)
-FACTOR_ALTO   <- 1.08     # > 1 hace la celda un poco más alta que ancha
-ALTO_FILA     <- ANCHO_COL * FACTOR_ALTO   # alto de fila de faceta (≈ cuadrada)
+ANCHO_PANEL   <- 6        # ancho total del panel, igual en los 4 capítulos (pulgadas)
+ALTO_POR_FILA <- 2.2      # alto asignado por fila de faceta (pulgadas)
+ALTO_BASE     <- 1.1      # espacio fijo para subtítulo, ejes y caption (pulgadas)
 CAPTION_PANEL <- "Elaboración propia con base en US Census Bureau. Serie mensual ajustada por estacionalidad (X-13ARIMA-SEATS)"
 
 construir_panel <- function(num_cap_obj, ncol_facet = NCOL_FACET, incluir_caption = TRUE) {
@@ -997,7 +1020,7 @@ construir_panel <- function(num_cap_obj, ncol_facet = NCOL_FACET, incluir_captio
     facet_wrap(~ label_partida, scales = "free_y", ncol = ncol_facet) +
     scale_x_date(date_breaks = "2 years", date_labels = "%Y") +
     labs(
-      subtitle = "Enero 2018 = 100. Línea roja: tendencia con quiebres detectados (strucchange, Bai-Perron)",
+      subtitle = "Enero 2018 = 100. Línea roja: tendencia (strucchange, Bai-Perron)",
       x = NULL, y = "Índice (ene-2018 = 100)",
       caption  = if (incluir_caption) CAPTION_PANEL else NULL
     ) +
@@ -1005,41 +1028,37 @@ construir_panel <- function(num_cap_obj, ncol_facet = NCOL_FACET, incluir_captio
     theme(
       axis.text.x = element_text(angle = 90, vjust = 0.5),
       strip.text  = element_text(size = 9)
-    ) +
-    # Tamaño físico absoluto de cada panel de faceta: inmune a cuánto
-    # espacio consuman las etiquetas del eje Y por panel (scales = "free_y")
-    # o cualquier otro elemento circundante.
-    force_panelsizes(rows = unit(ALTO_FILA, "in"), cols = unit(ANCHO_COL, "in"))
+    )
 }
 
-# Mide el ancho y alto reales (pulgadas) que necesita el gtable ya construido
-# -- título, subtítulo, ejes, paneles y caption -- para que ggsave() no deje
-# sobrantes en blanco ni recorte nada.
-medir_panel <- function(p) {
-  g <- ggplotGrob(p)
-  list(
-    ancho = sum(grid::convertWidth(g$widths, "in", valueOnly = TRUE)),
-    alto  = sum(grid::convertHeight(g$heights, "in", valueOnly = TRUE))
-  )
+# Número de filas de faceta que tendrá el panel de un capítulo, dado
+# ncol_facet columnas fijas.
+n_filas_panel <- function(num_cap_obj, ncol_facet = NCOL_FACET) {
+  n_partidas <- partidas_tendencia |>
+    filter(num_cap == num_cap_obj) |>
+    distinct(label_partida) |>
+    nrow()
+  ceiling(n_partidas / ncol_facet)
 }
 
 guardar_panel <- function(num_cap_obj) {
   panel <- construir_panel(num_cap_obj, incluir_caption = TRUE)
-  dim_panel <- medir_panel(panel)
+  alto  <- ALTO_BASE + ALTO_POR_FILA * n_filas_panel(num_cap_obj)
   archivo_base <- paste0("panel_partidas_cap", num_cap_obj)
 
   ggsave(here::here("Plots", paste0(archivo_base, ".pdf")), plot = panel,
-         width = dim_panel$ancho, height = dim_panel$alto, units = "in",
+         width = ANCHO_PANEL, height = alto, units = "in",
          device = cairo_pdf)
   ggsave(here::here("Plots", paste0(archivo_base, ".png")), plot = panel,
-         width = dim_panel$ancho, height = dim_panel$alto, units = "in",
+         width = ANCHO_PANEL, height = alto, units = "in",
          dpi = 150)
 }
 
 walk(c(84, 85, 87, 90), guardar_panel)
 
-rm(construir_panel, medir_panel, guardar_panel,
-   NCOL_FACET, ANCHO_COL, FACTOR_ALTO, ALTO_FILA, CAPTION_PANEL)
+rm(construir_panel, n_filas_panel, guardar_panel,
+   NCOL_FACET, ANCHO_PANEL, ALTO_POR_FILA, ALTO_BASE, CAPTION_PANEL,
+   partidas_tendencia, quiebres_partida)
 ```
 
 Empezamos con el **Capítulo 84**, Maquinaria.
@@ -1123,30 +1142,8 @@ El panorama es muy distinto para el **Capitulo 87**.  Como vimos antes, la Secci
 tab87
 ```
 
-```{r}
-#| label: tbl-cap90
-#| echo: false
-#| tbl-cap: "Capítulo 90: Maquinaria y equipo mecánico"
-#| tbl-cap-location: top
+Aunque en la @fig-cap87-partidas no se logró identificar estadísticamente cambios de tendencia en ninguna de las partidas analizadas, en el próximo capítulo, en el que se analizan las tarifas que enfrentan tanto México como sus principales competidores en este capítulo, se presenta evidencia que sugiere que el rápido crecimiento del período 2010-2018 no se repetirá y que no se puede descartar que la contracción de 2024-2025 se repita en 2026.
 
-tab90
-```
-
-En el Capítulo 85, cuya información se presenta en la @fig-cap85-partidas, el comportamiento es más diverso y, cuando responde positivamente al cambio de la política arancelaria de 2018, lo hace con mayor rezago que el Capítulo 84: el cambio tiene lugar alrededor de 2020–2021.
-
-
-
-
-
-- Las siguen 8536 (conmutación) y 8544 (cableado). El cambio de tendencia en Baterías tiene lugar en 2016.
-
-- Las demás partidas tienen crecimiento modesto, que en el caso de 8528 (televisores) es muy bajo, y en el de 8512 (iluminación) negativo
-
-
-
-Finalmente examinamos el comportamiento de las exportaciones correspondientes a los Capítulos 87, Automóviles, y 90, Óptica.
-
-Como se mostró en la sección anterior, equipo de Transporte fue la Sección que más creció entre 2010 y 2018, es decir, el período previo al primer gobierno de Trump y el inicio de la discusión sobre NS y la reestructuración geográfica de las cadenas de valor. La integración productiva de América del Norte tiene raíces más tempranas y es más profunda en este sector. No resulta entonces del todo sorprendente que en las tres Partidas más importantes del Capítulo 87, a saber, Camiones, Automóviles y Autopartes, la tendencia creciente que se observa entre 2010 y 2018 se incrementa, pero solo ligeramente, a partir de 2018. Nótese que aunque en las tres Partidas hay una caída en 2025 (asociada con una estructura tarifaria para México y sus competidores que se examina en el capítulo 3), no hay observaciones suficientes para concluir que hay un cambio de tendencia. En cambio, en Tractores es clara la tendencia a la baja a partir de 2023 y en Remolques a partir de 2024. Estos datos se muestran en la @fig-cap87-partidas.
 
 ```{r}
 #| label: fig-cap87-partidas
@@ -1157,7 +1154,19 @@ Como se mostró en la sección anterior, equipo de Transporte fue la Sección qu
 knitr::include_graphics(here::here("Plots", "panel_partidas_cap87.png"))
 ```
 
-La @fig-cap90-partidas muestra, entre otras partidas, la evolución de Instrumentos Médicos, cuyo ritmo de crecimiento se incrementa a partir de 2021, y que a pesar de una moderación a partir de 2023 sigue siendo superior a lo observado entre 2010 y 2018.
+Finalmente, exploramos el comportamiento del **Capítulo 90**.  Al igual que en el caso del Capítulo 84, las exportaciones están fuertemente concentradas en una única partida, 9018, Instrumentos médicos, que representa el 53.7% de sus exportaciones.  Únicamente esta partida, y la 9019, Aparatos para terapia, muestran un crecimiento fuerte en el último período.  En las demas, el crecimiento es o muy cercando a cero, o en la mayor parte de los casos, negativo, como se muestra en la @tbl-cap90.
+
+```{r}
+#| label: tbl-cap90
+#| echo: false
+#| tbl-cap: "Capítulo 90: Maquinaria y equipo mecánico"
+#| tbl-cap-location: top
+
+tab90
+```
+
+
+En este caso, la visualización de la información, que se presenta en la @fig-cap90-partidas no arroja sorpresas:  dos partidas, la 9018 y la 9019 muestran un crecimiento aceleardo, mientras que en las demás el crecimiento es modesto o muestra una quiebre negativo de tendencia en el último período. 
 
 ```{r}
 #| label: fig-cap90-partidas
@@ -1168,7 +1177,17 @@ La @fig-cap90-partidas muestra, entre otras partidas, la evolución de Instrumen
 knitr::include_graphics(here::here("Plots", "panel_partidas_cap90.png"))
 ```
 
+```{r}
+#| label: cleanup-tablas-cap
+#| include: false
+#| eval: false
+
+rm(tab84, tab85, tab87, tab90)
+```
+
 ### La evidencia econométrica
+
+ERNESTO:  ESTA SECCIÓN NO LA TOQUE PORQUE ME DIJISTE QUE VOS LA QUERÍAS REVISAR
 
 #### Laura Alfaro y Davin Chor
 
@@ -1256,6 +1275,8 @@ Es razonable suponer que estas disparidades regionales están asociadas con la c
 #| label: save-fig-tcac-estados
 #| include: false
 #| eval: false
+
+pacman::p_load(sf, cowplot, ggrepel)
 
 # ---- mapa_xmex_3periodos_tcac ----
 # 3 mapas de México (2010-2018, 2018-2024, 2024-2025) con la TCAC de las
@@ -1480,38 +1501,75 @@ tabla_tcac <- tcac_periodo(2010, 2018, "tcac_2010_2018") |>
   arrange(nombre) |>
   select(-cve_geo)
 
+### Reestructuración a 8 columnas / 16 filas ----
+# 32 estados en 4 columnas x 32 filas desborda una página. Partimos la lista
+# alfabética a la mitad (bloque izquierdo A-M, bloque derecho N-Z) y las
+# pegamos lado a lado, así la tabla queda ancha (8 columnas) y corta (16
+# filas), más fácil de ajustar a una sola página.
+n_estados <- nrow(tabla_tcac)
+mitad     <- ceiling(n_estados / 2)
+
+tabla_izq <- tabla_tcac |> slice(1:mitad)
+tabla_der <- tabla_tcac |> slice((mitad + 1):n_estados)
+
+# Si el número de estados es impar, rellenamos el bloque derecho con una
+# fila vacía para que ambos bloques tengan el mismo número de filas.
+if (nrow(tabla_der) < nrow(tabla_izq)) {
+  tabla_der <- tabla_der |>
+    bind_rows(tibble(
+      nombre         = NA_character_,
+      tcac_2010_2018 = NA_real_,
+      tcac_2018_2024 = NA_real_,
+      tcac_2024_2025 = NA_real_
+    ))
+}
+names(tabla_der) <- paste0(names(tabla_der), "_b")
+
+tabla_tcac_wide <- bind_cols(tabla_izq, tabla_der)
+
+cols_izq <- c("tcac_2010_2018", "tcac_2018_2024", "tcac_2024_2025")
+cols_der <- paste0(cols_izq, "_b")
+
 ### Tabla: tabla-xmex-tcac-estados ----
 # flextable en vez de gt() -- gt() no emite anchos de columna (<w:tblGrid>)
 # al exportar a Word en esta versión, lo que produce columnas angostas con
 # texto partido letra por letra al abrir el .docx. flextable sí renderiza
 # como tabla nativa de Word con anchos correctos y preserva el shading por
 # categoría de TCAC (mismos breaks/colores que el mapa).
-tabla_tcac |>
+tabla_tcac_wide |>
   flextable() |>
   set_header_labels(
-    nombre         = "Entidad",
-    tcac_2010_2018 = "2010–2018",
-    tcac_2018_2024 = "2018–2024",
-    tcac_2024_2025 = "2024–2025"
+    nombre           = "Entidad",
+    tcac_2010_2018   = "2010–2018",
+    tcac_2018_2024   = "2018–2024",
+    tcac_2024_2025   = "2024–2025",
+    nombre_b         = "Entidad",
+    tcac_2010_2018_b = "2010–2018",
+    tcac_2018_2024_b = "2018–2024",
+    tcac_2024_2025_b = "2024–2025"
   ) |>
   colformat_double(
-    j = c("tcac_2010_2018", "tcac_2018_2024", "tcac_2024_2025"),
-    suffix = "%", digits = 1
+    j = c(cols_izq, cols_der),
+    suffix = "%", digits = 1, na_str = ""
   ) |>
   bg(
-    j  = c("tcac_2010_2018", "tcac_2018_2024", "tcac_2024_2025"),
+    j  = c(cols_izq, cols_der),
     bg = scales::col_bin(
       palette  = unname(paleta_tcac),
       bins     = breaks_tcac,
       na.color = "grey80"
     )
   ) |>
-  flextable::align(j = 2:4, align = "center", part = "all") |>
+  flextable::align(j = c(cols_izq, cols_der), align = "center", part = "all") |>
+  fontsize(size = 9, part = "body") |>
+  fontsize(size = 9, part = "header") |>
+  padding(padding.top = 1, padding.bottom = 1, part = "body") |>
   add_header_lines("Tasa de crecimiento anual compuesto (%), por entidad federativa") |>
   add_header_lines("TCAC de las exportaciones estatales por subperíodo") |>
   bold(i = 1, part = "header") |>
   fontsize(i = 1, size = 13, part = "header") |>
   theme_booktabs() |>
+  vline(j = 4, part = "all") |>
   autofit() |>
   # Ver nota en prep-tablas-cap: fit_to_width() evita que la tabla se
   # desborde del área imprimible de reference-doc.docx (6" de ancho útil).
@@ -1519,7 +1577,8 @@ tabla_tcac |>
   add_footer_lines("Elaboración propia con base en datos de comercio exterior.") |>
   fontsize(size = 8, part = "footer")
 
-rm(x_ef, meta_x_ef, xmex_val, breaks_tcac, labels_tcac, paleta_tcac, tcac_periodo, tabla_tcac)
+rm(x_ef, meta_x_ef, xmex_val, breaks_tcac, labels_tcac, paleta_tcac, tcac_periodo,
+   tabla_tcac, tabla_izq, tabla_der, tabla_tcac_wide, n_estados, mitad, cols_izq, cols_der)
 ```
 
 ### Exportaciones de los estados de la frontera, partidas seleccionadas
@@ -1550,6 +1609,8 @@ Finalmente, los problemas de Equipo de Transporte (Sección 336) quedan en evide
 #| label: save-fig-scian-frontera
 #| include: false
 #| eval: false
+
+pacman::p_load(ggrepel, patchwork)
 
 p <- local({
   estados_limpios <- list(
@@ -1903,6 +1964,8 @@ paleta_discreta_immex <- c(
 #| include: false
 #| eval: false
 
+pacman::p_load(sf, cowplot, ggrepel, patchwork)
+
 p <- local({
   mexico_sf <- readRDS(here::here("geodata", "gadm41_MEX_1_pk.rds")) |>
     sf::st_as_sf() |>
@@ -2068,6 +2131,8 @@ Como sucede también con otras variables, el impacto de Trump-Biden se hace evid
 #| include: false
 #| code-summary: "IED total 2010-2025 y composición por país de origen (treemaps 2010 vs. 2025)"
 
+pacman::p_load(cowplot, treemapify, patchwork)
+
 local({
 
   ied_por_origen <- readRDS(here::here("RDS", "ied_por_origen.rds"))
@@ -2225,6 +2290,8 @@ Da la impresión de que existe una incongruencia entre las oportunidades puestas
 #| eval: false
 #| include: false
 
+pacman::p_load(patchwork)
+
 p <- local({
   ied_pib_anual  <- readRDS(here::here("RDS", "ied_pib.rds"))  |>
     filter(frecuencia == "anual", año >= 2010)
@@ -2284,6 +2351,8 @@ Este pobre desempeño en atracción de IED no refleja una tendencia general en l
 #| include: false
 #| eval: false
 #| code-summary: "Descarga WDI y gráfico comparativo IED/PIB"
+
+pacman::p_load(WDI)
 
 # Fuente: World Bank, World Development Indicators (WDI)
 # Indicador: BX.KLT.DINV.WD.GD.ZS — "Foreign direct investment, net inflows (% of GDP)"
@@ -2874,17 +2943,14 @@ En cuanto a planes de inversión para los próximos dos años, México ocupaba e
 
 Fuente: IFC (mimeo).
 
-## 6. Síntesis y conclusiones
+## Síntesis y conclusiones
 
 *Pendiente.*
 
-## 7. Anexos
+## Anexos
 
-### 7.1 Nomenclatura SA
 
-*Pendiente.*
-
-### 7.2 Disponibilidad de información de exportaciones por estado y sector
+### Disponibilidad de información de exportaciones por estado y sector
 
 ```{r}
 #| label: tbl-disponibilidad-estado-sector
@@ -2935,7 +3001,7 @@ supresion_ns_wide |>
 rm(supresion_ns_wide, cols_sec, filas_completas)
 ```
 
-## 8. Referencias
+## Referencias
 
 ::: {#refs}
 :::
