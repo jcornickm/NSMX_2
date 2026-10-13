@@ -21,44 +21,43 @@ bibliography: references.bib
 link-citations: true
 ---
 
+```{r}
+#| label: loadlibs
+#| echo: false
+#| code-summary: "Carga de bibliotecas"
+
+pacman::p_load(tidyverse, here, scales, knitr, flextable)
+
+# Mismo criterio que en C2_Revised: fonts_ignore = TRUE deja que flextable
+# herede la tipografía de reference-doc.docx en vez de imponer una fuente
+# propia, para que las tablas de ambos capítulos luzcan uniformes al
+# combinarse en el libro.
+set_flextable_defaults(fonts_ignore = TRUE)
+```
+
 ## Introducción
 
-La guerra comercial entre EUA y China se inicia durante el primer gobierno de Trump, con la imposición de aranceles diferenciados a las importaciones provenientes de China.
+El panorama global del NS en México quedó claramente establecido en el capítulo anterior. Pero de la misma manera que en ese capítulo hicimos una serie de acercamientos sucesivos que nos llevaron paso a paso de las exportaciones totales de México hasta la identificación de las Partidas individuales más importantes, en este volvemos a hacer un acercamiento, un "zoom in", pero esta vez en temporales: este capítulo se enfoca exclusivamente en el período que va de enero 2025 a julio 2026, y explora sus diversas dimensiones con detalle.
 
-Como vimos en el capítulo anterior, esta nueva política arancelaria, que se mantuvo durante el gobierno de Trump, otorgó tanto a México como a otros países una ventaja competitiva en el mercado de EUA con respecto a China.
+En primer lugar, por tratarse de un período en el que la política arancelaria está sujeta a cambios frecuentes y significativos, y en el que además se utilizan instrumentos novedosos y controversiales, la primara sección de este capítulo presenta una breve explicación de esos instrumentos y una cronología simplificada de su aplicación entre diciembre 2025 y julio 2026.  Este el el tema de la **Sección 2** del capítulo.
 
-Como era de esperar, tanto México como Vietnam y otros competidores se beneficiaron de esta ventaja competitiva.
+En la **Sección 3** lugar se examina la evolución de los aranceles del "carril principal" [^1] para México y un conjunto ilustrativo de países, que incluye a las "estrellas emergentes", Taiwán y Vietnam, identificadas en el Capítulo 2.  Este análisis tiene dos objetivos: muestra la volatilidad de la politica arancelaria de EUA en este período, pero además muestra las diferencias en los aranceles aplicados a diversos países, lo que tiene el resultado paradójico de que un país puede estar al mismo tiempo pagando aranceles más altos que en el período anterior, y en mejor posición competitiva frente a otros exportadores al mercado de los EUA.
 
-Durante ese primer gobierno no se produce únicamente un cambio sustantivo en la política comercial de EUA sino que también **se inicia el abandono de las instituciones y normas multilaterales del comercio internacional**: EUA bloquea el nombramiento de jueces al Órgano de Apelaciones de la OMC, que carece de quórum desde 2019; las sanciones a China al amparo de la Sección 301 se imponen unilateralmente, sin pasar primero por el mecanismo de resolución de disputas de la OMC, y los aranceles a la importación de acero y aluminio, impuestas al amparo de la Sección 232, también fueron establecidas unilateralmente y el Panel de Quejas de la OMC eventualmente determinó que eran incompatibles con las obligaciones de EUA dentro de esa organización.
+[^1]: Es decir, los que aplican a productos que no están sujetos a aranceles específicos, independientes del país de origen, así como a productos que ingresan a EUA bajo el régimen general, pero no los que ingresan al amparo de TLCs, como el T-MEC y otros
 
-Este abandono inicial de la normativa comercial internacional es, sin embargo, acotado: se limita a productos y socios comerciales específicos y se ejecuta mediante mecanismos congruentes con la normativa de EUA.
+Estas dos secciones permiten trazar, con bastante precisión, los contornos de la política arancelaria de EUA a partir de 2025.  Las dos secciones siguientes vuelcan su atención hacia temas de interés específico para la economía mexicana.
 
-Además, la normativa del comercio regional es respetada, y los cambios que afectan ese comercio se plasman en una renegociación del NAFTA, que se transforma en el T-MEC actualmente vigente.
+Como se recordará, en el Capítulo 2 se identificó a Vietnam y Taiwán como las dos economías cuyas exportaciones a México están incrementando su participación en el mercado más rápidamente, y se sugirió que a pesar de que todavía tienen un volumen de exportaciones muy pequeño comparado con el de México, podrían ser sus competidores más importantes en el mediano plazo.  
 
-El segundo gobierno de Trump marca un punto de ruptura mucho más profundo tanto con la normativa comercial internacional como con los canales y objetivos mediante los cuales se conduce la política comercial de EUA.
+Para dilucidar esta cuestión, en la **Sección 4** se repite el ejercicio que anteriormente hicimos para México:  se identifican las Partidas de más peso en las exportaciones de cada país a EUA, se eliminan las que no están relación con el NS, y el resultado final se compara con el de México.  Se identifican así las partidas en las que México compite con Vietnam o Taiwán, y luego se compara la evolución de las exportaciones de esos productos y, para un conjunto seleccionado de subpartidas, se comparan los aranceles efectivos e implícitos pagados por cada uno de esos países en sus exportaciones a EUA.
 
-Varios aspectos de esta ruptura se examinan con detalle más adelante en este capítulo; por ahora, nos limitamos a enunciar sus cinco rasgos fundamentales:
+La **Sección 5** se enfoca en productos, en vez de hacerlo en países, como la sección anterior.  Se seleccionan productos centrales del portafolio exportador de México en los Capítulos 84, 85, 87 y 90 del SA primero, y luego se identifican los principales competidores de México en esos productos.  Se incluyen productos tales como autopartes, automóviles y servidores para centros de datos, y se analizan tanto la evolución de las exportaciones de México y sus principales competidores, sino también los aranceles implícitos y efectivos que pagan esos productos según su país de origen.
 
-- La sede de la política arancelaria de EUA se ha trasladado, de facto, del Congreso al Presidente; las resoluciones judiciales que han anulado algunas de las tarifas impuestas por el Ejecutivo no han logrado revertir este cambio de sede.
+La **Sección 6** aborda el tema de la renegociación del T-MEC y su importancia para México, aún si el actual gobierno de EUA no trata sus acuerdos comerciales como compromisos vinculantes.  Se abordan aquí tanto temas de fondo como de estrategia y negociación.
 
-- El uso de aranceles ha pasado de ser un instrumento selectivo a ser el principal instrumento de una política proteccionista de alcance general, sin perjuicio de que se mantenga la intensidad del conflicto comercial y geopolítico con China.
+En conjunto, las secciones 2 a 6 no solo permiten comprender de manera bastante granular la nueva politica arancelaria de EUA, sino también como ha afectado la competitivida de las exportaciones mexicanas a ese mercado, tanto en términos generales como en relación con países y productos específicos.
 
-- La política arancelaria no se utiliza únicamente con fines económicos sino también como un instrumento punitivo que se aplica a amigos y rivales por igual cuando no cumplen con determinadas demandas del gobierno de EUA.
-
-- Es una política deliberadamente impredecible, pero además vacilante: avanza o retrocede, con frecuencia, dependiendo de la respuesta de los países a los que se aplica.
-
-- El abandono de los instrumentos e instituciones multilaterales y regionales del comercio internacional ahora es completo: ni las normas de la OMC, ni las provisiones de acuerdos comerciales regionales (incluyo aquellos negociados y firmados por el presidente Trump durante su primer gobierno) son tratados como instrumentos jurídicos vinculantes por el gobierno de EUA.
-
-Para entender en detalle este cambio radical en la política comercial de EUA, y en particular, las oportunidades - considerables – que abre para México, así como los peligros – nada despreciables – que ella acarrea, se procederá de la siguiente manera.
-
-En la Sección 2 se describen con cierto detalle los instrumentos y la trayectoria de la política comercial del segundo gobierno de Trump; se presenta una breve explicación de las “reglas de origen” en el T-MEC, un aspecto relativamente oscuro de los tratados comerciales que súbitamente ha cobrado una gran importancia.
-
-En la Sección 3 se analiza como la nueva política ha modificado la posición competitiva de México con respecto a otros exportadores a ese mercado, el cambio en los incentivos para exportar dentro o fuera del T-MEC y cómo usos y definiciones de reglas de origen distinto inciden sobre el perfil exportador de México.
-
-En la Sección 4 se ilustra el impacto de la nueva política comercial de EUA sobre México en términos de base gravable, tasa implícita y tasa efectiva para autos, autopartes, acero y aluminio y semiconductores que enfrentan México y sus principales competidores en cada uno de estos rubros. 
-El último sector, semiconductores se discute, de manera mucho más detallada, en el Capítulo 7 de este libro.
-
-En la Sección 6 se sintetizan las oportunidades que esta nueva política genera para México, y se mencionan algunas de las iniciativas de política pública que podrían contribuir a aprovecharlas, y se toma nota también de los desafíos que surgen del carácter impredecible y vacilante de esa política, así como de su uso punitivo y no solo con fines de política comercial.
+El capítulo cierra con la **Sección 7**. en la quie se presenta una discusión de naturaleza distinta: a partir de 2025 no solo ha cambiado la politica arancelaria de los EUA: han cambiado las reglas, procesos y criterios de su formulación. Este cambio es quizá el más importante de todos, ya que introduce un elemento de incertidumbre sobre el curso futuro de la política arancelaria de EUA que resulta independiente de quien ocupe temporalmente la presidencia de ese país. Este es un cambio fundamental y perdurable en las reglas (de facto) del comercio internacional a nivel global.
 
 ## Instrumentos y cronología de la política comercial de EUA a partir de 2025
 
@@ -68,31 +67,31 @@ La política arancelaria del segundo gobierno del presidente Trump ha utilizado 
 
 **IEEPA**
 
-- International Emergency Powers Act, de 1977, que le permite al presidente de EUA regular diversas transacciones económicas, tras la declaración de una emergencia nacional y una amenaza inusual y extraordinaria que se origina fuera de los EUA. La ley no menciona explícitamente el uso de aranceles, y por eso mismo no establece requerimientos procesales para su utilización[^1]
+- International Emergency Powers Act, de 1977, que le permite al presidente de EUA regular diversas transacciones económicas, tras la declaración de una emergencia nacional y una amenaza inusual y extraordinaria que se origina fuera de los EUA. La ley no menciona explícitamente el uso de aranceles, y por eso mismo no establece requerimientos procesales para su utilización[^3]
 
-[^1]: IEEPA — 50 U.S.C. §§ 1701–1707: [*https://www.law.cornell.edu/uscode/text/50/1701*](https://www.law.cornell.edu/uscode/text/50/1701) (start of the statute; §1702 covering the actual presidential authorities is [*https://www.law.cornell.edu/uscode/text/50/1702*](https://www.law.cornell.edu/uscode/text/50/1702))
+[^3]: IEEPA — 50 U.S.C. §§ 1701–1707: [*https://www.law.cornell.edu/uscode/text/50/1701*](https://www.law.cornell.edu/uscode/text/50/1701) (start of the statute; §1702 covering the actual presidential authorities is [*https://www.law.cornell.edu/uscode/text/50/1702*](https://www.law.cornell.edu/uscode/text/50/1702))
 
 **Trade Expansion Act, Sección 232**
 
-- Trade Expansion Act de 1962, que en su Sección 232 autoriza al presidente a usar tarifas o cuotas cuando el Departamento de Comercio determina que determinadas importaciones ponen en peligro la seguridad nacional; el Departamento de Comercio debe abrir una investigación y presentar un reporte antes de que el presidente pueda usar esta autoridad[^2].
+- Trade Expansion Act de 1962, que en su Sección 232 autoriza al presidente a usar tarifas o cuotas cuando el Departamento de Comercio determina que determinadas importaciones ponen en peligro la seguridad nacional; el Departamento de Comercio debe abrir una investigación y presentar un reporte antes de que el presidente pueda usar esta autoridad[^4].
 
-[^2]: Trade Expansion Act of 1962, Section 232 — 19 U.S.C. § 1862: [*https://www.law.cornell.edu/uscode/text/19/1862*](https://www.law.cornell.edu/uscode/text/19/1862)
+[^4]: Trade Expansion Act of 1962, Section 232 — 19 U.S.C. § 1862: [*https://www.law.cornell.edu/uscode/text/19/1862*](https://www.law.cornell.edu/uscode/text/19/1862)
 
 **Trade Act, Secciones 301 y 112**
 
-- La Sección 301 autoriza al USTR a investigar y tomar represalias contra prácticas comerciales de otras naciones que se consideren injustificadas, discriminatorias o que imponen un costo indebido al comercio de EIA[^3].
+- La Sección 301 autoriza al USTR a investigar y tomar represalias contra prácticas comerciales de otras naciones que se consideren injustificadas, discriminatorias o que imponen un costo indebido al comercio de EIA[^5].
 
-- La Sección 122 que le permite al presidente imponer recargos arancelarios de hasta un 15%, por un período de hasta 150 días en respuesta ante déficit de la balanza de pagos, sin necesidad de investigaciones previas[^4]
+- La Sección 122 que le permite al presidente imponer recargos arancelarios de hasta un 15%, por un período de hasta 150 días en respuesta ante déficit de la balanza de pagos, sin necesidad de investigaciones previas[^6]
 
-[^3]: Trade Act of 1974, Section 301 — 19 U.S.C. § 2411: [*https://uscode.house.gov/view.xhtml?req=%28title%3A19+section%3A2411+edition%3Aprelim%29*](https://uscode.house.gov/view.xhtml?req=%28title%3A19+section%3A2411+edition%3Aprelim%29) (LII doesn't have this one cleanly indexed under the modern code; the House Office of Law Revision Counsel link is the cleanest live text)
+[^5]: Trade Act of 1974, Section 301 — 19 U.S.C. § 2411: [*https://uscode.house.gov/view.xhtml?req=%28title%3A19+section%3A2411+edition%3Aprelim%29*](https://uscode.house.gov/view.xhtml?req=%28title%3A19+section%3A2411+edition%3Aprelim%29) (LII doesn't have this one cleanly indexed under the modern code; the House Office of Law Revision Counsel link is the cleanest live text)
 
-[^4]: Trade Act of 1974, Section 122 — 19 U.S.C. § 2132: [*https://uscode.house.gov/view.xhtml?req=%28title%3A19+section%3A2132+edition%3Aprelim%29*](https://uscode.house.gov/view.xhtml?req=%28title%3A19+section%3A2132+edition%3Aprelim%29)
+[^6]: Trade Act of 1974, Section 122 — 19 U.S.C. § 2132: [*https://uscode.house.gov/view.xhtml?req=%28title%3A19+section%3A2132+edition%3Aprelim%29*](https://uscode.house.gov/view.xhtml?req=%28title%3A19+section%3A2132+edition%3Aprelim%29)
 
 **Trade Act, Sección 338**
 
-- La Sección 338 autoriza al presidente a imponer aranceles adicionales, de hasta un 50%, e incluso a prohibir a las importaciones de países con prácticas comerciales discriminatorias contra los EUA. No tiene requerimientos procesales[^5].
+- La Sección 338 autoriza al presidente a imponer aranceles adicionales, de hasta un 50%, e incluso a prohibir a las importaciones de países con prácticas comerciales discriminatorias contra los EUA. No tiene requerimientos procesales[^7].
 
-[^5]: Tariff Act of 1930, Section 338 — 19 U.S.C. § 1338: [*https://www.law.cornell.edu/uscode/text/19/1338*](https://www.law.cornell.edu/uscode/text/19/1338)
+[^7]: Tariff Act of 1930, Section 338 — 19 U.S.C. § 1338: [*https://www.law.cornell.edu/uscode/text/19/1338*](https://www.law.cornell.edu/uscode/text/19/1338)
 
 ### Tres fases: cronología simplificada
 
@@ -104,8 +103,7 @@ Para caracterizar de manera general la política arancelaria de EUA de 2025 a la
 
 - El 10 de febrero se anuncian aranceles del 25% para las importaciones de acero y aluminio y productos derivados.
 
-- El 2 de abril, “Liberation Day”, se anuncian “aranceles recíprocos” a casi la totalidad de los socios comerciales, salvo México y Canadá.
-  Las tasas oscilan entre el 11 y el 50%, según la magnitud del déficit comercial bilateral, pero luego sufren variaciones y son reemplazas por una tasa general del 10%.
+- El 2 de abril, “Liberation Day”, se anuncian “aranceles recíprocos” a casi la totalidad de los socios comerciales, salvo México y Canadá. Las tasas oscilan entre el 11 y el 50%, según la magnitud del déficit comercial bilateral, pero luego sufren variaciones y son reemplazas por una tasa general del 10%.
 
 - El 3 de abril se anuncia arancel global del 25% para autos y autopartes.
 
@@ -121,8 +119,7 @@ Para caracterizar de manera general la política arancelaria de EUA de 2025 a la
 
 - Entre el 4 y el 9 de junio aranceles al acero y aluminio suben al 50% para todos los países, salvo el Reino Unido, para el cual se mantiene en 25%.
 
-- 16 de junio de 2025 se anuncia acuerdo comercial con el Reino Unido.
-  10% de arancel para autos y autopartes, sujeto a cuota (TRQ).
+- 16 de junio de 2025 se anuncia acuerdo comercial con el Reino Unido. 10% de arancel para autos y autopartes, sujeto a cuota (TRQ).
 
 - 6 de agosto 2025, aranceles IEEPA para Brasil e India suben al 40 y el 25%, respectivamente
 
@@ -130,15 +127,13 @@ Para caracterizar de manera general la política arancelaria de EUA de 2025 a la
 
 - 29 de agosto: Circuito Federal confirma fallo e CIT sobre IEEPA
 
-- 4 de setiembre: acuerdo marco con Japón.
-  Techo arancelario del 15%, incluyendo autos.
+- 4 de setiembre: acuerdo marco con Japón. Techo arancelario del 15%, incluyendo autos.
 
 - 29 de setiembre, arancel del 10% a madera blanda, 25% a muebles tapizados y gabinetes, Sección 232.
 
 - 26 de octubre: acuerdos con Camboya, Malasia, Tailandia y Vietnam
 
-- 4 de diciembre: acuerdo comercial con Corea del Sur.
-  Arancel para automóviles 15%, retroactivo al 1 de noviembre.
+- 4 de diciembre: acuerdo comercial con Corea del Sur. Arancel para automóviles 15%, retroactivo al 1 de noviembre.
 
 - 14 de enero 2026, arancel a semiconductores del 25%, con numerosas exenciones (ver reglas de origen)
 
@@ -148,28 +143,25 @@ Durante todo este período los aranceles IEEPA permanecieron vigentes (la admini
 
 **Fase 3: Sección 122 y Sección 301, febrero 2026 a la fecha**
 
-- 20 de febrero: el mismo día que la Corte Suprema falla contra el uso de IEPPA para la imposición de aranceles, la administración impone un recargo temporal del 10% bajo la Sección 122 con un período de vigencia de 150 días (Proclamation 11012), Este instrumento también es impugnado y la CIT lo rechaza el 7 de mayo de 2026, aunque el Circuito Federal otorga el 11 de junio de 2026 una suspensión (*stay*) de esa orden. En otras palabras, el período de vigencia de los aranceles amparados a esta sección es inferior al tiempo que demora el agotamiento de la vía judicial, lo que permite seguir cobrando el recargo mientras se resuelve la apelación y en la práctica la hace irrelevante.  El recargo de la Sección 122 expira por límite estatutario el 24 de julio de 2026 [@covingtonburling2026; @whitecase2026b; @wardsmith2026; @troutmanpepperlocke2026].
+- 20 de febrero: el mismo día que la Corte Suprema falla contra el uso de IEPPA para la imposición de aranceles, la administración impone un recargo temporal del 10% bajo la Sección 122 con un período de vigencia de 150 días (Proclamation 11012), Este instrumento también es impugnado y la CIT lo rechaza el 7 de mayo de 2026, aunque el Circuito Federal otorga el 11 de junio de 2026 una suspensión (*stay*) de esa orden. En otras palabras, el período de vigencia de los aranceles amparados a esta sección es inferior al tiempo que demora el agotamiento de la vía judicial, lo que permite seguir cobrando el recargo mientras se resuelve la apelación y en la práctica la hace irrelevante. El recargo de la Sección 122 expira por límite estatutario el 24 de julio de 2026 [@covingtonburling2026; @whitecase2026b; @wardsmith2026; @troutmanpepperlocke2026].
 
-- 12 de marzo el USTR inicia investigaciones para determinar si las políticas y prácticas de 60 países implementaban efectivamente la prohibición de exportar a EUA bienes producidos en todo o en parte mediante el uso de trabajo forzado e imponían de esta manera una carga no razonable o discriminatoria contra EUA. 
-  El 2 de junio el USTR determinó que en efecto, así era, y el 24 de julio entran en vigor tarifas de entre el 10% y el 12.5% [@presidentialmemo2026].
+- 12 de marzo el USTR inicia investigaciones para determinar si las políticas y prácticas de 60 países implementaban efectivamente la prohibición de exportar a EUA bienes producidos en todo o en parte mediante el uso de trabajo forzado e imponían de esta manera una carga no razonable o discriminatoria contra EUA.  El 2 de junio el USTR determinó que en efecto, así era, y el 24 de julio entran en vigor tarifas de entre el 10% y el 12.5% [@presidentialmemo2026].
 
-- A partir de setiembre de 2026 se empieza a utilizar la Sección 338 contra Canadá, una autoridad bilateral y punitiva dirigida específicamente a un país (Canadá) por una disputa concreta (trato preferencial a los quesos de la UE bajo CETA frente al T-MEC).
-  Su uso en julio de 2026 — la primera invocación documentada de esta sección en casi cien años — escaló en agosto a un paquete arancelario de USD 27.600 millones y produjo represalia canadiense en espejo, vigente desde el 8 de septiembre de 2026 (fecha de cierre de este documento) [@federalregister2026g; @aljazeera2026a; @canada2026].
+- A partir de setiembre de 2026 se empieza a utilizar la Sección 338 contra Canadá, una autoridad bilateral y punitiva dirigida específicamente a un país (Canadá) por una disputa concreta (trato preferencial a los quesos de la UE bajo CETA frente al T-MEC). Su uso en julio de 2026 — la primera invocación documentada de esta sección en casi cien años — escaló en agosto a un paquete arancelario de USD 27.600 millones y produjo represalia canadiense en espejo, vigente desde el 8 de septiembre de 2026 (fecha de cierre de este documento) [@federalregister2026g; @aljazeera2026a; @canada2026].
 
-## Reglas arancelarias por país: idas y venidas en cuatro casos ilustrativos.
+## Reglas arancelarias por país: idas y venidas en __ casos ilustrativos.
 
 Aún en esta versión simplificada, resulta difícil tener un panorama claro de la evolución de la política arancelaria de los EUA durante el segundo gobierno del presidente Trump.
 
 Para superar esta dificultad, en esta sección se muestra gráficamente la evolución de los aranceles del “canal principal” para una serie de países, incluyendo por supuesto a México, el foco de este libro, y algunos de sus principales competidores.
 
-Por “canal principal” entendemos los aranceles de alcance general. 
-Como se han definido excepciones y tratamientos diferenciados para muchos productos, en la subsección siguiente analizamos tres casos particularmente relevantes para México: autos, autopartes y servidores para procesamiento de datos.
+Por “canal principal” entendemos los aranceles de alcance general. Como se han definido excepciones y tratamientos diferenciados para muchos productos, en la subsección siguiente analizamos tres casos particularmente relevantes para México: autos, autopartes y servidores para procesamiento de datos.
 
 ### El caso de México
 
 El 1 de febrero se anunció un arancel del 25% para todas las importaciones provenientes de México, que fue pausado dos días después, y entro en vigor el 4 de marzo.
 
-Sin embargo, el 6 de marzo se anuncia una excepción fundamental: el arancel no se aplicará a bienes que cumplan con las reglas de origen del T-MEC.  Esta es la base de una ventaja competitiva considerable para México, que se discute en la próxima Sección, pero la historia no se detiene: el 12 de julio se amenaza con un incremento del arancel al 30%, pero se suspende su aplicación por 90 día.
+Sin embargo, el 6 de marzo se anuncia una excepción fundamental: el arancel no se aplicará a bienes que cumplan con las reglas de origen del T-MEC. Esta es la base de una ventaja competitiva considerable para México, que se discute en la próxima Sección, pero la historia no se detiene: el 12 de julio se amenaza con un incremento del arancel al 30%, pero se suspende su aplicación por 90 día.
 
 Tras la declaración de ilegalidad de los aranceles IEEPA, entra en vigor un arancel del 10% bajo Sección 122, que es sustituido por un arancel del mismo porcentaje a partir del 24 de julio de 2026, ahora bajo Sección 301.
 
@@ -186,7 +178,7 @@ Pero la @fig-info-mexico también pone en evidencia otro hecho: el arancel del �
 #| fig-cap-location: top
 #| out-width: 100%
 
-knitr::include_graphics(here::here("PLOTS", "infografia_mexico_ieepa.png"))
+knitr::include_graphics(here::here("PLOTS", "infografia_mexico.png"))
 ```
 
 ### El caso de Canadá
@@ -206,14 +198,14 @@ Todo esto tiene relevancia para México por dos razones: pone en evidencia que e
 #| fig-cap-location: top
 #| out-width: 100%
 
-knitr::include_graphics(here::here("PLOTS", "infografia_canada_ieepa.png"))
+knitr::include_graphics(here::here("PLOTS", "infografia_canada.png"))
 ```
 
 ### Vietnam
 
 Aunque en “Liberation Day” se anunció un arancel para las importaciones provenientes de Vietnam del 46%, muy por encima del arancel del 25% para importaciones provenientes de México que no cumplieran con T-MEC, entre abril 2025 y febrero 2026 el arancel para “carril principal” fue menor para Vietnam que para México: 10% de abril a agosto 2025, y 20% desde agosto hasta la anulación de las tarifas IEEPA.
 
-Al amparo de Sección 122, se estableció un arancel igual al de México, y posteriormente 12.5% al amparo de Sección 301.  Estos datos se ilustran en la @fig-info-vtn.
+Al amparo de Sección 122, se estableció un arancel igual al de México, y posteriormente 12.5% al amparo de Sección 301. Estos datos se ilustran en la @fig-info-vtn.
 
 ```{r}
 #| label: fig-info-vtn
@@ -222,15 +214,14 @@ Al amparo de Sección 122, se estableció un arancel igual al de México, y post
 #| fig-cap-location: top
 #| out-width: 100%
 
-knitr::include_graphics(here::here("PLOTS", "infografia_vietnam_ieepa.png"))
+knitr::include_graphics(here::here("PLOTS", "infografia_vietnam.png"))
 ```
 
 ### China
 
 Ningún caso como el de China ilustra el patrón de “idas y venidas” de la política arancelaria de EUA.
 
-El arancel IEEPA alcanzó un máximo de 125%, solo para bajar a 10% poco más de un mes después de alcanzar ese nivel.
-Bajo Sección 122 primero y Sección 301 después China paga el mismo arancel que Vietnam, 12.5%, por encima del 10% que pagan México y Canadá.
+El arancel IEEPA alcanzó un máximo de 125%, solo para bajar a 10% poco más de un mes después de alcanzar ese nivel. Bajo Sección 122 primero y Sección 301 después China paga el mismo arancel que Vietnam, 12.5%, por encima del 10% que pagan México y Canadá.
 
 Lo que hasta hace poco hacía único el caso de China era la respuesta ante los aranceles de EUA: China “devolvió el golpe”, aumentando sus propios aranceles a las importaciones provenientes de EUA y imponiendo restricciones a las exportaciones de bienes estratégicos de China a EUA.
 
@@ -245,7 +236,51 @@ Los aranceles que ha impuesto Canadá pueden causar disrupciones económicas en 
 #| fig-cap-location: top
 #| out-width: 100%
 
-knitr::include_graphics(here::here("PLOTS", "infografia_china_ieepa.png"))
+knitr::include_graphics(here::here("PLOTS", "infografia_china.png"))
+```
+
+## Análisis comparativo:  México, Taiwán y Vietnam
+
+<!-- INSERTED BY PA -->
+
+Siguiendo el método del Capítulo 2, se identificaron las 50 Partidas (HS4) de mayor valor exportado a EUA en 2024–2025 para Vietnam y Taiwán, depuradas de categorías sin interés para NS (alimentos, combustibles, materias primas, joyería, muebles, textiles y calzado, entre otras). Se revisó también, para cada país, si alguna de las Partidas de mayor crecimiento entre 2018 y 2025 alcanzaba un volumen de exportación comparable al de su propia lista por valor; al igual que en el caso de México, ninguna lo hizo.
+
+La @tbl-partidas-competencia presenta las Partidas en que México coincide con Vietnam y/o Taiwán entre sus respectivas listas depuradas — es decir, las Partidas en que México compite directamente con uno o ambos países en el mercado de EUA. La coincidencia se concentra en los Capítulos 84, 85, 87 y 90, los mismos identificados para México en el Capítulo 2. Destaca además un grupo de Partidas del Capítulo 85 en que Vietnam y Taiwán coinciden entre sí, pero México no está presente: semiconductores y circuitos integrados (8541, 8542), dispositivos de almacenamiento (8523), y aparatos de transmisión y señalización (8525, 8531) — un segmento de la cadena electrónica en el que, por ahora, México no participa.
+
+<!-- END OF PA TEXT -->
+
+```{r}
+#| label: tbl-partidas-competencia
+#| echo: false
+#| tbl-cap: "Partidas (HS4) en que México compite con Vietnam y/o Taiwán"
+#| tbl-cap-location: top
+
+readRDS(here::here("RDS", "tabla_partidas_competencia.rds"))
+```
+
+```{r}
+#| label: fig-847150-exploratorio
+#| echo: false
+#| fig-cap: "EXPLORATORIO: Importaciones de EUA, Partida 847150 (HS6), 2018-2026"
+
+datos_847150 <- readRDS(here::here("RDS", "datos_847150_hs6.rds"))
+
+plot_847150 <- datos_847150 |>
+  dplyr::select(fecha, Pais, GEN_VAL_MO) |>
+  tidyr::pivot_wider(names_from = Pais, values_from = GEN_VAL_MO) |>
+  dplyr::arrange(fecha)
+
+matplot(
+  plot_847150$fecha, plot_847150[, -1],
+  type = "l", lty = 1, lwd = 2,
+  col = c("steelblue", "darkorange", "forestgreen"),
+  xaxt = "n",
+  ylab = "Valor mensual (USD)", xlab = "",
+  main = "Importaciones de EE.UU. - Partida 847150"
+)
+axis.Date(1, at = seq(min(plot_847150$fecha), max(plot_847150$fecha), by = "1 year"), format = "%Y")
+legend("topleft", legend = colnames(plot_847150)[-1],
+       col = c("steelblue", "darkorange", "forestgreen"), lty = 1, lwd = 2, bty = "n")
 ```
 
 # Reglas arancelarias por producto: autos, autopartes, acero y aluminio, semiconductores
@@ -287,9 +322,8 @@ El arancel del 15% es una tarifa plana en un caso, y el resultado de un proceso 
 #| fig-cap-location: top
 #| out-width: 100%
 
-knitr::include_graphics(here::here("PLOTS", "autos_comparativo_aranceles.png"))
+knitr::include_graphics(here::here("PLOTS", "comparativo_autos.png"))
 ```
-
 
 ### Autopartes
 
@@ -304,16 +338,14 @@ Bajo la misma Proclama 10908, las autopartes originadas en México que cumplan c
 #| fig-cap-location: top
 #| out-width: 100%
 
-knitr::include_graphics(here::here("PLOTS", "autopartes_comparativo_aranceles.png"))
+knitr::include_graphics(here::here("PLOTS", "comparativo_autopartes.png"))
 ```
-
 
 ### Acero y aluminio
 
 Los aranceles a la importación de acero y aluminio al amparo de la Sección 232 datan de 2018 y no fueron afectados por la eliminación de los aranceles IEEPA. Durante la administración Trump se han introducido cuatro cambios:
 
-- En febrero 2025 se restableció el arancel de 25% para aluminio, que había bajado a 10%. 
-El arancel al acero se mantuvo sin cambios, en 25% (Proclamations 10895  10896)
+- En febrero 2025 se restableció el arancel de 25% para aluminio, que había bajado a 10%.  El arancel al acero se mantuvo sin cambios, en 25% (Proclamations 10895  10896)
 
 - En junio, el arancel se duplicó: 50% para ambos productos, con excepción del Reino Unido, para el que se mantuvo el arancel de 25% (Proclamation 10947)
 
@@ -333,8 +365,7 @@ Las cosas son muy distintas en cuanto a los productos derivados: existe una regl
 
 - Todo lo demás: aranceles se acumulan
 
-Dadas estas reglas, la anulación de los aranceles IEEPA no cambia nada para las tres primeras categorías. 
-En el caso concreto de México esto significa concretamente que su ventaja competitiva en autopartes no se ve afectada por los aranceles al acero y el aluminio, que sin embargo si afectan a otros productos que utilizan estos metales como insumo.
+Dadas estas reglas, la anulación de los aranceles IEEPA no cambia nada para las tres primeras categorías.  En el caso concreto de México esto significa concretamente que su ventaja competitiva en autopartes no se ve afectada por los aranceles al acero y el aluminio, que sin embargo si afectan a otros productos que utilizan estos metales como insumo.
 
 ### Servidores para inteligencia artificial
 
@@ -356,12 +387,32 @@ Consideremos un servidor típico de inteligencia artificial: contiene una tarjet
 
 Dado que ninguno de estos componentes cae dentro de las tres subpartidas excluidas, el servidor terminado califica como originario bajo el T-MEC —incluso si absolutamente todos sus insumos provienen de China [@steinlovegren2026].
 
-Es importante subrayar que esta práctica de ensamblar bienes con escaso o nulo insumo regional —donde el producto terminado se considera suficientemente transformado en virtud del propio proceso de ensamblaje— es enteramente permisible: no constituye ni una violación del T-MEC ni un intento de eludir el espíritu del acuerdo.
-De hecho, las reglas fueron diseñadas deliberadamente para atraer este tipo de manufactura hacia la región.
-El ensamblaje de productos de alta tecnología es en sí mismo un proceso sofisticado que agrega valor significativo a la producción y que ha generado inversión sustancial y creación de empleo en México.
-Pero la ausencia de valor agregado doméstico limita de manera importante el potencial de desarrollo más amplio del sector cuando no existen insumos locales que puedan integrarse a esa cadena.
+Es importante subrayar que esta práctica de ensamblar bienes con escaso o nulo insumo regional —donde el producto terminado se considera suficientemente transformado en virtud del propio proceso de ensamblaje— es enteramente permisible: no constituye ni una violación del T-MEC ni un intento de eludir el espíritu del acuerdo. De hecho, las reglas fueron diseñadas deliberadamente para atraer este tipo de manufactura hacia la región. El ensamblaje de productos de alta tecnología es en sí mismo un proceso sofisticado que agrega valor significativo a la producción y que ha generado inversión sustancial y creación de empleo en México. Pero la ausencia de valor agregado doméstico limita de manera importante el potencial de desarrollo más amplio del sector cuando no existen insumos locales que puedan integrarse a esa cadena.
 
-## Balance normativo: la nueva política arancelaria y la posición competitiva de México
+## La renegociación del T-MEC
+
+## Las nuevas reglas del juego
+
+Durante ese primer gobierno no se produce únicamente un cambio sustantivo en la política comercial de EUA sino que también **se inicia el abandono de las instituciones y normas multilaterales del comercio internacional**: EUA bloquea el nombramiento de jueces al Órgano de Apelaciones de la OMC, que carece de quórum desde 2019; las sanciones a China al amparo de la Sección 301 se imponen unilateralmente, sin pasar primero por el mecanismo de resolución de disputas de la OMC, y los aranceles a la importación de acero y aluminio, impuestas al amparo de la Sección 232, también fueron establecidas unilateralmente y el Panel de Quejas de la OMC eventualmente determinó que eran incompatibles con las obligaciones de EUA dentro de esa organización.
+
+Este abandono inicial de la normativa comercial internacional es, sin embargo, acotado: se limita a productos y socios comerciales específicos y se ejecuta mediante mecanismos congruentes con la normativa de EUA.
+
+Además, la normativa del comercio regional es respetada, y los cambios que afectan ese comercio se plasman en una renegociación del NAFTA, que se transforma en el T-MEC actualmente vigente.
+
+El segundo gobierno de Trump marca un punto de ruptura mucho más profundo tanto con la normativa comercial internacional como con los canales y objetivos mediante los cuales se conduce la política comercial de EUA.
+
+Varios aspectos de esta ruptura se examinan con detalle más adelante en este capítulo; por ahora, nos limitamos a enunciar sus cinco rasgos fundamentales:
+
+- La sede de la política arancelaria de EUA se ha trasladado, de facto, del Congreso al Presidente; las resoluciones judiciales que han anulado algunas de las tarifas impuestas por el Ejecutivo no han logrado revertir este cambio de sede.
+
+- El uso de aranceles ha pasado de ser un instrumento selectivo a ser el principal instrumento de una política proteccionista de alcance general, sin perjuicio de que se mantenga la intensidad del conflicto comercial y geopolítico con China.
+
+- La política arancelaria no se utiliza únicamente con fines económicos sino también como un instrumento punitivo que se aplica a amigos y rivales por igual cuando no cumplen con determinadas demandas del gobierno de EUA.
+
+- Es una política deliberadamente impredecible, pero además vacilante: avanza o retrocede, con frecuencia, dependiendo de la respuesta de los países a los que se aplica.
+
+- El abandono de los instrumentos e instituciones multilaterales y regionales del comercio internacional ahora es completo: ni las normas de la OMC, ni las provisiones de acuerdos comerciales regionales (incluyo aquellos negociados y firmados por el presidente Trump durante su primer gobierno) son tratados como instrumentos jurídicos vinculantes por el gobierno de EUA.
+Balance normativo: la nueva política arancelaria y la posición competitiva de México
 
 En el Capítulo 2 de este libro vimos como el inicio de la guerra comercial entre EUA y China otorgó a México una ventaja considerable con respecto a China en términos arancelarios, y dio inicio al proceso que eventualmente llevó a que México desplazara a China y se convirtiera en el principal origen de las importaciones de bienes de EUA.
 
@@ -369,23 +420,11 @@ Sin embargo, la ventaja arancelaria frente a otros países era más bien modesta
 
 El balance de incentivos y ventajas competitivas ha cambiado radicalmente a partir de 2025.
 
-Mientras los aranceles IEEPA estuvieron vigentes, los exportadores que operaban en México ya no escogían entre 0 arancel o 2.5% bajo NMF: la escogencia ahora era entre 0 y 25%. Mientras tanto, los competidores de México pagaron aranceles variables, que oscilaron entre el 10 y el 40%, e incluso niveles superiores para China, y que tras la anulación de los aranceles IEPPA y el vencimiento de los aranceles de la Sección 122 se ubican ahora en un 12.5%.
-La ventaja arancelaria de México se incrementó en 10 puntos porcentuales.
+Mientras los aranceles IEEPA estuvieron vigentes, los exportadores que operaban en México ya no escogían entre 0 arancel o 2.5% bajo NMF: la escogencia ahora era entre 0 y 25%. Mientras tanto, los competidores de México pagaron aranceles variables, que oscilaron entre el 10 y el 40%, e incluso niveles superiores para China, y que tras la anulación de los aranceles IEPPA y el vencimiento de los aranceles de la Sección 122 se ubican ahora en un 12.5%. La ventaja arancelaria de México se incrementó en 10 puntos porcentuales.
 
 Lo anterior se refiere, claro está, al “carril principal”.
 
-En autos, como vimos, México ha quedado en una posición de franca desventaja frente a Europa, Japón y Corea del Sur, pero en autopartes tiene aura una ventaja muy considerable: arancel 0 frente a 15% de sus competidores. 
-Y en semiconductores, específicamente en servidores para centros de datos, a la ventaja de la cercanía con los usuarios del producto final suma unas reglas de origen en el T-MEC que permiten importar insumos de cualquier origen.
+En autos, como vimos, México ha quedado en una posición de franca desventaja frente a Europa, Japón y Corea del Sur, pero en autopartes tiene aura una ventaja muy considerable: arancel 0 frente a 15% de sus competidores. Y en semiconductores, específicamente en servidores para centros de datos, a la ventaja de la cercanía con los usuarios del producto final suma unas reglas de origen en el T-MEC que permiten importar insumos de cualquier origen.
 
 Otros países fabricantes de estos equipos deben pagar la tarifa NMF y en algunos casos capas arancelarias adicionales.
-
-## De las normas al comercio y las tarifas efectivas: ¿Qué nos dicen los datos? Productos seleccionados
-
-### Origen de las importaciones por  país (México, Vietnam, etc)
-
-### Tarifas efectivas e implícitas, por producto y país
-
-### Valor y distribución de importaciones de MX según TMEC no TMEC
-
-## La renegociación del T-MEC y el futuro del comercio México
 
