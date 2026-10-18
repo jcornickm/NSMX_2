@@ -178,7 +178,7 @@ Pero la @fig-info-mexico también pone en evidencia otro hecho: el arancel del �
 #| fig-cap-location: top
 #| out-width: 100%
 
-knitr::include_graphics(here::here("PLOTS", "infografia_mexico.png"))
+knitr::include_graphics(here::here("Plots", "infografia_mexico_ieepa.png"))
 ```
 
 ### El caso de Canadá
@@ -198,7 +198,7 @@ Todo esto tiene relevancia para México por dos razones: pone en evidencia que e
 #| fig-cap-location: top
 #| out-width: 100%
 
-knitr::include_graphics(here::here("PLOTS", "infografia_canada.png"))
+knitr::include_graphics(here::here("Plots", "infografia_canada_ieepa.png"))
 ```
 
 ### Vietnam
@@ -214,7 +214,7 @@ Al amparo de Sección 122, se estableció un arancel igual al de México, y post
 #| fig-cap-location: top
 #| out-width: 100%
 
-knitr::include_graphics(here::here("PLOTS", "infografia_vietnam.png"))
+knitr::include_graphics(here::here("Plots", "infografia_vietnam_ieepa.png"))
 ```
 
 ### China
@@ -236,7 +236,7 @@ Los aranceles que ha impuesto Canadá pueden causar disrupciones económicas en 
 #| fig-cap-location: top
 #| out-width: 100%
 
-knitr::include_graphics(here::here("PLOTS", "infografia_china.png"))
+knitr::include_graphics(here::here("Plots", "infografia_china_ieepa.png"))
 ```
 
 ## Análisis comparativo:  México, Taiwán y Vietnam
@@ -322,7 +322,7 @@ El arancel del 15% es una tarifa plana en un caso, y el resultado de un proceso 
 #| fig-cap-location: top
 #| out-width: 100%
 
-knitr::include_graphics(here::here("PLOTS", "comparativo_autos.png"))
+knitr::include_graphics(here::here("Plots", "autos_comparativo_aranceles.png"))
 ```
 
 ### Autopartes
@@ -338,7 +338,7 @@ Bajo la misma Proclama 10908, las autopartes originadas en México que cumplan c
 #| fig-cap-location: top
 #| out-width: 100%
 
-knitr::include_graphics(here::here("PLOTS", "comparativo_autopartes.png"))
+knitr::include_graphics(here::here("Plots", "autopartes_comparativo_aranceles.png"))
 ```
 
 ### Acero y aluminio
