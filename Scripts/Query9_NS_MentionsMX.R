@@ -14,7 +14,7 @@ ruta_csv <- here::here("Excel", "mc-onlinenews-mediacloud-20260611141803-counts.
 
 media_cloud_raw <- read_csv(ruta_csv, col_types = cols(
   date        = col_date(format = "%Y-%m-%d"),
-  count       = col_integer(),
+  count       = col_intewger(),
   total_count = col_integer(),
   ratio       = col_double()
 ))
@@ -58,55 +58,71 @@ tryCatch({
 }, error = function(e) message("✗ Error al guardar: ", e$message))
 
 # -----------------------------------------------------------------------------
-# 3. Figura: conteo mensual de menciones (barras) + media móvil 3 meses (línea)
+# 3. Figuras: conteo mensual de menciones (barras) + media móvil 3 meses (línea)
+#    Dos versiones:
+#      - fig_media_cloud_menciones_2024.png : termina en FECHA_FIN (Capítulo 2)
+#      - fig_media_cloud_menciones.png      : hasta el último dato (Capítulo 3)
 # -----------------------------------------------------------------------------
 
 # Media móvil de 3 meses sobre el conteo mensual
 media_cloud_mensual <- media_cloud_mensual |>
   mutate(mm3 = rollmean(menciones, k = 3, fill = NA, align = "right"))
 
-# Hitos editoriales relevantes
+# Hitos editoriales relevantes (cada versión muestra solo los que caen en su ventana)
 hitos <- tibble(
   fecha = as.Date(c("2018-07-06",   # Aranceles China Ronda 1 (Lista 1)
                     "2020-07-01",   # Entrada en vigor T-MEC
-                    "2022-02-01")), # Inicio publicación masiva nearshoring MX
-  etiqueta = c("Aranceles\nEE.UU.-China", "T-MEC", "Auge\nnearshoring")
+                    "2022-02-01",   # Inicio publicación masiva nearshoring MX
+                    "2025-01-20")), # Segundo gobierno Trump
+  etiqueta = c("Aranceles\nEE.UU.-China", "T-MEC", "Auge\nnearshoring",
+               "Aranceles\nTrump 2025")
 )
 
-p <- media_cloud_mensual |>
-  filter(anio_mes >= as.Date("2018-01-01"), anio_mes <= FECHA_FIN) |>
-  ggplot(aes(x = anio_mes)) +
-  # Barras de conteo mensual
-  geom_col(aes(y = menciones), fill = "#457b9d", alpha = 0.7, width = 25) +
-  # Media móvil
-  geom_line(aes(y = mm3), color = "#e63946", linewidth = 0.8, na.rm = TRUE) +
-  # Líneas verticales de hitos
-  geom_vline(data = hitos, aes(xintercept = fecha),
-             linetype = "dashed", color = "grey40", linewidth = 0.5) +
-  # Etiquetas de hitos
-  geom_text(data = hitos, aes(x = fecha, y = Inf, label = etiqueta),
-            vjust = 1.3, hjust = -0.07, size = 2.8, color = "grey30", lineheight = 0.9) +
-  scale_x_date(
-    breaks = seq(as.Date("2018-01-01"), as.Date("2024-01-01"), by = "1 year"),
-    date_labels = "%Y",
-    expand = expansion(mult = c(0.01, 0.04))
-  ) +
-  scale_y_continuous(labels = comma_format(big.mark = ",")) +
-  labs(
-    x = NULL,
-    y = "Menciones mensuales"
-  ) +
-  theme_bw() +
-  theme(
-    panel.grid.minor = element_blank(),
-    axis.text.x      = element_text(angle = 0)
-  )
+fig_menciones <- function(fecha_fin) {
+  hitos_v <- hitos |> filter(fecha <= fecha_fin)
 
-# Guardar figura
-ggsave(here::here("Plots", "fig_media_cloud_menciones.pdf"),
-       plot = p, width = 10, height = 5, device = cairo_pdf)
-ggsave(here::here("Plots", "fig_media_cloud_menciones.png"),
-       plot = p, width = 10, height = 5, dpi = 150)
+  media_cloud_mensual |>
+    filter(anio_mes >= as.Date("2018-01-01"), anio_mes <= fecha_fin) |>
+    ggplot(aes(x = anio_mes)) +
+    # Barras de conteo mensual
+    geom_col(aes(y = menciones), fill = "#457b9d", alpha = 0.7, width = 25) +
+    # Media móvil
+    geom_line(aes(y = mm3), color = "#e63946", linewidth = 0.8, na.rm = TRUE) +
+    # Líneas verticales de hitos
+    geom_vline(data = hitos_v, aes(xintercept = fecha),
+               linetype = "dashed", color = "grey40", linewidth = 0.5) +
+    # Etiquetas de hitos
+    geom_text(data = hitos_v, aes(x = fecha, y = Inf, label = etiqueta),
+              vjust = 1.3, hjust = -0.07, size = 2.8, color = "grey30",
+              lineheight = 0.9) +
+    scale_x_date(
+      breaks = seq(as.Date("2018-01-01"), floor_date(fecha_fin, "year"), by = "1 year"),
+      date_labels = "%Y",
+      expand = expansion(mult = c(0.01, 0.04))
+    ) +
+    scale_y_continuous(labels = comma_format(big.mark = ",")) +
+    labs(
+      x = NULL,
+      y = "Menciones mensuales"
+    ) +
+    theme_bw() +
+    theme(
+      panel.grid.minor = element_blank(),
+      axis.text.x      = element_text(angle = 0)
+    )
+}
 
-message("✓ Figura guardada en Figuras/")
+figs <- list(
+  fig_media_cloud_menciones_2024 = fig_menciones(FECHA_FIN),                # Capítulo 2
+  fig_media_cloud_menciones      = fig_menciones(max(media_cloud_raw$date)) # Capítulo 3
+)
 
+# Guardar figuras (PDF para diseño/Word, PNG 150 dpi para Quarto)
+iwalk(figs, \(p, nm) {
+  ggsave(here::here("Plots", paste0(nm, ".pdf")),
+         plot = p, width = 10, height = 5, device = cairo_pdf)
+  ggsave(here::here("Plots", paste0(nm, ".png")),
+         plot = p, width = 10, height = 5, dpi = 150)
+})
+
+message("✓ Figuras guardadas en Plots/")

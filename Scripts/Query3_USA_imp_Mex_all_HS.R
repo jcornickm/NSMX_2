@@ -476,11 +476,23 @@ total_gral_2025 <- total_gral_anual |>
   filter(Año == 2025) |>
   pull(Val_total_gral)
 
+# Shares 2024 (Capítulo 2 termina en 2024); se conservan los de 2025 (Capítulo 3)
+total_cap_2024 <- total_cap_anual |>
+  filter(Año == 2024) |>
+  select(Capítulo, Val_cap_2024 = Val_cap)
+
+total_gral_2024 <- total_gral_anual |>
+  filter(Año == 2024) |>
+  pull(Val_total_gral)
+
 TCAC_y_shares_84858790 <- tabla_tasas |>
   left_join(total_cap_2025, by = "Capítulo") |>
+  left_join(total_cap_2024, by = "Capítulo") |>
   mutate(
-    pct_cap   = val_2025 / Val_cap_2025,      # % dentro del capítulo en 2025
-    pct_total = val_2025 / total_gral_2025     # % del total exportaciones en 2025
+    pct_cap        = val_2025 / Val_cap_2025,      # % dentro del capítulo en 2025
+    pct_total      = val_2025 / total_gral_2025,   # % del total exportaciones en 2025
+    pct_cap_2024   = val_2024 / Val_cap_2024,      # % dentro del capítulo en 2024
+    pct_total_2024 = val_2024 / total_gral_2024    # % del total exportaciones en 2024
   ) |>
   select(
     Capítulo,
@@ -496,7 +508,9 @@ TCAC_y_shares_84858790 <- tabla_tasas |>
     TCAC_1824,
     Crec_2425,
     pct_cap,
-    pct_total
+    pct_total,
+    pct_cap_2024,
+    pct_total_2024
   ) |>
   arrange(Capítulo, desc(val_2025))
 
@@ -507,6 +521,8 @@ TCAC_y_shares_84858790 |>
   summarise(
     suma_pct_cap   = sum(pct_cap,   na.rm = TRUE),
     suma_pct_total = sum(pct_total, na.rm = TRUE),
+    suma_pct_cap_2024   = sum(pct_cap_2024,   na.rm = TRUE),
+    suma_pct_total_2024 = sum(pct_total_2024, na.rm = TRUE),
     .groups = "drop"
   ) |>
   print()
@@ -528,7 +544,8 @@ meta_TCAC_y_shares <- list(
   ),
   shares          = paste(
     "pct_cap: participación de la partida dentro de su capítulo en 2025;",
-    "pct_total: participación de la partida en el total México→EUA en 2025"
+    "pct_total: participación de la partida en el total México→EUA en 2025;",
+    "pct_cap_2024 y pct_total_2024: lo mismo, con base en 2024 (Capítulo 2)"
   ),
   resto           = paste(
     "Fila 'Resto' = total del capítulo (imp_mex_sec_cap) menos",

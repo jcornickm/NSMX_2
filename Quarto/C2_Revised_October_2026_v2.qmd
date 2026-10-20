@@ -91,7 +91,7 @@ Era razonable, por lo tanto, preguntarse si la intensidad de la discusión sobre
 #| cap-location: top
 #| echo: false
 
-knitr::include_graphics(here::here("Plots", "fig_media_cloud_menciones.png"))
+knitr::include_graphics(here::here("Plots", "fig_media_cloud_menciones_2024.png"))
 ```
 
 Fuente: elaboración propia con base en MediaCloud
@@ -268,7 +268,10 @@ p <- local({
       color = col_chn, fill = "white", fontface = "bold", size = 3.5, linewidth = 0.4
     ) +
     scale_color_manual(values = c("China" = col_chn, "México" = col_mex)) +
-    scale_x_date(date_labels = "%Y", date_breaks = "1 year") +
+    scale_x_date(
+      breaks = seq(as.Date("2010-01-01"), as.Date("2024-01-01"), by = "1 year"),
+      date_labels = "%Y"
+    ) +
     labs(
       x       = NULL,
       y       = NULL,
@@ -304,7 +307,7 @@ rm(p)
 #| echo: false
 #| code-summary: "Importaciones EUA desde China y México"
 #| fig-cap: |
-#|   EUA: importaciones mensuales desde China y México, 2010-2025
+#|   EUA: importaciones mensuales desde China y México, 2010-2024
 #|   Miles de millones de dólares
 #| fig-cap-location: top
 
@@ -427,7 +430,7 @@ ggsave(here::here("Plots", "fig-imp-cambio-pais.png"), plot = p, width = 8, heig
 ```{r}
 #| label: fig-imp-cambio-pais
 #| echo: false
-#| fig-cap: "Cambios en la participación porcentual de los principales exportadores al mercado de EUA, 2010-2018, 2018-2024 y 2024-2025"
+#| fig-cap: "Cambios en la participación porcentual de los principales exportadores al mercado de EUA, 2010-2018 y 2018-2024"
 #| fig-cap-location: top
 #| out-width: 100%
 
@@ -482,7 +485,7 @@ rm(p)
 #| echo: false
 #| fig-cap: |
 #|   EUA: participación porcentual en las importaciones totales,
-#|   México, China, Taiwán y Vietnam, 2010-2025
+#|   México, China, Taiwán y Vietnam, 2010-2024
 #| fig-cap-location: top
 
 knitr::include_graphics(here::here("Plots", "imp_pais_perc.png"))
@@ -636,7 +639,7 @@ Quizá el dato más sorprendente de este período sea la evolución de las expor
 ```{r}
 #| label: fig-imp-cambio-sec-mex
 #| echo: false
-#| fig-cap: "Cambios en la participación porcentual por Secciones de las exportaciones mexicanas a EUA, 2010-2018, 2018-2024, y 2024-2025"
+#| fig-cap: "Cambios en la participación porcentual por Secciones de las exportaciones mexicanas a EUA, 2010-2018 y 2018-2024"
 #| fig-cap-location: top
 #| out-width: 100%
 
@@ -648,7 +651,7 @@ El resultado de este proceso es un portafolio exportador concentrado en las secc
 ```{r}
 #| label: fig-tree-sec
 #| echo: false
-#| fig-cap: "Distribución porcentual de las exportaciones de México a EUA, 2025"
+#| fig-cap: "Distribución porcentual de las exportaciones de México a EUA, 2024"
 #| fig-cap-location: top
 
 knitr::include_graphics(here::here("Plots", "impMex_sec_perc.png"))
@@ -713,6 +716,14 @@ rm(p)
 
 tcac_shares <- readRDS(here::here("RDS", "TCAC_y_shares_84858790.rds")) |> hs_relabel()
 
+# El Capítulo 2 termina en 2024: las participaciones se toman de las columnas
+# *_2024 (Scripts/Query3_USA_imp_Mex_all_HS.R, sección 7). Si faltan, re-ejecutar
+# esa sección.
+stopifnot("Faltan pct_cap_2024 / pct_total_2024 en TCAC_y_shares_84858790.rds" =
+            all(c("pct_cap_2024", "pct_total_2024") %in% names(tcac_shares)))
+tcac_shares <- tcac_shares |>
+  mutate(pct_cap = pct_cap_2024, pct_total = pct_total_2024)
+
 # flextable en vez de gt() -- gt() no emite anchos de columna (<w:tblGrid>) al
 # exportar a Word en esta versión, lo que produce columnas angostas con texto
 # partido letra por letra al abrir el .docx. flextable sí renderiza como
@@ -720,12 +731,12 @@ tcac_shares <- readRDS(here::here("RDS", "TCAC_y_shares_84858790.rds")) |> hs_re
 tabla_cap <- function(cap_num, datos = tcac_shares) {
 
   cap_label  <- datos |> filter(Capítulo == cap_num) |> pull(Cap_corto) |> first()
-  total_2025 <- datos |> filter(Capítulo == cap_num) |> pull(val_2025)  |> sum()
+  total_2024 <- datos |> filter(Capítulo == cap_num) |> pull(val_2024)  |> sum()
 
   df <- datos |>
     filter(Capítulo == cap_num) |>
     { \(d) bind_rows(
-      d |> filter(Cod_partida != "Resto") |> arrange(desc(Crec_2425)),
+      d |> filter(Cod_partida != "Resto") |> arrange(desc(TCAC_1824)),
       d |> filter(Cod_partida == "Resto")
     )}() |>
     mutate(
@@ -737,7 +748,6 @@ tabla_cap <- function(cap_num, datos = tcac_shares) {
       Descripción  = Part_corto,
       TCAC_1018,
       TCAC_1824,
-      Crec_2425,
       pct_cap,
       pct_cap_acum,
       pct_total,
@@ -746,11 +756,12 @@ tabla_cap <- function(cap_num, datos = tcac_shares) {
     # fmt_percent() de gt multiplicaba por 100 y agregaba "%" a la vez;
     # colformat_double() de flextable solo agrega el sufijo, así que hay que
     # escalar los valores a mano antes de formatear.
-    mutate(across(c(TCAC_1018, TCAC_1824, Crec_2425,
+    mutate(across(c(TCAC_1018, TCAC_1824,
                      pct_cap, pct_cap_acum, pct_total, pct_total_acum),
                   \(x) x * 100))
 
-  filas_resaltar <- which(df$Crec_2425 > df$TCAC_1824)
+  # Se resaltan las partidas cuyo crecimiento se aceleró en 2018-2024 respecto a 2010-2018
+  filas_resaltar <- which(df$TCAC_1824 > df$TCAC_1018)
 
   df |>
     flextable() |>
@@ -759,7 +770,6 @@ tabla_cap <- function(cap_num, datos = tcac_shares) {
       Descripción    = "Descripción",
       TCAC_1018      = "2010–2018",
       TCAC_1824      = "2018–2024",
-      Crec_2425      = "2024–2025",
       pct_cap        = "%",
       pct_cap_acum   = "% acum.",
       pct_total      = "%",
@@ -768,17 +778,17 @@ tabla_cap <- function(cap_num, datos = tcac_shares) {
     add_header_row(
       top       = TRUE,
       values    = c("", "", "Tasa de crecimiento anual compuesta",
-                    "% Capítulo, 2025", "% Total, 2025"),
-      colwidths = c(1, 1, 3, 2, 2)
+                    "% Capítulo, 2024", "% Total, 2024"),
+      colwidths = c(1, 1, 2, 2, 2)
     ) |>
     colformat_double(
-      j = c("TCAC_1018", "TCAC_1824", "Crec_2425",
+      j = c("TCAC_1018", "TCAC_1824",
             "pct_cap", "pct_cap_acum", "pct_total", "pct_total_acum"),
       suffix = "%", digits = 1
     ) |>
     bg(i = filas_resaltar, bg = "#fff3cd") |>
     bold(i = filas_resaltar) |>
-    flextable::align(j = 3:9, align = "center", part = "all") |>
+    flextable::align(j = 3:8, align = "center", part = "all") |>
     flextable::align(i = 1, align = "center", part = "header") |>
     theme_booktabs() |>
     autofit() |>
@@ -903,7 +913,7 @@ El siguiente nivel de desagregación en el SA, tras las Secciones, son los Capí
 ```{r}
 #| label: fig-treemap-caps-seccion
 #| echo: false
-#| fig-cap: "México: distribución por capítulo de las exportaciones de Maquinaria, Transporte e Instrumentos, 2025"
+#| fig-cap: "México: distribución por capítulo de las exportaciones de Maquinaria, Transporte e Instrumentos, 2024"
 #| fig-cap-location: top
 #| fig-width: 12
 #| fig-height: 6
@@ -1203,7 +1213,7 @@ ggsave(here::here("Plots", "mapa_xmex_3periodos_tcac.png"), plot = p,
 ```{r}
 #| label: fig-tcac-estados
 #| echo: false
-#| fig-cap: "Tasas de crecimiento de las exportaciones por estado, 2010-2018, 2018-2024 y 2024-2025"
+#| fig-cap: "Tasas de crecimiento de las exportaciones por estado, 2010-2018 y 2018-2024"
 #| fig-cap-location: top
 
 knitr::include_graphics(here::here("Plots", "mapa_xmex_3periodos_tcac.png"))
@@ -1217,7 +1227,7 @@ knitr::include_graphics(here::here("Plots", "mapa_xmex_3periodos_tcac.png"))
 
 # ---- tabla_xmex_3periodos_tcac ----
 # Tabla gt con la TCAC de las exportaciones por estado en los mismos 3
-# subperíodos del mapa anterior (2010-2018, 2018-2024, 2024-2025). Mismo
+# subperíodos del mapa anterior (2010-2018, 2018-2024). Mismo
 # cálculo de TCAC y misma paleta/bins que el mapa, para consistencia visual.
 
 # TCAC por estado y período: Scripts/Prep_tcac_estados.R
@@ -1227,6 +1237,7 @@ tcac_estados <- readRDS(here::here("RDS", "tcac_estados.rds"))
 ### Construcción: tabla_tcac (una fila por estado, una columna por período) ----
 tabla_tcac <- tcac_estados |>
   select(nombre, col, tcac_pct) |>
+  filter(col != "tcac_2024_2025") |>   # el Capítulo 2 termina en 2024
   pivot_wider(names_from = col, values_from = tcac_pct) |>
   arrange(nombre)
 
@@ -1248,15 +1259,14 @@ if (nrow(tabla_der) < nrow(tabla_izq)) {
     bind_rows(tibble(
       nombre         = NA_character_,
       tcac_2010_2018 = NA_real_,
-      tcac_2018_2024 = NA_real_,
-      tcac_2024_2025 = NA_real_
+      tcac_2018_2024 = NA_real_
     ))
 }
 names(tabla_der) <- paste0(names(tabla_der), "_b")
 
 tabla_tcac_wide <- bind_cols(tabla_izq, tabla_der)
 
-cols_izq <- c("tcac_2010_2018", "tcac_2018_2024", "tcac_2024_2025")
+cols_izq <- c("tcac_2010_2018", "tcac_2018_2024")
 cols_der <- paste0(cols_izq, "_b")
 
 ### Tabla: tabla-xmex-tcac-estados ----
@@ -1271,11 +1281,9 @@ tabla_tcac_wide |>
     nombre           = "Entidad",
     tcac_2010_2018   = "2010–2018",
     tcac_2018_2024   = "2018–2024",
-    tcac_2024_2025   = "2024–2025",
     nombre_b         = "Entidad",
     tcac_2010_2018_b = "2010–2018",
-    tcac_2018_2024_b = "2018–2024",
-    tcac_2024_2025_b = "2024–2025"
+    tcac_2018_2024_b = "2018–2024"
   ) |>
   colformat_double(
     j = c(cols_izq, cols_der),
@@ -1298,7 +1306,7 @@ tabla_tcac_wide |>
   #bold(i = 1, part = "header") |>
   fontsize(i = 1, size = 13, part = "header") |>
   theme_booktabs() |>
-  vline(j = 4, part = "all") |>
+  vline(j = 3, part = "all") |>
   autofit() |>
   # Ver nota en prep-tablas-cap: fit_to_width() evita que la tabla se
   # desborde del área imprimible de reference-doc.docx (6" de ancho útil).
@@ -1651,7 +1659,7 @@ rm(p)
 ```{r}
 #| label: fig-immex-empleo
 #| echo: false
-#| fig-cap: "Empleo IMMEX en manufactura: Total, ZLFN y Resto, 2010-2025 (miles de personas, diciembre)"
+#| fig-cap: "Empleo IMMEX en manufactura: Total, ZLFN y Resto, 2010-2024 (miles de personas, diciembre)"
 #| fig-cap-location: top
 
 knitr::include_graphics(here::here("Plots", "fig-immex-empleo.png"))
@@ -2037,7 +2045,7 @@ rm(p)
 #| echo: false
 #| fig-cap: |
 #|   Inversión extranjera directa como porcentaje del PIB (panel superior)
-#|   y de la formación bruta de capital fijo (panel inferior), 2010–2025.
+#|   y de la formación bruta de capital fijo (panel inferior), 2010–2024.
 #|   Datos anuales. Fuente: Secretaría de Economía / SE.
 #| fig-cap-location: top
 #| fig-width: 10
@@ -2096,7 +2104,7 @@ rm(p, ied_pib_comp)
 ```{r}
 #| label: fig-ied-pib-comparadores
 #| echo: false
-#| fig-cap: "IED como porcentaje del PIB. Costa Rica, México, R. Dominicana y Vietnam, 2010-2025"
+#| fig-cap: "IED como porcentaje del PIB. Costa Rica, México, R. Dominicana y Vietnam, 2010-2024"
 #| fig-cap-location: top
 
 knitr::include_graphics(here::here("Plots", "ied_pib_comparativo_wdi.png"))
@@ -2238,7 +2246,7 @@ rm(p)
 #| label: fig-ied-actividad-combinado
 #| echo: false
 #| fig-cap: |
-#|   IED en México: total, manufactura (sectores 31–33) y resto, 2010–2025.
+#|   IED en México: total, manufactura (sectores 31–33) y resto, 2010–2024.
 #|   Arriba: montos absolutos en millones de dólares. Abajo: composición porcentual
 #|   entre manufactura y resto.
 #| fig-cap-location: top
@@ -2392,7 +2400,7 @@ rm(p, datos_fig_sub, total_3133, sub_sum, resto_df, datos_combinados,
 ```{r}
 #| label: fig-ied-manuf-subsector
 #| echo: false
-#| fig-cap: "IED en México: industrias manufactureras (31-33) por subsector, 2006–2024 <br> Nota: valores negativos de IED se representan como cero en el panel inferior"
+#| fig-cap: "IED en México: industrias manufactureras (31-33) por subsector, 2010–2024 <br> Nota: valores negativos de IED se representan como cero en el panel inferior"
 #| fig-cap-location: top
 #| fig-width: 10
 #| fig-height: 10
@@ -2578,7 +2586,7 @@ Capítulo 84
 ```{r}
 #| label: fig-cap84-partidas
 #| echo: false
-#| fig-cap: "México. Exportaciones Capítulo 84, Partidas Seleccionadas, 2010-2025"
+#| fig-cap: "México. Exportaciones Capítulo 84, Partidas Seleccionadas, 2010-2024"
 #| fig-cap-location: top
 #| out-width: 100%
 
@@ -2596,7 +2604,7 @@ Capítulo 85
 ```{r}
 #| label: fig-cap85-partidas
 #| echo: false
-#| fig-cap: "México. Exportaciones Capítulo 85, Partidas seleccionadas, 2010-2025"
+#| fig-cap: "México. Exportaciones Capítulo 85, Partidas seleccionadas, 2010-2024"
 #| fig-cap-location: top
 
 knitr::include_graphics(here::here("Plots", "panel_partidas_cap85.png"))
@@ -2611,7 +2619,7 @@ La @fig-cap85-partidas presenta gráficamente la evolución de las exportaciones
 ```{r}
 #| label: fig-cap87-partidas
 #| echo: false
-#| fig-cap: "México. Exportaciones Capítulo 87, Partidas seleccionadas, 2010-2025"
+#| fig-cap: "México. Exportaciones Capítulo 87, Partidas seleccionadas, 2010-2024"
 #| fig-cap-location: top
 
 knitr::include_graphics(here::here("Plots", "panel_partidas_cap87.png"))
@@ -2622,7 +2630,7 @@ Aunque en la @fig-cap87-partidas no se logró identificar estadísticamente camb
 ```{r}
 #| label: fig-cap90-partidas
 #| echo: false
-#| fig-cap: "México. Exportaciones Capítulo 90, Partidas seleccionadas, 2010-2025"
+#| fig-cap: "México. Exportaciones Capítulo 90, Partidas seleccionadas, 2010-2024"
 #| fig-cap-location: top
 
 knitr::include_graphics(here::here("Plots", "panel_partidas_cap90.png"))
