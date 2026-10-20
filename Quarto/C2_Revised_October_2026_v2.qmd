@@ -1102,6 +1102,7 @@ p <- local({
   # Lectura desde caché local (gadm41_MEX_1_pk.rds) -- sin llamada al servidor.
   mexico_sf <- here::here("geodata", "gadm", "gadm41_MEX_1_pk.rds") |>
     readRDS() |>
+    terra::unwrap() |>
     sf::st_as_sf() |>
     mutate(
       nombre_join = coalesce(unname(estados_lookup$gadm_a_nombre[NAME_1]), NAME_1)
@@ -1684,6 +1685,7 @@ estados_lookup <- readRDS(here::here("RDS", "estados_lookup.rds"))
 
 p <- local({
   mexico_sf <- readRDS(here::here("geodata", "gadm", "gadm41_MEX_1_pk.rds")) |>
+    terra::unwrap() |>
     sf::st_as_sf() |>
     mutate(
       nombre_join = coalesce(unname(estados_lookup$gadm_a_nombre[NAME_1]), NAME_1)
