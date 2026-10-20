@@ -458,7 +458,7 @@ spec_mexico <- list(
     labpos = c("above", NA, "above", NA, NA, NA, NA, "above", "above")),
   hoy = 9.32,
   foot = list(
-    list(h = "Qué muestra este carril", p = c("Carril general/horizontal: arancel que decide cuánto paga casi todo lo importado.", "Los tres colores marcan la base legal vigente en cada tramo: dorado = IEEPA (feb. 2025–20 feb. 2026, declarado ilegal por la Corte Suprema); ciruela = recargo temporal Sección 122 (24 feb.–24 jul. 2026); verde = Sección 301 por trabajo forzado, vigente desde el 24 de julio de 2026.")),
+    list(h = "Qué muestra este carril", p = c("Carril general/horizontal: arancel que decide cuánto pagan las importaciones fuera de T-MEC.", "Los tres colores marcan la base legal vigente en cada tramo: dorado = IEEPA (feb. 2025–20 feb. 2026, declarado ilegal por la Corte Suprema); ciruela = recargo temporal Sección 122 (24 feb.–24 jul. 2026); verde = Sección 301 por trabajo forzado, vigente desde el 24 de julio de 2026.")),
     list(h = "Nota del caso", p = c("México es el contraste directo con Canadá: la misma amenaza de subir la tasa (esta vez a 30%, anunciada el 12 de julio de 2025) no llegó a implementarse — un acuerdo bilateral del 31 de julio de 2025 la suspendió 90 días y la tasa se mantuvo en 25% hasta la reorganización judicial de 2026."))),
   fuentes = "Federal Register (2025, 2026) · The White House (2025a-f) · *Learning Resources, Inc. v. Trump* (2026), Corte Suprema de EUA · Global Trade Alert (2026) · CRS (2026), R48549."
 )
@@ -493,7 +493,7 @@ spec_canada <- list(
     labpos = c("above", NA, "above", NA, "above", NA, "above", "above")),
   hoy = 8.32,
   foot = list(
-    list(h = "Qué muestra este carril", p = c("Carril general/horizontal: arancel que decide cuánto paga casi todo lo importado.", "Los tres colores marcan la base legal vigente en cada tramo: dorado = IEEPA (feb. 2025–20 feb. 2026, declarado ilegal por la Corte Suprema); ciruela = recargo temporal Sección 122 (24 feb.–24 jul. 2026); verde = Sección 301 por trabajo forzado, vigente desde el 24 de julio de 2026.")),
+    list(h = "Qué muestra este carril", p = c("Carril general/horizontal: arancel que decide cuánto pagan las importaciones fuera de T-MEC.", "Los tres colores marcan la base legal vigente en cada tramo: dorado = IEEPA (feb. 2025–20 feb. 2026, declarado ilegal por la Corte Suprema); ciruela = recargo temporal Sección 122 (24 feb.–24 jul. 2026); verde = Sección 301 por trabajo forzado, vigente desde el 24 de julio de 2026.")),
     list(h = "Nota del caso", p = c("Canadá es, junto con México, el caso donde una amenaza sí se convirtió en tasa vigente sin mediar acuerdo marco: el recargo por fentanilo subió de 25% a 35% el 1 de agosto de 2025 (E.O. 14325) y se mantuvo así hasta que el fallo de la Corte Suprema lo dejó sin base legal."))),
   fuentes = "Federal Register (2025, 2026) · The White House (2025a-f) · *Learning Resources, Inc. v. Trump* (2026), Corte Suprema de EUA · Global Trade Alert (2026) · CRS (2026), R48549."
 )
@@ -669,7 +669,7 @@ spec_vietnam <- list(
     labpos = c("above", "above", NA, NA, "above", NA, NA, "above", "above")),
   hoy = 9.32,
   foot = list(
-    list(h = "Qué muestra este carril", p = c("Carril general/horizontal: arancel que decide cuánto paga casi todo lo importado.", "Los tres colores marcan la base legal vigente en cada tramo: dorado = IEEPA (feb. 2025–20 feb. 2026, declarado ilegal por la Corte Suprema); ciruela = recargo temporal Sección 122 (24 feb.–24 jul. 2026); verde = Sección 301 por trabajo forzado, vigente desde el 24 de julio de 2026.")),
+    list(h = "Qué muestra este carril", p = c("Carril general/horizontal: Vietnam no tiene un acceso preferencia al mercado de USA de manera que este es el arancel que pagan la mayor parte de las impotaciones provenientes de este país.", "Los tres colores marcan la base legal vigente en cada tramo: dorado = IEEPA (feb. 2025–20 feb. 2026, declarado ilegal por la Corte Suprema); ciruela = recargo temporal Sección 122 (24 feb.–24 jul. 2026); verde = Sección 301 por trabajo forzado, vigente desde el 24 de julio de 2026.")),
     list(h = "Nota del caso", p = c("Vietnam tuvo la escalada más pronunciada de los seis países documentados en este proyecto: 46% el 2 de abril —el segundo más alto de toda la tabla de “Liberation Day”, solo detrás de Camboya (49%)— reducido a 10% en la pausa global, y renegociado a 20%, más del doble del 10% de México/Canadá o el 15% de Japón/Corea/UE, más una tasa punitiva del 40% para transbordo, pensada para desalentar el uso de Vietnam como ruta de desvío de mercancía china. El acuerdo marco de octubre no cambió la tasa recíproca, pero sí eliminó el arancel a “casi todos” los bienes estadounidenses de parte de Vietnam y añadió una lista Anexo III con arancel 0%."))),
   fuentes = "Federal Register (2025, 2026) · The White House (2025a-f) · *Learning Resources, Inc. v. Trump* (2026), Corte Suprema de EUA · Global Trade Alert (2026) · CRS (2026), R48549 · USTR (2025), Fact Sheet: US-Vietnam Framework · Global Trade Alert (2026), S301-FL Vietnam economy report."
 )
