@@ -1,0 +1,252 @@
+---
+title: "Acero y Aluminio: Productos Complejos — Síntesis de Hallazgos y Selección de Casos"
+subtitle: "Documento de trabajo N.º 4.b — Insumo para el ejercicio numérico de productos derivados (complemento al documento N.º 4)"
+author: "DRP Research"
+date: "2026-08-29"
+format:
+  docx:
+    toc: true
+    number-sections: true
+lang: es
+---
+
+# Nota metodológica
+
+Este documento **sintetiza los hallazgos** de una conversación de trabajo previa al ejercicio cuantitativo sobre acero y aluminio — no es una minuta ni reproduce el intercambio como diálogo. El objetivo de esa conversación fue resolver, antes de calcular nada, tres preguntas conceptuales:
+
+1. ¿Cómo se exporta el metal primario (acero y aluminio) y constituye una categoría única o varias?
+2. ¿El arancel del metal primario varía por línea HS o por país de origen (más allá de Reino Unido), o es plano?
+3. Cuando un producto derivado podría clasificar bajo más de un programa de Sección 232 (por ejemplo, una autoparte de aluminio: ¿aplica el arancel de autos, el de aluminio, o ambos?), ¿qué regla determina cuál rige?
+
+Las respuestas —desarrolladas en las secciones 1 a 4— llevaron a seleccionar **tres casos reales** (sección 5) para el ejercicio numérico que se desarrolla en la sección 6 de este mismo documento. Las fuentes se citan en el texto en formato APA; las ya utilizadas en los documentos de trabajo N.º 3 y N.º 4 de este proyecto no se repiten en la lista de Referencias al final — ver esos documentos para su detalle completo.
+
+---
+
+# 1. El metal primario no es una categoría única
+
+El acero y el aluminio se exportan en una secuencia de formas físicas distintas, y cada metal tiene además un eje transversal de composición/aleación. Esto importa porque el arancel de Sección 232 respeta exactamente esta subdivisión en sus listas de HTS cubiertos (U.S. Customs and Border Protection [CBP], 2025a, 2025b; U.S. International Trade Commission [USITC], s.f.).
+
+## 1.1 Acero (Capítulo 72 del Arancel Armonizado)
+
+| Etapa / grupo | Formas típicas | Partidas HS |
+|---|---|---|
+| Semielaborado (primera forma sólida tras la colada) | Lingotes, palanquillas (*billets*), tochos (*blooms*), planchones (*slabs*) | 7206, 7207, 7224 |
+| Productos planos | Bobinas, láminas, planchas, flejes | 7208–7212, 7225–7226 |
+| Productos largos | Barras, varillas, alambrón, perfiles/ángulos estructurales, tablestacas, rieles | 7213–7216, 7227–7228 |
+| Tubos y perfiles huecos | Tubería sin costura y soldada, conexiones | 7304–7306 |
+| Acero inoxidable (eje transversal, no una etapa) | Versión "inox" de productos planos y largos (≥10.5% cromo) | 7218–7223 |
+
+Después de estas seis categorías de acero primario/semielaborado viene el Capítulo 73 ("manufacturas de fundición, hierro o acero"), que ya corresponde a **productos derivados** (tornillería, estructuras armadas, tubería con accesorios), no a metal primario.
+
+## 1.2 Aluminio (Capítulo 76)
+
+| Nivel | Formas típicas | Partidas HS |
+|---|---|---|
+| Sin trabajar / primario ("unwrought") | Lingotes, *pigs*, lingotes de aleación maestra | 7601 |
+| Trabajado — barras, varillas y perfiles (extrusiones) | Perfiles estructurales, marcos de ventana | 7604 |
+| Trabajado — alambre | Alambre eléctrico y estructural | 7605 |
+| Trabajado — planchas, láminas y flejes | Chapa, *can stock*, lámina automotriz | 7606 |
+| Trabajado — papel/lámina delgada | Papel aluminio food-grade e industrial | 7607 |
+| Trabajado — tubos y accesorios | Tubería, conexiones | 7608–7609 |
+| Piezas fundidas y forjadas | Componentes de fundición/forja (ej. automotrices) | 7616.99.51 |
+
+La distinción que más importa para el arancel es **sin trabajar (7601) vs. trabajado** (todo lo demás) — la misma lógica "unwrought vs. wrought" que usa toda la estadística de comercio de aluminio a nivel mundial (USITC, s.f.). Dentro de "trabajado" hay además una subdivisión por serie de aleación (1000–8000) que se refleja en el desglose nacional del HTSUS, no siempre en el código HS a 6 dígitos.
+
+---
+
+# 2. El metal primario paga una tasa plana — no hay variable de cálculo
+
+## 2.1 La tasa no varía por línea HS ni por país (salvo Reino Unido)
+
+Dentro de cada metal primario, la tasa de Sección 232 es única sin importar si el renglón es lingote, plancha, barra, tubo o inoxidable (ver documento de trabajo N.º 4 de este proyecto):
+
+- **50%** general para acero y para aluminio.
+- **25%** solo para Reino Unido (única excepción de país, más una cuota TRQ limitada a 0% dentro de cupo).
+- Recargos punitivos (no reducciones) para metal con país de fundición Rusia (hasta 200% en aluminio), Bielorrusia, Irán o China.
+
+No existe una fórmula que aplicar: es valor en aduana × tasa fija, sin ajuste por contenido, peso relativo o certificación.
+
+## 2.2 Corrección de una premisa común: no hay 0% para metal originado en EE.UU., Canadá o México
+
+Es fácil confundir tres cosas distintas:
+
+- **Metal producido y usado dentro de EE.UU. no es una importación** — no hay pregunta arancelaria de por medio; no es una exención, es que el arancel de importación no aplica a lo que nunca cruza la frontera.
+- **Canadá y México NO tienen exención vigente en metal primario.** Sí la tuvieron antes de 2025 (acuerdo de cuotas de 2019, heredado del primer mandato), pero la **Proclamación 10895/10896 (10 feb. 2025)** eliminó explícitamente todas las exenciones y cuotas por país heredadas — Canadá y México incluidos (The White House, 2025a). Desde el 12 de marzo de 2025 pagan el 50% pleno, igual que la UE, Japón o Corea.
+- El proceso de exclusiones producto-por-producto del esquema 2018 (*General Approved Exclusions* y exclusiones caso-por-caso) **fue terminado** en el rediseño 2025-2026 — tampoco queda una vía de excepción por escasez doméstica.
+
+Lo que sí existe con 0%/10% por contenido estadounidense aplica **exclusivamente a productos derivados**, nunca al metal primario (ver sección 3).
+
+---
+
+# 3. Dónde sí hay variables de cálculo: productos derivados
+
+El patrón es inverso al de autos: en autos, el vehículo completo tiene un mecanismo de contenido nacional variable; aquí el metal puro es tasa fija, y es el **producto derivado** el que hereda la complejidad:
+
+| Variable | Efecto |
+|---|---|
+| Umbral de peso (¿el artículo supera 15% de peso en acero/aluminio/cobre?) | Determina si Sección 232 aplica en absoluto, o el artículo queda exento |
+| Categoría del derivado (Anexo I-B genérico 25% vs. Anexo III transitorio 15%, expira dic. 2027) | La tasa nominal depende de en qué anexo cae el HTS del producto terminado |
+| % de contenido metálico fundido/colado en EE.UU. (≥85%) | Si se certifica, la tasa de derivados baja de 25% a **10%** (no 0%) |
+| % de contenido NO-estadounidense, para equipo móvil industrial de Canadá/México (Anexo I-C, creado jun. 2026) | Fórmula graduada: **25% × (valor total − valor atribuible a partes producidas en EE.UU.) / valor total**, con un **piso de 15% ad valorem efectivo** — no es un umbral binario de "0% si ≤40%"; ver corrección en sección 6.3 (The White House, 2026; Troutman Pepper Locke, 2026; PwC, 2026) |
+| Base gravable (valor íntegro desde abr. 2026, antes solo "valor del metal") | Ya documentado en el doc. N.º 4 con el caso *Express Fasteners* (arancel efectivo entre 10% y 50% sobre el mismo artículo según qué valor se declarara) |
+
+---
+
+# 4. Regla de prelación entre programas de Sección 232 (no-stacking)
+
+Cuando un bien podría clasificar bajo más de un programa de Sección 232, existe una **jerarquía explícita** —no es ambigüedad de clasificación— establecida por la Executive Order 14289 (29 abr. 2025) y ajustada por la Proclamación 10947 (3 jun. 2025) (Global Trade Alert, 2025; Phillips Lytle LLP, 2025; Torres Trade Law, PLLC, 2025):
+
+| Prioridad | Programa | Efecto |
+|---|---|---|
+| 1 (más alta) | Sección 232 semiconductores (Proc. 11002, ene. 2026) | Exento de aranceles recíprocos, de IEEPA por tráfico de fentanilo (Canadá/México) y de **cualquier otro** arancel de Sección 232 |
+| 2 | Sección 232 autos/transporte (Proc. 10908, y camiones medianos/pesados) | Prevalece sobre metales (acero/aluminio/cobre/madera) y sobre IEEPA fentanilo (Canadá/México/Brasil/India) |
+| 3 | Sección 232 metales (acero/aluminio/cobre/madera) | Prevalece sobre IEEPA recíproco y por país, excepto donde ya aplican los niveles 1-2 |
+| 4 | Todo lo demás (Sección 301, antidumping/compensatorios, NMF) | **Sí se acumula** — no cubierto por la regla de no-stacking |
+
+Regla adicional dentro del nivel 3: si un artículo contiene más de uno de los tres metales cubiertos (acero, aluminio, cobre), el importador paga **solo uno** de los tres aranceles — no se apilan entre sí.
+
+**Implicación central para el ejercicio numérico:** un bien nunca paga dos aranceles de Sección 232 a la vez. La pregunta relevante no es "¿cuánto se acumula?" sino "¿cuál de los programas aplicables tiene la prioridad más alta?".
+
+---
+
+# 5. Casos seleccionados para el ejercicio cuantitativo
+
+## 5.1 Las dos empresas de referencia
+
+- **Prima** (Prima, s.f.): fabricación de acero estructural certificada, transfronteriza (EE.UU.-México), para infraestructura de IA/centros de datos, red eléctrica y reshoring industrial. Líneas de producto: acero estructural puro (vigas, columnas, armaduras); ensamblajes modulares (skids, gabinetes, racks con arnés y tubería integrados); sistemas "mission-critical" (HVAC, enfriamiento de baterías); infraestructura de energía/conectividad (subestaciones, plataformas de transformadores, soportes de switchgear, shelters de telecom).
+- **Alupress** (Alupress, s.f.): fabricante mexicano de fundición de aluminio a alta presión (HPDC) y maquinado CNC, con 30 años en el mercado, sirviendo tres sectores: automotriz, eléctrico/electrónico e industrial general.
+
+El caso de Alupress es especialmente útil porque **el mismo proceso de fabricación (pieza de aluminio fundido) recibe tratamiento arancelario distinto según a qué industria se destine** — lo cual conecta directamente con la regla de prelación de la sección 4.
+
+## 5.2 Caso 1 — Alupress: autoparte de aluminio fundido
+
+Ejemplo ilustrativo: carcasa de transmisión o soporte de motor de aluminio, clasificado como autoparte (Cap. 87, sujeta a la Proclamación 10908 — documento N.º 3).
+
+**Por qué es ilustrativo:** aplica directamente la regla de prelación del nivel 2 sobre el nivel 3 (sección 4). La pieza paga el régimen de autos (25% simple, o el mecanismo de contenido EE.UU. si califica T-MEC) y **no** paga adicionalmente el 50% de aluminio-derivados. Es el caso de libro para desmentir la intuición de "doble cobro" cuando un bien podría clasificar en dos programas — y para mostrar que el tipo de origen que sí importa aquí (T-MEC autos: RVC 75% + LVC) es mucho más estricto que el de aluminio puro.
+
+**Pendiente para el cálculo numérico:** confirmar clasificación HTS específica de una autoparte de aluminio fundido representativa; supuesto de contenido EE.UU. (usar los órdenes de magnitud del documento N.º 3.b como referencia, dado que Alupress es un proveedor mexicano).
+
+## 5.3 Caso 2 — Otra pieza de Alupress, con destino electrónica/electrodoméstico
+
+Ejemplo ilustrativo: carcasa o componente fundido de aluminio para un electrodoméstico o dispositivo electrónico (no automotriz) — distinto del producto del Caso 1, para evitar la lectura de "la misma pieza vendida dos veces".
+
+**Por qué es ilustrativo:** sin el paraguas de autos, esta pieza cae de lleno en el régimen de aluminio-derivados puro (documento N.º 4: umbral de peso, Anexo I-B/I-C). Además, si el producto final del cliente de Alupress clasifica dentro de la lista cerrada de la Nota General 11(p) del HTSUS (documento N.º 5 — origen "automático" sin CTC ni RVC para productos informáticos/electrónicos), se genera un contraste directo con el Caso 1: mismo proceso de fabricación (fundición HPDC de aluminio), mismo país de origen (México), pero **régimen de origen y de arancel Sección 232 completamente distintos** según el destino final de la pieza.
+
+**Pendiente para el cálculo numérico:** identificar un producto electrónico/electrodoméstico representativo y verificar si clasifica dentro de la Nota General 11(p) (origen automático) o bajo la regla general CTC de electrónica (documento N.º 5); confirmar si la pieza fundida en sí (previa al ensamblaje final) cae bajo el umbral de peso de 15% del documento N.º 4.
+
+## 5.4 Caso 3 — Prima: equipo de subestación / transformador / switchgear
+
+Ejemplo ilustrativo: plataforma de transformador o soporte de switchgear fabricado por Prima para infraestructura de red eléctrica.
+
+**Por qué es ilustrativo:** no es auto ni semiconductor, por lo que no hay colisión de prelación — cae directo en el nivel 3 "puro". Pero activa dos variables propias del documento N.º 4 que aún no se han ilustrado con un caso real: (i) la categoría transitoria del Anexo III para equipo eléctrico/industrial intensivo en metal (15%, vigente solo hasta el 31 de diciembre de 2027 — confirmado en la Fact Sheet de la Casa Blanca de junio de 2026), y (ii) el mecanismo de contenido EE.UU./no-EE.UU. transfronterizo (Anexo I-C, mecanismo graduado con piso de 15%, ver sección 6.3), dado que Prima fabrica explícitamente combinando capacidad de EE.UU. y México.
+
+**Pendiente para el cálculo numérico:** confirmar si la clasificación HTS de una plataforma de transformador/switchgear específica efectivamente cae en el Anexo III (y no en el Anexo I-B genérico); construir un supuesto razonable de reparto de valor EE.UU./México para ilustrar el mecanismo Anexo I-C.
+
+---
+
+# 6. Ejercicio numérico: arancel efectivo por caso
+
+**Advertencia sobre los datos:** al igual que en el documento N.º 3.b, las cifras de contenido (EE.UU., metálico, etc.) usadas aquí donde no hay un dato público específico de Alupress o Prima son **supuestos ilustrativos razonados**, marcados como tales, no datos de embarque real de ninguna de las dos empresas. El objetivo es ilustrar el mecanismo de cálculo con productos y clasificaciones plausibles, no auditar a estas empresas.
+
+## 6.1 Caso 1 — Alupress: autoparte de aluminio fundido
+
+Producto ilustrativo: carcasa de transmisión o soporte de motor de aluminio fundido, destinado a un fabricante de vehículos. Por la regla de clasificación de "partes" (Notas de Sección XVI/XVII del Arancel Armonizado), una pieza identificable como de uso exclusivo o principal para un vehículo se clasifica junto con el vehículo (Cap. 87 o partida específica de motor), **no** como manufactura genérica de aluminio (7616) — es decir, entra al régimen de autos desde la clasificación misma, no por elección del importador.
+
+A diferencia de los vehículos (documento N.º 3.b, mecanismo graduado de deducción por contenido EE.UU.), las **autopartes** reciben un tratamiento binario bajo la Proclamación 10908 (ver documento de trabajo N.º 3):
+
+| Escenario | Línea de entrada HTS | Base gravable | Tasa Sección 232 | Arancel efectivo (solo 232) |
+|---|---|---|---|---|
+| No califica origen T-MEC | 9903.94.01 (línea general) | 100% del valor | 25% | **25%** |
+| Sí califica origen T-MEC (RVC 75% + LVC 40-45% + 70% acero/aluminio norteamericano, documento N.º 3) | 9903.94.06 (autopartes calificadas USMCA) | — | 0% | **0%** |
+
+**El punto central a ilustrar:** en ninguno de los dos escenarios se suma el arancel de aluminio-derivados del documento N.º 4 (25% Anexo I-B) — la regla de prelación de la sección 4 hace que el régimen de autos gobierne en exclusiva. Sin la regla de prelación, un importador desprevenido podría calcular erróneamente 25% (autos) + 25% (aluminio) = 50% en el escenario no calificado; el resultado real es 25%, no 50%.
+
+## 6.2 Caso 2 — Otra pieza de Alupress: componente de aluminio fundido para electrónica/electrodoméstico
+
+Producto ilustrativo: carcasa o disipador de aluminio fundido para un compresor, inversor o fuente de poder de un electrodoméstico o dispositivo electrónico — **no** es una autoparte, así que no hay paraguas de la Proclamación 10908. Cae directo en el régimen general de aluminio-derivados del documento N.º 4 (Anexo I-B, o la lista específica de "artículos misceláneos de aluminio fabricado" que ya incluye partidas de Cap. 84/85 para componentes de refrigeración/AC, según la lista de HTS de aluminio de CBP) (CBP, 2025b).
+
+**Paso 1 — umbral de peso:** una pieza de aluminio fundido es, en la práctica, ~100% aluminio por peso — supera ampliamente el umbral de minimis de 15%, por lo que Sección 232 aplica sin duda.
+
+**Paso 2 — base gravable:** valor íntegro de aduana (regla vigente desde la Proclamación 11021, abr. 2026 — ya no "solo el valor del metal").
+
+**Paso 3 — tasa:**
+
+| Escenario | Contenido metálico certificado como fundido/colado en EE.UU. | Base gravable | Tasa | Arancel efectivo |
+|---|---|---|---|---|
+| Sin certificación (supuesto base — aluminio primario de origen no verificado, típico de un fundidor mexicano que compra a proveedores regionales/globales) | — | 100% del valor | 25% (Anexo I-B) | **25%** |
+| Con certificación ≥85% del metal fundido/colado en EE.UU. | ≥85% | 100% del valor | 10% | **10%** |
+
+**Nota de alcance (marcada explícitamente como pendiente de verificar):** las fuentes secundarias consultadas difieren en si el umbral "≥85% EE.UU. → 10%" aplica a **cualquier derivado** (lectura de White & Case/CRS, ver documento N.º 4: *"regardless of origin country"*) o solo a una categoría más acotada de **"equipo de capital"** (lectura literal de la Fact Sheet de la Casa Blanca de junio de 2026) (The White House, 2026). Para una pieza de aluminio fundido de uso general (no un bien de capital), el alcance exacto debe confirmarse contra el texto de la proclamación antes de asumir que el 10% está disponible.
+
+**Nota adicional — dos preguntas de arancel independientes, no una que se cruza con otra:** si el producto electrónico terminado en el que se instala esta pieza clasifica en la lista cerrada de la Nota General 11(p) del HTSUS (documento N.º 5), ese producto puede acceder a **0% de arancel NMF** por "origen automático" T-MEC. Esto **no reduce ni elimina** el 25%/10% de Sección 232 sobre el contenido de aluminio calculado arriba — son dos bases legales distintas (arancel NMF de tratado vs. Sección 232 por seguridad nacional) que se evalúan por separado sobre el mismo artículo. El hallazgo del documento N.º 5 (origen laxo) no "rescata" a la pieza de aluminio del arancel de metales.
+
+## 6.3 Caso 3 — Prima: equipo de subestación / plataforma de transformador / soporte de switchgear
+
+**Corrección respecto a la sección 3:** en la conversación previa a este documento se citó un mecanismo "Anexo I-C: 0% si el contenido no-EE.UU. no excede 40%" para Canadá/México. La investigación adicional para este ejercicio numérico muestra que esa descripción era imprecisa en dos sentidos: (i) el Anexo I-C (creado en la Proclamación de junio de 2026) aplica específicamente a **equipo móvil industrial** (excavadoras, montacargas, maquinaria agrícola) — no está confirmado que cubra equipo de red eléctrica fijo como subestaciones o transformadores; y (ii) el mecanismo no es un umbral binario de "0% si ≤40%", sino una **fórmula graduada con piso** (The White House, 2026; Troutman Pepper Locke, 2026; PwC, 2026):
+
+$$
+\text{Arancel efectivo} = \max\left(25\% \times \frac{\text{Valor total} - \text{Valor atribuible a partes producidas en EE.UU.}}{\text{Valor total}},\ 15\%\right)
+$$
+
+Es decir, el arancel nunca baja de **15% efectivo**, sin importar cuánto contenido estadounidense se certifique — un piso análogo al que ya existe para autopartes de EE.UU./Canadá/México, pero aquí explícito en la propia fórmula.
+
+Dado que no está confirmado que el equipo de subestación de Prima califique como "equipo móvil industrial" (Anexo I-C), se presentan tres escenarios de clasificación, de más a menos probable según la lectura de las fuentes disponibles:
+
+| Escenario de clasificación | Fundamento | Tasa | Arancel efectivo sobre valor íntegro | Vigencia |
+|---|---|---|---|---|
+| **(A) Categoría transitoria de "equipo industrial/de potencia"** — subestaciones y transformadores encajan conceptualmente en "power equipment" | Ampliación de jun. 2026 (agrícola, equipo móvil industrial, HVAC residencial, equipo de potencia) | 15% | **15%** | Expira 31 dic. 2027 |
+| **(B) Anexo I-B genérico** — si el HTS específico no está en la lista de la categoría transitoria | Régimen general de derivados (documento N.º 4) | 25% | **25%** | Sin fecha de expiración conocida |
+| **(C) Certificación ≥85% acero/aluminio fundido/colado en EE.UU.** — disponible independientemente de si aplica (A) o (B), dado el modelo de fabricación EE.UU.-México de Prima | Fact Sheet jun. 2026 | 10% | **10%** | — |
+| (D) Anexo I-C (mecanismo graduado, fórmula arriba) — **solo si** el producto calificara como "equipo móvil industrial", lo cual no está confirmado para equipo de subestación fijo | Proclamación jun. 2026 | 25% × %no-EE.UU., piso 15% | **Entre 15% y 25%**, según % de valor producido en EE.UU. | — |
+
+**Lectura para el ejercicio:** de los tres/cuatro caminos, el escenario (C) —certificación de contenido metálico fundido/colado en EE.UU.— es el más favorable y, dado que Prima combina explícitamente capacidad de fabricación en ambos países, es plausible que sea la ruta que efectivamente persigan, en vez de depender de que su HTS específico caiga en la categoría transitoria (A) o de que su producto califique como "equipo móvil" para acceder a (D).
+
+## 6.4 Síntesis comparativa de los tres casos
+
+| Caso | Empresa | Régimen que gobierna | Rango de arancel efectivo (Sección 232) | Variable que más mueve el resultado |
+|---|---|---|---|---|
+| 1. Autoparte de aluminio fundido | Alupress | Autos (Proc. 10908) — sin stacking de aluminio | 0% – 25% | Calificación T-MEC de la autoparte (binaria) |
+| 2. Pieza de aluminio para electrónica/electrodoméstico | Alupress | Aluminio-derivados (documento N.º 4, Anexo I-B) | 10% – 25% | Certificación de metal fundido/colado en EE.UU. (≥85%) |
+| 3. Equipo de subestación/transformador | Prima | Aluminio/acero-derivados — anexo específico por confirmar | 10% – 25% | Clasificación exacta del HTS (categoría transitoria vs. genérica) + certificación de contenido EE.UU. |
+
+El patrón que emerge de los tres casos: **la tasa nominal (25%) rara vez es la tasa final pagada** — casi todos los caminos de alivio disponibles (calificación T-MEC binaria en autopartes, certificación de metal EE.UU. en derivados generales, categorías transitorias por tipo de equipo) dependen de una certificación o clasificación específica que el importador debe gestionar activamente, no de una reducción automática por acuerdo comercial de país.
+
+---
+
+# 7. Próximos pasos
+
+1. Para el Caso 2, resolver primero la clasificación HTS del producto electrónico representativo, y confirmar el alcance exacto (todo derivado vs. solo "equipo de capital") del mecanismo 85%→10%, antes de tratar la cifra como definitiva.
+2. Para el Caso 3, verificar en el texto de la Proclamación de junio de 2026 (y su Anexo I-C) si equipo de subestación/transformador fijo está listado en la categoría transitoria de "equipo de potencia" o si califica como "equipo móvil industrial" — esto decide si el escenario (A), (B) o (D) de la sección 6.3 es el real.
+3. Incorporar esta síntesis y el ejercicio numérico al informe final de 20-25 páginas cuando se ensamble (ver documento N.º 2 y siguientes).
+
+---
+
+# Referencias
+
+*Nota: las fuentes primarias del marco legal general de Sección 232 (acero/aluminio) ya citadas en el documento de trabajo N.º 4, y del marco legal de autos ya citado en el documento N.º 3, no se repiten aquí. Solo se listan las fuentes nuevas introducidas en este documento.*
+
+Alupress. (s.f.). *Sitio corporativo*. Recuperado el 29 de agosto de 2026, de https://www.alupress.com.mx/
+
+Global Trade Alert. (2025, mayo). *US tariff stacking, explained*. https://globaltradealert.org/blog/US-Tariff-Stacking-Explained
+
+Phillips Lytle LLP. (2025). *Clarifying guidance on new stacking tariffs*. https://phillipslytle.com/clarifying-guidance-on-new-stacking-tariffs/
+
+Prima. (s.f.). *Sitio corporativo*. Recuperado el 29 de agosto de 2026, de https://www.prima.ai/
+
+PwC. (2026, junio). *Trump administration further adjusts Section 232 tariffs on aluminum, steel, and copper imports*. https://www.pwc.com/us/en/services/tax/library/pwc-trump-admin-further-adjusts-sec-232-metals-tariffs.html
+
+Torres Trade Law, PLLC. (2025, mayo). *Trump addresses tariff stacking and provides some relief to automakers*. https://www.torrestradelaw.com/posts/Trump-Addresses-Tariff-Stacking-and-Provides-Some-Relief-to-Automakers/397
+
+Troutman Pepper Locke. (2026, junio). *President Trump further adjusts Section 232 tariffs on aluminum, steel, and copper*. https://www.troutman.com/insights/president-trump-further-adjusts-section-232-tariffs-on-aluminum-steel-and-copper/
+
+U.S. Customs and Border Protection. (s.f.). *Section 232 tariffs on steel and aluminum FAQs*. Recuperado el 29 de agosto de 2026, de https://www.cbp.gov/trade/programs-administration/entry-summary/232-tariffs-aluminum-and-steel-faqs
+
+U.S. Customs and Border Protection. (2025a, 11 de marzo). *Lista de HTS de acero sujetos a Sección 232* [PDF]. https://content.govdelivery.com/attachments/USDHSCBP/2025/03/11/file_attachments/3192385/steelHTSlist%20final%20(1).pdf
+
+U.S. Customs and Border Protection. (2025b, 11 de marzo). *Lista de HTS de aluminio sujetos a Sección 232* [PDF]. https://content.govdelivery.com/attachments/USDHSCBP/2025/03/11/file_attachments/3192386/aluminumHTSlist%20final.pdf
+
+U.S. International Trade Commission. (s.f.). *Harmonized Tariff Schedule, Chapter 76: Aluminum and articles thereof*. Recuperado el 29 de agosto de 2026, de https://www.usitc.gov/publications/docs/tata/hts/bychapter/1000c76.pdf
+
+The White House. (2025a, febrero). *Adjusting imports of steel into the United States* [Proclamación 10896]. https://www.whitehouse.gov/presidential-actions/2025/02/adjusting-imports-of-steel-into-the-united-states/
+
+The White House. (2026, junio). *Fact sheet: President Donald J. Trump updates tariffs on steel, aluminum, and copper imports*. https://www.whitehouse.gov/fact-sheets/2026/06/fact-sheet-president-donald-j-trump-updates-tariffs-on-steel-aluminum-and-copper-imports/

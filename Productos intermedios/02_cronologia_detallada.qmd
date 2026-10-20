@@ -1,0 +1,498 @@
+---
+title: "Cronología Detallada: Política Arancelaria y Comercial de EE.UU. bajo la Segunda Administración Trump"
+subtitle: "Documento de trabajo N.º 2 — Enero 2025 a septiembre 2026"
+author: "DRP Research"
+date: "2026-10-13"
+format:
+  docx:
+    toc: true
+    number-sections: true
+lang: es
+---
+
+# Nota metodológica
+
+Esta cronología se construyó a partir de fuentes primarias (Federal Register, White House, USTR, opiniones judiciales) y del informe del Congressional Research Service *"Presidential 2025 Tariff Actions: Timeline and Status"* (R48549) (Congressional Research Service [CRS], 2025a, 2026), complementada con alertas legales de bufetes especializados en comercio internacional y cobertura de prensa especializada para el período no cubierto aún por el CRS (desde marzo de 2026 en adelante). Las fechas corresponden, salvo indicación contraria, a la fecha de firma de la medida; cuando la fecha de publicación en el Federal Register o la fecha de entrada en vigor difieren de la fecha de firma, se indican las tres por separado.
+
+Las fuentes se citan en el texto en formato APA (autor, año) **junto a cada afirmación individual** — no solo en un listado al final — para que el lector pueda identificar la procedencia de cada dato puntual. Se listan completas, en formato APA, en la sección de Referencias al final del documento.
+
+*Nota de esta versión (8 de septiembre de 2026):* se completaron las dos tareas pendientes marcadas como prioritarias en la versión anterior: **(1)** se verificó contra fuentes primarias (Federal Register, whitehouse.gov, The American Presidency Project) la fecha de firma de cada orden ejecutiva y proclamación citada en la cronología, lo que permitió corregir varias fechas que la versión anterior tomaba de resúmenes secundarios y que en realidad correspondían a la fecha de *entrada en vigor* y no a la de firma (los casos se señalan explícitamente con una nota "**Corrección**" en el texto); **(2)** se amplió el detalle de los acuerdos marco bilaterales pendientes (Indonesia, Filipinas, el resto de la gira asiática de octubre de 2025, el bloque latinoamericano de noviembre de 2025, Suiza/Liechtenstein y Corea del Sur), incluyendo tasas, compromisos específicos y el mecanismo legal de implementación (E.O. 14346). Además, siguiendo instrucciones del cliente, se añadieron citas en el texto para cada afirmación individual de la cronología (antes solo parcialmente citada) y una nueva sección, "TACO: anuncios de aranceles pausados o revertidos", que documenta en un solo lugar los casos en que la administración anunció o ejecutó una medida y luego la pausó, redujo o revirtió. Como parte de la verificación de fuentes primarias se identificó también un instrumento legal no cubierto en la versión anterior — la Sección 338 de la Tariff Act de 1930, invocada por primera vez en casi un siglo contra Canadá en julio de 2026 —, por lo que el corte de información de este documento se extendió del 25 de agosto al 8 de septiembre de 2026 para reflejar esa escalada y su desenlace más reciente. La tarea 3 pendiente (aplicar el mismo formato de citas APA a los demás documentos de trabajo) ya se había completado el 29 de agosto de 2026 en una ronda anterior y no se repite aquí.
+
+*Nota de actualización (13 de octubre de 2026):* se incorporó el caso de **Taiwán**, que la versión anterior solo mencionaba de pasada (como uno de los socios con techo específico bajo la Sección 301). Se añadieron: la tasa recíproca de 20% de la E.O. 14326 (31 de julio / 7 de agosto de 2025); el memorando de inversión del 15 de enero de 2026; el Acuerdo de Comercio Recíproco del 12 de febrero de 2026, que no llegó a entrar en vigor; la precisión de que Taiwán paga 10% *neto de la tasa NMF* bajo la Sección 301 (igual que la UE; Japón, Corea del Sur y Suiza pagan 12,5% neto de NMF); una fila en la tabla de acuerdos marco y una subsección de detalle. Se agregaron cinco referencias nuevas y se desambiguaron con sufijo (2026a/2026b) las de Global Trade Alert y Holland & Knight. El resto del documento no se modificó; el corte de información de las demás secciones sigue siendo el 8 de septiembre de 2026.
+
+**Abreviaturas de base legal:**
+
+- **IEEPA** — International Emergency Economic Powers Act (Ley de Poderes Económicos de Emergencia Internacional)
+- **S. 232** — Sección 232 de la Trade Expansion Act de 1962 (seguridad nacional)
+- **S. 301** — Sección 301 de la Trade Act de 1974 (prácticas comerciales desleales)
+- **S. 122** — Sección 122 de la Trade Act de 1974 (recargo temporal por balanza de pagos)
+- **S. 338** — Sección 338 de la Tariff Act de 1930 (19 U.S.C. § 1338), que faculta al presidente a imponer aranceles de hasta 50% a países cuyas políticas discriminen contra el comercio de EE.UU.; invocada por primera vez en la práctica moderna en julio de 2026 contra Canadá (ver Julio de 2026, abajo) (Federal Register, 2026g).
+
+# Contexto: continuidad y ruptura con el orden comercial multilateral
+
+Antes de entrar en el detalle cronológico conviene situar la política de la segunda administración Trump frente a la primera. Es tentador leer a la primera administración (2017-2021) como una que operó "dentro" del marco multilateral y regional de comercio (OMC, TLCAN) y a la segunda como la primera en romper unilateralmente con ese marco. Esa lectura subestima cuánto de la ruptura ya había comenzado en el primer mandato; lo que cambia en 2025-2026 es la escala y la falta de excepciones, no la existencia previa de la ruptura.
+
+Tres elementos del primer mandato ya representaron un apartamiento sustancial de las reglas multilaterales:
+
+1. **La parálisis del Órgano de Apelación de la OMC.** Desde 2017, la Oficina del Representante Comercial de EE.UU. bloqueó sistemáticamente el nombramiento de nuevos jueces al Órgano de Apelación; para diciembre de 2019 el órgano perdió el quórum mínimo de tres miembros y quedó no funcional (Hillman, 2020). Buena parte de la literatura especializada considera este bloqueo — ocurrido íntegramente durante Trump I — el golpe estructural más significativo al mecanismo vinculante de solución de controversias de la OMC desde su creación en 1995.
+2. **Los aranceles de la Sección 301 a China (2018-2019)** se impusieron unilateralmente bajo una ley comercial doméstica de 1974, sin agotar el proceso de solución de controversias de la OMC. China impugnó la medida y un panel de la OMC determinó en septiembre de 2020 que los aranceles violaban las obligaciones de nación más favorecida y de consolidación arancelaria de EE.UU. bajo el GATT (artículos I y II) (Zhou, 2020). La administración no acató el fallo ni retiró los aranceles.
+3. **Los aranceles de la Sección 232 a acero (25%) y aluminio (10%) de marzo de 2018** se aplicaron de forma amplia, incluyendo a aliados cercanos (UE, Canadá, México, Japón, Corea del Sur), invocando "seguridad nacional". La UE, China, Canadá, México, India, Rusia, Suiza, Turquía y Noruega presentaron demandas ante la OMC alegando que se trataba de salvaguardias disfrazadas; los paneles determinarían en 2022 (ya bajo la administración Biden) que los aranceles violaban el GATT. Varios socios comerciales impusieron represalias directas (Weaver, 2019; Durante, 2022; ING, 2025).
+
+Donde la primera administración sí se mantuvo más cerca del marco fue en el eje regional: amenazó con retirarse unilateralmente del TLCAN para forzar una renegociación, pero el resultado — el T-MEC, firmado en noviembre de 2018 y vigente desde julio de 2020 — se tramitó como una sustitución negociada del acuerdo, ratificada por el Congreso bajo la autoridad de promoción comercial (TPA), no como un abandono del marco de tratados.
+
+La segunda administración profundiza esta trayectoria en lugar de inaugurarla: aplica aranceles casi universales (en vez de selectivos por producto o adversario) usando una ley nunca antes invocada para fines arancelarios (IEEPA), superpone estos aranceles horizontales incluso sobre socios del T-MEC vigente, revive en 2026 una autoridad arancelaria bilateral que llevaba casi un siglo sin usarse (Sección 338), y en general ha dejado de argumentar compatibilidad con la OMC en lugar de litigarla, como sí hacía la administración anterior. La cronología que sigue documenta esa segunda fase; el contraste con la primera administración importa para el informe final porque sitúa el abandono del marco multilateral y regional como un proceso que se acelera y generaliza en 2025-2026, no como algo que comienza en esa fecha.
+
+# Resumen del arco narrativo
+
+La política arancelaria de la segunda administración Trump puede dividirse en cuatro grandes fases "horizontales" (aplicadas a la generalidad de los socios comerciales), más un quinto instrumento de naturaleza distinta que emerge hacia el final del período cubierto por este documento:
+
+1. **Enero–abril de 2025 — Escalada unilateral vía IEEPA.** La administración invoca por primera vez la IEEPA (una ley de emergencia nunca antes usada para imponer aranceles) para justificar medidas contra Canadá, México y China (por fentanilo/migración) y, el 2 de abril ("Liberation Day"), un arancel "recíproco" global basado en los déficits comerciales bilaterales. En paralelo, se activa la Sección 232 (seguridad nacional) para acero, aluminio y automóviles (CRS, 2026).
+2. **Mayo de 2025–febrero de 2026 — Impugnación judicial.** Un conjunto de importadores y estados demandan al gobierno. La Corte de Comercio Internacional (CIT) falla en su contra en mayo de 2025; el Circuito Federal lo confirma en agosto de 2025; la Corte Suprema, tras escuchar argumentos en noviembre de 2025, falla el 20 de febrero de 2026 en *Learning Resources, Inc. v. Trump* (2026) que la IEEPA **no** autoriza al presidente a imponer aranceles. Durante todo este período los aranceles IEEPA permanecieron vigentes (la administración no los suspendió mientras litigaba) y convivieron con una expansión paralela de acuerdos marco bilaterales y de acciones bajo la Sección 232 (CRS, 2026; Holland & Knight, 2026a).
+3. **Febrero–julio de 2026 — Intento de sustitución vía Sección 122.** El mismo día del fallo, la administración impone un recargo temporal del 10% bajo la Sección 122 (que permite medidas de emergencia por hasta 150 días sin aprobación del Congreso). Este instrumento también es impugnado y la CIT lo rechaza el 7 de mayo de 2026, aunque el Circuito Federal otorga el 11 de junio de 2026 una suspensión (*stay*) de esa orden que permite seguir cobrando el recargo mientras se resuelve la apelación. El recargo de la Sección 122 expira de todos modos por límite estatutario el 24 de julio de 2026 (Covington & Burling, 2026; White & Case, 2026b; Ward and Smith, 2026; Troutman Pepper Locke, 2026).
+4. **Julio de 2026 en adelante — Reconstrucción vía Sección 301.** El mismo día en que expira el recargo de la Sección 122, entra en vigor un nuevo arancel global basado en una investigación de la Sección 301 sobre prácticas de trabajo forzado, que cubre a 60 países (~99,4% de las importaciones de EE.UU.). Esta acción enfrenta ya **tres** demandas ante la CIT — dos de pequeñas empresas y una tercera, de agosto de 2026, presentada por 25 estados —, aún sin resolver a la fecha de este documento (Morgan Lewis, 2026; Sheppard Mullin, 2026; CNBC, 2026a; Nakachi Eckhardt & Jacobson, 2026).
+5. **Julio–septiembre de 2026 — Un quinto instrumento, de naturaleza distinta: la Sección 338 contra Canadá.** A diferencia de los cuatro anteriores, la Sección 338 de la Tariff Act de 1930 no es un instrumento horizontal aplicado a la generalidad de los socios comerciales, sino una autoridad bilateral y punitiva dirigida específicamente a un país (Canadá) por una disputa concreta (trato preferencial a los quesos de la UE bajo CETA frente al T-MEC). Su uso en julio de 2026 — la primera invocación documentada de esta sección en casi cien años — escaló en agosto a un paquete arancelario de USD 27.600 millones y produjo represalia canadiense en espejo, vigente desde el 8 de septiembre de 2026 (fecha de cierre de este documento) (Federal Register, 2026g; Al Jazeera, 2026a; Canada.ca, 2026).
+
+En todo momento, junto con los instrumentos "horizontales" (IEEPA, Sección 122, Sección 301 global), la administración fue añadiendo aranceles **sectoriales** bajo la Sección 232 (acero, aluminio, automóviles y autopartes, cobre, madera/muebles, camiones, semiconductores, minerales críticos procesados, productos farmacéuticos) que **no** fueron afectados por los fallos judiciales sobre IEEPA, ya que descansan en una base legal distinta (CRS, 2026).
+
+---
+
+# Cronología detallada
+
+## 2025
+
+### Enero 2025
+
+- **20 de enero** — Toma de posesión de Donald Trump para su segundo mandato. Se anticipan órdenes ejecutivas sobre comercio y aranceles como prioridad temprana (CRS, 2026).
+
+### Febrero 2025
+
+- **1 de febrero** — **E.O. 14193** (IEEPA) — Canadá: arancel del 25% a la mayoría de los bienes, 10% a energía, invocando la crisis del fentanilo/migración. Firmada y con fecha del 1 de febrero de 2025; publicada en el Federal Register el 7 de febrero (Federal Register, 2025a). Programada para el 4 de febrero; **pausada el 3 de febrero** tras una llamada entre Trump y el primer ministro Trudeau en la que Canadá se comprometió a reforzar la seguridad fronteriza (ver sección "TACO", caso 1).
+- **1 de febrero** — **E.O. 14194** (IEEPA) — México: arancel del 25% a la mayoría de los bienes, mismo fundamento. Firmada el 1 de febrero de 2025; publicada el 7 de febrero (Federal Register, 2025b). Programada para el 4 de febrero; **pausada el 3 de febrero** tras una llamada entre Trump y la presidenta Sheinbaum, en la que México se comprometió a desplegar 10.000 elementos de la Guardia Nacional en la frontera (ver sección "TACO", caso 2).
+- **1 de febrero** — **E.O. 14195** (IEEPA) — China: arancel adicional del 10% por fentanilo. Firmada el 1 de febrero de 2025; publicada el 7 de febrero (Federal Register, 2025c). Efectivo el 4 de febrero.
+- **5 de febrero** — Restablecimiento temporal del trato *de minimis* libre de derechos para China mientras se ajustan los sistemas aduaneros (CRS, 2026).
+- **10 de febrero** — **Proclamaciones 10895 y 10896** (S. 232) — Acero y aluminio: arancel global del 25% (todos los países), incluyendo derivados. Ambas firmadas el 10 de febrero de 2025 y publicadas en el Federal Register el 18 de febrero (Federal Register, 2025d, 2025e). Reglamento de implementación (CBP) publicado el 5 de marzo.
+- **13 de febrero** — Memorando "Reciprocal Trade and Tariffs": anuncia el marco de política para reducir el déficit comercial bilateral país por país (antecedente directo del "Liberation Day") (CRS, 2026).
+
+### Marzo 2025
+
+- **1 de marzo** — **E.O. 14223** (S. 232) — Inicio de investigación sobre madera/productos madereros. Firmada el 1 de marzo de 2025; publicada el 6 de marzo (Federal Register, 2025f).
+- **3 de marzo** — China: el arancel IEEPA por fentanilo sube de 10% a 20% (CRS, 2026).
+- **4 de marzo** — Entrada en vigor de los aranceles del 25% (10% energía/potasa) a Canadá y México (CRS, 2026).
+- **6 de marzo** — Proclamaciones de excepción USMCA para Canadá y México: se restablece el trato libre de derechos para bienes calificados bajo el T-MEC; la potasa baja a 10% (Federal Register, 2025z).
+- **11–13 de marzo** — La UE y Canadá anuncian contramedidas de represalia (Canadá: 25% sobre acero, aluminio y otros productos de EE.UU.) (ING, 2025).
+- **12 de marzo** — Entrada en vigor plena de los aranceles del 25% a acero y aluminio (S. 232) (CRS, 2026).
+- **24 de marzo** — **E.O. 14245** (IEEPA) — Arancel del 25% a países que importen petróleo venezolano ("aranceles secundarios"). Firmada el 24 de marzo de 2025; publicada el 27 de marzo (Federal Register, 2025g); efectiva a partir del 2 de abril de 2025.
+
+### Abril 2025
+
+- **2 de abril ("Liberation Day")** — **E.O. 14257** (IEEPA): arancel "recíproco" a prácticamente todos los socios comerciales (excepto Canadá/México, ya cubiertos), con un piso del 10% y tasas específicas por país de 11% a 50% según fórmula de déficit bilateral. Firmada el 2 de abril de 2025; publicada el 7 de abril (Federal Register, 2025j). Efectivo el 5 de abril; las tasas diferenciadas por país se suspenden el 9 de abril (ver sección "TACO", caso 3 — el episodio que originó el término "TACO", *Trump Always Chickens Out*).
+- **2 de abril** — **E.O. 14256** (IEEPA): elimina el trato *de minimis* (envíos ≤ USD 800) para China. Firmada el 2 de abril de 2025; publicada el 7 de abril (Federal Register, 2025i). Efectivo el 2 de mayo.
+- **3 de abril** — **Proclamación 10908** (S. 232) — Automóviles y autopartes: arancel global del 25%. **Corrección respecto de la versión anterior de este documento:** la proclamación fue en realidad **firmada el 26 de marzo de 2025**, no el 3 de abril; el 3 de abril es únicamente la fecha de publicación en el Federal Register y, coincidentemente, la fecha de entrada en vigor para vehículos (autopartes desde el 3 de mayo) (Federal Register, 2025h).
+- **5 de abril** — Entra en vigor el piso global del 10% (IEEPA) (CRS, 2026).
+- **8–9 de abril** — Escalada con China: el arancel recíproco sube de 34% a 84% (8 de abril) y luego a 125% (9 de abril), en respuesta a las represalias chinas (CRS, 2026).
+- **9 de abril** — Se suspenden por 90 días las tasas diferenciadas por país (vuelven al 10% general, salvo China) (CRS, 2026; ver sección "TACO", caso 3).
+- **11–15 de abril** — Exclusión de semiconductores y electrónica de consumo seleccionados del arancel recíproco; la UE anuncia contramedidas autorizadas del 10-20% (CRS, 2026).
+- **14 y 22 de abril** — Se presentan las demandas que luego se consolidarán en el caso ante la Corte Suprema: *V.O.S. Selections v. Trump* (14 de abril, ante la CIT) y *Learning Resources, Inc. v. Trump* (22 de abril, ante la Corte de Distrito de D.C.). Doce estados liderados por Oregón presentan una demanda paralela que se consolida con V.O.S. Selections (CRS, 2026; Wikipedia contributors, s.f.).
+- **23 de abril** — Propuesta S. 301 sobre grúas y equipo portuario chino (20-100%) (CRS, 2026).
+
+### Mayo 2025
+
+- **2 de mayo** — Entra en vigor la eliminación del *de minimis* para China (aranceles plenos + 54% en envíos postales) (CRS, 2026).
+- **3 de mayo** — Entra en vigor el arancel del 25% (S. 232) a autopartes (CRS, 2026).
+- **12 de mayo** — Acuerdo temporal EE.UU.-China (declaración conjunta de Ginebra): reducción del arancel recíproco de 125% a 10% por 90 días (CRS, 2026; ver sección "TACO", caso 4).
+- **14 de mayo** — Reducción del arancel postal *de minimis* a China de 120% a 54% (90 días) (CRS, 2026).
+- **20 de mayo** — Canadá anuncia alivio arancelario de 6 meses para industrias clave (CRS, 2026).
+- **28 de mayo** — **Fallo de la Corte de Comercio Internacional (CIT)** en *V.O.S. Selections v. Trump*: la IEEPA **no** delega en el presidente la facultad de crear aranceles. Primer golpe judicial a los aranceles "recíprocos" y a los de fentanilo (CRS, 2026; Wikipedia contributors, s.f.).
+
+### Junio 2025
+
+- **3 de junio** — **Proclamación 10947**: modifica los procedimientos de acumulación entre distintas medidas arancelarias (S. 232/IEEPA) y eleva el arancel a acero y aluminio. Firmada el 3 de junio de 2025; publicada el 9 de junio (Federal Register, 2025k).
+- **4–9 de junio** — El arancel de acero y aluminio (S. 232) sube de 25% a 50% para todos los países excepto el Reino Unido (se mantiene en 25%) (CRS, 2026).
+- **12 de junio** — Se modifica la propuesta S. 301 sobre grúas/marítimo (tarifas portuarias separadas) (CRS, 2026).
+- **16 de junio** — Expansión de derivados de acero/aluminio a electrodomésticos; acuerdo con el Reino Unido sobre automóviles (10% con cuota, TRQ) (CRS, 2026).
+- **30 de junio** — Entrada en vigor del arancel preferencial del 10% (TRQ) para vehículos y autopartes del Reino Unido (CRS, 2026).
+
+### Julio 2025
+
+- **1 de julio** — Inicio de investigaciones S. 232 sobre drones/sistemas aéreos no tripulados y sobre polisilicio (CRS, 2026).
+- **2 de julio** — Trump anuncia un marco preliminar con **Vietnam**: 20% recíproco más una tasa punitiva del 40% sobre mercancía transbordada, dirigida a desalentar el uso de Vietnam como ruta de desvío de productos chinos (CNBC, 2025b).
+- **7 de julio** — **E.O. 14316**: extiende la pausa de las tasas recíprocas diferenciadas por país hasta el 1 de agosto. Firmada el 7 de julio de 2025; publicada el 10 de julio (Federal Register, 2025l).
+- **10–12 de julio** — Cartas anunciando nuevas tasas a partir del 1 de agosto: Canadá (35%), México (30%), Unión Europea (30%, pendiente de acuerdo) (CNBC, 2025a).
+- **15 de julio** — Inicio de investigación S. 301 sobre Brasil (prácticas comerciales) (CRS, 2026).
+- **22 de julio** — Anuncios simultáneos de marcos de comercio recíproco con **Filipinas** (19%) e **Indonesia** (19%), y avance en las negociaciones con **Japón** y **Corea del Sur** (ver detalle ampliado en "Tabla resumen de acuerdos marco bilaterales") (Al Jazeera, 2025; The White House, 2025a; USTR, 2025a).
+- **30 de julio** — **Proclamación S. 232 sobre cobre**: arancel del 50% a cobre y derivados, más controles a la exportación de cierta chatarra de cobre. Efectivo el 1 de agosto (publicado en el Federal Register el 5 de agosto) (The White House, 2025b; Federal Register, 2025m; CRS, 2025b; Thompson Coburn, 2025).
+- **28 de julio** — Corte del informe CRS de julio: múltiples acuerdos preliminares en curso con Japón, Indonesia, Vietnam, Filipinas y la UE (CRS, 2025a).
+
+### Agosto 2025
+
+- **1 de agosto** — **E.O. 14325** (IEEPA) — Canadá: el arancel por fentanilo sube de 25% a 35% (40% para bienes transbordados para evadir el arancel). **Corrección:** firmada el **31 de julio de 2025**; publicada el 6 de agosto (Federal Register, 2025p); el 1 de agosto es la fecha de entrada en vigor.
+- **6 de agosto** — **E.O. 14323** (IEEPA) — Brasil: arancel del 40% (con excepciones para agrícolas, energía, fertilizantes y madera), en respuesta a políticas del gobierno brasileño. **Corrección:** firmada el **30 de julio de 2025**; publicada el 5 de agosto (Federal Register, 2025n); entra en vigor siete días después de la firma (6 de agosto).
+- **6 de agosto** — **E.O. 14329** (IEEPA) — India: arancel adicional del 25% por la compra de petróleo ruso (formalmente, una medida bajo la orden sobre amenazas de la Federación Rusa). Firmada el 6 de agosto de 2025 (The White House, 2025c); efectiva 21 días después (27 de septiembre de 2025), con período de transición hasta el 17 de septiembre para mercancía en tránsito (ver sección "TACO", caso 8, sobre su remoción en febrero de 2026).
+- **7 de agosto** — **E.O. 14326** (IEEPA): implementación de tasas recíprocas específicas por país, de 10% a 41%, según la fórmula de déficit comercial. **Corrección:** firmada el **31 de julio de 2025**; publicada el 6 de agosto (Federal Register, 2025q); efectiva siete días después de la publicación. **Vietnam** es un ejemplo directo de esta orden: la E.O. 14326 confirmó formalmente el 20% recíproco que Trump había anunciado como marco preliminar el 2 de julio (ver arriba) (Federal Register, 2025q). **Taiwán** queda en **20%** (frente al 32% que le asignaba el Anexo I de la E.O. 14257 el 2 de abril, suspendido el 9 de abril), tasa que se mantuvo hasta el fallo de la Corte Suprema (Federal Register, 2025j, 2025q; Holland & Knight, 2026b).
+- **11 de agosto** — **E.O. 14334** (IEEPA) — China: extiende por otros 90 días (hasta el 10 de noviembre) la reducción temporal del arancel recíproco de 125% a 10%. Firmada el 11 de agosto de 2025; publicada el 14 de agosto (Federal Register, 2025s; ver sección "TACO", caso 4).
+- **19 de agosto** — Expansión de la lista de derivados de acero/aluminio (S. 232) con 407 productos adicionales (CRS, 2026).
+- **21 de agosto** — Acuerdo marco con la **Unión Europea**: techo del 15% para bienes de la UE, con exenciones para corcho, aeronaves/partes y ciertos farmacéuticos (efectivo 1 de septiembre) (CRS, 2026).
+- **29 de agosto** — **E.O. 14324** (IEEPA): elimina globalmente el trato *de minimis* para envíos de bajo valor (≤ USD 800), con tarifas de USD 80–200 por paquete según país de origen. **Corrección:** firmada el **30 de julio de 2025**, no el 29 de agosto; el 29 de agosto es la fecha de entrada en vigor prevista desde el propio texto de la orden, publicada el 5 de agosto (Federal Register, 2025o).
+- **29 de agosto** — **Fallo del Circuito Federal (Corte de Apelaciones)**: confirma que Trump excedió su autoridad bajo la IEEPA; la facultad de fijar aranceles corresponde exclusivamente al Congreso (CRS, 2026; Wikipedia contributors, s.f.).
+
+### Septiembre 2025
+
+- **1 de septiembre** — Acuerdo bilateral con Canadá: elimina represalias sobre bienes canadienses por C$30.000 millones y C$14.200 millones (se mantienen los aranceles S. 232 sobre acero, aluminio y autos) (CRS, 2026).
+- **4 de septiembre** — **E.O. 14345** (S. 232) — Acuerdo marco con **Japón**: techo del 15% (exenciones para aeronaves/partes; automóviles desde el 16 de septiembre; tasas preferenciales para madera y cobre). Firmada el 4 de septiembre de 2025; publicada el 9 de septiembre (Federal Register, 2025u). El marco político subyacente había sido anunciado el 22 de julio de 2025, junto con Filipinas e Indonesia (Federal Register, 2025u).
+- **5 de septiembre** — **E.O. 14346**: crea el mecanismo general (anexos por país al arancel recíproco) que la administración usará durante los siguientes meses para implementar, mediante avisos del Federal Register específicos por socio comercial, los distintos acuerdos marco bilaterales cerrados desde julio de 2025 (Camboya, Malasia, Tailandia y Vietnam en octubre; Corea del Sur en diciembre; Suiza/Liechtenstein en diciembre) — ver "Tabla resumen de acuerdos marco bilaterales" (Federal Register, 2025x, 2025y).
+- **16 de septiembre** — Reducción del arancel automotor (S. 232) a Japón al 15% (incluyendo NMF) (CRS, 2026).
+- **25 de septiembre** — Tasa automotriz del 15% para la UE, retroactiva al 1 de agosto (exenciones para aeronaves y derivados) (CRS, 2026).
+- **29 de septiembre** — **Proclamación 10976** (S. 232) — Madera/muebles: 10% madera blanda, 25% tapizados/gabinetes; tasas preferenciales para Reino Unido (10%), UE/Japón/Corea del Sur (15%); aumentos programados para el 1 de enero de 2027 (30% y 50%). Firmada el 29 de septiembre de 2025; publicada el 6 de octubre (Federal Register, 2025t; CRS, 2026).
+
+### Octubre 2025
+
+- **16 de octubre** — **S. 301** — China: arancel del 100% sobre grúas de muelle y chasis intermodal (efectivo 9 de noviembre); tarifas portuarias marítimas modificadas (CRS, 2026; ver sección "TACO", caso 6).
+- **17 de octubre** — **Proclamación 10984** (S. 232) — Camiones medianos/pesados: 25% camiones/partes, 10% autobuses (con exención USMCA). **Corrección respecto de la versión anterior de este documento:** la proclamación fue **firmada el 17 de octubre de 2025**, no el 1 de noviembre; publicada en el Federal Register el 22 de octubre; el 1 de noviembre es la fecha de entrada en vigor (Federal Register, 2025v).
+- **Gira asiática del presidente (octubre de 2025)** — Serie de acuerdos marco con países del sudeste y este asiático; ver detalle país por país en "Tabla resumen de acuerdos marco bilaterales" (USTR, 2025b, 2025c, 2025d, 2025e).
+- **26 de octubre** — Declaraciones conjuntas (IEEPA) — Acuerdos marco de comercio recíproco con **Camboya (19%), Malasia (19%), Tailandia (19%) y Vietnam (20%)**, cada uno implementado mediante los anexos por país de la E.O. 14346 (CRS, 2026; USTR, 2025b, 2025c, 2025d, 2025e).
+
+### Noviembre 2025
+
+- **4 de noviembre** — **E.O. 14358** (IEEPA) — China: extiende por un año (hasta el 10 de noviembre de 2026) la reducción del arancel recíproco (125%→10%) y amplía su alcance a otras medidas. Firmada el 4 de noviembre de 2025; publicada el 7 de noviembre (Federal Register, 2025w; ver sección "TACO", caso 4).
+- **4 de noviembre** — **E.O. 14357** (IEEPA) — China: reduce el arancel por fentanilo de 20% a 10% (efectivo 10 de noviembre). Firmada el 4 de noviembre de 2025; publicada el 7 de noviembre (Federal Register, 2025w).
+- **5 de noviembre** — **Argumentos orales ante la Corte Suprema** en el caso consolidado sobre los aranceles IEEPA (CRS, 2026; Wikipedia contributors, s.f.).
+- **10 de noviembre** — Suspensión por un año del arancel S. 301 del 100% sobre grúas/tarifas portuarias, tras acuerdo comercial con China — apenas un día después de su entrada en vigor (CRS, 2026; ver sección "TACO", caso 6).
+- **13 de noviembre** — Marcos de comercio recíproco (IEEPA) con **Argentina, Ecuador, El Salvador y Guatemala**; ver detalle de compromisos por país en "Tabla resumen de acuerdos marco bilaterales" (USTR, 2025f; The White House, 2025d).
+- **14 de noviembre** — Marco anunciado con **Suiza/Liechtenstein**: reduce el arancel recíproco de 39% a un techo de 15%; se excluyen ciertos productos agrícolas del arancel recíproco global. La implementación formal de la nueva tasa se publicó el 18 de diciembre de 2025, con efecto retroactivo al 14 de noviembre (Federal Register, 2025y).
+- **20 de noviembre** — Enmienda a la orden sobre Brasil: se excluyen ciertos productos agrícolas y de carne de res del arancel del 40%, tras presión política interna por el alza de precios de alimentos (CRS, 2026; ver sección "TACO", caso 7).
+
+### Diciembre 2025
+
+- **4 de diciembre** — Implementación formal del **"U.S.-Korea Strategic Trade and Investment Deal"** (marco anunciado meses antes, en el contexto de la gira asiática): arancel automotor del 15% para Corea del Sur, retroactivo al 1 de noviembre de 2025; exenciones para aeronaves/partes; tasas preferenciales para cobre y madera (Federal Register, 2025x).
+- **18 de diciembre** — Implementación formal del marco con **Suiza/Liechtenstein** anunciado el 14 de noviembre: nueva tasa recíproca del 15%, retroactiva al 14 de noviembre de 2025 (Federal Register, 2025y).
+- **31 de diciembre** — Se pausan los aumentos programados de los aranceles a productos de madera (S. 232) hasta el 1 de enero de 2027 (CRS, 2026).
+
+## 2026
+
+### Enero 2026
+
+- **12 de enero** — Última actualización identificada del informe CRS R48549 (versión 12) (CRS, 2026).
+- **14 de enero** — **Proclamación 11002** (S. 232) — Semiconductores: arancel del 25% a ciertos circuitos integrados lógicos avanzados (clasificaciones HTS 8471.50, 8471.80, 8473.30, con parámetros técnicos específicos de rendimiento/ancho de banda). Firmada el 14 de enero de 2026; publicada el 20 de enero (Federal Register, 2026a). Efectivo el 15 de enero a las 00:01 EST. Amplias exenciones de uso final (centros de datos, reparación, I+D, startups, electrónica de consumo, aplicaciones industriales y del sector público en EE.UU.). Los productos cubiertos quedan exentos de otros aranceles S. 232 e IEEPA, pero no de los aranceles específicos a Brasil y China (White & Case, 2026a).
+- **14 de enero** — Proclamación (S. 232) sobre **minerales críticos procesados y sus derivados**, firmada el mismo día que la de semiconductores y publicada también el 20 de enero (Federal Register, 2026b) — instrumento adicional no cubierto en la versión anterior de este documento.
+- **15 de enero** — **Taiwán:** se firma un memorando de entendimiento (MOU) sobre inversión: empresas taiwanesas de semiconductores y tecnología invertirán USD 250.000 millones en EE.UU., respaldados por otros USD 250.000 millones en garantías de crédito del gobierno de Taiwán; a cambio, EE.UU. otorga a Taiwán trato preferencial en la investigación S. 232 sobre semiconductores y en otras investigaciones S. 232 (USTR, 2026; Global Taiwan, 2026). Ese mismo día, un *fact sheet* del Departamento de Comercio estableció que los aranceles S. 232 sobre autopartes, madera aserrada y derivados de madera de Taiwán "no excederían" 15% en total (International Trade Insights, 2026). El MOU no modificó por sí solo la tasa recíproca IEEPA de 20%; sus términos arancelarios se formalizaron un mes después en el Acuerdo de Comercio Recíproco (ver 12 de febrero).
+
+### Febrero 2026 — Punto de quiebre judicial
+
+- **2 de febrero** — Trump anuncia, tras una llamada con el primer ministro Modi, la reducción del arancel a India de 50% a 18%, a cambio del compromiso indio de dejar de comprar petróleo ruso y de adquirir más de USD 500.000 millones en energía, tecnología y productos agrícolas estadounidenses; la remoción formal del recargo del 25% se implementa días después (6-7 de febrero) (Al Jazeera, 2026b; ver sección "TACO", caso 8).
+- **12 de febrero** — **Taiwán:** se firma en Washington el **Acuerdo de Comercio Recíproco (ART)** EE.UU.–Taiwán, que formaliza el MOU del 15 de enero. La tasa recíproca bajaría de 20% a 15% — en rigor, el mayor entre la tasa NMF del producto y 15%, de modo que los bienes con NMF inferior a 15% pagarían un total de 15% —, con exclusiones por producto en el anexo de la E.O. 14346 (USTR, 2026; International Trade Insights, 2026). **El acuerdo no entró en vigor:** requería que Taiwán lo sometiera a su Yuan Legislativo y que ambas partes completaran trámites internos, y se advertía que, de no aprobarse a tiempo, los aranceles de EE.UU. volverían a subir (Global Taiwan, 2026). Ocho días después el fallo de la Corte Suprema dejó sin base legal a la tasa IEEPA; las fuentes consultadas no registran que la tasa de 15% se haya aplicado antes de esa fecha (ver tabla de acuerdos marco, abajo).
+- **20 de febrero** — **Fallo de la Corte Suprema de EE.UU.** en *Learning Resources, Inc. v. Trump* (consolidado con *V.O.S. Selections*): la IEEPA **no** otorga al presidente la facultad de fijar aranceles. Se confirma el fallo de la CIT en V.O.S. Selections y se anula/desestima el caso paralelo de D.C. **Todos los aranceles impuestos bajo IEEPA desde febrero de 2025 (fentanilo/migración, "recíprocos", petróleo venezolano, aranceles secundarios a India/Brasil, etc.) quedan sin base legal** (*Learning Resources, Inc. v. Trump*, 2026; Holland & Knight, 2026a).
+- **20 de febrero (el mismo día del fallo)** — **Corrección importante respecto de la versión anterior de este documento:** la respuesta de la administración no llegó "días después" del fallo, sino **el mismo 20 de febrero de 2026**. Ese día se firmaron tanto la **Proclamación 11012** (S. 122), que impone un recargo temporal del 10% por balanza de pagos, como la **E.O. 14389**, "Ending Certain Tariff Actions", que formaliza el fin de los aranceles IEEPA declarados inválidos. Ambas se publicaron en el Federal Register el 25 de febrero (Federal Register, 2026c, 2026d; The American Presidency Project, 2026). El recargo del 10% entró en vigor el 24 de febrero a las 00:01 EST y, por diseño estatutario, no podía extenderse más allá de 150 días (hasta el 24 de julio de 2026) sin autorización del Congreso.
+
+### Marzo 2026
+
+- **4 de marzo** — La CIT (juez Richard Eaton) ordena a la Aduana (CBP) liquidar/reliquidar sin los aranceles IEEPA todas las entradas no finalizadas — **con alcance nacional, para todos los importadores**, no solo los demandantes. El gobierno solicita una suspensión de esta orden; es denegada. Se anticipa apelación ante el Circuito Federal (Holland & Knight, 2026a).
+- **12 de marzo** — El USTR inicia una nueva investigación bajo la **Sección 301** sobre prácticas de trabajo forzado en 60 países, que luego serviría de base legal para el arancel global que reemplazaría a la Sección 122 (Morgan Lewis, 2026).
+
+### Abril 2026
+
+- **2 de abril** — **Proclamación 11020** (S. 232) — Entra en vigor la política de aranceles a productos farmacéuticos y sus ingredientes ("Adjusting Imports of Pharmaceuticals and Pharmaceutical Ingredients"), con cláusula de nación más favorecida (MFN) para precios. Firmada el 2 de abril de 2026; publicada el 9 de abril (Federal Register, 2026e; Crowell & Moring, 2026).
+- **9 de abril** — Proclamación (S. 232) "Strengthening Actions Taken To Adjust Imports of Aluminum, Steel, and Copper Into the United States" (Proclamación 11021): reestructura el cálculo del arancel a acero, aluminio y cobre hacia el valor íntegro de la mercancía por umbral de peso, cerrando la brecha de facto/de jure documentada en el deep dive sectorial (documento N.º 4 de este proyecto). Publicada el mismo 9 de abril (Federal Register, 2026f).
+- Audiencias públicas iniciales de la investigación S. 301 sobre trabajo forzado (Morgan Lewis, 2026).
+
+### Mayo 2026
+
+- **7 de mayo** — **La CIT rechaza el recargo de la Sección 122** (Proclamación 11012): el tribunal sostiene que la administración no identificó el tipo de "déficit de balanza de pagos" que exige el estatuto (la ley se refiere a medidas de liquidez, saldos oficiales o balance básico, no a indicadores económicos generales). El fallo beneficia directamente solo a los tres demandantes (Estado de Washington, Burlap and Barrel, y Basic Fun), no automáticamente a todos los importadores. El gobierno apela (Ward and Smith, 2026; White & Case, 2026b; Gibson Dunn, 2026).
+- **11 de junio** — El Circuito Federal (CAFC) otorga una **suspensión (*stay*)** de la orden de la CIT: concluye que el gobierno mostró una probabilidad razonable de éxito en el fondo y que el daño de suspender la recaudación sería mayor que el de los importadores (remediable vía reembolso con intereses). El recargo del 10% continúa cobrándose mientras se resuelve la apelación (Steptoe, 2026; Troutman Pepper Locke, 2026).
+- **2 de junio** — El USTR determina que las prácticas investigadas bajo la Sección 301 (trabajo forzado) son procesables, allanando el camino para la nueva acción arancelaria global (Morgan Lewis, 2026).
+
+### Junio–Julio 2026 — Reconstrucción bajo la Sección 301
+
+- **Julio de 2026** — Segunda ronda de audiencias públicas y emisión de la determinación final de la investigación S. 301 (Morgan Lewis, 2026).
+- **20 de julio** — **Proclamación 11047** (Sección 338 de la Tariff Act de 1930, 19 U.S.C. § 1338) — Canadá: arancel adicional del 50% sobre productos lácteos canadienses (leche, queso, suero), en represalia por la política canadiense de cuotas arancelarias (TRQ) que permite a minoristas acceder a las cuotas de queso bajo el acuerdo con la UE (CETA) pero se las niega bajo el T-MEC — una discriminación, según la proclamación, contra el comercio lácteo estadounidense. Es la primera invocación documentada de la Sección 338 en casi un siglo. Firmada el 20 de julio de 2026; publicada el 23 de julio; efectiva el 19 de agosto de 2026 (Federal Register, 2026g).
+- **24 de julio** — **Expira por límite estatutario (150 días) el recargo de la Sección 122**, coincidiendo con la entrada en vigor de un **nuevo arancel global bajo la Sección 301** (fundamentado en la investigación sobre trabajo forzado), que cubre **60 países (~99,4% de las importaciones de EE.UU.)**. Estructura de tasas: **10%** para 17 economías con acuerdos recíprocos o compromisos contra el trabajo forzado (Argentina, Bangladesh, Camboya, Canadá, Ecuador, El Salvador, Guatemala, Honduras, India, Indonesia, Jordania, Malasia, México, Pakistán, Sri Lanka, Trinidad y Tobago, Reino Unido); **12,5%** para la mayoría de las demás economías investigadas —incluido **Vietnam**, sin la exención de cuota textil (TRQ) que sí aplica a otros socios de la región (Global Trade Alert, 2026a)—; tasas **netas de la NMF** de cada producto (el recargo S. 301 se calcula descontando la tasa NMF, de modo que la carga combinada NMF + S. 301 es el techo y el recargo propiamente dicho oscila entre 0 y ese techo según el producto): **10%** para la UE y **Taiwán**, y **12,5%** para Japón, Corea del Sur y Suiza (Global Trade Alert, 2026b); Taiwán cuenta además con su propia lista de exclusiones por producto (Global Trade Alert, 2026b; Holland & Knight, 2026b). Exenciones: acero, aluminio, automóviles, bienes calificados bajo el T-MEC, ciertas materias primas, energía y productos agrícolas (Morgan Lewis, 2026; Sheppard Mullin, 2026; CNBC, 2026a; Federal Register, 2026h).
+- **28 de julio** — Vence el plazo de "transición limitada" para mercancías en tránsito bajo el nuevo régimen S. 301 (Morgan Lewis, 2026).
+- Se presentan **dos demandas** ante la CIT por parte de pequeñas empresas impugnando la nueva acción S. 301, alegando que la ley no respalda aranceles globales de este alcance y cuestionando la justificación de trabajo forzado como pretexto. **Sin resolver a la fecha de este documento** (Sheppard Mullin, 2026).
+
+### Agosto 2026
+
+- **1 de agosto** — Entra en vigor la estructura escalonada de aranceles S. 232 sobre productos farmacéuticos patentados (hasta 100% en ciertos casos), con implementación completa programada para el 31 de julio y ajustes adicionales previstos hacia el 29 de septiembre de 2026 (Crowell & Moring, 2026).
+- **3 de agosto** — **Veinticinco estados**, liderados por Oregón, California y Arizona, presentan ante la CIT una **tercera demanda** (caso N.º 26-03467) contra el arancel global S. 301 por trabajo forzado, distinta de las dos demandas de pequeñas empresas ya en curso. Argumentan que la Sección 301 solo autoriza actuar contra "actos, políticas o prácticas particulares de un país en particular", no una acción general contra 60 países a la vez; alegan además que las tasas son "arbitrarias y caprichosas" porque no se correlacionan con la prevalencia real de trabajo forzado. La CIT programó una audiencia conjunta con el caso de los importadores para el **30 de septiembre de 2026** — posterior al cierre de este documento (Nakachi Eckhardt & Jacobson, 2026).
+- **20 de agosto** — Vence el plazo de negociación fijado por la Casa Blanca a Canadá para resolver la disputa arancelaria abierta por la Sección 338 (lácteos) y otros puntos pendientes (acceso a licitaciones, política digital); las conversaciones colapsan la noche del viernes previo al plazo (NPR, 2026a).
+- **22 de agosto** — Ante el colapso de las negociaciones, entra en vigor un arancel adicional del 50% sobre USD 20.000-27.600 millones de bienes canadienses adicionales (vino, bastones de hockey, cemento, lácteos, piscinas, muebles, cañas de pescar, semillas, ropa, pelucas), combinando la Sección 338 ampliada con partidas ya cubiertas por la Sección 232; se exceptúan petróleo, gas, minerales críticos y potasa. El primer ministro Mark Carney califica la situación de "guerra" comercial y anuncia represalias "dólar por dólar" a partir del 8 de septiembre (NPR, 2026a; Al Jazeera, 2026a, 2026c).
+
+### Septiembre 2026 (situación al cierre de este documento, 8 de septiembre de 2026)
+
+- **1 de septiembre (previsto)** — Fecha objetivo para la implementación de cuotas arancelarias (TRQ) sobre textiles bajo el nuevo régimen S. 301: permite volúmenes de importación a tasas reducidas para Bangladesh, Camboya, Indonesia y Malasia, condicionados a las compras de cada país de algodón e insumos textiles estadounidenses. **Sin confirmación pública, a la fecha de cierre de este documento, de que el aviso final del Federal Register que debía formalizar la medida ya se haya publicado** (Fibre2Fashion, 2026).
+- **8 de septiembre (hoy)** — **Canadá impone aranceles de represalia por USD 27.600 millones** sobre productos estadounidenses (tasas del 15%, 25% y 50% según categoría, replicando dólar por dólar las tasas impuestas por EE.UU. bajo las Secciones 338 y 232), afectando lácteos, acero, pulpa y papel, madera aserrada, textiles y electrodomésticos. El gobierno canadiense enmarca la medida explícitamente como una respuesta en espejo, no como una escalada nueva (Canada.ca, 2026; CNBC, 2026b). **No hay, a la fecha de cierre de este documento, señales de una nueva ronda de negociación o de un repliegue por ninguna de las dos partes** — a diferencia de los episodios documentados en la sección "TACO", este último capítulo de la disputa con Canadá permanece, por ahora, en fase de escalada.
+- **Pendiente (30 de septiembre)** — Audiencia programada en la CIT sobre las tres demandas acumuladas contra el arancel global S. 301 (Nakachi Eckhardt & Jacobson, 2026).
+
+---
+
+# TACO: anuncios de aranceles pausados o revertidos
+
+Esta sección reúne, en un solo lugar, los episodios de la cronología anterior en los que la administración anunció o llegó a ejecutar una medida arancelaria y luego la pausó, redujo, suspendió o revirtió — ya sea porque se abrieron negociaciones, porque hubo retaliación del socio comercial, por presión política interna, o por una combinación de las tres. El patrón le dio nombre a un término que se volvió de uso corriente en la cobertura financiera de 2025-2026: **"TACO"** (*Trump Always Chickens Out*), acuñado por el columnista Robert Armstrong del *Financial Times* en su boletín *Unhedged* a inicios de mayo de 2025 para describir el episodio de "Liberation Day" (caso 3, abajo), y que se popularizó al punto de que un periodista se lo planteó directamente al presidente en una conferencia de prensa a fines de mayo de 2025 (Armstrong, citado en CBS News, 2026; CBC Radio, 2026; The Week, 2026). El propio Trump rechazó la etiqueta ("Oh, ¿yo me acobardo? Qué lindo. Nunca lo había escuchado", declaró, según la misma cobertura), pero el patrón se repite con suficiente regularidad como para tratarlo como un rasgo estructural de esta administración en materia comercial, no como un hecho aislado.
+
+Los ocho casos documentados en esta cronología, ordenados cronológicamente:
+
+1. **Canadá, 1-3 de febrero de 2025.** Se anuncia un arancel del 25% (E.O. 14193), programado para el 4 de febrero; se pausa el 3 de febrero, un día antes de su entrada en vigor, tras una llamada Trump-Trudeau en la que Canadá se comprometió a nombrar un "zar del fentanilo", designar a los cárteles como organizaciones terroristas y reforzar la seguridad fronteriza. **Razón:** negociación bajo amenaza inminente (CRS, 2026).
+2. **México, 1-3 de febrero de 2025.** Mismo patrón que Canadá: arancel del 25% (E.O. 14194) pausado un día antes de entrar en vigor, tras el compromiso de la presidenta Sheinbaum de desplegar 10.000 elementos de la Guardia Nacional en la frontera norte. **Razón:** negociación bajo amenaza inminente (CRS, 2026).
+3. **"Liberation Day", 2-9 de abril de 2025 — el episodio que dio origen al término.** El arancel "recíproco" por país (hasta 50%) entra en vigor el 5 de abril; ante el desplome de los mercados de acciones y de bonos del Tesoro, la administración suspende las tasas diferenciadas por país apenas cuatro días después (9 de abril), volviendo a un piso general del 10% (salvo China, que en cambio escala). Entre las tasas más altas del Anexo I original estuvieron Camboya (49%) y **Vietnam (46%)**, la segunda más alta de toda la tabla (Federal Register, 2025j). **Razón de la pausa:** reacción de los mercados financieros (CRS, 2026; The Week, 2026).
+4. **China, mayo-noviembre de 2025 — una tregua que se extiende tres veces.** El arancel recíproco a China, escalado a 125% el 9 de abril, se reduce a 10% mediante el acuerdo de Ginebra del 12 de mayo por un plazo inicial de 90 días; la reducción se extiende luego el 11 de agosto (hasta el 10 de noviembre) y de nuevo el 4 de noviembre (por un año completo, hasta noviembre de 2026), en cada caso justo antes de que la tregua anterior expirara. **Razón:** negociación bilateral continua, evitando en cada ocasión el retorno a la tasa de escalada original (CRS, 2026).
+5. **Sección 122, mayo-junio de 2026 — una reversión judicial, no política, con final agridulce para el gobierno.** La CIT rechaza el recargo del 10% el 7 de mayo de 2026; sin embargo, el Circuito Federal suspende esa orden el 11 de junio y permite seguir cobrando el arancel. No es, en sentido estricto, un caso de "TACO" (la administración no cedió: fue un tribunal el que falló en su contra, y otro tribunal el que revirtió esa derrota), pero se incluye aquí porque ejemplifica el patrón inverso — un arancel que sobrevive pese a haber sido declarado ilegal — y conviene no confundirlo con los demás casos (Steptoe, 2026; Troutman Pepper Locke, 2026).
+6. **Grúas y equipo portuario chino, 9-10 de noviembre de 2025.** El arancel del 100% (S. 301) entra en vigor el 9 de noviembre; se suspende por un año completo apenas **un día después**, el 10 de noviembre, tras un acuerdo comercial más amplio con China. Es uno de los casos de reversión más rápidos de toda la cronología (CRS, 2026).
+7. **Brasil, 6 de agosto-20 de noviembre de 2025.** El arancel del 40% entra en vigor el 6 de agosto; el 20 de noviembre se excluyen ciertos productos agrícolas y de carne de res, después de que el alza de precios de alimentos (particularmente café y carne) generara presión política interna en EE.UU. **Razón:** presión política doméstica, no negociación con Brasil (CRS, 2026).
+8. **India, agosto de 2025-febrero de 2026 — de 50% a 18%.** El arancel adicional del 25% por la compra de petróleo ruso (E.O. 14329, agosto de 2025) se suma al arancel recíproco base, llevando la tasa combinada a 50%. El 2 de febrero de 2026, tras una llamada Trump-Modi, se anuncia su remoción a cambio del compromiso indio de dejar de comprar petróleo ruso y de adquirir más de USD 500.000 millones en energía y productos estadounidenses; la tasa combinada baja a 18%, con implementación formal días después. **Razón:** negociación bilateral exitosa (Al Jazeera, 2026b; Bloomberg, 2026).
+
+**Un noveno caso, aún sin resolver:** la amenaza de subir el arancel automotor y farmacéutico a Corea del Sur de 15% a 25% (26-27 de enero de 2026, alegando incumplimiento legislativo del acuerdo marco) tiene, según la prensa especializada citada en el documento N.º 6 de este proyecto, **estatus de implementación incierto** — no hay evidencia pública de que se haya ejecutado, pero tampoco de que se haya retirado formalmente. No se incluye en la lista numerada porque no está claro todavía si se trata de un caso de "TACO" (amenaza no ejecutada) o simplemente de una medida en pausa administrativa indefinida.
+
+**Una observación de cierre, que conviene incorporar al informe final:** de los ocho casos documentados, cinco (1, 2, 4, 6, 8) se resolvieron mediante negociación bilateral bajo amenaza, uno (3) por reacción de los mercados financieros, y uno (7) por presión política interna — ningún caso se debió a que un tribunal ordenara la reversión (el caso 5, judicial, es el único que no calza en el patrón "TACO" propiamente dicho, y de hecho corre en sentido contrario). El patrón sugiere que la amenaza arancelaria funciona, en esta administración, tanto como una herramienta de negociación genuina (los socios comerciales sí hacen concesiones concretas: seguridad fronteriza, compras de energía, exclusión de productos) como una señal predecible para los mercados financieros, que en al menos un episodio documentado (caso 3) llegaron a anticipar la reversión antes de que ocurriera — el propio origen bursátil del término "TACO" (una estrategia declarada de "comprar la caída" en cada anuncio de escalada) es evidencia indirecta de esa previsibilidad.
+
+---
+
+# Hilo judicial consolidado (síntesis)
+
+| Fecha | Instancia | Caso | Resultado |
+|---|---|---|---|
+| 14 abr. 2025 | CIT (presentación) | *V.O.S. Selections v. Trump* (+ demanda de 12 estados liderados por Oregón) | Impugna aranceles IEEPA |
+| 22 abr. 2025 | Corte Distrito D.C. (presentación) | *Learning Resources, Inc. v. Trump* | Impugna aranceles IEEPA |
+| 28 may. 2025 | CIT | *V.O.S. Selections v. Trump* | Falla que IEEPA no autoriza aranceles |
+| 29 ago. 2025 | Circuito Federal (apelación) | Casos consolidados | Confirma el fallo de la CIT |
+| sept. 2025 | Corte Suprema | Concede *certiorari* | Consolida ambos casos |
+| 5 nov. 2025 | Corte Suprema | Argumentos orales | — |
+| 20 feb. 2026 | Corte Suprema | *Learning Resources, Inc. v. Trump* | **Aranceles IEEPA declarados ilegales** |
+| 4 mar. 2026 | CIT | Orden de reembolso | Reembolso/reliquidación nacional de aranceles IEEPA |
+| 20 feb. 2026 | Administración | Proclamación 11012 (S. 122) | Nuevo recargo del 10% para sustituir a IEEPA (mismo día del fallo) |
+| 7 may. 2026 | CIT | Impugnación a Proclamación 11012 | Rechaza el recargo S. 122 (relief limitado a 3 demandantes) |
+| 11 jun. 2026 | Circuito Federal | Apelación de la Proclamación 11012 | Otorga *stay*: el recargo sigue cobrándose durante la apelación |
+| 24 jul. 2026 | Vencimiento estatutario | Recargo S. 122 | Expira (límite de 150 días); apelación de fondo sigue pendiente |
+| 24 jul. 2026 | Administración (S. 301) | Nuevo arancel global por trabajo forzado | Entra en vigor |
+| jul.-ago. 2026 | CIT (presentación) | Dos demandas de pequeñas empresas + demanda de 25 estados (3 ago. 2026, caso N.º 26-03467) | Impugnan el arancel S. 301 global; sin resolver |
+| 30 sept. 2026 | CIT | Audiencia conjunta programada | Pendiente — posterior al cierre de este documento |
+
+*Fuentes: CRS (2026); Learning Resources, Inc. v. Trump (2026); Holland & Knight (2026a); Ward and Smith (2026); White & Case (2026b); Covington & Burling (2026); Steptoe (2026); Troutman Pepper Locke (2026); Nakachi Eckhardt & Jacobson (2026); Wikipedia contributors (s.f.).*
+
+---
+
+# Tabla resumen de acuerdos marco bilaterales identificados
+
+| Socio comercial | Fecha del marco/anuncio | Implementación formal | Techo arancelario / condición principal |
+|---|---|---|---|
+| Reino Unido | 16 jun. 2025 | 30 jun. 2025 | 10% autos (TRQ) y autopartes |
+| Filipinas | 22 jul. 2025 | — | 19% recíproco; acceso preferencial para autos, agrícolas, farmacéuticos de EE.UU. |
+| Indonesia | 22 jul. 2025 | — | 19% recíproco; Indonesia elimina aranceles a ~99% de productos de EE.UU.; sin restricciones a exportación de minerales críticos |
+| Unión Europea | 21 ago. 2025 (autos: 25 sept.) | 1 sept. 2025 | Techo del 15% general; 15% autos (retroactivo a 1 ago.) |
+| Japón | 22 jul. 2025 (marco); 4 sept. 2025 (E.O. 14345) | 9 sept. 2025 | Techo del 15%; autos 15% desde 16 sept. |
+| Camboya | 26 oct. 2025 | vía E.O. 14346 (anexo) | 19% recíproco; Camboya elimina 100% de aranceles a EE.UU. |
+| Malasia | 26 oct. 2025 | vía E.O. 14346 (anexo) | 19% recíproco; compromisos sobre minerales críticos/tierras raras |
+| Tailandia | 26 oct. 2025 | vía E.O. 14346 (anexo) | 19% recíproco; Tailandia elimina 99% de aranceles a EE.UU. |
+| Vietnam | 26 oct. 2025 | vía E.O. 14346 (anexo) | 20% recíproco (0% para lista del Anexo III); Vietnam elimina aranceles a "casi todos" los bienes |
+| China | 12 may. / 11 ago. / 4 nov. 2025 | — | Reducciones sucesivas del arancel recíproco (125%→10%); extensión a nov. 2026 |
+| Argentina | 13 nov. 2025 | — | Trato NMF para lista de productos; acceso a aves de corral en 1 año; reglas "justas" para minerales críticos |
+| Ecuador, El Salvador, Guatemala | 13 nov. 2025 | El Salvador y Guatemala: acuerdos firmados formalmente en ene. 2026 | Marcos de comercio recíproco (términos específicos por país) |
+| Suiza / Liechtenstein | 14 nov. 2025 | 18 dic. 2025 (retroactivo al 14 nov.) | Reducción de 39% a techo del 15% |
+| Corea del Sur | Jul. 2025 (marco); anuncio detallado ~oct.-dic. 2025 | 4 dic. 2025 (retroactivo al 1 nov.) | 15% autos; "U.S.-Korea Strategic Trade and Investment Deal" |
+| Taiwán | 15 ene. 2026 (MOU de inversión); 12 feb. 2026 (ART firmado) | Sin entrada en vigor (pendiente de aprobación del Yuan Legislativo); superado por el fallo de la Corte Suprema del 20 feb. 2026 | Tasa recíproca de 20% (vigente desde el 7 ago. 2025) a bajar a 15% (el mayor entre NMF y 15%); inversión de USD 250.000 millones + USD 250.000 millones en garantías de crédito; trato preferencial en S. 232 de semiconductores |
+| Canadá | 1 sept. 2025 (elimina represalias) | — | Se mantienen S. 232; **ver también la disputa de Sección 338 (jul.-sept. 2026), de signo contrario** |
+
+*Fuente: CRS (2026); USTR (2025a, 2025b, 2025c, 2025d, 2025e, 2025f, 2026); The White House (2025a, 2025d); Federal Register (2025x, 2025y); Global Taiwan (2026); International Trade Insights (2026). Nota: varios de estos son "marcos" políticos anunciados mediante declaración conjunta, no tratados formales ratificados por el Congreso; varios se implementaron meses después mediante avisos del Federal Register específicos por país al amparo de la E.O. 14346 (5 sept. 2025), que funciona como mecanismo paraguas. Esta tabla se debe complementar con el texto completo de cada acuerdo/declaración conjunta al redactar la sección de negociaciones bilaterales del informe final.*
+
+## Detalle de compromisos por bloque de acuerdos
+
+**Sudeste asiático (Camboya, Malasia, Tailandia, Vietnam — declaraciones conjuntas del 26 de octubre de 2025, implementadas vía anexos país por país de la E.O. 14346):** los cuatro acuerdos comparten una estructura casi idéntica, más allá de la tasa recíproca específica. Los cuatro países se comprometen a: (a) aceptar vehículos y autopartes fabricados bajo estándares de seguridad y emisiones de EE.UU.; (b) reconocer certificados de la FDA para dispositivos médicos y farmacéuticos, agilizando su aprobación; (c) apoyar la moratoria de la OMC sobre aranceles a transmisiones electrónicas y permitir transferencia transfronteriza de datos sin licenciamiento; (d) fortalecer la aplicación de normas laborales (incluida la prohibición de trabajo forzado) y ambientales; (e) abordar distorsiones de empresas estatales. Camboya se compromete además a preservar el acceso de productores estadounidenses de queso y carne bajo "nombres comunes" (geographic indications). Vietnam, además, permite la importación de bienes remanufacturados y extiende la vigencia de licencias de importación para productos con criptografía. Ninguno de los cuatro textos públicos contiene disposiciones explícitas sobre transbordo o reglas de origen específicas para desviar mercancía china — un vacío relevante dado que la preocupación por el transbordo chino a través de estos países fue una de las motivaciones declaradas de la gira asiática (USTR, 2025b, 2025c, 2025d, 2025e). **Vietnam es la excepción:** su marco de julio-agosto de 2025, ya vigente al momento de esta declaración conjunta de octubre, sí fija una tasa punitiva explícita del 40% para mercancía transbordada (ver "7 de agosto" arriba) — el mecanismo anti-transbordo existe para Vietnam, solo que quedó fijado meses antes y por fuera del texto de la declaración conjunta del 26 de octubre.
+
+**Indonesia y Filipinas (22 de julio de 2025):** ambos acuerdos, anunciados el mismo día que el marco con Japón, fijan una tasa recíproca de 19%. Indonesia se compromete a eliminar aranceles preferenciales sobre más del 99% de los productos estadounidenses (agricultura, salud, automotriz, químicos, tecnología), a exentar a empresas de EE.UU. de requisitos de contenido local, y — el compromiso más relevante para el resto de este proyecto — a **remover restricciones a la exportación de minerales críticos y tierras raras hacia EE.UU.** Filipinas recibió cobertura de prensa menos detallada en fuentes primarias, pero comparte la misma tasa recíproca de 19% (Al Jazeera, 2025; The White House, 2025a).
+
+**Bloque latinoamericano (Argentina, Ecuador, El Salvador, Guatemala — 13 de noviembre de 2025):** a diferencia del bloque asiático, estos son explícitamente "marcos" (*frameworks*) para una negociación posterior, no acuerdos cerrados; los textos disponibles no fijan siempre una tasa recíproca numérica definitiva. Argentina obtuvo el compromiso más desarrollado: trato de nación más favorecida para una lista de productos (farmacéuticos, químicos, maquinaria, productos de TI, dispositivos médicos), acceso ampliado para carne de res/cerdo/aves (aves de corral dentro de un año), y reglas "justas" para inversión de empresas estadounidenses en el sector de minerales críticos argentino. El Salvador y Guatemala firmaron acuerdos formales recién en enero de 2026, dos meses después del anuncio del marco — un recordatorio de que la brecha entre "marco anunciado" y "acuerdo implementado" puede ser considerable (USTR, 2025f; KPMG, 2026).
+
+**Suiza/Liechtenstein y Corea del Sur:** ambos casos ilustran el mismo patrón de implementación diferida a través de la E.O. 14346: el marco político se anuncia en una fecha (Suiza, 14 de noviembre de 2025; Corea, negociado desde julio de 2025) y la tasa reducida se hace efectiva formalmente — y de manera retroactiva — semanas o meses después, mediante un aviso del Federal Register que modifica el anexo arancelario correspondiente (18 de diciembre para Suiza, retroactivo al 14 de noviembre; 4 de diciembre para Corea, retroactivo al 1 de noviembre). Para Corea del Sur, la proclamación original de autos (10908) sirve de referencia de cálculo: para autos coreanos con arancel base inferior a 15%, la suma de la tasa de columna 1 más el arancel S. 232 se ajusta para llegar exactamente a 15% (Federal Register, 2025x, 2025y).
+
+**Taiwán (15 de enero y 12 de febrero de 2026):** es el único marco de la lista que no llegó a implementarse antes del fallo de la Corte Suprema. A diferencia de Corea del Sur y Suiza, cuyas tasas reducidas se hicieron efectivas mediante avisos del Federal Register al amparo de la E.O. 14346, el ART con Taiwán dependía de un trámite legislativo en la isla y seguía pendiente cuando la IEEPA fue declarada inválida; Taiwán siguió pagando 20% hasta el 20 de febrero (Holland & Knight, 2026b; International Trade Insights, 2026). El paquete tenía dos patas: (a) una arancelaria — 15% como máximo entre NMF y 15%, con tope de 15% también para los aranceles S. 232 sobre autopartes y madera —, y (b) una de inversión — USD 250.000 millones de empresas taiwanesas más USD 250.000 millones en garantías de crédito —, a cambio de la cual EE.UU. ofreció trato preferencial en la investigación S. 232 sobre semiconductores; según Global Taiwan (2026), los futuros aranceles a semiconductores seguirían un sistema de cuotas ligado a la inversión taiwanesa en EE.UU. Bajo el régimen S. 301 vigente desde el 24 de julio de 2026, Taiwán paga 10% neto de la NMF, junto con la UE (Global Trade Alert, 2026b).
+
+# Referencias
+
+Al Jazeera. (2025, 22 de julio). *Trump sets 19% tariff on Philippines in new trade deal*. https://www.aljazeera.com/news/2025/7/22/trump-sets-19-tariff-on-philippines-in-new-trade-deal
+
+Al Jazeera. (2026a, 22 de agosto). *US imposes 50% tariffs on $20bn worth of Canadian goods after talks fail*. https://www.aljazeera.com/news/2026/8/22/us-imposes-50-tariffs-on-20bn-worth-of-canadian-goods-after-talks-fail
+
+Al Jazeera. (2026b, 2 de febrero). *Trump cuts India tariffs to 18% as Modi agrees to stop buying Russian oil*. https://www.aljazeera.com/economy/2026/2/2/trump-to-slash-us-tariffs-on-india-from-50-percent-to-18-percent
+
+Al Jazeera. (2026c, 22 de agosto). *Canada to hit US with retaliatory tariffs as trade war escalates*. https://www.aljazeera.com/news/2026/8/23/canada-to-hit-us-with-retaliatory-tariffs-as-trade-war-escalates
+
+The American Presidency Project. (2026). *Proclamation 11012—Imposing a temporary import surcharge to address fundamental international payments problems*. University of California, Santa Barbara. https://www.presidency.ucsb.edu/documents/proclamation-11012-imposing-temporary-import-surcharge-address-fundamental-international
+
+Bloomberg. (2026, 6 de febrero). *Trump removes India's 25% Russia-related tariff after deal*. https://www.bloomberg.com/news/articles/2026-02-06/trump-removes-india-s-25-russia-related-tariff-after-deal
+
+Canada.ca. (2026, agosto). *List of products from the United States subject to counter-tariffs effective September 8, 2026*. Department of Finance Canada. https://www.canada.ca/en/department-finance/news/2026/08/list-of-products-from-the-united-states-subject-to-counter-tariffs-effective-september-8-2026.html
+
+CBC Radio. (2026). *How a financial columnist coined 'TACO' to describe Trump's tariffs flip-flops*. https://www.cbc.ca/radio/asithappens/how-a-financial-columnist-coined-taco-to-describe-trump-s-tariffs-flip-flops-1.7547492
+
+CBS News. (2026). *Trump was asked about the "TACO" trade and called it a "nasty question." Here's what it means*. https://www.cbsnews.com/news/trump-taco-trade-trump-always-chickens-out-what-it-means/
+
+CNBC. (2025a, 12 de julio). *Trump announces 30% tariffs on EU and Mexico, starting Aug. 1*. https://www.cnbc.com/2025/07/12/trump-tariffs-european-union-eu-mexico-trade.html
+
+CNBC. (2025b, 2 de julio). *Trump announces Vietnam trade deal, 20% tariff on imports to U.S.*. https://www.cnbc.com/2025/07/02/trump-trade-vietnam-deal.html
+
+CNBC. (2026a, 21 de julio). *White House teases new trade action "soon" as it works to re-create global tariff regime*. https://www.cnbc.com/2026/07/21/trump-trade-tariffs-greer-section-301.html
+
+CNBC. (2026b, 8 de septiembre). *Canada tariffs up to 50% come into effect on $27.6 billion U.S. goods*. https://www.cnbc.com/2026/09/08/canada-retaliatory-tariffs.html
+
+Congressional Research Service. (2025a, 30 de julio). *Presidential 2025 tariff actions: Timeline and status* (R48549). EveryCRSReport. https://www.everycrsreport.com/files/2025-07-30_R48549_c67e64d04f991ea03fd9a36b32907ff4feef1132.html
+
+Congressional Research Service. (2025b, 30 de septiembre). *Section 232 national security tariffs on copper imports* (IN12614). EveryCRSReport. https://www.everycrsreport.com/reports/IN12614.html
+
+Congressional Research Service. (2026, 12 de enero). *Presidential 2025 tariff actions: Timeline and status* (R48549, versión 12). Congress.gov. https://www.congress.gov/crs_external_products/R/PDF/R48549/R48549.12.pdf
+
+Covington & Burling LLP. (2026, febrero). *IEEPA tariffs terminated, replacement Section 122 tariffs take effect*. https://www.cov.com/en/news-and-insights/insights/2026/02/ieepa-tariffs-terminated-replacement-section-122-tariffs-take-effect
+
+Crowell & Moring LLP. (2026, 7 de abril). *Trump administration imposes Section 232 tariffs on patented pharmaceutical imports: Tiered rate structure takes effect beginning July 31, 2026*. https://www.crowell.com/en/insights/client-alerts/trump-administration-imposes-section-232-tariffs-on-patented-pharmaceutical-imports-tiered-rate-structure-takes-effect-beginning-july-31-2026
+
+Durante, A. (2022, 20 de septiembre). *How the Section 232 tariffs on steel and aluminum harmed the economy*. Tax Foundation. https://taxfoundation.org/research/all/federal/section-232-tariffs-steel-aluminum/
+
+Federal Register. (2025a, 7 de febrero). *Imposing duties to address the flow of illicit drugs across our northern border* [E.O. 14193]. https://www.federalregister.gov/documents/2025/02/07/2025-02406/imposing-duties-to-address-the-flow-of-illicit-drugs-across-our-northern-border
+
+Federal Register. (2025b, 7 de febrero). *Imposing duties to address the situation at our southern border* [E.O. 14194]. https://www.federalregister.gov/documents/2025/02/07/2025-02407/imposing-duties-to-address-the-situation-at-our-southern-border
+
+Federal Register. (2025c, 7 de febrero). *Imposing duties to address the synthetic opioid supply chain in the People's Republic of China* [E.O. 14195]. https://www.federalregister.gov/documents/2025/02/07/2025-02408/imposing-duties-to-address-the-synthetic-opioid-supply-chain-in-the-peoples-republic-of-china
+
+Federal Register. (2025d, 18 de febrero). *Adjusting imports of aluminum into the United States* [Proclamación 10895]. https://www.federalregister.gov/documents/2025/02/18/2025-02832/adjusting-imports-of-aluminum-into-the-united-states
+
+Federal Register. (2025e, 18 de febrero). *Adjusting imports of steel into the United States* [Proclamación 10896]. https://www.federalregister.gov/documents/2025/02/18/2025-02833/adjusting-imports-of-steel-into-the-united-states
+
+Federal Register. (2025f, 6 de marzo). *Addressing the threat to national security from imports of timber, lumber, and their derivative products* [E.O. 14223]. https://www.federalregister.gov/documents/2025/03/06/2025-03693/addressing-the-threat-to-national-security-from-imports-of-timber-lumber-and-their-derivative
+
+Federal Register. (2025g, 27 de marzo). *Imposing tariffs on countries importing Venezuelan oil* [E.O. 14245]. https://www.federalregister.gov/documents/2025/03/27/2025-05440/imposing-tariffs-on-countries-importing-venezuelan-oil
+
+Federal Register. (2025h, 3 de abril). *Adjusting imports of automobiles and automobile parts into the United States* [Proclamación 10908, firmada el 26 de marzo de 2025]. https://www.federalregister.gov/documents/2025/04/03/2025-05930/adjusting-imports-of-automobiles-and-automobile-parts-into-the-united-states
+
+Federal Register. (2025i, 7 de abril). *Further amendment to duties addressing the synthetic opioid supply chain in the People's Republic of China as applied to low-value imports* [E.O. 14256]. https://www.federalregister.gov/documents/2025/04/07/2025-06027/further-amendment-to-duties-addressing-the-synthetic-opioid-supply-chain-in-the-peoples-republic-of-
+
+Federal Register. (2025j, 7 de abril). *Regulating imports with a reciprocal tariff to rectify trade practices that contribute to large and persistent annual United States goods trade deficits* [E.O. 14257]. https://www.federalregister.gov/documents/2025/04/07/2025-06063/regulating-imports-with-a-reciprocal-tariff-to-rectify-trade-practices-that-contribute-to-large-and-
+
+Federal Register. (2025k, 9 de junio). *Adjusting imports of aluminum and steel into the United States* [Proclamación 10947]. https://www.federalregister.gov/documents/2025/06/09/2025-10524/adjusting-imports-of-aluminum-and-steel-into-the-united-states
+
+Federal Register. (2025l, 10 de julio). *Extending the modification of the reciprocal tariff rates* [E.O. 14316]. https://www.federalregister.gov/documents/2025/07/10/2025-12962/extending-the-modification-of-the-reciprocal-tariff-rates
+
+Federal Register. (2025m, 5 de agosto). *Adjusting imports of copper into the United States* [Proclamación]. https://www.federalregister.gov/documents/2025/08/05/2025-14893/adjusting-imports-of-copper-into-the-united-states
+
+Federal Register. (2025n, 5 de agosto). *Addressing threats to the United States by the government of Brazil* [E.O. 14323, firmada el 30 de julio de 2025]. https://www.federalregister.gov/documents/2025/08/05/2025-14896/addressing-threats-to-the-united-states-by-the-government-of-brazil
+
+Federal Register. (2025o, 5 de agosto). *Suspending duty-free de minimis treatment for all countries* [E.O. 14324, firmada el 30 de julio de 2025]. https://www.federalregister.gov/documents/2025/08/05/2025-14897/suspending-duty-free-de-minimis-treatment-for-all-countries
+
+Federal Register. (2025p, 6 de agosto). *Amendment to duties to address the flow of illicit drugs across our northern border* [E.O. 14325, firmada el 31 de julio de 2025]. https://www.federalregister.gov/documents/2025/08/06/2025-14999/amendment-to-duties-to-address-the-flow-of-illicit-drugs-across-our-northern-border
+
+Federal Register. (2025q, 6 de agosto). *Further modifying the reciprocal tariff rates* [E.O. 14326, firmada el 31 de julio de 2025]. https://www.federalregister.gov/documents/2025/08/06/2025-15010/further-modifying-the-reciprocal-tariff-rates
+
+Federal Register. (2025s, 14 de agosto). *Further modifying reciprocal tariff rates to reflect ongoing discussions with the People's Republic of China* [E.O. 14334]. https://www.federalregister.gov/documents/2025/08/14/2025-15554/further-modifying-reciprocal-tariff-rates-to-reflect-ongoing-discussions-with-the-peoples-republic-
+
+Federal Register. (2025t, 6 de octubre). *Adjusting imports of timber, lumber, and their derivative products into the United States* [Proclamación 10976]. https://www.federalregister.gov/documents/2025/10/06/2025-19482/adjusting-imports-of-timber-lumber-and-their-derivative-products-into-the-united-states
+
+Federal Register. (2025u, 9 de septiembre). *Implementing the United States-Japan Agreement* [E.O. 14345]. https://www.federalregister.gov/documents/2025/09/09/2025-17389/implementing-the-united-states-japan-agreement
+
+Federal Register. (2025v, 22 de octubre). *Adjusting imports of medium- and heavy-duty vehicles, medium- and heavy-duty vehicle parts, and buses into the United States* [Proclamación 10984, firmada el 17 de octubre de 2025]. https://www.federalregister.gov/documents/2025/10/22/2025-19639/adjusting-imports-of-medium--and-heavy-duty-vehicles-medium--and-heavy-duty-vehicle-parts-and-buses
+
+Federal Register. (2025w, 7 de noviembre). *Modifying reciprocal tariff rates consistent with the economic and trade arrangement between the United States and the People's Republic of China* [E.O. 14358]; *Modifying duties addressing the synthetic opioid supply chain in the People's Republic of China* [E.O. 14357, ambas firmadas el 4 de noviembre de 2025]. https://www.federalregister.gov/documents/2025/11/07/2025-19826/modifying-reciprocal-tariff-rates-consistent-with-the-economic-and-trade-arrangement-between-the-; https://www.federalregister.gov/documents/2025/11/07/2025-19825/modifying-duties-addressing-the-synthetic-opioid-supply-chain-in-the-peoples-republic-of-china
+
+Federal Register. (2025x, 4 de diciembre). *Implementing certain tariff-related elements of the U.S.-Korea Strategic Trade and Investment Deal* [al amparo de la E.O. 14346, firmada el 5 de septiembre de 2025]. https://www.federalregister.gov/documents/2025/12/04/2025-21940/implementing-certain-tariff-related-elements-of-the-us-korea-strategic-trade-and-investment-deal
+
+Federal Register. (2025y, 18 de diciembre). *Implementing certain tariff-related elements of the framework for a United States-Switzerland-Liechtenstein agreement on fair, balanced, and reciprocal trade* [al amparo de la E.O. 14346]. https://www.federalregister.gov/documents/2025/12/18/2025-23316/implementing-certain-tariff-related-elements-of-the-framework-for-a-united
+
+Federal Register. (2025z, 6 de marzo). *Amendment to duties to address the situation at our southern border* [y su equivalente para la frontera norte con Canadá; proclamaciones de excepción USMCA]. https://www.federalregister.gov/documents/2025/03/06/2025-03729/amendment-to-duties-to-address-the-situation-at-our-southern-border
+
+Federal Register. (2026, 25 de febrero). *Ending certain tariff actions* [E.O. 14389]. https://www.federalregister.gov/documents/2026/02/25/2026-03832/ending-certain-tariff-actions
+
+Federal Register. (2026a, 20 de enero). *Adjusting imports of semiconductors, semiconductor manufacturing equipment, and their derivative products into the United States* [Proclamación 11002, firmada el 14 de enero de 2026]. https://www.federalregister.gov/documents/2026/01/20/2026-01052/adjusting-imports-of-semiconductors-semiconductor-manufacturing-equipment-and-their-derivative
+
+Federal Register. (2026b, 20 de enero). *Adjusting imports of processed critical minerals and their derivative products into the United States*. https://www.federalregister.gov/documents/2026/01/20/2026-01045/adjusting-imports-of-processed-critical-minerals-and-their-derivative-products-into-the-united
+
+Federal Register. (2026c, 25 de febrero). *Imposing a temporary import surcharge to address fundamental international payments problems* [Proclamación 11012, firmada el 20 de febrero de 2026]. https://www.federalregister.gov/documents/2026/02/25/2026-03824/imposing-a-temporary-import-surcharge-to-address-fundamental-international-payments-problems
+
+Federal Register. (2026d, 25 de febrero). *Ending certain tariff actions* [E.O. 14389, firmada el 20 de febrero de 2026]. https://www.federalregister.gov/documents/2026/02/25/2026-03832/ending-certain-tariff-actions
+
+Federal Register. (2026e, 9 de abril). *Adjusting imports of pharmaceuticals and pharmaceutical ingredients into the United States* [Proclamación 11020, firmada el 2 de abril de 2026]. https://www.federalregister.gov/documents/2026/04/09/2026-06956/adjusting-imports-of-pharmaceuticals-and-pharmaceutical-ingredients-into-the-united-states
+
+Federal Register. (2026f, 9 de abril). *Strengthening actions taken to adjust imports of aluminum, steel, and copper into the United States* [Proclamación 11021]. https://www.federalregister.gov/documents/2026/04/09/2026-06960/strengthening-actions-taken-to-adjust-imports-of-aluminum-steel-and-copper-into-the-united-states
+
+Federal Register. (2026g, 23 de julio). *Imposing additional duties to offset Canadian discrimination against the commerce of the United States with respect to dairy* [Proclamación 11047, firmada el 20 de julio de 2026]. https://www.federalregister.gov/documents/2026/07/23/2026-14992/imposing-additional-duties-to-offset-canadian-discrimination-against-the-commerce-of-the-united
+
+Federal Register. (2026h, 28 de julio). *Notice of actions in Section 301 investigations of acts, policies, and practices of various economies related to the failure of each economy to impose and effectively enforce a prohibition on the importation of goods produced with forced labor*. https://www.federalregister.gov/documents/2026/07/28/2026-15181/notice-of-actions-in-section-301-investigations-of-acts-policies-and-practices-of-various-economies
+
+Fibre2Fashion. (2026, 29 de julio). *Section 301 quota creates Sept 1 decision point for US yarn mills*. https://www.fibre2fashion.com/news/textile-news/section-301-quota-creates-sept-1-decision-point-for-us-yarn-mills-312169-newsdetails.htm
+
+Gibson Dunn. (2026, mayo). *Section 122 global tariffs invalidated by the Court of International Trade: Ruling and next steps*. https://www.gibsondunn.com/section-122-global-tariffs-invalidated-by-the-court-of-international-trade-ruling-and-next-steps/
+
+Global Taiwan. (2026, febrero). *What's in the new US-Taiwan "Agreement on Reciprocal Trade"?* https://globaltaiwan.org/2026/02/whats-in-the-new-us-taiwan-agreement-on-reciprocal-trade/
+
+Global Trade Alert. (2026a). *US Section 301 — Forced Labour Investigations: Vietnam*. https://ricardo-dashboard.s3.eu-west-1.amazonaws.com/reports/forced-labour-section-301-final-action/economies/S301-FL_Vietnam.pdf
+
+Global Trade Alert. (2026b, julio). *Forced-labour Section 301 tariffs on 60 economies take effect on 24 July: An overview of the final action*. https://globaltradealert.org/blog/forced-labour-section-301-final-action
+
+Hillman, J. (2020, enero). *A reset of the World Trade Organization's Appellate Body*. Council on Foreign Relations. https://www.cfr.org/report/reset-world-trade-organizations-appellate-body
+
+Holland & Knight LLP. (2026a, marzo). *Court of International Trade orders nationwide tariff refunds*. https://www.hklaw.com/en/insights/publications/2026/03/court-of-international-trade-orders-nationwide-tariff-refunds
+
+Holland & Knight LLP. (2026b, julio). *And the (tariff) beat goes on: New Section 301 forced-labor tariffs imposed on 60 countries*. https://www.hklaw.com/en/insights/publications/2026/07/and-the-tariff-beat-goes-on
+
+ING. (2025, 11 de febrero). *Retaliation inevitable as Trump slaps tariffs on metals, again*. ING Think. https://think.ing.com/articles/retaliation-inevitable-as-trump-slaps-tariffs-on-metals-again/
+
+International Trade Insights. (2026, febrero). *United States and Taiwan sign Agreement on Reciprocal Trade*. https://www.internationaltradeinsights.com/2026/02/united-states-and-taiwan-sign-agreement-on-reciprocal-trade/
+
+KPMG. (2026, enero). *United States signs reciprocal trade agreements: Guatemala, El Salvador*. TaxNewsFlash. https://kpmg.com/us/en/taxnewsflash/news/2026/01/united-states-signs-reciprocal-trade-agreements-guatemala-el-salvador.html
+
+*Learning Resources, Inc. v. Trump*, No. 24-1287 (Corte Suprema de EE.UU., 20 de febrero de 2026). https://www.supremecourt.gov/opinions/25pdf/24-1287_4gcj.pdf
+
+Morgan, Lewis & Bockius LLP. (2026, julio). *US administration rebuilds global tariff program under Section 301*. https://www.morganlewis.com/pubs/2026/07/us-administration-rebuilds-global-tariff-program-under-section-301
+
+Nakachi Eckhardt & Jacobson. (2026, 7 de agosto). *Twenty-five states sue to block the Section 301 forced-labor tariffs*. https://www.tradelawcounsel.com/insights-news/2026/8/7/twenty-five-states-sue-to-block-the-section-301-forced-labor-tariffs
+
+NPR. (2026a, 22 de agosto). *As Canada readies retaliatory tariffs, Mark Carney says his nation is 'at war' with U.S.* https://www.npr.org/2026/08/22/nx-s1-5941584/us-canada-tariffs
+
+Sheppard Mullin Richter & Hampton LLP. (2026, 23 de junio). *Section 301'ing the world (or 99.4% of it)*. https://www.sheppard.com/insights/blogs/section-301ing-the-world-or-99-4-of-it
+
+Steptoe. (2026, 30 de junio). *Appellate court raises more uncertainty in Section 122 tariff litigation*. Global Trade and Investment Law Blog. https://www.steptoe.com/en/news-publications/global-trade-and-investment-law-blog/appellate-court-raises-more-uncertainty-in-section-122-tariff-litigation.html
+
+The Week. (2026, 31 de julio). *The TACO moments that define Trump's second term so far*. https://theweek.com/politics/trump-taco-moments-second-term
+
+Thompson Coburn LLP. (2025, 1 de agosto). *Trump administration issues proclamation imposing 50% Section 232 tariffs, export controls on some copper scrap*. https://www.thompsoncoburn.com/insights/trump-administration-issues-proclamation-imposing-50-section-232-tariffs-export-controls-on-some-copper-scrap/
+
+Troutman Pepper Locke. (2026, junio). *Federal Circuit hits pause on CIT's Section 122 tariff ruling*. https://www.troutman.com/insights/federal-circuit-hits-pause-on-cits-section-122-tariff-ruling/
+
+USTR. (2025a, 22 de julio). *Ambassador Greer issues statement on U.S.-Indonesia deal* [comunicado de prensa]. Office of the United States Trade Representative. https://ustr.gov/about/policy-offices/press-office/press-releases/2025/july/ambassador-greer-issues-statement-us-indonesia-deal
+
+USTR. (2025b, 26 de octubre). *Fact sheet: The United States and Cambodia reach an agreement on reciprocal trade*. https://ustr.gov/about/policy-offices/press-office/fact-sheets/2025/october/fact-sheet-united-states-and-cambodia-reach-agreement-reciprocal-trade
+
+USTR. (2025c, 26 de octubre). *Fact sheet: The United States and Malaysia reach an agreement on reciprocal trade*. https://ustr.gov/about/policy-offices/press-office/fact-sheets/2025/october/fact-sheet-united-states-and-malaysia-reach-agreement-reciprocal-trade
+
+USTR. (2025d, 26 de octubre). *Fact sheet: The United States and Thailand reach a framework for an agreement on reciprocal trade*. https://ustr.gov/about/policy-offices/press-office/fact-sheets/2025/october/fact-sheet-united-states-and-thailand-reach-framework-agreement-reciprocal-trade
+
+USTR. (2025e, 26 de octubre). *Fact sheet: The United States and Viet Nam reach a framework for an agreement on reciprocal, fair, and balanced trade*. https://ustr.gov/about/policy-offices/press-office/fact-sheets/2025/october/fact-sheet-united-states-and-viet-nam-reach-framework-agreement-reciprocal-fair-and-balanced-trade
+
+USTR. (2025f, 13 de noviembre). *Fact sheet: The United States and Argentina agree to a framework for an agreement on reciprocal trade and investment*. https://ustr.gov/about/policy-offices/press-office/fact-sheets/2025/november/fact-sheet-united-states-and-argentina-agree-framework-agreement-reciprocal-trade-and-investment
+
+USTR. (2026, febrero). *Fact sheet on U.S.-Taiwan Agreement on Reciprocal Trade*. Office of the United States Trade Representative. https://ustr.gov/about/policy-offices/press-office/fact-sheets/2026/february/fact-sheet-us-taiwan-agreement-reciprocal-trade
+
+Ward and Smith, P.A. (2026, 13 de mayo). *Court of International Trade rejects 10% Section 122 tariff: What businesses should know while the appeal proceeds*. https://www.wardandsmith.com/article/court-of-international-trade-rejects-10-section-122-tariff-what-businesses-should-know-while-the-appeal-proceeds
+
+Weaver, M. (2019). Special topic: Section 232 and 301 trade actions in 2018. En U.S. International Trade Commission, *Shifts in U.S. merchandise trade 2018*. https://www.usitc.gov/research_and_analysis/trade_shifts_2018/special_topic.htm
+
+White & Case LLP. (2026a, 21 de enero). *President Trump orders narrowly targeted 25% Section 232 tariff on certain advanced semiconductor articles*. https://www.whitecase.com/insight-alert/president-trump-orders-narrowly-targeted-25-section-232-tariff-certain-advanced
+
+White & Case LLP. (2026b, 2 de marzo). *Trump administration imposes 10% Section 122 tariff, plan to replace IEEPA tariffs*. https://www.whitecase.com/insight-alert/trump-administration-imposes-10-section-122-tariff-plan-replace-ieepa-tariffs
+
+The White House. (2025a, 22 de julio). *Fact sheet: The United States and Indonesia reach historic trade deal*. https://www.whitehouse.gov/fact-sheets/2025/07/fact-sheet-the-united-states-and-indonesia-reach-historic-trade-deal
+
+The White House. (2025b, julio). *Adjusting imports of copper into the United States* [Proclamación presidencial]. https://www.whitehouse.gov/presidential-actions/2025/07/adjusting-imports-of-copper-into-the-united-states/
+
+The White House. (2025c, 6 de agosto). *Addressing threats to the United States by the government of the Russian Federation* [E.O. 14329]. https://www.whitehouse.gov/wp-content/uploads/2025/08/eo-14329.pdf
+
+The White House. (2025d, 13 de noviembre). *Joint statement on framework for a United States-Argentina agreement on reciprocal trade and investment*. https://www.whitehouse.gov/briefings-statements/2025/11/joint-statement-on-framework-for-a-united-states-argentina-agreement-on-reciprocal-trade-and-investment
+
+The White House. (2026, abril). *Adjusting imports of pharmaceuticals and pharmaceutical ingredients into the United States* [Proclamación presidencial]. https://www.whitehouse.gov/presidential-actions/2026/04/adjusting-imports-of-pharmaceuticals-and-pharmaceutical-ingredients-into-the-united-states/
+
+Wikipedia contributors. (s.f.). *Learning Resources, Inc. v. Trump*. En *Wikipedia*. Recuperado el 29 de agosto de 2026, de https://en.wikipedia.org/wiki/Learning_Resources,_Inc._v._Trump
+
+Zhou, J. (2020, 5 de octubre). No unilateral action—WTO panel ruled U.S. Section 301 tariffs on Chinese imports inconsistent with WTO obligations. *ASIL Insights*, *24*(26). American Society of International Law. https://www.asil.org/insights/volume/24/issue/26/no-unilateral-action%E2%80%94wto-panel-ruled-us-section-301-tariffs-chinese
+
+# Próximos pasos sugeridos
+
+1. **[Completado en esta versión]** Verificación con fuentes primarias (Federal Register / White House / The American Presidency Project) de cada fecha de firma citada en la cronología. Se identificaron y corrigieron seis fechas que la versión anterior tomaba de resúmenes secundarios y que en realidad correspondían a la fecha de entrada en vigor o de publicación, no de firma: Proclamación 10908 (autos, en realidad firmada el 26 de marzo, no el 3 de abril), Proclamación 10984 (camiones, firmada el 17 de octubre, no el 1 de noviembre), E.O. 14323 (Brasil, firmada el 30 de julio, no el 6 de agosto), E.O. 14324 (de minimis global, firmada el 30 de julio, no el 29 de agosto), E.O. 14325 (Canadá 35%, firmada el 31 de julio, no el 1 de agosto) y E.O. 14326 (tasas recíprocas por país, firmada el 31 de julio, no el 7 de agosto). También se estableció que la Proclamación 11012 (Sección 122) y la E.O. 14389 se firmaron el mismo día del fallo de la Corte Suprema (20 de febrero de 2026), no "días después" como sugería la redacción anterior.
+2. **[Completado en esta versión]** Detalle de acuerdos marco bilaterales pendientes de profundizar (Vietnam, Indonesia, Filipinas, el resto de la gira asiática de octubre de 2025, el bloque latinoamericano de noviembre de 2025, Suiza/Liechtenstein y Corea del Sur) — ver "Tabla resumen de acuerdos marco bilaterales" y su nueva subsección de detalle por bloque.
+3. **[Completado en esta versión]** Estado más reciente (posterior al 25 de agosto de 2026) de los tres frentes pendientes: **(a)** la apelación del recargo S. 122 sigue en trámite ante el Circuito Federal, con el recargo ya expirado por límite estatutario pero la cuestión de fondo (y los reembolsos) aún sin resolver; **(b)** las demandas contra el nuevo arancel S. 301 global pasaron de dos a **tres** (se sumó una demanda de 25 estados el 3 de agosto de 2026), con audiencia conjunta programada para el 30 de septiembre de 2026; **(c)** la implementación de las TRQ textiles del 1 de septiembre de 2026 estaba programada pero, a la fecha de cierre de este documento, no hay confirmación pública de que el aviso final ya se haya publicado — monitorear.
+4. Con esta cronología como base, avanzar al siguiente documento de trabajo: clasificación de instrumentos por producto y país (Paso 3 original), y luego el resumen de la literatura académica sobre consecuencias económicas (Paso 4 original). **No se avanza en esta tarea en la presente entrega**, según instrucción explícita del cliente.
+5. *(Completado el 29 de agosto de 2026 en una ronda anterior: aplicación del formato de citas APA a los demás documentos de trabajo del proyecto — 01, 03, 03.b, 04, 04.b, 05.)*
+6. **Nuevo — monitorear:** desenlace de la disputa Sección 338 con Canadá (¿negociación, retaliación adicional, o litigio ante la CIT? Canadá no ha indicado que vaya a impugnar judicialmente la Proclamación 11047, a diferencia de su respuesta a los aranceles IEEPA/S.301); resultado de la audiencia del 30 de septiembre de 2026 sobre las tres demandas acumuladas contra el arancel S. 301 global; confirmación de la implementación efectiva de las TRQ textiles; resolución de la apelación de fondo sobre la Sección 122 ante el Circuito Federal; estatus final de la amenaza de subida de Corea del Sur (25% autos/farmacéuticos, enero de 2026 — sigue sin confirmarse si se implementó).
+7. **Nuevo — monitorear (Taiwán):** si el ART del 12 de febrero de 2026 es aprobado por el Yuan Legislativo y entra en vigor, y cómo interactuaría su techo de 15% con el arancel S. 301 de 10% neto de NMF (el ART se firmó cuando la tasa IEEPA aún regía); alcance del trato preferencial de Taiwán en la investigación S. 232 de semiconductores.

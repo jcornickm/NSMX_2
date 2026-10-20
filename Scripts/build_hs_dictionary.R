@@ -8,31 +8,28 @@
 #   - Capítulos y Partidas: Excel/naladisa_2022.xlsx (NALADISA 2022), que
 #     reproduce la nomenclatura oficial del SA en español para Centroamérica.
 #
-# Alcance de esta primera versión:
+# Alcance (versión 2):
 #   - Secciones:  las 21, completas.
-#   - Capítulos:  los 96 capítulos activos del SA (se excluyen el 77,
-#                 reservado para uso futuro, y 98/99, que son provisiones
-#                 especiales de clasificación de EUA y NO forman parte de la
-#                 nomenclatura internacional del SA — no están en NALADISA ni
-#                 en WCO Trade Tools. Se omiten de este diccionario; si se
-#                 necesitan para fines de EUA, deben tratarse por separado).
-#   - Partidas:   únicamente para los capítulos 84, 85, 87 y 90 (manufactura,
-#                 eléctrico, automotriz y óptica/médico), que son los de
-#                 mayor interés para el proyecto. Se pueden agregar más
-#                 capítulos más adelante repitiendo el mismo patrón.
-#   - Subpartidas: no incluidas aún; se agregarán entradas puntuales según
-#                 se identifiquen necesidades específicas (p. ej. al analizar
-#                 Vietnam/Taiwán).
+#   - Capítulos:  los 96 activos del SA (NALADISA) + 98 y 99 (provisiones
+#                 especiales de EUA, texto manual: no están en el SA).
+#   - Partidas:   TODAS las de NALADISA (nchar == 4), con nombre oficial.
+#   - Subpartidas: no incluidas.
+#   - Nombres cortos y de tabla: se leen de Excel/hs_nombres_cortos.csv
+#     (editable a mano; es la ÚNICA fuente de nombres cortos). Columnas:
+#     nivel, codigo, nombre_corto, nombre_tabla. Si nombre_tabla está vacío
+#     se usa nombre_corto; así el editor puede pedir nombres largos solo
+#     donde haga falta, editando el CSV y volviendo a correr este script.
 #
 # Estructura de salida (formato largo, una fila por código):
 #   nivel          — "Sección", "Capítulo" o "Partida"
 #   codigo         — "I".."XXI" (Sección); "01".."97" (Capítulo); "8401" etc. (Partida)
 #   codigo_padre   — Sección a la que pertenece el Capítulo; Capítulo (2 dígitos)
 #                    al que pertenece la Partida; NA para Secciones.
-#   nombre_corto   — Etiqueta corta sin acentos/espacios (CamelCase), para usar
-#                    en gráficas y leyendas. Definida solo para Sección y
-#                    Capítulo por ahora; NA para Partida (pendiente, se
-#                    completará solo para las partidas que se usen en análisis).
+#   nombre_corto   — Etiqueta corta legible (con espacios) para gráficas y
+#                    tablas; la misma en todo el proyecto. NA si aún no se define
+#                    (el script lo reporta).
+#   nombre_tabla   — Nombre para tablas; = nombre_corto si no se especifica otro.
+#   fuente         — "WCO 2022" (Secciones), "NALADISA 2022" o "manual".
 #   nombre_oficial — Texto oficial del SA en español, en "Sentence case"
 #                    (primera letra en mayúscula, resto en minúsculas), tal
 #                    como aparece en la fuente, sin abreviar.
@@ -68,15 +65,6 @@ secciones_oficial <- tribble(
   "XXI",  97, 99, "OBJETOS DE ARTE O COLECCIÓN Y ANTIGÜEDADES"
 )
 
-seccion_corto <- c(
-  "I"="Animales", "II"="Vegetales", "III"="GrasasAceites", "IV"="Alimentos",
-  "V"="Minerales", "VI"="Químicos", "VII"="PlásticosHule", "VIII"="Cuero",
-  "IX"="Madera", "X"="Papel", "XI"="Textiles", "XII"="Calzado",
-  "XIII"="PiedraCerámica", "XIV"="Joyería", "XV"="MetalesBase", "XVI"="Maquinaria",
-  "XVII"="Transporte", "XVIII"="Instrumentos", "XIX"="Armas", "XX"="Manufactura",
-  "XXI"="Arte"
-)
-
 # Sección 2. Capítulos y Partidas — fuente: NALADISA 2022                    ####
 
 ruta_naladisa <- here("Excel", "naladisa_2022.xlsx")
@@ -89,45 +77,27 @@ naladisa <- read_excel(
 ) |>
   mutate(codigo = trimws(codigo), descripcion = trimws(descripcion))
 
-capitulos <- naladisa |>
-  filter(nchar(codigo) == 2)
+capitulos <- naladisa |> filter(nchar(codigo) == 2)
+partidas  <- naladisa |> filter(nchar(codigo) == 4)
 
-capitulos_de_interes_hs4 <- c("84", "85", "87", "90")
-
-partidas <- naladisa |>
-  filter(nchar(codigo) == 4, substr(codigo, 1, 2) %in% capitulos_de_interes_hs4)
-
-# Nombres cortos para Capítulos — heredados/adaptados de versiones previas
-# del proyecto; revisar y ajustar según se detecten imprecisiones.
-capitulo_corto <- c(
-  "01"="AnimalesVivos","02"="Carnes","03"="Pescados","04"="Lácteos","05"="OtrosAnimales",
-  "06"="PlantasVivas","07"="Hortalizas","08"="FrutasNueces","09"="Café","10"="Cereales",
-  "11"="Molinería","12"="Semillas","13"="GomasResinas","14"="MatVegetal","15"="GrasasAceites",
-  "16"="PrepCarnes","17"="Azúcares","18"="Cacao","19"="PrepCereales","20"="PrepHortalizas",
-  "21"="PrepAlim","22"="Bebidas","23"="ResiduosAlim","24"="Tabaco","25"="Sal",
-  "26"="Minerales","27"="Combustibles","28"="QuímInorg","29"="QuímOrg","30"="Farmacéuticos",
-  "31"="Fertilizantes","32"="Tintes","33"="Perfumes","34"="Jabones","35"="MatAlbuminoideas",
-  "36"="Explosivos","37"="FotoCine","38"="QuímDiversos","39"="Plásticos","40"="Caucho",
-  "41"="PielesCuero","42"="ArtCuero","43"="Peletería","44"="Madera","45"="Corcho",
-  "46"="Cestería","47"="PastaPapel","48"="Papel","49"="ArtEditorial","50"="Seda",
-  "51"="LanaFibras","52"="Algodón","53"="FibrasVeg","54"="FilsSint","55"="FibrasSint",
-  "56"="Guatas","57"="Alfombras","58"="TejidosEsp","59"="TejidosImp","60"="TejidosPunto",
-  "61"="PrendaPunto","62"="PrendaNoTejida","63"="ArtTextilHogar","64"="Calzado","65"="Sombreros",
-  "66"="Paraguas","67"="PlumasFlores","68"="PiedraCem","69"="Cerámica","70"="Vidrio",
-  "71"="Joyería","72"="HierroAcero","73"="ArtHierroAcero","74"="Cobre","75"="Níquel",
-  "76"="Aluminio","78"="Plomo","79"="Zinc","80"="Estaño","81"="OtrosMetales",
-  "82"="HerramMetal","83"="ArtMetal","84"="Maquinaria","85"="Eléctrico","86"="Ferroviario",
-  "87"="Automóviles","88"="Aeronaves","89"="Barcos","90"="Óptica","91"="Relojería",
-  "92"="InstMúsica","93"="Armas","94"="Muebles","95"="Juguetes","96"="ManufDiversas",
-  "97"="Arte"
+# Capítulos 98 y 99: provisiones especiales de clasificación de EUA (manual)
+capitulos_especiales <- tibble(
+  codigo      = c("98", "99"),
+  descripcion = c("Provisiones especiales de clasificación (EUA)",
+                  "Otras provisiones especiales de clasificación (EUA)")
 )
 
-stopifnot(
-  "Todos los capítulos presentes deben tener nombre corto" =
-    all(capitulos$codigo %in% names(capitulo_corto))
-)
+# Sección 3. Nombres cortos (CSV editable a mano)                            ####
 
-# Sección 3. Ensamblaje del diccionario en formato largo                     ####
+nombres <- read_csv(here("Excel", "hs_nombres_cortos.csv"),
+                    col_types = cols(.default = col_character()),
+                    na = c("", "NA")) |>
+  mutate(codigo = trimws(codigo))
+
+stopifnot("hs_nombres_cortos.csv: duplicados en nivel+codigo" =
+            !anyDuplicated(nombres[, c("nivel", "codigo")]))
+
+# Sección 4. Ensamblaje del diccionario en formato largo                     ####
 
 to_sentence <- function(x) {
   x <- str_to_lower(x)
@@ -139,24 +109,28 @@ secciones_tbl <- secciones_oficial |>
     nivel          = "Sección",
     codigo         = Sección,
     codigo_padre   = NA_character_,
-    nombre_corto   = seccion_corto[Sección],
-    nombre_oficial = to_sentence(nombre_oficial_caps)
+    nombre_oficial = to_sentence(nombre_oficial_caps),
+    fuente         = "WCO 2022"
   )
 
 seccion_de_capitulo <- secciones_oficial |>
   rowwise() |>
   mutate(cap = list(cap_desde:cap_hasta)) |>
   unnest(cap) |>
+  ungroup() |>
   transmute(cap = sprintf("%02d", cap), Sección)
 
-capitulos_tbl <- capitulos |>
+capitulos_tbl <- bind_rows(
+  capitulos |> mutate(fuente = "NALADISA 2022"),
+  capitulos_especiales |> mutate(fuente = "manual")
+) |>
   left_join(seccion_de_capitulo, by = c("codigo" = "cap")) |>
   transmute(
     nivel          = "Capítulo",
     codigo,
     codigo_padre   = Sección,
-    nombre_corto   = capitulo_corto[codigo],
-    nombre_oficial = to_sentence(descripcion)
+    nombre_oficial = str_replace(to_sentence(descripcion), "\\(eua\\)", "(EUA)"),
+    fuente
   )
 
 partidas_tbl <- partidas |>
@@ -164,27 +138,48 @@ partidas_tbl <- partidas |>
     nivel          = "Partida",
     codigo,
     codigo_padre   = substr(codigo, 1, 2),
-    nombre_corto   = NA_character_,   # pendiente, completar según se use
-    nombre_oficial = to_sentence(descripcion)
+    nombre_oficial = to_sentence(descripcion),
+    fuente         = "NALADISA 2022"
   )
 
-hs_dictionary <- bind_rows(secciones_tbl, capitulos_tbl, partidas_tbl)
+hs_dictionary <- bind_rows(secciones_tbl, capitulos_tbl, partidas_tbl) |>
+  left_join(nombres, by = c("nivel", "codigo")) |>
+  mutate(nombre_tabla = coalesce(nombre_tabla, nombre_corto)) |>
+  select(nivel, codigo, codigo_padre, nombre_corto, nombre_tabla,
+         nombre_oficial, fuente)
 
-# Sección 4. Validaciones                                                    ####
+# Sección 5. Validaciones                                                    ####
+
+huerfanos <- anti_join(nombres, hs_dictionary, by = c("nivel", "codigo"))
 
 stopifnot(
   "No debe haber códigos duplicados dentro de un mismo nivel" =
     hs_dictionary |> count(nivel, codigo) |> pull(n) |> max() == 1,
-  "Deben existir 96 Capítulos activos" =
-    sum(hs_dictionary$nivel == "Capítulo") == 96,
+  "Deben existir 98 Capítulos (96 SA + 98 y 99)" =
+    sum(hs_dictionary$nivel == "Capítulo") == 98,
+  "Deben existir 21 Secciones" =
+    sum(hs_dictionary$nivel == "Sección") == 21,
   "No debe haber nombre_oficial faltante" =
-    sum(is.na(hs_dictionary$nombre_oficial)) == 0
+    sum(is.na(hs_dictionary$nombre_oficial)) == 0,
+  "Todas las Secciones y Capítulos deben tener nombre_corto" =
+    !anyNA(hs_dictionary$nombre_corto[hs_dictionary$nivel != "Partida"]),
+  "Hay códigos en hs_nombres_cortos.csv que no existen en el diccionario" =
+    nrow(huerfanos) == 0
 )
 
 cat("\n=== hs_dictionary construido ===\n")
 count(hs_dictionary, nivel) |> print()
 
-# Sección 5. Guardado                                                        ####
+sin_corto <- hs_dictionary |> filter(nivel == "Partida", is.na(nombre_corto))
+message("Partidas sin nombre_corto: ", nrow(sin_corto),
+        " (se agregan a Excel/hs_nombres_cortos.csv solo si se usan)")
+
+largos <- hs_dictionary |> filter(!is.na(nombre_corto), nchar(nombre_corto) > 26)
+if (nrow(largos) > 0) warning("nombre_corto con más de 26 caracteres: ",
+                              paste(largos$codigo, collapse = ", "))
+
+# Sección 6. Guardado                                                        ####
 
 saveRDS(hs_dictionary, here("RDS", "hs_dictionary.rds"))
 message("✔  hs_dictionary.rds guardado. Filas: ", nrow(hs_dictionary))
+

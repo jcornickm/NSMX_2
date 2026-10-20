@@ -1,0 +1,137 @@
+---
+title: "Mapa de Fuentes: Política Comercial y Arancelaria de EE.UU. bajo la Segunda Administración Trump"
+subtitle: "Documento de trabajo N.º 1 — Identificación de fuentes de información"
+author: "DRP Research"
+date: "2026-08-29"
+format:
+  docx:
+    toc: true
+    number-sections: true
+lang: es
+---
+
+# Propósito de este documento
+
+Este documento constituye el primer paso de la Parte 1 del proyecto: identificar y catalogar las fuentes de información que se utilizarán para construir la narrativa de la política comercial de la segunda administración Trump (enero de 2025 en adelante). Las fuentes se organizan en siete categorías:
+
+1. Fuentes oficiales del gobierno de EE.UU.
+2. Sitios y "trackers" especializados en el seguimiento de la política comercial
+3. Litigio judicial y análisis legal (impugnaciones a los aranceles)
+4. Literatura académica y de organismos multilaterales / de desarrollo
+5. Cabildeo (*lobbying*) industrial y grupos de interés
+6. Negociaciones bilaterales y acuerdos comerciales
+7. Prensa especializada en comercio internacional
+
+Cada entrada se cita en **formato APA** (autor/organización, año, título en cursiva, sitio o editorial, URL), seguida de una breve nota sobre su utilidad para el proyecto. A diferencia de los demás documentos de trabajo del proyecto, este mapa de fuentes funciona ya como una lista de referencias organizada por categoría, por lo que no lleva una sección adicional de "Referencias" al final — cada entrada es, en sí misma, la referencia completa. Los demás documentos (02 en adelante) citan estas y otras fuentes en el texto con el formato "(Autor, Año)" y remiten a una sección de Referencias unificada al cierre de cada documento. Cuando la fecha exacta de publicación de un recurso vivo (un *tracker*, un portal temático, una base de datos) no está fijada porque el contenido se actualiza continuamente, se usa la convención APA "(s.f.)" ["sin fecha"], con la fecha de consulta indicada en el texto de esta nota introductoria: **fuentes consultadas por última vez el 29 de agosto de 2026**.
+
+Este mapa se irá actualizando a medida que avance la investigación; sirve como base para la elaboración del cronograma detallado y de las secciones temáticas del informe final.
+
+Un hallazgo temprano importante que deberá guiar la estructura del cronograma: la Corte Suprema de EE.UU. declaró inválidos los aranceles impuestos bajo la Ley de Poderes Económicos de Emergencia Internacional (IEEPA, por sus siglas en inglés) en el caso *Learning Resources, Inc. v. Trump* (fallo del 20 de febrero de 2026) (*Learning Resources, Inc. v. Trump*, 2026), y la administración los reemplazó parcialmente con un nuevo recargo bajo la Sección 122 de la Trade Act de 1974. Esto marca un punto de quiebre central en la narrativa y se detalla en la sección 3 más abajo.
+
+# Fuentes oficiales del gobierno de EE.UU.
+
+Estas son las fuentes primarias: texto legal de las medidas, fechas exactas de entrada en vigor, tasas arancelarias oficiales y comunicados de la propia administración.
+
+- Office of the United States Trade Representative. (s.f.). *Presidential tariff actions*. USTR. Recuperado el 29 de agosto de 2026, de https://ustr.gov/trade-topics/presidential-tariff-actions — Página oficial que consolida todas las acciones arancelarias presidenciales. Punto de partida obligado para el cronograma.
+- Office of the United States Trade Representative. (s.f.). *U.S. Harmonized Tariff Schedule (HTS)*. USTR. Recuperado el 29 de agosto de 2026, de https://ustr.gov/callout/us-harmonized-tariff-schedule-hts — Acceso al arancel armonizado de EE.UU., útil para el análisis por producto en la Parte 2.
+- Office of the United States Trade Representative. (2025). *Fact sheet: Section 301 action against Brazil*. USTR. https://ustr.gov/node/14362 — Ejemplo de comunicado oficial de una acción Sección 301 específica (Brasil), modelo para documentar otras acciones país por país.
+- The White House. (s.f.). *Presidential actions*. Recuperado el 29 de agosto de 2026, de https://www.whitehouse.gov/presidential-actions/ — Texto íntegro de las órdenes ejecutivas y proclamas (p. ej. "Further Modifying the Reciprocal Tariff Rates", "Ending Certain Tariff Actions").
+- Federal Register. (2026, 25 de febrero). *Ending certain tariff actions*. https://www.federalregister.gov/documents/2026/02/25/2026-03832/ending-certain-tariff-actions — Ejemplo de publicación oficial de reglas, proclamas y órdenes ejecutivas con fecha de vigencia legal; el sitio general (https://www.federalregister.gov/) permite verificar el texto exacto de cada medida y sus modificaciones.
+- U.S. Customs and Border Protection. (s.f.). *Newsroom*. Recuperado el 29 de agosto de 2026, de https://www.cbp.gov/newsroom — Guías de implementación aduanera, avisos a importadores y anuncios operativos (p. ej. el aviso sobre el "Liberation Day").
+- Bureau of Industry and Security, U.S. Department of Commerce. (s.f.). *Section 232 investigations: Steel and aluminum*. Recuperado el 29 de agosto de 2026, de https://www.bis.gov/about-bis/bis-leadership-and-offices/SIES/section-232-investigations/section-232-steel-aluminum — Investigaciones y procesos de inclusión/exclusión de productos bajo la Sección 232 (acero, aluminio y otros).
+- Congressional Research Service. (2025a, 30 de julio). *Presidential 2025 tariff actions: Timeline and status* (R48549). EveryCRSReport. https://www.everycrsreport.com/files/2025-07-30_R48549_c67e64d04f991ea03fd9a36b32907ff4feef1132.html
+- Congressional Research Service. (2026, 12 de enero). *Presidential 2025 tariff actions: Timeline and status* (R48549, versión 12). Congress.gov. https://www.congress.gov/crs_external_products/R/PDF/R48549/R48549.12.pdf — Estas dos versiones del mismo informe (CRS, 2025a, 2026) son el documento más útil como columna vertebral del cronograma; se actualiza periódicamente y resume cada acción con su base legal, fecha y estado.
+- Congressional Research Service. (2025b). *U.S. tariffs and the 2025 U.S.-Japan framework agreement* (IN12608). Congress.gov. https://www.congress.gov/crs_external_products/IN/PDF/IN12608/IN12608.3.pdf — Nota específica sobre el marco comercial con Japón.
+- Congressional Research Service. (2026, febrero). *Supreme Court rules against tariffs imposed under the International Emergency Economic Powers Act (IEEPA)* (LSB11398). https://www.congress.gov/crs-product/LSB11398 — Análisis jurídico oficial del Congreso sobre *Learning Resources v. Trump*.
+- Congress.gov. (s.f.). *CRS reports search: "tariffs"*. Recuperado el 29 de agosto de 2026, de https://www.congress.gov/search?q=%7B%22source%22%3A%22crs%22%2C%22search%22%3A%22tariffs%22%7D — Para localizar notas adicionales (CRS Insight, In Focus) sobre temas puntuales según avance la redacción.
+
+# Sitios y "trackers" especializados en seguimiento de la política comercial
+
+Estos sitios consolidan y actualizan continuamente el estado de los aranceles; son muy útiles para verificar fechas y tasas vigentes, y para triangular la información oficial. La mayoría son recursos vivos sin fecha de publicación fija (s.f.).
+
+- Peterson Institute for International Economics. (s.f.). *Tariffs* [portal temático]. Recuperado el 29 de agosto de 2026, de https://www.piie.com/research/trade-investment/tariffs — Agrupa todos los análisis, *trackers* y *working papers* de PIIE sobre aranceles.
+- Peterson Institute for International Economics. (2025). *Trump's tariff revenue tracker: How much is the US collecting and which imports are affected?*. https://www.piie.com/research/piie-charts/2025/trumps-tariff-revenue-tracker-how-much-us-collecting-which-imports-are — Seguimiento de la recaudación arancelaria y de qué productos/países están más afectados.
+- Peterson Institute for International Economics. (2025). *The global trade war: An update* [serie de blog]. https://www.piie.com/blogs/realtime-economics/2025/global-trade-war-update — Serie de actualizaciones narrativas sobre la guerra comercial global.
+- Tax Foundation. (s.f.). *Trump tariffs tracker*. Recuperado el 29 de agosto de 2026, de https://taxfoundation.org/research/all/federal/trump-tariffs-trade-war/ — Tasas, recaudación estimada e impacto económico, actualizado regularmente y con buena documentación metodológica.
+- Tax Policy Center. (s.f.). *TPC tariff tracker*. Recuperado el 29 de agosto de 2026, de https://taxpolicycenter.org/features/tracking-trump-tariffs — Seguimiento independiente enfocado en efectos fiscales y distributivos.
+- Atlantic Council, GeoEconomics Center. (s.f.). *Trump tariff tracker*. Recuperado el 29 de agosto de 2026, de https://www.atlanticcouncil.org/programs/geoeconomics-center/trump-tariff-tracker/ — Cronología interactiva con enfoque geoeconómico y geopolítico.
+- Global Trade Alert. (s.f.). *Tariff watch: Real-time information on Trump's trade deals*. Recuperado el 29 de agosto de 2026, de https://globaltradealert.org/reports/Real-Time-Information-on-Trump-Trade-Deals — Seguimiento en tiempo real de los acuerdos comerciales bilaterales.
+- Global Trade Alert. (2026, febrero). *From IEEPA to Section 122: What changed on 20 February 2026* [entrada de blog]. https://globaltradealert.org/blog/from-ieepa-to-section-122 — Explicación puntual y cronológicamente precisa de la transición legal tras el fallo de la Corte Suprema.
+- Trade Compliance Resource Hub. (2026, 19 de agosto). *Trump 2.0 tariff tracker*. https://www.tradecomplianceresourcehub.com/2026/08/19/trump-2-0-tariff-tracker/ — Tracker de cumplimiento aduanero mantenido por especialistas en comercio, actualizado casi semanalmente.
+- Wiley Law. (s.f.). *Trump administration tariff tracker*. Recuperado el 29 de agosto de 2026, de https://www.wiley.law/trump-administration-tariff-tracker — Versión de un bufete especializado en comercio internacional; útil para contrastar interpretaciones legales.
+- Council on Foreign Relations. (s.f.). *Tracking Trump's trade deals*. Recuperado el 29 de agosto de 2026, de https://www.cfr.org/articles/tracking-trumps-trade-deals — Cronología específica de los acuerdos bilaterales alcanzados (más orientada a negociaciones que a aranceles unilaterales).
+
+# Litigio judicial y análisis legal
+
+El componente judicial es central para la narrativa: qué instrumentos fueron impugnados, en qué tribunales, y qué los reemplazó.
+
+- *Learning Resources, Inc. v. Trump*, No. 24-1287 (Corte Suprema de EE.UU., 20 de febrero de 2026). https://www.supremecourt.gov/opinions/25pdf/24-1287_4gcj.pdf — El texto íntegro del fallo que invalidó los aranceles bajo IEEPA. Fuente primaria imprescindible.
+- Wikipedia contributors. (s.f.). *Learning Resources, Inc. v. Trump*. En *Wikipedia*. Recuperado el 29 de agosto de 2026, de https://en.wikipedia.org/wiki/Learning_Resources,_Inc._v._Trump — Resumen útil como punto de partida y para verificar cronología del litigio (Corte de Comercio Internacional → Circuito Federal → Corte Suprema); debe contrastarse con fuentes primarias.
+- Congressional Research Service. (2026, febrero). *Supreme Court rules against tariffs imposed under the International Emergency Economic Powers Act (IEEPA)* (LSB11398). https://www.congress.gov/crs-product/LSB11398 — Análisis jurídico neutral del Congreso (ver también sección 1).
+- Holland & Knight LLP. (2026, marzo). *Court of International Trade orders nationwide tariff refunds*. https://www.hklaw.com/en/insights/publications/2026/03/court-of-international-trade-orders-nationwide-tariff-refunds — Seguimiento de las consecuencias prácticas del fallo (reembolsos a importadores).
+- BCLP (Bryan Cave Leighton Paisner). (2025, agosto). *Federal Circuit affirms IEEPA tariffs' invalidation but questions persist as to future injunctive and monetary relief for importers*. https://www.bclplaw.com/en-US/events-insights-news/federal-circuit-affirms-ieepa-tariffs-invalidation-but-questions-persist-as-to-future-injunctive-and-monetary-relief-for-importers.html — Cubre la etapa intermedia (Circuito Federal) antes de la Corte Suprema.
+- DLA Piper. (2026, febrero). *US Supreme Court holds IEEPA does not authorize tariffs: Key takeaways*. https://www.dlapiper.com/en-us/insights/publications/2026/02/us-supreme-court-holds-ieepa-does-not-authorize-tariffs — Resumen legal orientado a empresas importadoras.
+- WilmerHale. (2026, 20 de febrero). *Supreme Court strikes down IEEPA tariffs—What now?*. https://www.wilmerhale.com/en/insights/client-alerts/20260220-supreme-court-strikes-down-ieepa-tariffs-what-now — Análisis de implicancias y escenarios posteriores al fallo.
+- Covington & Burling LLP. (2026, febrero). *IEEPA tariffs terminated, replacement Section 122 tariffs take effect*. https://www.cov.com/en/news-and-insights/insights/2026/02/ieepa-tariffs-terminated-replacement-section-122-tariffs-take-effect — Documenta específicamente la transición a la Sección 122.
+- White & Case LLP. (2026, 2 de marzo). *Trump administration imposes 10% Section 122 tariff, plan to replace IEEPA tariffs*. https://www.whitecase.com/insight-alert/trump-administration-imposes-10-section-122-tariff-plan-replace-ieepa-tariffs — Detalle del nuevo instrumento que reemplazó a IEEPA.
+- International Economic Law and Policy Blog (worldtradelaw.net). (2026, febrero). *Section 122 as a (partial) replacement for the IEEPA tariffs*. https://ielp.worldtradelaw.net/2026/02/section-122-as-a-partial-replacement-for-the-ieepa-tariffs/ — Análisis académico-legal independiente sobre el alcance y límites de la Sección 122.
+
+*Nota metodológica:* los bufetes de abogados (Holland & Knight, BCLP, DLA Piper, WilmerHale, Covington & Burling, White & Case, Ropes & Gray, K&L Gates, Steptoe, BDO, Clark Hill) publican análisis de alta calidad técnica pero con una perspectiva orientada a clientes importadores; se usarán como fuente secundaria para cronología y mecánica legal, no como fuente de opinión sobre políticas.
+
+# Literatura académica y de organismos multilaterales / de desarrollo
+
+- Ignatenko, A., Lashkaripour, A., Macedoni, L., & Simonovska, I. (2025). *Making America great again? The economic impacts of Liberation Day tariffs* (NBER Working Paper No. 33771). National Bureau of Economic Research. https://www.nber.org/papers/w33771
+- Fajgelbaum, P. D., & Khandelwal, A. (2026). *Tariffs in 2025: Short-run impacts on the U.S. economy* (NBER Working Paper No. 35064). National Bureau of Economic Research. https://www.nber.org/papers/w35064
+- Benguria, F., & Saffie, F. E. (2025). *Rounding up the effect of tariffs on financial markets: Evidence from April 2, 2025* (NBER Working Paper No. 34036). National Bureau of Economic Research. https://www.nber.org/papers/w34036
+- Clausing, K. A., & Obstfeld, M. (2025). *Tariffs as fiscal policy* (NBER Working Paper No. 34192). National Bureau of Economic Research. https://www.nber.org/papers/w34192
+- Ferrante, F., Prestipino, A., Raffo, A., & Waugh, M. E. (2026). *Tariffs, investment, and the missing trade collapse* (NBER Working Paper No. 35630). National Bureau of Economic Research. https://www.nber.org/papers/w35630
+- Yan, H., & Morck, R. (2025). *Who's afraid of tariffs? The geographic distribution of fear and loss* (NBER Working Paper No. 34299). National Bureau of Economic Research. https://www.nber.org/papers/w34299
+- McKibbin, W. J., Noland, M., & Shuetrim, G. (2025, junio). *The global economic effects of Trump's 2025 tariffs* (PIIE Working Paper 25-13). Peterson Institute for International Economics. https://www.piie.com/sites/default/files/2025-06/wp25-13.pdf
+- Peterson Institute for International Economics. (2026a). *How did Trump's 2025 trade war affect the decoupling of US-China supply chains?* [documento de trabajo]. https://www.piie.com/publications/working-papers/2026/how-did-trumps-2025-trade-war-affect-decoupling-us-china-supply
+- Peterson Institute for International Economics. (2026b). *The Trump-China trade wars: Five takeaways from US imports in 2025* [entrada de blog]. https://www.piie.com/blogs/realtime-economics/2026/trump-china-trade-wars-five-takeaways-us-imports-2025
+- Brookings Institution. (s.f.). *Tariffs* [portal temático]. Recuperado el 29 de agosto de 2026, de https://www.brookings.edu/tags/tariffs/ — Agrupa artículos de política; destacan "From rules to discretion: How Trump reconfigured US tariff policy" y "Is US trade policy on a new path?".
+- Cato Institute. (s.f.). *IEEPA tariffs* [portal temático]. Recuperado el 29 de agosto de 2026, de https://www.cato.org/ieepa — Perspectiva de libre mercado, crítica a los aranceles; incluye análisis sobre el proceso de exclusiones/inclusiones y su relación con el cabildeo (ver sección 5).
+- Centre for Economic Policy Research / VoxEU. (s.f.). *Trump and tariffs* [colección temática]. Recuperado el 29 de agosto de 2026, de https://cepr.org/voxeu/trump-and-tariffs — Colección curada de columnas de economistas académicos europeos y estadounidenses sobre los efectos macro y de comercio internacional.
+- Council on Foreign Relations. (s.f.). [Página institucional]. Recuperado el 29 de agosto de 2026, de https://www.cfr.org/ — Además del *tracker* de acuerdos (sección 2), CFR publica análisis de política exterior/comercial.
+- International Monetary Fund. (s.f.). *World Economic Outlook* [portal de publicaciones]. Recuperado el 29 de agosto de 2026, de https://www.imf.org/en/Publications/WEO — Declaraciones y análisis sobre el impacto de los aranceles en la economía global (p. ej. advertencias del FMI reportadas en octubre de 2025).
+- World Trade Organization. (s.f.). *News*. Recuperado el 29 de agosto de 2026, de https://www.wto.org/english/news_e/news_e.htm — Informes y pronósticos sobre comercio global afectados por la guerra arancelaria.
+- World Bank. (s.f.). *Trade* [portal temático]. Recuperado el 29 de agosto de 2026, de https://www.worldbank.org/en/topic/trade — Informes sobre impacto en comercio y desarrollo (a explorar con mayor profundidad en la Parte 2 del proyecto, con foco en países/bienes seleccionados).
+- Foreign Policy Association. (s.f.). *The end of an era: Trump's tariffs in historical perspective*. Recuperado el 29 de agosto de 2026, de https://fpa.org/topics/2-the-end-of-an-era-trumps-tariffs-in-historical-perspective/ — Pieza de contexto histórico útil para la introducción del informe.
+
+# Cabildeo (*lobbying*) industrial y grupos de interés
+
+- Cato Institute. (s.f.). *Tariff "inclusion" process comes with high costs, absurd outcomes, and extra cronyism* [entrada de blog]. Recuperado el 29 de agosto de 2026, de https://www.cato.org/blog/tariff-inclusion-process-comes-high-costs-absurd-outcomes-extra-cronyism — Análisis crítico del proceso de solicitud de exclusiones como vehículo de cabildeo.
+- National Foreign Trade Council. (2026, febrero). *US industry multi-association letter on Section 232 process* [carta]. https://www.nftc.org/wp-content/uploads/2026/02/US-Industry-Multi-Association-Letter-on-Section-232-Process.pdf — Ejemplo directo de cabildeo organizado por múltiples asociaciones industriales.
+- Bureau of Industry and Security, U.S. Department of Commerce. (2025, abril). *Department of Commerce launches Section 232 steel and aluminum inclusions process* [comunicado de prensa]. https://www.bis.gov/press-release/department-commerce-launches-section-232-steel-aluminum-inclusions-process — Página oficial del proceso de solicitudes de inclusión/exclusión, base para rastrear qué empresas/sectores solicitaron qué.
+- Trade War Lab. (s.f.). *Did political influence determine who got tariff exclusions?*. Recuperado el 29 de agosto de 2026, de https://www.tradewarlab.com/p/did-political-influence-determine — Análisis independiente (con datos) sobre la relación entre conexiones políticas/cabildeo y la concesión de exclusiones arancelarias — muy relevante para esta sección del informe.
+- QuantGov. (s.f.). *Section 232 and 301 tariff data and interactive maps* [base de datos]. Recuperado el 29 de agosto de 2026, de https://www.quantgov.org/tariffs — Base de datos e interfaz interactiva sobre las tarifas por sector, potencialmente útil para cuantificar el efecto del cabildeo por industria.
+- The Conference Board. (s.f.). *Policy backgrounder: Section 232 tariff investigations and public comments*. Recuperado el 29 de agosto de 2026, de https://www.conference-board.org/research/ced-policy-backgrounders/section-232-tariff-investigations-and-public-comments — Describe el mecanismo formal de comentarios públicos, canal principal del cabildeo corporativo.
+- OpenSecrets.org. (s.f.). *Federal lobbying* [base de datos]. Recuperado el 29 de agosto de 2026, de https://www.opensecrets.org/federal-lobbying — Base de datos de cabildeo y gasto político por industria; se debe consultar directamente (buscador de *lobbying* por tema "Trade") para cuantificar el gasto de las asociaciones industriales relevantes.
+- Sandler, Travis & Rosenberg. (s.f.). *Section 232, 301 and other trade remedy tariff exclusion opportunities*. Recuperado el 29 de agosto de 2026, de https://www.strtrade.com/services/duty-savings-tariff-mitigation/exclusion-requests — Perspectiva de firma especializada en representar empresas ante estos procesos; útil para entender la mecánica del cabildeo desde el lado del solicitante.
+
+# Negociaciones bilaterales y acuerdos comerciales
+
+- Office of the United States Trade Representative. (s.f.). *Presidential tariff actions*. Ver sección 1 — incluye también el estado de negociaciones bilaterales.
+- Council on Foreign Relations. (s.f.). *Tracking Trump's trade deals*. Ver sección 2 — cronología completa y actualizada de acuerdos marco alcanzados (Reino Unido, UE, Japón, Vietnam, Corea del Sur, etc.).
+- German Marshall Fund of the United States. (s.f.). *Trade explainer: A comparison of US agreements with the EU, the United Kingdom, and Japan*. Recuperado el 29 de agosto de 2026, de https://www.gmfus.org/news/trade-explainer-comparison-us-agreements-eu-united-kingdom-and-japan — Comparación estructurada de los términos de los distintos acuerdos.
+- Congressional Research Service. (s.f.). *U.S.-Japan trade agreements and tariff negotiations* (IF11120). Recuperado el 29 de agosto de 2026, de https://www.congress.gov/crs-product/IF11120 — Nota de antecedentes sobre la relación comercial con Japón.
+- Congressional Research Service. (2025b). *U.S. tariffs and the 2025 U.S.-Japan framework agreement* (IN12608). Ver sección 1.
+- KPMG. (2025, octubre). *US and Vietnam outline framework for reciprocal trade agreement*. https://kpmg.com/vn/en/home/insights/2025/10/us-and-vietnam-outline-framework-for-reciprocal-trade-agreement.html — Ejemplo de cobertura de firma de auditoría/consultoría sobre un acuerdo específico; útil para el caso de Vietnam y el sudeste asiático.
+- Sidley Austin LLP. (2025, 10 de noviembre). *Shifts in U.S. trade in Asia: Key agreements from President Trump's October 2025 Asia trip* (Partes I y II) [entrada de blog]. Global Trade Law Blog. https://www.globaltradelawblog.com/2025/11/10/shifts-in-u-s-trade-in-asia-key-agreements-president-trumps-october-2025-asia-trip-part-i-southeast-asia/ — Cobertura detallada de la gira asiática de octubre de 2025 y sus resultados comerciales.
+- Holland & Knight LLP. (2025, julio). *Reciprocal tariff update: State of bilateral negotiations*. https://www.hklaw.com/en/insights/publications/2025/07/reciprocal-tariff-update-state-of-bilateral-negotiations — Estado consolidado de las negociaciones a mitad de 2025, útil como corte temporal intermedio.
+
+# Prensa especializada en comercio internacional
+
+- Inside U.S. Trade. (s.f.). [Página institucional]. Recuperado el 29 de agosto de 2026, de https://insidetrade.com/ — Cobertura diaria especializada en política comercial de EE.UU.; requiere suscripción, pero suele ser la fuente periodística más citada por analistas y bufetes.
+- Library of Congress. (s.f.). *U.S. trade policy: Current news* [guía de investigación]. Recuperado el 29 de agosto de 2026, de https://guides.loc.gov/united-states-trade-policy/current-news — Directorio curado de medios especializados en comercio, útil para ampliar esta lista.
+- Thomson Reuters Institute. (2025, noviembre). *2026 global trade report: Tariff turbulence is elevating the strategic role of trade departments*. https://www.thomsonreuters.com/en-us/posts/corporates/2026-global-trade-report/ — Cobertura y análisis de la turbulencia arancelaria desde la perspectiva de departamentos de comercio corporativos.
+- Medios generalistas de referencia para verificar cronología y declaraciones oficiales: *Reuters*, *Associated Press*, *The Wall Street Journal*, *Financial Times* (se irán citando puntualmente según la noticia, con su referencia APA individual, no como fuente única).
+
+# Próximos pasos sugeridos
+
+1. Validar y complementar esta lista con el equipo (agregar fuentes específicas por país si se prioriza algún socio comercial en particular).
+2. Usar el reporte CRS R48549 (Congressional Research Service, 2025a, 2026) como columna vertebral para construir el cronograma detallado (línea de tiempo) de la Parte 1.
+3. Clasificar cada instrumento arancelario (IEEPA/"recíprocos", Sección 232, Sección 301, Sección 122, otros) con su base legal, alcance por producto/país, y estado judicial actual.
+4. Iniciar el mapeo de los casos judiciales y su efecto en cada instrumento (sección 3 de este documento).
+5. Comenzar la revisión sistemática de la literatura académica (sección 4) para la sección de "discusión en la literatura" del informe final.
+6. Profundizar la investigación de cabildeo (sección 5), incluyendo una consulta específica a OpenSecrets.org por industria.

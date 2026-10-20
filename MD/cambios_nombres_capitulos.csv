@@ -1,0 +1,99 @@
+Capítulo,viejo,nuevo
+1,AnimalesVivos,Animales vivos
+2,Carnes,Carnes
+3,Pescados,Pescados
+4,Lácteos,Lácteos
+5,OtrosAnimales,Otros animales
+6,PlantasVivas,Plantas vivas
+7,Hortalizas,Hortalizas
+8,FrutasNueces,Frutas y nueces
+9,Café,Café y especias
+10,Cereales,Cereales
+11,Molinería,Molinería
+12,Semillas,Semillas
+13,GomasResinas,Gomas y resinas
+14,MatVegetal,Materias vegetales
+15,GrasasAceites,Grasas y aceites
+16,PrepCarnes,Prep. de carne
+17,Azúcares,Azúcares
+18,Cacao,Cacao
+19,PrepCereales,Prep. de cereales
+20,PrepHortalizas,Prep. de hortalizas
+21,PrepAlim,Prep. alimenticias
+22,Bebidas,Bebidas
+23,ResiduosAlim,Residuos alimentarios
+24,Tabaco,Tabaco
+25,Sal,Sal y piedras
+26,Minerales,Minerales
+27,Combustibles,Combustibles
+28,QuímInorg,Químicos inorgánicos
+29,QuímOrg,Químicos orgánicos
+30,Farmacéuticos,Farmacéuticos
+31,Fertilizantes,Fertilizantes
+32,Tintes,Tintes y pinturas
+33,Perfumes,Perfumería
+34,Jabones,Jabones
+35,MatAlbuminoideas,Almidones y colas
+36,Explosivos,Explosivos
+37,FotoCine,Fotografía y cine
+38,QuímDiversos,Químicos diversos
+39,Plásticos,Plásticos
+40,Caucho,Caucho
+41,PielesCuero,Pieles
+42,ArtCuero,Art. de cuero
+43,Peletería,Peletería
+44,Madera,Madera
+45,Corcho,Corcho
+46,Cestería,Cestería
+47,PastaPapel,Pasta de papel
+48,Papel,Papel y cartón
+49,ArtEditorial,Impresos
+50,Seda,Seda
+51,LanaFibras,Lana
+52,Algodón,Algodón
+53,FibrasVeg,Fibras vegetales
+54,FilasSint,Filamentos sintéticos
+55,FibrasSint,Fibras sintéticas
+56,Guatas,Guata y fieltro
+57,Alfombras,Alfombras
+58,TejidosEsp,Tejidos especiales
+59,TejidosImp,Tejidos recubiertos
+60,TejidosPunto,Tejidos de punto
+61,PrendaPunto,Prendas de punto
+62,PrendaNoTejida,Prendas de tela
+63,ArtTextilHogar,Textiles del hogar
+64,Calzado,Calzado
+65,Sombreros,Sombreros
+66,Paraguas,Paraguas
+67,PlumasFlores,Plumas y flores
+68,PiedraCem,Piedra y cemento
+69,Cerámica,Cerámica
+70,Vidrio,Vidrio
+71,Joyería,Joyería
+72,HierroAcero,Hierro y acero
+73,ArtHierroAcero,Manuf. de acero
+74,Cobre,Cobre
+75,Níquel,Níquel
+76,Aluminio,Aluminio
+78,Plomo,Plomo
+79,Zinc,Zinc
+80,Estaño,Estaño
+81,OtrosMetales,Otros metales
+82,HerramMetal,Herramientas
+83,ArtMetal,Manuf. metálicas
+84,Maquinaria,Maquinaria
+85,Eléctrico,Eléctrico
+86,Ferroviario,Ferroviario
+87,Automóviles,Vehículos
+88,Aeronaves,Aeronaves
+89,Barcos,Barcos
+90,Óptica,Óptica/médico
+91,Relojería,Relojería
+92,InstMúsica,Instr. musicales
+93,Armas,Armas
+94,Muebles,Muebles
+95,Juguetes,Juguetes
+96,ManufDiversas,Manuf. diversas
+97,Arte,Arte
+98,EspecialEUA,Especial EUA
+99,OtrasEspeciales,Otras especiales

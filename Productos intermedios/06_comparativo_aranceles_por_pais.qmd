@@ -1,0 +1,547 @@
+---
+title: "Aranceles de EE.UU. por Socio Comercial: Canadá, México, Corea del Sur, Japón, la Unión Europea y Vietnam"
+subtitle: "Documento de trabajo N.º 6 — Comparativo de anuncios y vigencia, carril general vs. carril automotor (enero 2025 - julio 2026)"
+author: "DRP Research"
+date: "2026-08-29"
+format:
+  docx:
+    toc: true
+    number-sections: true
+lang: es
+execute:
+  echo: false
+  warning: false
+  message: false
+knitr:
+  opts_chunk:
+    results: hide
+---
+
+```{r}
+#| label: setup
+
+library(dplyr)
+library(tibble)
+library(ggplot2)
+library(scales)
+library(patchwork)
+
+# Este documento genera sus propias figuras a partir de datos embebidos más
+# abajo (no depende de archivos externos para los DATOS): se puede volver a
+# ejecutar sin cambios en cualquier instalación de R/Quarto con acceso a CRAN.
+
+# Carpeta de salida para las figuras exportadas (PNG y PDF). El texto inserta
+# las imágenes desde aquí vía knitr::include_graphics() en vez de graficarlas
+# in-line; los bloques que las generan y guardan pueden desactivarse con
+# eval: false (ver nota metodológica) cuando no se necesita recrearlas.
+if (!dir.exists("Plots")) dir.create("Plots")
+```
+
+# Nota metodológica
+
+Este documento nace de la infografía HTML entregada previamente (`infografia_relevo_arancelario.html`), donde el gráfico del arancel a China —ocho días de abril de 2025, de 34% a 125% y de vuelta a 10%— resultó especialmente ilustrativo. Este documento **replica esa misma lógica visual para Canadá, México, Corea del Sur, Japón, la Unión Europea y Vietnam**, generado en R (`ggplot2`) para que sea reproducible y editable por código en vez de HTML/CSS a mano.
+
+**Por qué no es un solo gráfico por país.** A diferencia de China —que enfrentó un único instrumento (el arancel "recíproco" IEEPA) durante el período más dramático—, los otros cinco socios comerciales estuvieron sujetos, en paralelo, a un arancel **general/horizontal** (que decide cuánto paga *casi todo* lo que importan) y a un arancel **automotor sectorial** bajo la Sección 232 (Proclamación 10908), con calendarios y lógicas propias. Mezclar ambos carriles en una sola línea habría sido engañoso, así que se separan en dos series:
+
+1. **Carril general — un gráfico por país (secc. 2).** Para Canadá y México, la base es el recargo IEEPA por fentanilo/migración; para la Unión Europea, Japón y Corea del Sur, la base es el arancel "recíproco" IEEPA. Los cinco confluyen, a partir de 2026, en la misma secuencia judicial-legislativa: fallo de la Corte Suprema (20 feb. 2026) → Sección 122 (24 feb.-24 jul. 2026) → Sección 301 (desde 24 jul. 2026). Por tratarse de bases legales distintas antes de 2026, cada gráfico indica su propia base en el subtítulo y no deben leerse como la misma métrica entre países.
+2. **Carril automotor — un solo gráfico comparativo, cinco líneas (secc. 3).** Al ser el mismo instrumento (Proclamación 10908) para los cinco países, sí es comparable directamente en una sola figura.
+
+**Vietnam (agregado 9 sept. 2026).** A pedido del usuario, se añadió Vietnam al carril general (secc. 2) como sexto país — no estaba en el alcance original de este documento (29 ago. 2026). Su cronología no proviene de una fuente ya vetada en otro documento del proyecto, sino de investigación primaria dedicada: Anexo I de la Casa Blanca para la tasa "Liberation Day" inicial (46%), USTR para el marco bilateral (20% + 40% transbordo) y Global Trade Alert para la tasa exacta de Sección 301 (12,5%, sin TRQ textil). Vietnam **no** se incluye en el comparativo automotor de la sección 3, que sigue limitado a los cinco socios originales de este documento.
+
+**Anuncio vs. vigencia.** Siguiendo el pedido original, cada gráfico distingue explícitamente la fecha en que una tasa **se anuncia o se amenaza** de la fecha en que **efectivamente entra en vigor** (símbolos huecos/triángulos vs. círculos llenos conectados por la línea escalonada — ver leyenda en el pie de cada figura). La línea escalonada (`geom_step`) conecta únicamente los puntos que representan la tasa realmente vigente en cada momento; los anuncios, amenazas, pausas y fallos judiciales que **no** modificaron la tasa vigente en ese instante se marcan aparte, sin torcer la línea.
+
+**Diseño en dos paneles.** Con varios hitos concentrados en pocos meses (en particular el nudo de feb.-jul. 2026), poner el texto de cada hito directamente sobre la línea del gráfico —como en una versión anterior de este documento— generaba etiquetas superpuestas e ilegibles. Cada figura se compone ahora de dos paneles apilados (vía `patchwork`): arriba, la línea/escalón limpia, sin texto; abajo, una franja de "tarjetas" cronológicas (fecha en negrita + descripción breve), en el mismo espíritu que la fila de hitos de la infografía original de China. Esto separa la lectura de tendencia (panel superior) de la lectura de detalle (panel inferior) sin sacrificar ningún dato.
+
+**Corte de información: 31 de julio de 2026.** Se eligió este corte —en vez de agosto de 2026, que es donde termina la cronología general del proyecto (documento N.º 2)— para no depender de eventos de las últimas semanas que aún estaban en desarrollo al cierre de este documento. La entrada en vigor del arancel de la Sección 301 (24 de julio de 2026) sí queda incluida.
+
+**Un caso con estatus incierto: Corea del Sur, enero de 2026.** El 26-27 de enero de 2026, Trump anunció que subiría el arancel a Corea del Sur (autos y farmacéuticos, según la cobertura de prensa) de 15% a 25%, alegando que la Asamblea Nacional surcoreana no había ratificado el acuerdo comercial de 2025. Varias fuentes de prensa señalaron que **no quedó claro si esta subida llegó a implementarse** antes de que el fallo de la Corte Suprema (20 feb. 2026) reordenara todo el carril general. Se incluye como una amenaza marcada (triángulo), no como un cambio confirmado de tasa.
+
+**Nominal vs. efectivo (carril automotor, México y Canadá).** La tasa nominal de México y Canadá no cambió (25% desde abril de 2025), pero ambos países —a diferencia de la UE, Japón y Corea— pueden certificar contenido estadounidense bajo el T-MEC para pagar un arancel **efectivo** menor sobre una porción del valor del vehículo. Para México, esto produce un rango efectivo de 10-18,75%, documentado con ejemplos numéricos completos en el documento de trabajo N.º 3. Ese mecanismo no se grafica aquí (es una fórmula, no una serie temporal de anuncios) — se referencia como nota en la figura 6.
+
+**Reproducibilidad y caché de figuras.** Todo el código y los datos de este documento están embebidos en los bloques de R de este mismo archivo `.qmd`; no depende de datos externos. Cada figura se genera con `ggplot2`, se guarda en `Plots/` en PNG y PDF, y se inserta en el texto con `knitr::include_graphics()` a partir del PNG guardado — así el render no depende de volver a trazar las figuras cada vez. El bloque de R que genera y guarda cada figura trae una línea `#| eval: false` insertada pero comentada (`# #| eval: false`): déjala comentada para recrear la figura en cada render, o descoméntala para saltarte el recálculo y reutilizar el PNG/PDF ya guardado en `Plots/`. Para agregar un país o actualizar una fecha, basta con editar la tabla (`tribble`) correspondiente en la sección 2 o 3, asegurarse de que el bloque de guardado correspondiente esté con `eval` activo, y volver a renderizar.
+
+# Carril general por país
+
+```{r}
+#| label: datos-general
+
+corte <- as.Date("2026-07-31")
+
+canada_general <- tribble(
+  ~fecha,         ~tasa, ~linea, ~tipo,      ~etiqueta,                         ~nota_fuente,
+  "2025-02-01",   25,    FALSE, "anuncio",  "Anuncio E.O. 14193 (25%)",         "The White House (2025a)",
+  "2025-02-03",   25,    FALSE, "pausa",    "Pausado (iba a regir el 4 feb.)",  "The White House (2025a)",
+  "2025-03-04",   25,    TRUE,  "vigente",  "Entra en vigor: 25%",              "The White House (2025a); CRS (2026)",
+  "2025-03-06",   25,    FALSE, "marco",    "Excepción T-MEC (bienes calificados)", "The White House (2025b)",
+  "2025-08-01",   35,    TRUE,  "vigente",  "Sube a 35% (E.O. 14325)",          "The White House (2025c)",
+  "2026-02-20",   35,    FALSE, "fallo",    "Corte Suprema: IEEPA ilegal",      "Learning Resources, Inc. v. Trump (2026)",
+  "2026-02-24",   10,    TRUE,  "vigente",  "Sección 122: 10% (Proc. 11012)",   "Federal Register (2026)",
+  "2026-07-24",   10,    TRUE,  "vigente",  "Sección 301: 10% (exento T-MEC)",  "Global Trade Alert (2026a)"
+)
+
+mexico_general <- tribble(
+  ~fecha,         ~tasa, ~linea, ~tipo,      ~etiqueta,                         ~nota_fuente,
+  "2025-02-01",   25,    FALSE, "anuncio",  "Anuncio E.O. 14194 (25%)",         "The White House (2025a)",
+  "2025-02-03",   25,    FALSE, "pausa",    "Pausado (iba a regir el 4 feb.)",  "The White House (2025a)",
+  "2025-03-04",   25,    TRUE,  "vigente",  "Entra en vigor: 25%",              "The White House (2025a); CRS (2026)",
+  "2025-03-06",   25,    FALSE, "marco",    "Excepción T-MEC (bienes calificados)", "The White House (2025b)",
+  "2025-07-12",   25,    FALSE, "amenaza",  "Amenaza: 30% desde 1 ago.",        "NPR (2025)",
+  "2025-07-31",   25,    FALSE, "pausa",    "Suspendido 90 días (se mantiene 25%)", "Holland & Knight (2025)",
+  "2026-02-20",   25,    FALSE, "fallo",    "Corte Suprema: IEEPA ilegal",      "Learning Resources, Inc. v. Trump (2026)",
+  "2026-02-24",   10,    TRUE,  "vigente",  "Sección 122: 10% (Proc. 11012)",   "Federal Register (2026)",
+  "2026-07-24",   10,    TRUE,  "vigente",  "Sección 301: 10% (exento T-MEC)",  "Global Trade Alert (2026a)"
+)
+
+ue_general <- tribble(
+  ~fecha,         ~tasa, ~linea, ~tipo,      ~etiqueta,                         ~nota_fuente,
+  "2025-04-02",   20,    TRUE,  "vigente",  "\"Liberation Day\": 20%",          "The White House (2025d); CSIS (2025)",
+  "2025-04-09",   10,    TRUE,  "vigente",  "Pausa global: baja a 10%",         "The White House (2025e)",
+  "2025-07-12",   10,    FALSE, "amenaza",  "Amenaza: 30% desde 1 ago.",        "NPR (2025)",
+  "2025-08-21",   15,    TRUE,  "vigente",  "Acuerdo marco: techo 15%",         "CRS (2026)",
+  "2026-02-20",   15,    FALSE, "fallo",    "Corte Suprema: IEEPA ilegal",      "Learning Resources, Inc. v. Trump (2026)",
+  "2026-02-24",   10,    TRUE,  "vigente",  "Sección 122: 10%",                 "Federal Register (2026)",
+  "2026-07-24",   10,    TRUE,  "vigente",  "Sección 301: 10% (neto de NMF)",   "Global Trade Alert (2026a)"
+)
+
+japon_general <- tribble(
+  ~fecha,         ~tasa, ~linea, ~tipo,      ~etiqueta,                         ~nota_fuente,
+  "2025-04-02",   24,    TRUE,  "vigente",  "\"Liberation Day\": 24%",          "Yahoo Finance/Reuters (2025)",
+  "2025-04-09",   10,    TRUE,  "vigente",  "Pausa global: baja a 10%",         "The White House (2025e)",
+  "2025-07-08",   10,    FALSE, "amenaza",  "Amenaza: 25% desde 1 ago.",        "Yahoo Finance/Reuters (2025)",
+  "2025-07-23",   10,    FALSE, "anuncio",  "Anuncio de acuerdo (15%)",         "CBS News (2025)",
+  "2025-09-04",   15,    TRUE,  "vigente",  "Vigencia formal: techo 15% (E.O. 14345)", "CRS (2026)",
+  "2026-02-20",   15,    FALSE, "fallo",    "Corte Suprema: IEEPA ilegal",      "Learning Resources, Inc. v. Trump (2026)",
+  "2026-02-24",   10,    TRUE,  "vigente",  "Sección 122: 10%",                 "Federal Register (2026)",
+  "2026-07-24",   12.5,  TRUE,  "vigente",  "Sección 301: 12,5% (neto de NMF)", "Global Trade Alert (2026a)"
+)
+
+corea_general <- tribble(
+  ~fecha,         ~tasa, ~linea, ~tipo,      ~etiqueta,                         ~nota_fuente,
+  "2025-04-02",   25,    TRUE,  "vigente",  "\"Liberation Day\": 25%",          "Yahoo Finance/Reuters (2025)",
+  "2025-04-09",   10,    TRUE,  "vigente",  "Pausa global: baja a 10%",         "The White House (2025e)",
+  "2025-07-08",   10,    FALSE, "amenaza",  "Amenaza: 25% desde 1 ago.",        "Yahoo Finance/Reuters (2025)",
+  "2025-12-04",   15,    TRUE,  "vigente",  "Acuerdo marco (retroactivo a 1 nov.)", "Federal Register (2025)",
+  "2026-01-27",   15,    FALSE, "amenaza",  "Amenaza: sube a 25% (incumplimiento alegado)", "CNN (2026)",
+  "2026-02-20",   15,    FALSE, "fallo",    "Corte Suprema: IEEPA ilegal",      "Learning Resources, Inc. v. Trump (2026)",
+  "2026-02-24",   10,    TRUE,  "vigente",  "Sección 122: 10%",                 "Federal Register (2026)",
+  "2026-07-24",   12.5,  TRUE,  "vigente",  "Sección 301: 12,5% (neto de NMF)", "Global Trade Alert (2026a)"
+)
+
+vietnam_general <- tribble(
+  ~fecha,         ~tasa, ~linea, ~tipo,      ~etiqueta,                                     ~nota_fuente,
+  "2025-04-02",   46,    TRUE,  "vigente",  "\"Liberation Day\": 46% (Anexo I)",             "The White House (2025d)",
+  "2025-04-09",   10,    TRUE,  "vigente",  "Pausa global: baja a 10%",                      "The White House (2025e)",
+  "2025-07-02",   10,    FALSE, "anuncio",  "Anuncio preliminar: 20% + 40% transbordo",      "USTR (2025)",
+  "2025-07-31",   10,    FALSE, "marco",    "E.O. 14326 firmada: confirma 20%",              "USTR (2025)",
+  "2025-08-07",   20,    TRUE,  "vigente",  "Entra en vigor: 20% (E.O. 14326)",              "USTR (2025)",
+  "2025-10-26",   20,    FALSE, "marco",    "Acuerdo marco: confirma 20%, 0% p/ Anexo III",  "USTR (2025)",
+  "2026-02-20",   20,    FALSE, "fallo",    "Corte Suprema: IEEPA ilegal",                   "Learning Resources, Inc. v. Trump (2026)",
+  "2026-02-24",   10,    TRUE,  "vigente",  "Sección 122: 10%",                              "Federal Register (2026)",
+  "2026-07-24",   12.5,  TRUE,  "vigente",  "Sección 301: 12,5% (sin TRQ textil)",           "Global Trade Alert (2026b)"
+)
+
+general_list <- list(
+  "Canadá"         = canada_general,
+  "México"         = mexico_general,
+  "Unión Europea"  = ue_general,
+  "Japón"          = japon_general,
+  "Corea del Sur"  = corea_general,
+  "Vietnam"        = vietnam_general
+)
+
+subt_general <- list(
+  "Canadá"        = "Base: recargo IEEPA por fentanilo/migración -> Sección 122 -> Sección 301",
+  "México"        = "Base: recargo IEEPA por fentanilo/migración -> Sección 122 -> Sección 301",
+  "Unión Europea" = "Base: arancel \"recíproco\" IEEPA -> acuerdo marco -> Sección 122 -> Sección 301",
+  "Japón"         = "Base: arancel \"recíproco\" IEEPA -> acuerdo marco -> Sección 122 -> Sección 301",
+  "Corea del Sur" = "Base: arancel \"recíproco\" IEEPA -> acuerdo marco -> Sección 122 -> Sección 301",
+  "Vietnam"       = "Base: arancel \"recíproco\" IEEPA -> acuerdo marco -> Sección 122 -> Sección 301"
+)
+```
+
+```{r}
+#| label: funciones-graficos
+
+tema_informe <- theme_minimal(base_size = 11) +
+  theme(
+    plot.title = element_text(face = "bold", size = 13),
+    plot.subtitle = element_text(size = 9.5, color = "grey30"),
+    panel.grid.minor = element_blank(),
+    panel.grid.major.x = element_blank(),
+    axis.title.x = element_blank(),
+    axis.title.y = element_text(size = 9),
+    legend.position = "none"
+  )
+
+col_linea   <- "#1f4e5f"
+col_anuncio <- "#8a8a8a"
+col_amenaza <- "#c0392b"
+col_fallo   <- "#6a3d9a"
+col_pausa   <- "#b7950b"
+
+colores_tipo <- c(vigente = col_linea, anuncio = col_anuncio, amenaza = col_amenaza,
+                   fallo = col_fallo, pausa = col_pausa, marco = col_pausa)
+formas_tipo  <- c(vigente = 16, anuncio = 1, amenaza = 17, fallo = 4, pausa = 5, marco = 5)
+
+envolver <- function(texto, ancho = 118) {
+  partes <- strsplit(texto, "\n", fixed = TRUE)[[1]]
+  paste(sapply(partes, function(p) paste(strwrap(p, width = ancho), collapse = "\n")), collapse = "\n")
+}
+
+envolver_vec <- function(v, ancho = 24) {
+  sapply(v, function(x) paste(strwrap(x, width = ancho), collapse = "\n"))
+}
+
+# Panel superior: línea/escalón limpia, sin texto de hitos encima.
+panel_linea <- function(df, pais, subtitulo_base) {
+  df <- df %>% mutate(fecha = as.Date(fecha)) %>% filter(fecha <= corte) %>% arrange(fecha)
+  linea <- df %>% filter(linea)
+  hitos <- df %>% filter(!linea)
+
+  ggplot() +
+    geom_step(data = linea, aes(x = fecha, y = tasa), color = col_linea, linewidth = 0.9, direction = "hv") +
+    geom_point(data = linea, aes(x = fecha, y = tasa), color = col_linea, size = 2.8) +
+    geom_point(data = hitos, aes(x = fecha, y = tasa, color = tipo, shape = tipo), size = 2.8, stroke = 1.2) +
+    scale_color_manual(values = colores_tipo) +
+    scale_shape_manual(values = formas_tipo) +
+    scale_y_continuous(labels = label_percent(scale = 1), expand = expansion(mult = c(0.08, 0.12))) +
+    scale_x_date(date_labels = "%b. %Y", expand = expansion(mult = c(0.03, 0.03)),
+                 limits = c(min(df$fecha) - 10, corte + 10)) +
+    labs(
+      title = paste0("Arancel de EE.UU. a ", pais, " — carril general, ene. 2025-jul. 2026"),
+      subtitle = subtitulo_base, y = "Tasa ad-valorem"
+    ) +
+    tema_informe
+}
+
+# Panel inferior: franja de tarjetas cronológicas (fecha en negrita + texto),
+# organizadas en una cuadrícula de `max_por_fila` columnas. Reemplaza las
+# etiquetas de geom_text_repel que antes se superponían sobre la línea.
+panel_cronologia <- function(df, max_por_fila = 4, tam_fecha = 3.0, tam_texto = 2.55, ancho = 24) {
+  df <- df %>% mutate(fecha = as.Date(fecha)) %>% filter(fecha <= corte) %>% arrange(fecha)
+  n <- nrow(df)
+  filas <- ceiling(n / max_por_fila)
+  df <- df %>% mutate(
+    idx  = row_number(),
+    fila = ceiling(idx / max_por_fila),
+    col  = idx - (fila - 1) * max_por_fila,
+    y    = -(fila - 1),
+    fecha_fmt = format(fecha, "%d %b. %Y"),
+    etiqueta_env = envolver_vec(etiqueta, ancho)
+  )
+
+  divisores <- expand.grid(fila = seq_len(filas), col_borde = seq_len(max_por_fila - 1) + 0.5) %>%
+    mutate(y = -(fila - 1))
+
+  p <- ggplot(df, aes(x = col)) +
+    geom_segment(data = divisores, aes(x = col_borde, xend = col_borde, y = y - 0.42, yend = y + 0.42),
+                 inherit.aes = FALSE, color = "grey85", linewidth = 0.4)
+
+  if (filas > 1) {
+    fila_borde <- tibble(y = -(seq_len(filas - 1)) + 0.5)
+    p <- p + geom_hline(data = fila_borde, aes(yintercept = y), color = "grey88", linewidth = 0.35)
+  }
+
+  p +
+    geom_text(aes(y = y + 0.22, label = fecha_fmt), fontface = "bold", size = tam_fecha, color = "grey15") +
+    geom_text(aes(y = y - 0.08, label = etiqueta_env), size = tam_texto, color = "grey30",
+              vjust = 1, lineheight = 0.95) +
+    scale_x_continuous(limits = c(0.5, max_por_fila + 0.5), expand = c(0, 0)) +
+    scale_y_continuous(limits = c(-(filas - 1) - 0.58, 0.58), expand = c(0, 0)) +
+    theme_void()
+}
+
+# Combina panel superior + cronología en una sola figura de dos paneles.
+figura_general <- function(df, pais, subtitulo_base, max_por_fila = 4) {
+  df2 <- df %>% mutate(fecha = as.Date(fecha)) %>% filter(fecha <= corte) %>% arrange(fecha)
+  fuentes <- df2 %>% pull(nota_fuente) %>% strsplit("; ") %>% unlist() %>% unique() %>% sort() %>% paste(collapse = "; ")
+
+  p_top <- panel_linea(df, pais, subtitulo_base)
+  p_bottom <- panel_cronologia(df2 %>% select(fecha, etiqueta), max_por_fila = max_por_fila)
+
+  (p_top / p_bottom) +
+    plot_layout(heights = c(3, 1.55)) +
+    plot_annotation(
+      caption = envolver(paste0(
+        "Círculo lleno = tasa vigente (línea escalonada). Círculo hueco = anuncio previo a la vigencia. ",
+        "Triángulo = amenaza no siempre implementada. Rombo = pausa/excepción/marco. X = hito judicial.\n",
+        "Corte de información: 31 de julio de 2026. Fuentes: ", fuentes, "."
+      ), ancho = 108),
+      theme = theme(plot.caption = element_text(size = 7.3, color = "grey35", hjust = 0, lineheight = 1.15))
+    )
+}
+```
+
+## Canadá
+
+```{r}
+#| label: guardar-fig-canada
+# #| eval: false
+
+p_canada <- figura_general(general_list[["Canadá"]], "Canadá", subt_general[["Canadá"]])
+ggsave("Plots/arancel_general_canada.png", p_canada, width = 7.5, height = 6.0, dpi = 300)
+ggsave("Plots/arancel_general_canada.pdf", p_canada, width = 7.5, height = 6.0)
+```
+
+```{r}
+#| label: fig-canada
+#| fig-cap: "Arancel general de EE.UU. a Canadá, enero 2025 - julio 2026"
+#| out-width: "100%"
+knitr::include_graphics("Plots/arancel_general_canada.png")
+```
+
+Canadá es, junto con México, el caso donde una amenaza sí se convirtió en tasa vigente sin mediar un acuerdo marco: el recargo por fentanilo subió de 25% a 35% el 1 de agosto de 2025 (E.O. 14325) y se mantuvo así hasta que el fallo de la Corte Suprema (20 feb. 2026) lo dejó sin base legal.
+
+## México
+
+```{r}
+#| label: guardar-fig-mexico
+# #| eval: false
+
+p_mexico <- figura_general(general_list[["México"]], "México", subt_general[["México"]])
+ggsave("Plots/arancel_general_mexico.png", p_mexico, width = 7.5, height = 6.0, dpi = 300)
+ggsave("Plots/arancel_general_mexico.pdf", p_mexico, width = 7.5, height = 6.0)
+```
+
+```{r}
+#| label: fig-mexico
+#| fig-cap: "Arancel general de EE.UU. a México, enero 2025 - julio 2026"
+#| out-width: "100%"
+knitr::include_graphics("Plots/arancel_general_mexico.png")
+```
+
+México es el contraste directo con Canadá: la misma amenaza de subir la tasa (esta vez a 30%, anunciada el 12 de julio de 2025) **no llegó a implementarse** — un acuerdo bilateral del 31 de julio de 2025 la suspendió 90 días y la tasa se mantuvo en 25% hasta la reorganización judicial de 2026.
+
+## Unión Europea
+
+```{r}
+#| label: guardar-fig-ue
+# #| eval: false
+
+p_ue <- figura_general(general_list[["Unión Europea"]], "Unión Europea", subt_general[["Unión Europea"]])
+ggsave("Plots/arancel_general_ue.png", p_ue, width = 7.5, height = 6.0, dpi = 300)
+ggsave("Plots/arancel_general_ue.pdf", p_ue, width = 7.5, height = 6.0)
+```
+
+```{r}
+#| label: fig-ue
+#| fig-cap: "Arancel general de EE.UU. a la Unión Europea, enero 2025 - julio 2026"
+#| out-width: "100%"
+knitr::include_graphics("Plots/arancel_general_ue.png")
+```
+
+La UE recibió la misma amenaza de 30% que México (12 jul. 2025) pero la resolvió por la vía de un acuerdo marco (21 ago. 2025, techo de 15%) en lugar de una simple suspensión temporal.
+
+## Japón
+
+```{r}
+#| label: guardar-fig-japon
+# #| eval: false
+
+p_japon <- figura_general(general_list[["Japón"]], "Japón", subt_general[["Japón"]])
+ggsave("Plots/arancel_general_japon.png", p_japon, width = 7.5, height = 6.0, dpi = 300)
+ggsave("Plots/arancel_general_japon.pdf", p_japon, width = 7.5, height = 6.0)
+```
+
+```{r}
+#| label: fig-japon
+#| fig-cap: "Arancel general de EE.UU. a Japón, enero 2025 - julio 2026"
+#| out-width: "100%"
+knitr::include_graphics("Plots/arancel_general_japon.png")
+```
+
+Japón muestra con más claridad que ningún otro caso la brecha entre **anuncio político** y **vigencia formal**: el acuerdo se anunció el 23 de julio de 2025, pero la tasa de 10% (pausa global) siguió aplicándose hasta que la proclamación formal (E.O. 14345) entró en vigor recién el 4 de septiembre de 2025 — mes y medio después.
+
+## Corea del Sur
+
+```{r}
+#| label: guardar-fig-corea
+# #| eval: false
+
+p_corea <- figura_general(general_list[["Corea del Sur"]], "Corea del Sur", subt_general[["Corea del Sur"]])
+ggsave("Plots/arancel_general_corea.png", p_corea, width = 7.5, height = 6.0, dpi = 300)
+ggsave("Plots/arancel_general_corea.pdf", p_corea, width = 7.5, height = 6.0)
+```
+
+```{r}
+#| label: fig-corea
+#| fig-cap: "Arancel general de EE.UU. a Corea del Sur, enero 2025 - julio 2026"
+#| out-width: "100%"
+knitr::include_graphics("Plots/arancel_general_corea.png")
+```
+
+Corea del Sur es el único de los cinco países con una amenaza de reversión **después** de haber alcanzado su acuerdo marco: en enero de 2026, ya con el techo de 15% vigente desde diciembre de 2025, Trump amenazó con subirlo a 25% alegando incumplimiento legislativo — un episodio que la prensa describió como de estatus incierto, y que quedó superado semanas después por el fallo de la Corte Suprema.
+
+## Vietnam
+
+```{r}
+#| label: guardar-fig-vietnam
+# #| eval: false
+
+p_vietnam <- figura_general(general_list[["Vietnam"]], "Vietnam", subt_general[["Vietnam"]])
+ggsave("Plots/arancel_general_vietnam.png", p_vietnam, width = 7.5, height = 6.0, dpi = 300)
+ggsave("Plots/arancel_general_vietnam.pdf", p_vietnam, width = 7.5, height = 6.0)
+```
+
+```{r}
+#| label: fig-vietnam
+#| fig-cap: "Arancel general de EE.UU. a Vietnam, enero 2025 - julio 2026"
+#| out-width: "100%"
+knitr::include_graphics("Plots/arancel_general_vietnam.png")
+```
+
+Vietnam tuvo la escalada más pronunciada de los seis países de esta sección: 46% inicial el 2 de abril de 2025 —el segundo más alto de toda la tabla "Liberation Day", solo detrás de Camboya (49%)— bajó a 10% en la pausa global, y se renegoció a 20% más una tasa punitiva del 40% para transbordo (pensada para desalentar el uso de Vietnam como ruta de desvío de mercancía china), muy por encima del 10% de México/Canadá o el 15% de Japón/Corea/UE. El acuerdo marco del 26 de octubre de 2025 no cambió la tasa recíproca, pero sí eliminó el arancel vietnamita a casi todos los bienes estadounidenses y agregó una lista Anexo III con arancel 0%.
+
+# Carril automotor (Sección 232, Proclamación 10908)
+
+A diferencia del carril general, el arancel automotor es el **mismo instrumento legal** para los cinco países, lo que permite compararlos directamente en una sola figura.
+
+```{r}
+#| label: datos-autos
+
+autos_general <- tribble(
+  ~pais,            ~fecha,        ~tasa, ~linea, ~tipo,     ~etiqueta,                              ~nota_fuente,
+  "Canadá",         "2025-04-03",  25,    TRUE,  "vigente", "Vigente: 25% nominal (Proc. 10908)",     "The White House (2025f)",
+  "Canadá",         "2026-07-24",  25,    TRUE,  "vigente", "Sin cambios a jul. 2026",                 "CRS (2026)",
+
+  "México",         "2025-04-03",  25,    TRUE,  "vigente", "Vigente: 25% nominal (Proc. 10908)",     "The White House (2025f)",
+  "México",         "2026-07-24",  25,    TRUE,  "vigente", "Sin cambios a jul. 2026 (efectivo 10-18,75% vía T-MEC, doc. 3)", "CRS (2026)",
+
+  "Unión Europea",  "2025-04-03",  25,    TRUE,  "vigente", "Vigente: 25% nominal",                   "The White House (2025f)",
+  "Unión Europea",  "2025-09-25",  15,    FALSE, "anuncio", "Anuncio: 15%, retroactivo a 1 ago.",      "CRS (2026)",
+  "Unión Europea",  "2025-08-01",  15,    TRUE,  "vigente", "Vigencia (retroactiva): 15%",             "CRS (2026)",
+  "Unión Europea",  "2026-07-24",  15,    TRUE,  "vigente", "Sin cambios a jul. 2026",                 "CRS (2026)",
+
+  "Japón",          "2025-04-03",  25,    TRUE,  "vigente", "Vigente: 25% nominal",                   "The White House (2025f)",
+  "Japón",          "2025-09-16",  15,    TRUE,  "vigente", "Vigencia: 15% (E.O. 14345)",              "CRS (2026)",
+  "Japón",          "2026-07-24",  15,    TRUE,  "vigente", "Sin cambios a jul. 2026",                 "CRS (2026)",
+
+  "Corea del Sur",  "2025-04-03",  25,    TRUE,  "vigente", "Vigente: 25% nominal",                   "The White House (2025f)",
+  "Corea del Sur",  "2025-11-01",  15,    TRUE,  "vigente", "Vigencia (retroactiva): 15%",             "Federal Register (2025)",
+  "Corea del Sur",  "2026-01-27",  15,    FALSE, "amenaza", "Amenaza: sube a 25% (autos y farmacéuticos)", "CNN (2026)",
+  "Corea del Sur",  "2026-07-24",  15,    TRUE,  "vigente", "Estatus incierto a jul. 2026 (ver nota)", "CNN (2026)"
+)
+
+# Cronología resumida y deduplicada para la franja inferior de la figura 6:
+# los cinco países arrancan el mismo día al mismo valor (una sola tarjeta),
+# y de ahí en más solo los hitos que sí distinguen a un país del resto.
+autos_cronologia <- tribble(
+  ~fecha,        ~etiqueta,
+  "2025-04-03",  "Los cinco países: vigente 25% nominal (Proc. 10908)",
+  "2025-08-01",  "Unión Europea: vigencia retroactiva al 15%",
+  "2025-09-16",  "Japón: vigente 15% (E.O. 14345)",
+  "2025-09-25",  "Unión Europea: anuncio formal del 15% (retroactivo)",
+  "2025-11-01",  "Corea del Sur: vigencia retroactiva al 15%",
+  "2026-01-27",  "Corea del Sur: amenaza de subir a 25% (autos y farmacéuticos)",
+  "2026-07-24",  "Canadá y México: sin cambio, 25% nominal (ver nota T-MEC)"
+)
+```
+
+```{r}
+#| label: guardar-fig-autos
+# #| eval: false
+
+paleta_paises <- c("Canadá" = "#1f4e5f", "México" = "#2e8b57", "Unión Europea" = "#b7950b",
+                    "Japón" = "#c0392b", "Corea del Sur" = "#7d5ba6")
+
+autos <- autos_general %>% mutate(fecha = as.Date(fecha)) %>% filter(fecha <= corte) %>% arrange(pais, fecha)
+autos_linea <- autos %>% filter(linea)
+autos_hitos <- autos %>% filter(!linea)
+fuentes_autos <- autos %>% pull(nota_fuente) %>% strsplit("; ") %>% unlist() %>% unique() %>% sort() %>% paste(collapse = "; ")
+
+# Etiquetas al final de cada línea (en vez de junto al arranque, donde las
+# cinco líneas coinciden). Cuando dos países terminan en el mismo valor
+# (Canadá/México en 25%; UE/Japón/Corea en 15%), se apilan verticalmente.
+etiquetas_finales <- autos_linea %>%
+  group_by(pais) %>% filter(fecha == max(fecha)) %>% ungroup() %>%
+  group_by(tasa) %>% mutate(n_grupo = n(), rango = rank(pais, ties.method = "first"),
+                             y_etq = tasa + (rango - (n_grupo + 1) / 2) * 1.6) %>%
+  ungroup()
+
+p_top_autos <- ggplot() +
+  geom_step(data = autos_linea, aes(x = fecha, y = tasa, color = pais), linewidth = 1, direction = "hv") +
+  geom_point(data = autos_linea, aes(x = fecha, y = tasa, color = pais), size = 2.2) +
+  geom_point(data = autos_hitos, aes(x = fecha, y = tasa), shape = 17, color = col_amenaza, size = 2.8, stroke = 1.2) +
+  geom_text(
+    data = etiquetas_finales,
+    aes(x = fecha, y = y_etq, label = pais, color = pais),
+    hjust = 0, nudge_x = 12, size = 3.1, fontface = "bold", show.legend = FALSE
+  ) +
+  scale_color_manual(values = paleta_paises) +
+  scale_y_continuous(labels = label_percent(scale = 1), limits = c(0, 30), expand = expansion(mult = c(0.02, 0.05))) +
+  scale_x_date(date_labels = "%b. %Y", limits = c(min(autos$fecha) - 10, corte + 95),
+               breaks = as.Date(c("2025-07-01", "2026-01-01", "2026-07-01"))) +
+  labs(
+    title = "Arancel automotor (Sección 232, Proclamación 10908) por país, abr. 2025-jul. 2026",
+    subtitle = "Tasa nominal ad-valorem sobre vehículos y autopartes (Cap. 87)", y = "Tasa nominal"
+  ) +
+  tema_informe
+
+p_bottom_autos <- panel_cronologia(autos_cronologia, max_por_fila = 4)
+
+p_autos <- (p_top_autos / p_bottom_autos) +
+  plot_layout(heights = c(3, 1.55)) +
+  plot_annotation(
+    caption = envolver(paste0(
+      "Triángulo = amenaza no confirmada al cierre de este documento. ",
+      "México y Canadá: la tasa nominal no cambió, pero el arancel EFECTIVO puede ser menor (10-18,75% para México) ",
+      "vía certificación de contenido estadounidense bajo el T-MEC — ver documento N.º 3.\n",
+      "Corte de información: 31 de julio de 2026. Fuentes: ", fuentes_autos, "."
+    ), ancho = 118),
+    theme = theme(plot.caption = element_text(size = 7.3, color = "grey35", hjust = 0, lineheight = 1.15))
+  )
+
+ggsave("Plots/arancel_automotor_comparativo.png", p_autos, width = 8.2, height = 6.4, dpi = 300)
+ggsave("Plots/arancel_automotor_comparativo.pdf", p_autos, width = 8.2, height = 6.4)
+```
+
+```{r}
+#| label: fig-autos
+#| fig-cap: "Arancel automotor (Sección 232) por país, abril 2025 - julio 2026"
+#| out-width: "100%"
+knitr::include_graphics("Plots/arancel_automotor_comparativo.png")
+```
+
+El contraste central: Japón, Corea del Sur y la Unión Europea consiguieron, cada uno en su respectivo acuerdo marco, bajar el arancel automotor nominal de 25% a 15% — mientras que Canadá y México, ambos socios T-MEC, se quedaron formalmente en 25% nominal sin ninguna reducción negociada. La diferencia práctica para México (y, por el mismo mecanismo, para Canadá) no aparece en este gráfico: se paga solo sobre la porción no estadounidense del valor del vehículo, lo que en la práctica puede acercar o incluso bajar el arancel efectivo mexicano por debajo del 15% plano de sus competidores — a cambio de un costo de certificación y un riesgo de auditoría retroactiva que Japón, Corea y la UE no enfrentan (documento de trabajo N.º 3, secc. 4).
+
+# Referencias
+
+CBS News. (2025, 23 de julio). *Trump says he's struck "massive" trade deal with Japan calling for 15% tariffs*. https://www.cbsnews.com/news/trump-announces-japan-trade-deal-15-tariffs/
+
+CNN. (2026, 26 de enero). *Trump says he's raising tariffs on South Korea because it's "not living up" to trade agreement*. https://www.cnn.com/2026/01/26/economy/tariffs-trump-south-korea
+
+CRS. (2026). Ver referencia completa en el documento de trabajo N.º 2 (cronología detallada) — se reutiliza aquí para hechos ya documentados y citados en esa fuente (estructura de la Sección 301, fechas de acuerdos marco, fallo de la Corte Suprema).
+
+CSIS. (2025). *"Liberation Day" tariffs explained*. Center for Strategic and International Studies. https://www.csis.org/analysis/liberation-day-tariffs-explained
+
+Federal Register. (2025, 4 de diciembre). *Implementing certain tariff-related elements of the U.S.-Korea Strategic Trade and Investment Deal*. https://www.federalregister.gov/documents/2025/12/04/2025-21940/implementing-certain-tariff-related-elements-of-the-us-korea-strategic-trade-and-investment-deal
+
+Federal Register. (2026). Ver referencia completa en el documento de trabajo N.º 2 (Proclamación 11012, Sección 122).
+
+Global Trade Alert. (2026a, 24 de julio). *Forced-labour Section 301 tariffs on 60 economies take effect on 24 July: An overview of the final action*. https://globaltradealert.org/blog/forced-labour-section-301-final-action
+
+Global Trade Alert. (2026b). *US Section 301 — Forced Labour Investigations: Vietnam*. https://ricardo-dashboard.s3.eu-west-1.amazonaws.com/reports/forced-labour-section-301-final-action/economies/S301-FL_Vietnam.pdf
+
+Holland & Knight. (2025, 1 de agosto). *90-day suspension of the U.S. application of 30 percent tariffs on products from Mexico*. https://www.hklaw.com/en/insights/publications/2025/08/pausa-en-aplicacion-de-aranceles-del-30-a-productos-mexicanos
+
+*Learning Resources, Inc. v. Trump*, No. 24-1287 (Corte Suprema de EE.UU., 20 de febrero de 2026). Ver referencia completa en el documento de trabajo N.º 2.
+
+NPR. (2025, 12 de julio). *Trump announces 30% tariffs against EU, Mexico to begin August 1*. https://www.npr.org/2025/07/12/nx-s1-5465577/trump-30-tariffs-eu-mexico
+
+The White House. (2025a). Ver referencia completa en el documento de trabajo N.º 2 (E.O. 14193 y E.O. 14194, 1 feb. 2025).
+
+The White House. (2025b). Ver referencia completa en el documento de trabajo N.º 2 (proclamaciones de excepción T-MEC, 6 mar. 2025).
+
+The White House. (2025c). Ver referencia completa en el documento de trabajo N.º 2 (E.O. 14325, 1 ago. 2025).
+
+The White House. (2025d). Ver referencia completa en el documento de trabajo N.º 2 (E.O. 14257, "Liberation Day", 2 abr. 2025).
+
+The White House. (2025e). Ver referencia completa en el documento de trabajo N.º 2 (pausa global, 9 abr. 2025).
+
+The White House. (2025f). Ver referencia completa en el documento de trabajo N.º 3 (Proclamación 10908, aranceles automotores S. 232).
+
+USTR. (2025, 26 de octubre). *Fact Sheet: The United States and Viet Nam Reach a Framework for an Agreement on Reciprocal, Fair, and Balanced Trade*. United States Trade Representative. https://ustr.gov/about/policy-offices/press-office/fact-sheets/2025/october/fact-sheet-united-states-and-viet-nam-reach-framework-agreement-reciprocal-fair-and-balanced-trade
+
+Yahoo Finance/Reuters. (2025, 8 de julio). *Trump unveils 25% tariffs on South Korea and Japan, nearly identical to his "Liberation Day" rates*. https://finance.yahoo.com/news/trump-unveils-25-tariffs-on-south-korea-and-japan-nearly-identical-to-his-liberation-day-rates-165556527.html
+
+*Nota:* varias entradas remiten a la lista de Referencias completa de los documentos N.º 2 y N.º 3 en vez de repetir la ficha completa, siguiendo la convención ya aplicada en los sub-documentos "N.º X.b" de este proyecto para hechos ya citados en un documento anterior.

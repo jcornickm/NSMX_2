@@ -1,0 +1,233 @@
+---
+title: "Semiconductores: Aranceles y Reglas de Origen bajo la Segunda Administración Trump"
+subtitle: "Documento de trabajo N.º 5 — Deep dive por producto: salto de línea arancelaria vs. contenido de valor regional"
+author: "DRP Research"
+date: "2026-08-29"
+format:
+  docx:
+    toc: true
+    number-sections: true
+lang: es
+---
+
+# Nota metodológica
+
+Este es el tercer "deep dive" sectorial de la serie (después de autos/autopartes, doc. N.º 3, y acero/aluminio, doc. N.º 4). Cubre **semiconductores** (Capítulo 85, principalmente partidas **8541** y **8542**) y, en menor medida, los bienes electrónicos terminados que los contienen.
+
+El eje analítico de este documento, planteado directamente por el usuario, es la **regla de origen aplicable**: a diferencia de autos (contenido de valor regional de 75% + contenido de valor laboral, documento N.º 3) o de acero/aluminio (umbral de peso del metal, documento N.º 4), la regla de origen dominante para semiconductores y electrónica bajo el T-MEC es el **cambio de clasificación arancelaria** ("salto de línea arancelaria" o *tariff shift*/*change in tariff classification*, CTC) — y en un grupo específico de productos informáticos, ni siquiera eso: basta con importar el bien desde México o Canadá para que se considere "originario", sin ningún análisis de transformación. Esto es estructuralmente distinto de las reglas de contenido de valor (RVC) que dominan en autos y, en menor medida, en acero/aluminio, y ayuda a explicar por qué las exportaciones de productos electrónicos y semiconductores de México pueden crecer con fuerza sin que el valor agregado real generado en territorio mexicano crezca en la misma proporción.
+
+Las fuentes se citan en el texto en formato APA y se listan completas en la sección de Referencias al final: proclamaciones presidenciales y comunicados de la Casa Blanca, resoluciones de clasificación de CBP, la Organización Mundial del Comercio, USTR, la Semiconductor Industry Association, bufetes de comercio internacional, cobertura especializada y un artículo académico publicado en la *Vanderbilt Journal of Transnational Law* sobre los límites del criterio de "transformación sustancial".
+
+---
+
+# 1. Marco legal: un arancel angosto (S. 232) sobre un trasfondo de arancel cero (OMC/ITA)
+
+## 1.1 El punto de partida: semiconductores libres de arancel desde 1994-1996
+
+A diferencia de acero, aluminio y autos, los semiconductores y la mayoría del equipo de tecnología de la información llegan a este período con un arancel **NMF (nación más favorecida) de 0%** en EE.UU., resultado de dos compromisos previos: la eliminación arancelaria pactada en el marco de la CUSFTA/TLCAN desde el 1 de enero de 1994, y el **Acuerdo sobre Tecnología de la Información de la OMC (ITA, 1996-1997)**, que obliga a sus miembros —incluido EE.UU.— a eliminar y consolidar en cero los aranceles sobre semiconductores y equipo de fabricación y prueba de semiconductores, entre ~200 líneas de productos de TI (World Trade Organization [WTO], s.f.). Esto es clave para entender el resto del documento: para semiconductores, la "regla de origen" no determina el acceso a una tasa preferencial baja frente a una tasa NMF alta (como en autos, donde el NMF es bajo pero el arancel S. 232 es 25%); determina si el producto **escapa por completo** de los recargos arancelarios específicos por país que se han superpuesto desde 2025 sobre ese arancel base de cero.
+
+## 1.2 Cronología de la Sección 232 sobre semiconductores
+
+| Fecha | Evento | Resultado |
+|---|---|---|
+| **1 abr. 2025** | Comercio inicia investigación de Sección 232 sobre semiconductores y equipo de fabricación de semiconductores | Sin acción inmediata; período de comentarios públicos (Semiconductor Industry Association [SIA], 2025b, presentó comentarios en mayo de 2025). |
+| **6 ago. 2025** | Trump anuncia intención de imponer arancel del **100%** sobre chips importados, con exención para empresas que "estén construyendo" en EE.UU. (CNBC, 2025; Bloomberg, 2025) | Anuncio verbal, sin proclamación formal ni HTS codes; genera semanas de incertidumbre sobre implementación (mecanismo de exención, verificación de compromisos de inversión). |
+| **14 ene. 2026** | **Proclamación 11002** — "Adjusting Imports of Semiconductors, Semiconductor Manufacturing Equipment, and Their Derivative Products" (The White House, 2026; White & Case LLP, 2026a) | Impone un arancel de **25% ad valorem**, pero de alcance **mucho más angosto** que el 100% anunciado en agosto: solo aplica a una categoría específica de circuitos lógicos avanzados para IA/centros de datos (ver sección 1.3). El **equipo de fabricación de semiconductores queda fuera** del arancel pese a haber sido objeto de la investigación. Efectivo **15 de enero de 2026, 00:01 h**. |
+| **ago.-dic. 2025** | Investigación paralela de Sección 232 sobre **polisilicio** (insumo para semiconductores y paneles solares) (White & Case LLP, 2026b; SIA, 2025a) | Concluye en arancel específico y **precio mínimo de importación** para polisilicio y derivados — instrumento distinto, dirigido a un insumo previo en la cadena, no al chip terminado. |
+| **1 jul. 2026** | Fecha de revisión de "Fase 2" prevista en la propia Proclamación 11002, para posible ampliación a un arancel "significativo" sobre chips de memoria, circuitos analógicos/mixtos y otros productos derivados, acompañado de un "programa de compensación arancelaria" para empresas que inviertan en fabricación en EE.UU. (TariffLens, 2026) | A la fecha de este documento (26 de agosto de 2026) **no se ha identificado una proclamación formal de Fase 2** — el arancel angosto de enero de 2026 permanece como el único arancel S. 232 vigente sobre semiconductores propiamente dichos. Punto de monitoreo activo para la cronología del proyecto. |
+
+## 1.3 Alcance exacto del arancel de enero de 2026 (HS6/HTS)
+
+El arancel de la Proclamación 11002 no cubre "semiconductores" en general — cubre circuitos lógicos que cumplan parámetros técnicos específicos de rendimiento (Tensor Processing Performance y ancho de banda de memoria DRAM), diseñados para capturar dos productos identificables: **Nvidia H200 y AMD MI325X** (chips de IA de centro de datos de gama alta) (GingerControl, 2026; EY Global Tax News, 2026). Se declara en las siguientes clasificaciones:
+
+| Código | Descripción | Tasa |
+|---|---|---|
+| **HTS 9903.79.01** | Artículos de las subpartidas base (8471.50, 8471.80, 8473.30) que cumplen los parámetros técnicos cubiertos | 25% |
+| **HTS 9903.79.02** | Artículos de las mismas subpartidas que **no** cumplen los parámetros técnicos | Exento (fuera de alcance) |
+| **HTS 9903.79.03 a .09** | Excepciones por uso final: centros de datos estadounidenses certificados, reparación/reemplazo doméstico, I+D doméstica, startups estadounidenses, aplicaciones de consumo fuera de centros de datos, uso industrial civil, sector público | Exento, sujeto a certificación de uso final |
+
+*Fuentes: GingerControl (2026); EY Global Tax News (2026); The White House (2026).*
+
+Nota importante: la base de clasificación (8471.50 "unidades de procesamiento digital", 8471.80, 8473.30 "partes de máquinas de procesamiento de datos") **no corresponde a las partidas de semiconductores propiamente dichas (8541/8542)**, sino a los productos terminados (servidores, tarjetas aceleradoras) en los que esos chips se incorporan. Es decir, el arancel de enero de 2026 grava el módulo/tarjeta que contiene el chip avanzado, no la oblea o el circuito integrado importado de forma aislada bajo 8542.
+
+## 1.4 Un segundo track legal, independiente: Sección 301 y el "apilamiento" sobre China
+
+Separado de la Sección 232, semiconductores de origen chino enfrentan un apilamiento de aranceles de Sección 301 que, hacia agosto de 2026, se acerca al **70%** combinado (Tech Times, 2026):
+
+- **50%**: arancel de Sección 301 original (revisión cuatrienal de la investigación de propiedad intelectual iniciada en el primer mandato, mantenida y elevada).
+- **12.5%**: arancel global de Sección 301 por trabajo forzado (desde 24 jul. 2026 — ver documento de trabajo N.º 2), aplicado a bienes chinos junto con los de otros 59 países (PwC Canada, 2026).
+- **7.5% (en preparación, esperado antes del 24 sep. 2026)**: nueva capa de Sección 301 por "sobrecapacidad" en 22 sectores manufactureros, incluidos semiconductores, de una investigación iniciada el 11 de marzo de 2026 (Tech Times, 2026; SIA, 2026). El Ministerio de Comercio chino señaló que EE.UU. se había comprometido en consultas bilaterales a un tope de 20% en aranceles de reemplazo — la cifra de 7.5% sumada al 12.5% ya vigente da exactamente ese 20%, lo que sugiere una cifra calibrada diplomáticamente, no puramente técnica (Tech Times, 2026).
+- Paralelamente, semiconductores "heredados" (*legacy*/*mature node*) de origen chino para sectores críticos (defensa, automotor, médico, aeroespacial, telecomunicaciones, red eléctrica) recibieron en diciembre de 2025 una determinación de Sección 301 con arancel fijado en **0% hasta mediados de 2027**, con aumento programado para el 23 de junio de 2027 — una ventana deliberada de dos años para que los fabricantes chinos decidan si establecen manufactura en EE.UU., replicando la lógica de incentivos de la CHIPS Act (The Register, 2025).
+
+Este documento se concentra en el instrumento S. 232 y en las reglas de origen del T-MEC (la pregunta central planteada por el usuario); el apilamiento de Sección 301 sobre China se documenta aquí como contexto necesario, pero su desarrollo detallado corresponde al documento de trabajo N.º 2 (cronología) y a futuros deep dives específicos si el proyecto lo requiere.
+
+---
+
+# 2. Reglas de origen: el corazón del documento
+
+## 2.1 Por qué la regla de origen importa más que la tasa nominal en este sector
+
+Como se estableció en la sección 1.1, la mayoría de los semiconductores entra a EE.UU. con arancel NMF de 0%. Lo que determina la factura arancelaria real de un semiconductor o de un producto electrónico que lo contiene no es, salvo para el grupo angosto de chips de IA cubiertos por la Proclamación 11002, una tasa sectorial — es si el bien tiene **origen no preferencial en un país sujeto a recargo** (China, principalmente, por los aranceles de Sección 301 descritos arriba, o el arancel global de Sección 301 desde jul. 2026 para el resto del mundo) o si califica como **originario de EE.UU./T-MEC**, en cuyo caso escapa de esos recargos por completo. El T-MEC exime de los aranceles de Sección 301 por trabajo forzado a los bienes que califican bajo el tratado (documento de trabajo N.º 4, sección 2; confirmado también para México y Canadá en la ronda de agosto de 2026, PwC Canada, 2026). La pregunta de cómo se "gana" ese origen T-MEC es, entonces, la pregunta que decide la factura arancelaria de gran parte del comercio de electrónica y semiconductores.
+
+## 2.2 Dos regímenes de origen distintos conviven en el T-MEC para electrónica
+
+**(A) "Origen automático" para una lista cerrada de productos de TI — Artículo 2.10 del T-MEC / Nota General 11(p) del HTSUS.**
+
+Para una lista específica y cerrada de productos de tecnología de la información —heredada del compromiso de arancel cero de la OMC/ITA, bajo la lógica de que si el arancel ya es cero para todo el mundo, exigir un análisis de origen es un costo administrativo sin beneficio— el T-MEC establece que el bien **"se considerará originario" por el solo hecho de importarse desde otro país del T-MEC**, sin necesidad de superar una prueba de cambio de clasificación arancelaria ni de contenido de valor regional (U.S. Customs and Border Protection [CBP], s.f.). Esta lista, incorporada en la Nota General 11(p) del HTSUS, cubre principalmente productos informáticos terminados y sus partes — no los semiconductores en sí:
+
+| HS6 / subpartida | Descripción |
+|---|---|
+| 8471.30, 8471.41, 8471.49 | Máquinas automáticas para tratamiento de datos (computadoras portátiles y de escritorio) |
+| 8471.50 | Unidades de procesamiento digital |
+| 8471.60 | Unidades de entrada/salida (teclados, mouse, unidades combinadas) |
+| 8471.70 | Unidades de almacenamiento |
+| 8471.80 | Otras unidades de máquinas de procesamiento de datos |
+| 8473.30 | Partes de máquinas de la partida 8471 |
+| 8443.99 | Partes de máquinas de impresión |
+| 8504.40, 8504.90 | Fuentes de poder y sus partes (para equipo informático) |
+| 8517.70 | Partes de equipo de redes (LAN) |
+| 8528.42, 8528.52, 8528.62 | Monitores y proyectores para uso con máquinas de procesamiento de datos |
+| 8529.90 | Partes de monitores/proyectores |
+
+*Fuente: CBP (s.f.).*
+
+**Caso documentado (CBP, 2020):** una empresa estadounidense contrató a una maquiladora en México para recibir componentes informáticos de **origen chino** (máquinas de procesamiento de datos, unidades de entrada/salida, unidades de almacenamiento, clasificadas en las partidas de la tabla anterior) y limitarse a **clasificarlos, empacarlos y reexpedirlos a EE.UU. sin ningún procesamiento**. CBP resolvió, en su resolución de clasificación HQ H312426, que esos bienes **no calificaban** bajo la regla general de origen del T-MEC (Nota General 11(b), que exige transformación) — pero **sí calificaban** bajo la Nota General 11(p), precisamente porque la mercancía estaba clasificada en una de las subpartidas de la lista y se importó a EE.UU. desde un país del T-MEC (México) (CBP, 2020). Es el caso documentado más extremo de la brecha de jure/de facto identificada en este proyecto: cero transformación, origen chino no disputado, y aun así trato preferencial T-MEC por disposición expresa y legal del tratado — no por un vacío de aplicación, sino por diseño. Nótese que esta resolución es anterior a la segunda administración Trump (2020), pero interpreta una disposición del T-MEC (vigente desde 2020) que no ha sido modificada desde entonces y que sigue rigiendo la clasificación de estos productos en 2025-2026.
+
+**(B) Cambio de clasificación arancelaria (CTC / "salto de línea") para semiconductores propiamente dichos — partidas 8541/8542.**
+
+Para los circuitos integrados y dispositivos semiconductores discretos en sí (fuera de la lista cerrada anterior), aplica la regla general que el propio CBP describe para "productos electrónicos" bajo el T-MEC: la **regla primaria es un cambio de clasificación arancelaria por sí solo, sin requisito de contenido de valor regional** (a diferencia de la regla alternativa —más permisiva en cuanto a procesamiento, pero que sí exige RVC— reservada para transformaciones menores) (CBP, s.f.; Titoma, 2025). Las subpartidas relevantes de la partida 8542 ilustran por qué esto importa:
+
+| HS6 | Descripción |
+|---|---|
+| **8542.31** | Procesadores y controladores (CPU, microcontroladores, ASIC) |
+| **8542.32** | Circuitos integrados de memoria (DRAM, SRAM, NAND flash, EEPROM) |
+| **8542.39** | Otros circuitos integrados (analógicos, RF, gestión de potencia) |
+| **8542.90** | **Partes** de circuitos integrados — categoría que incluye obleas (*wafers*) y ensambles híbridos sin encapsular |
+| 8541.10 / 8541.21-29 / 8541.30 | Diodos; transistores; tiristores/diacs/triacs (dispositivos semiconductores discretos) |
+
+*Fuente: FreightAmigo (2025).*
+
+La oblea o el troquel (*die*) sin encapsular ni probar —el producto de la fabricación (*wafer fab*), que es donde se concentra el diseño, la propiedad intelectual y el valor real del semiconductor— se clasifica como **"parte"** bajo **8542.90**. Cuando ese troquel se **encapsula, se conecta (wire bonding), se prueba y se empaca** como circuito integrado terminado, listo para montarse en una tarjeta, el producto resultante se clasifica en **8542.31, 8542.32 u 8542.39** — una subpartida distinta dentro de la misma partida (FreightAmigo, 2025). Ese cambio de clasificación (de "parte" 8542.90 a "circuito integrado terminado" 8542.3x) es, conforme al principio general de CTC sin RVC que aplica a la mayoría de la electrónica bajo el T-MEC, **suficiente por sí solo** para que el circuito integrado terminado se considere originario de Norteamérica — sin necesidad de acreditar qué porción del valor del chip (diseño, fotolitografía, dopaje, la fabricación de la oblea misma) se generó dentro de la región (CBP, s.f.; I-Connect007 / SMT007 Magazine, 2026). Las operaciones de ensamblaje, prueba y empaque (*assembly, test and packaging*, ATP) —intensivas en mano de obra, de relativamente bajo valor agregado comparadas con la fabricación de la oblea— son, en sí mismas, la transformación que activa el salto de línea arancelaria (Titoma, 2025).
+
+## 2.3 Contraste con autos y acero/aluminio: el espectro de rigor de las reglas de origen del T-MEC
+
+| Sector | Regla de origen dominante | Rigor relativo |
+|---|---|---|
+| Autos (doc. N.º 3) | RVC 75% + contenido de valor laboral (40-45% a USD 16/h) + 70% acero/aluminio norteamericano + certificación separada de "contenido estadounidense" para S. 232 | **Alto** — múltiples pruebas acumulativas, autocertificación sujeta a auditoría con riesgo retroactivo |
+| Acero/aluminio (doc. N.º 4) | Umbral de peso del contenido metálico (desde abr. 2026) + "melted and poured"/"smelted and cast" | **Medio** — una prueba física verificable, pero de aplicación tardía e inconsistente en la práctica (litigio *Express Fasteners*) |
+| Semiconductores/electrónica (este documento) | CTC sin RVC (8541/8542 y la mayoría de la electrónica) — o "origen automático" sin ninguna prueba (lista GN 11(p)) | **Bajo a nulo** — una operación de empaque/prueba, o incluso ningún procesamiento en absoluto para la lista cerrada, basta para calificar |
+
+Este contraste no es casual: la lógica original del T-MEC/TLCAN para electrónica de TI está heredada de un contexto (mediados de los años 90) en el que el arancel NMF de estos productos ya era cero o iba camino a serlo por el ITA (WTO, s.f.) — por lo que exigir una prueba de origen rigurosa no tenía el mismo propósito protector que en autos o acero. El problema de política pública surge en 2025-2026 porque, por primera vez en tres décadas, **sí hay recargos arancelarios sustanciales por país** (Sección 301 sobre China, Sección 301 global, Sección 232 angosta) superpuestos sobre ese arancel base de cero — y las reglas de origen heredadas de una era de aranceles nulos no fueron diseñadas para decidir, con el rigor de autos o acero, quién debe pagar esos recargos y quién no.
+
+---
+
+# 3. De jure vs. de facto: el ejemplo numérico
+
+La siguiente tabla ilustra, con cifras hipotéticas pero representativas del patrón documentado en la sección 2.2, cómo un mismo circuito integrado puede terminar con cargas arancelarias radicalmente distintas según dónde se realice la etapa final (empaque/prueba), sin que cambie el diseño, la propiedad intelectual, ni el valor real del chip:
+
+| Ruta de importación | Origen de la oblea/troquel (fabricación) | Empaque y prueba (ATP) | Clasificación de entrada a EE.UU. | Origen T-MEC | Recargo aplicable (más allá del 0% NMF) |
+|---|---|---|---|---|---|
+| Directa desde Taiwán | Taiwán | Taiwán | 8542.31 (terminado) | No | Arancel S. 301 global (10-12.5%) salvo excepción específica |
+| Directa desde China | China | China | 8542.31 (terminado) | No | Hasta ~70% (apilamiento S. 301, sección 1.4) |
+| Vía México (troquel taiwanés, ATP en México) | Taiwán | **México** | Entra a México como 8542.90 ("parte"); sale a EE.UU. como 8542.31 (cambio de subpartida) | **Sí — CTC satisfecho** | **0%** — ningún recargo, pese a que el 100% del diseño y la fabricación del troquel ocurrió fuera de Norteamérica |
+| Vía México (troquel chino, ATP en México) | China | **México** | Igual que arriba | **Sí — CTC satisfecho** | **0%** — mismo resultado que el caso anterior, aun cuando el troquel es de origen chino |
+
+El resultado es idéntico al del caso documentado por CBP (2020) para productos de la lista GN 11(p) (sección 2.2): el "salto de línea arancelaria" —o, para la lista cerrada de productos informáticos, ni siquiera eso— convierte a México en un punto de tránsito que confiere origen preferencial casi sin relación con dónde se generó el valor económico real del producto.
+
+---
+
+# 4. El auge de las exportaciones electrónicas de México y su relación con la regla de origen
+
+La regla de origen descrita en la sección 2 no es una curiosidad técnica: coincide, en el tiempo, con un crecimiento muy marcado de las exportaciones mexicanas de equipo informático y, más ampliamente, de productos electrónicos hacia EE.UU.
+
+- Las exportaciones mexicanas de **equipo de cómputo** alcanzaron **USD 82,900 millones en el primer semestre de 2026**, un incremento de **172% interanual** frente al primer semestre de 2025, impulsado por la demanda de infraestructura de inteligencia artificial. El **93.9%** de esas exportaciones tuvo como destino EE.UU. (Mexico Business News, 2026).
+- Analistas de Banamex, citados en cobertura especializada, describen a México como "una plataforma de ensamblaje cercana al mercado de EE.UU., mientras el diseño, la integración tecnológica y la coordinación de la cadena de suministro permanecen concentrados en Asia" — y advierten explícitamente que esto crea "una distinción importante entre el crecimiento de las exportaciones y la creación de valor doméstico": México puede capturar actividad manufacturera, empleo y flujos comerciales **sin retener necesariamente una proporción equivalente del valor** generado por el diseño, la propiedad intelectual y la coordinación tecnológica global del semiconductor (Mexico Business News, 2026).
+- México ocupa el puesto 17 entre exportadores mundiales de dispositivos semiconductores (cerca de 0.8% del valor de exportación global en 2023), con capacidad de manufactura primaria (fabricación de obleas) prácticamente inexistente — el mayor proyecto de inversión privada doméstica identificado es una planta de USD 12 millones en Querétaro, órdenes de magnitud por debajo de compromisos de otros países (India, más de USD 9,000 millones; Brasil, más de USD 4,500 millones) (Milken Institute, 2025). El plan gubernamental "Plan México" se propone duplicar las exportaciones de semiconductores para 2030 desde esta base de ensamblaje, prueba y empaque, no desde una base de fabricación primaria (OECD, 2026).
+
+**Síntesis:** el patrón encaja exactamente con el mecanismo descrito en la sección 2 — el crecimiento explosivo de las exportaciones "de semiconductores/electrónica" de México es, en gran medida, crecimiento de **operaciones de ensamblaje, prueba y empaque (ATP)** de componentes fabricados en Asia, que obtienen origen T-MEC (y, con ello, exención de los recargos arancelarios por país descritos en la sección 1.4) mediante el salto de línea arancelaria o, para productos informáticos terminados, mediante el régimen de origen automático de la Nota General 11(p) — no crecimiento proporcional de diseño o fabricación de valor agregado alto dentro de México.
+
+---
+
+# 5. Litigio y estabilidad jurídica
+
+- La Proclamación 11002 es muy reciente (14 de enero de 2026) y no se identificó litigio activo específico a la fecha de este documento. El diseño de sus exenciones por uso final —siete categorías, con "sin especificación" sobre cómo debe sustentarse documentalmente cada una, según analistas de comercio internacional (GingerControl, 2026)— es estructuralmente similar al vacío de verificación que, en acero/aluminio, produjo el litigio *Express Fasteners v. United States* (documento N.º 4); es un punto de riesgo a monitorear, no un litigio confirmado.
+- Las capas de Sección 301 sobre China (sección 1.4) tienen una base procesal más consolidada (revisiones periódicas bajo el Trade Act de 1974) y no han sido objeto, hasta la fecha, de fallos que las invaliden — a diferencia de IEEPA (documento N.º 2).
+- La Nota General 11(p) del HTSUS y la regla de cambio de clasificación arancelaria para electrónica son disposiciones consolidadas del T-MEC (y de su predecesor, el TLCAN, desde 1994), sin litigio ni indicios de renegociación en la revisión conjunta del T-MEC prevista para 2026 — a diferencia de las reglas de origen automotrices, que México sí busca modificar activamente (documento N.º 3).
+- Un académico de la propia Corte de Comercio Internacional de EE.UU. ha publicado una crítica formal al uso de reglas de cambio de clasificación arancelaria para determinar origen en manufactura moderna, argumentando que la nomenclatura del Sistema Armonizado "no fue diseñada como un instrumento para determinar el origen de las mercancías" y que su aplicación produce resultados "comercialmente —a menudo cómicamente— absurdos", proponiendo en su lugar un estándar de "transformación sustancial" (Peterson, 2023). Es evidencia de que el problema identificado en este documento es reconocido dentro del propio sistema judicial de comercio de EE.UU., aunque no se ha traducido, a la fecha, en una reforma normativa.
+
+---
+
+# 6. Cabildeo industrial
+
+- **Semiconductor Industry Association (SIA):** adoptó una postura de "apoyo condicionado" desde el anuncio de agosto de 2025, solicitando explícitamente (i) exenciones arancelarias para fabricantes con producción en EE.UU., (ii) que el diseño final "asegure que la industria de semiconductores de EE.UU. mantenga su posición de liderazgo global" y (iii) certeza sobre el alcance antes de la implementación (SIA, 2025b, 2025c). La Proclamación 11002 —angosta, con ocho categorías de excepción por uso final y sin cubrir equipo de fabricación— coincide en gran medida con lo solicitado por SIA, un patrón de cabildeo con resultado documentado comparable al del *offset* de autos (documento N.º 3).
+- **Acuerdo Taiwán-EE.UU. (ene. 2026):** Taiwán —origen de la abrumadora mayoría de la fabricación avanzada de obleas a nivel mundial (TSMC)— comprometió al menos **USD 250,000 millones en inversión directa** más **USD 250,000 millones en garantías de crédito** para producción de semiconductores en EE.UU., a cambio de que empresas taiwanesas puedan **importar hasta 2.5 veces su capacidad de producción planeada en EE.UU. sin pagar el arancel de Sección 232** durante el período de construcción aprobado (Global Policy Watch, 2026) — la misma lógica de "inversión a cambio de alivio arancelario" documentada para autos (offset) y para acero/aluminio (mecanismo Canadá/México, documento N.º 4), aplicada aquí a nivel de un acuerdo país-empresa específico en vez de una regla general.
+- No se identificó cabildeo opositor significativo y documentado por parte de usuarios industriales de semiconductores (fabricantes de electrónica de consumo, automotrices) específicamente contra el arancel de enero de 2026 — consistente con su alcance angosto, que en la práctica exime a la inmensa mayoría de los semiconductores que estas industrias importan.
+
+---
+
+# 7. Síntesis para el informe final
+
+1. A diferencia de autos y acero/aluminio, el arancel S. 232 vigente sobre semiconductores (Proclamación 11002, ene. 2026) es **extremadamente angosto** — cubre solo un puñado de chips de IA de gama alta (Nvidia H200, AMD MI325X) — y coexiste con un arancel NMF de base de 0% heredado del Acuerdo de Tecnología de la Información de la OMC. La "Fase 2" de ampliación prevista para julio de 2026 no se había concretado a la fecha de este documento.
+2. La verdadera carga arancelaria diferenciada para semiconductores no viene de Sección 232 sino del **apilamiento de Sección 301 sobre China** (hasta ~70% combinado) y del arancel global de Sección 301 (10-12.5% desde jul. 2026) — lo que hace que la pregunta de **origen** (¿el bien califica como T-MEC/estadounidense o no?) sea, para este sector, la variable que más determina la factura arancelaria real.
+3. **Hallazgo central (responde directamente a la pregunta del usuario):** el T-MEC aplica a semiconductores y electrónica un régimen de origen mucho más laxo que a autos o acero — cambio de clasificación arancelaria (CTC/"salto de línea") sin contenido de valor regional para circuitos integrados (partidas 8541/8542), y **origen automático sin ninguna prueba** para una lista cerrada de productos informáticos terminados (Nota General 11(p) del HTSUS) — documentado en al menos un caso real de CBP (2020) donde componentes de origen chino calificaron como originarios del T-MEC tras ser solo clasificados y reempacados en México, sin transformación alguna.
+4. Esta regla de origen laxa es coherente con —y probablemente explica en gran medida— el auge de las exportaciones electrónicas mexicanas (+172% interanual, USD 82,900 millones en el primer semestre de 2026), que la evidencia disponible (Mexico Business News, 2026; Milken Institute, 2025; OECD, 2026) describe consistentemente como crecimiento de **ensamblaje, prueba y empaque**, no de fabricación primaria ni de valor agregado proporcional al crecimiento de las exportaciones.
+5. El espectro de rigor de las reglas de origen del T-MEC por sector queda así: autos (alto rigor, RVC + LVC + certificación) > acero/aluminio (rigor medio, umbral físico de peso, aplicación tardía) > semiconductores/electrónica (rigor bajo o nulo, CTC o "deemed origin"). Este contraste es, en sí mismo, un hallazgo relevante para el capítulo de instrumentos por producto del informe final: el T-MEC no tiene un estándar único de "cuánto hay que hacer" para que un bien sea norteamericano — varía por sector en un rango muy amplio, con consecuencias económicas de fondo muy distintas.
+6. Puntos de monitoreo para la cronología del proyecto: la eventual proclamación de "Fase 2" del arancel de semiconductores (revisión prevista jul. 2026, sin concretar a la fecha); la capa de Sección 301 por "sobrecapacidad" (esperada antes del 24 sep. 2026); y la posibilidad, aún no observada, de litigio sobre la verificación de las exenciones por uso final de la Proclamación 11002.
+
+---
+
+# Referencias
+
+Bloomberg. (2025, 6 de agosto). *Trump eyes 100% chips tariff, exempting firms that invest in US*. https://www.bloomberg.com/news/articles/2025-08-06/trump-plans-100-tariff-on-chips-with-carveout-for-apple-others
+
+CNBC. (2025, 6 de agosto). *Trump vows 100% tariff on chips, unless companies are building in the U.S.* https://www.cnbc.com/2025/08/06/trump-tariffs-chips-companies.html
+
+EY Global Tax News. (2026, 9 de febrero). *US Section 232 proclamation imposes 25% tariff on certain semiconductors*. https://globaltaxnews.ey.com/news/2026-0209-us-section-232-proclamation-imposes-25-percent-tariff-on-certain-semiconductors
+
+FreightAmigo. (2025, 28 de julio). *HS 8542 guide: ICs, electronics classification tips*. https://www.freightamigo.com/en/blog/hs-code/hs-code-for-electronic-integrated-circuits/
+
+GingerControl. (2026, 22 de marzo). *Section 232 semiconductor tariff: Rate, HTS codes (9903.79.01/.02) & exemptions*. https://gingercontrol.com/blog/section-232-semiconductor-tariff
+
+Global Policy Watch. (2026, febrero). *A month in semiconductor policy: Section 232 measures, BIS rule, and Taiwan deal signal strategic push*. https://www.globalpolicywatch.com/2026/02/a-month-in-semiconductor-policy-section-232-measures-bis-rule-and-taiwan-deal-signal-strategic-push/
+
+I-Connect007 / SMT007 Magazine. (2026, 5 de agosto). *USMCA rules of origin for electronics: What could change in 2026*. https://iconnect007.com/article/151068/usmca-rules-of-origin-for-electronics-what-could-change-in-2026/151065/smt
+
+Mexico Business News. (2026, 17 de agosto). *Mexico's computer equipment exports surge 172% as AI demand grows*. https://mexicobusiness.news/tech/news/mexicos-computer-equipment-exports-surge-172-ai-demand-grows
+
+Milken Institute. (2025, 4 de junio). *From maquiladoras to microchips: Expanding Mexico's semiconductor manufacturing*. https://milkeninstitute.org/content-hub/insights/maquiladoras-microchips-expanding-mexicos-semiconductor-manufacturing
+
+OECD. (2026, 27 de febrero). *Examining the domestic semiconductor ecosystem: Promoting the development of the semiconductor ecosystem in Mexico*. https://www.oecd.org/en/publications/promoting-the-development-of-the-semiconductor-ecosystem-in-mexico_02c81dec-en/full-report/examining-the-domestic-semiconductor-ecosystem_784b856d.html
+
+Peterson, J. M. (2023). Substantial transformation: The worst rule for determining origin of goods, except for all the rest. *Vanderbilt Journal of Transnational Law*, *56*(4), 1065. https://www.cit.uscourts.gov/sites/cit/files/Substantial%20Transformation.pdf
+
+PwC Canada. (2026, 6 de agosto). *Tax insights: USTR imposes final section 301 tariffs on 60 economies for failure to enforce forced labour import prohibitions*. https://www.pwc.com/ca/en/services/tax/publications/tax-insights/section-301-tariffs-aug-2026.html
+
+Sandler, Travis & Rosenberg. (s.f.). *Section 232 tariffs on semiconductors*. Recuperado el 29 de agosto de 2026, de https://www.strtrade.com/trade-news-resources/tariff-actions-resources/section-232-investigation-semiconductors
+
+Semiconductor Industry Association. (2025a, agosto). *Comments, polysilicon Section 232 investigation*. https://www.semiconductors.org/wp-content/uploads/2025/08/Semiconductor-Industry-Association-SIA-Comments-Polysilicon-Section-232-Investigation.pdf
+
+Semiconductor Industry Association. (2025b, mayo). *Comments, Section 232 investigation*. https://www.semiconductors.org/wp-content/uploads/2025/05/SIA-Comments-Section-232-Investigation.pdf
+
+Semiconductor Industry Association. (2025c, 7 de agosto). *SIA statement on semiconductor tariffs announcement*. https://www.semiconductors.org/sia-statement-on-semiconductor-tariffs-announcement/
+
+Semiconductor Industry Association. (2026, abril). *Comments, Section 301 excess capacity*. https://www.semiconductors.org/wp-content/uploads/2026/04/FINAL_SIA-Comments-Section-301-Excess-Capacity.pdf
+
+TariffLens. (2026, 27 de mayo). *The July 1 semiconductor tariff review: What happens next could double your duty bill*. https://www.tarifflens.ai/blog/section-232-semiconductor-tariff-july-2026-phase-2-guide
+
+Tech Times. (2026, 24 de agosto). *China semiconductor tariffs near 70% as new overcapacity layer stacks before summit*. https://www.techtimes.com/articles/325383/20260824/china-semiconductor-tariffs-near-70-new-overcapacity-layer-stacks-before-summit.htm
+
+The Register. (2025, 24 de diciembre). *US punishes China's "dominance" of legacy chips with zero percent tariffs*. https://www.theregister.com/2025/12/24/us_china_chip_tariffs/
+
+The White House. (2026, 14 de enero). *Adjusting imports of semiconductors, semiconductor manufacturing equipment, and their derivative products into the United States* (Proclamation 11002). https://www.whitehouse.gov/presidential-actions/2026/01/adjusting-imports-of-semiconductors-semiconductor-manufacturing-equipment-and-their-derivative-products-into-the-united-states/
+
+Titoma. (2025, 28 de abril). *How USMCA affects electronics manufacturing?* https://titoma.com/blog/usmca-rules-origin-electronics/
+
+U.S. Customs and Border Protection. (s.f.). *Electronic products* [Guía de reglas de origen NAFTA/USMCA]. Recuperado el 29 de agosto de 2026, de https://www.cbp.gov/trade/nafta/guide-customs-procedures/provisions-specific-sectors/electronic-products
+
+U.S. Customs and Border Protection. (2020, 7 de agosto). *Resolución de clasificación HQ H312426* [vía CustomsMobile]. https://www.customsmobile.com/rulings/docview?doc_id=HQ+H312426&highlight=category%3AClassification
+
+White & Case LLP. (2026a, 21 de enero). *President Trump orders narrowly targeted 25% Section 232 tariff on certain advanced semiconductor articles*. https://www.whitecase.com/insight-alert/president-trump-orders-narrowly-targeted-25-section-232-tariff-certain-advanced
+
+White & Case LLP. (2026b, 10 de agosto). *President Trump orders tariffs and price floors in polysilicon Section 232 action*. https://www.whitecase.com/insight-alert/president-trump-orders-tariffs-and-price-floors-polysilicon-section-232-action
+
+World Trade Organization. (s.f.). *Information Technology Agreement: An explanation*. Recuperado el 29 de agosto de 2026, de https://www.wto.org/english/tratop_e/inftec_e/itaintro_e.htm

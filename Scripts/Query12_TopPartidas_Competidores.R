@@ -21,6 +21,7 @@
 #    ("partidas en competencia").
 
 pacman::p_load(tidyverse, here, scales, flextable)
+source(here("Scripts", "funciones.R"))   # hs_etiquetas_partida() — nombres del SA desde RDS/hs_dictionary.rds
 
 set_flextable_defaults(fonts_ignore = TRUE)
 
@@ -46,24 +47,17 @@ desc_partida_pais <- imp_competidores_hs4 |>
 # explícita para este ejercicio — textiles y calzado (Secciones XI y XII),
 # cuero, juguetes y vidrio.
 
-categorias_excluir <- c(
-  # Alimentos / agro / animal (Secciones I–IV, caps. 1–24)
-  "AnimalesVivos","Carnes","Pescados","Lácteos","OtrosAnimales","PlantasVivas",
-  "Hortalizas","FrutasNueces","Café","Cereales","Molinería","Semillas",
-  "GomasResinas","MatVegetal","GrasasAceites","PrepCarnes","Azúcares","Cacao",
-  "PrepCereales","PrepHortalizas","PrepAlim","Bebidas","ResiduosAlim","Tabaco",
-  # Minerales / combustibles (Sección V, caps. 25–27)
-  "Sal","Minerales","Combustibles",
-  # Materias primas / insumos y categorías sin interés (precedente México)
-  "Plásticos","Caucho","Joyería","Muebles",
-  # Partidas especiales de clasificación de EUA
-  "EspecialEUA","OtrasEspeciales",
-  # Textiles (Sección XI, caps. 50–63) y Calzado/tocado (Sección XII, caps. 64–67)
-  "Seda","LanaFibras","Algodón","FibrasVeg","FilasSint","FibrasSint","Guatas",
-  "Alfombras","TejidosEsp","TejidosImp","TejidosPunto","PrendaPunto",
-  "PrendaNoTejida","ArtTextilHogar","Calzado","Sombreros","Paraguas","PlumasFlores",
-  # Exclusiones adicionales específicas de este ejercicio
-  "ArtCuero","Juguetes","Vidrio"
+# Se excluye por NÚMERO de capítulo (no por nombre corto), así los nombres
+# pueden editarse sin romper la depuración.
+capitulos_excluir <- c(
+  1:27,         # Secciones I–V: animales, vegetales, alimentos, minerales y combustibles
+  39, 40,       # Plásticos y caucho
+  42,           # Artículos de cuero
+  50:67,        # Textiles, prendas, calzado y sombreros (Secciones XI y XII)
+  70,           # Vidrio
+  71,           # Joyería
+  94, 95,       # Muebles y juguetes
+  98, 99        # Provisiones especiales de clasificación de EUA
 )
 
 # Sección 3. Top 50 por valor (2024–2025), por país, depurado   ####
@@ -84,14 +78,14 @@ top_valor_pais <- function(pais_sel) {
 top50_valor_todos <- map_dfr(paises_análisis, top_valor_pais)
 
 top50_valor_dep <- top50_valor_todos |>
-  filter(!Cap_corto %in% categorias_excluir) |>
+  filter(!Capítulo %in% capitulos_excluir) |>
   group_by(Pais) |>
   mutate(ranking = row_number()) |>
   ungroup()
 
 cat("\n=== Top 50 por valor (2024–2025): retenidas vs. excluidas, por país ===\n")
 top50_valor_todos |>
-  mutate(excluida = Cap_corto %in% categorias_excluir) |>
+  mutate(excluida = Capítulo %in% capitulos_excluir) |>
   count(Pais, excluida) |>
   pivot_wider(names_from = excluida, values_from = n, names_prefix = "excluida_") |>
   print()
@@ -121,7 +115,7 @@ crecimiento_pais <- function(pais_sel) {
 top50_crecimiento_todos <- map_dfr(paises_análisis, crecimiento_pais)
 
 top50_crecimiento_dep <- top50_crecimiento_todos |>
-  filter(!Cap_corto %in% categorias_excluir) |>
+  filter(!Capítulo %in% capitulos_excluir) |>
   group_by(Pais) |>
   mutate(ranking = row_number()) |>
   ungroup()
@@ -192,51 +186,13 @@ tabla_overlap |>
   print(n = nrow(tabla_overlap))
 
 # Sección 7. Traducción al español   ####
-# Diccionario manual. Los códigos que ya tenían traducción verificada para
-# México (Query10) se reutilizan tal cual; se añaden los códigos nuevos que
-# aparecen solo por Vietnam y/o Taiwán (electrónica/semiconductores).
-
-traducciones_partidas <- tribble(
-  ~Cod_partida, ~Desc_es,                                                                         ~Nombre_corto_partida,
-  # — Reutilizadas de Query10 (México) —
-  "8471", "Máquinas automáticas para tratamiento o procesamiento de datos y sus unidades",         "Computadoras",
-  "8708", "Partes y accesorios de vehículos automóviles",                                           "Autopartes",
-  "8544", "Hilos, cables y demás conductores aislados para electricidad",                          "Cableado",
-  "9018", "Instrumentos y aparatos de medicina, cirugía, odontología o veterinaria",                "Médico",
-  "8517", "Teléfonos, incluidos los celulares y aparatos de otras redes inalámbricas",              "Telefonía",
-  "8528", "Monitores, proyectores y aparatos receptores de televisión",                             "Televisores",
-  "8537", "Cuadros, paneles y consolas para control o distribución eléctrica",                      "Tableros",
-  "8504", "Transformadores eléctricos, convertidores estáticos y bobinas de reactancia",            "Transformadores",
-  "8543", "Máquinas y aparatos eléctricos con función propia, no clasificados en otra parte",       "Misceláneos eléc.",
-  "8536", "Aparatos para corte, protección o conexión de circuitos eléctricos",                     "Conmutación",
-  "8421", "Centrifugadoras y aparatos para filtrar o depurar líquidos o gases",                     "Centrifugadoras",
-  "8501", "Motores y generadores eléctricos",                                                       "Motores eléc.",
-  "8481", "Llaves, grifos, válvulas y artículos similares para tuberías, calderas, tanques",        "Válvulas",
-  "8414", "Bombas de aire o vacío, compresores de aire o gas, ventiladores; sus partes",             "Compresores",
-  "8411", "Turborreactores, turbopropulsores y demás turbinas de gas, y sus partes",                 "Turbinas",
-  "8507", "Acumuladores eléctricos, incluidos sus separadores; sus partes",                          "Baterías",
-  "8473", "Partes y accesorios para máquinas de escribir y otras máquinas de oficina",               "Partes de oficina",
-  "8512", "Aparatos eléctricos de alumbrado o señalización, limpiaparabrisas y similares para vehículos; sus partes", "Iluminación veh.",
-  # — Nuevas: aparecen solo por Vietnam y/o Taiwán —
-  "8467", "Herramientas neumáticas, hidráulicas o con motor incorporado, de uso manual",             "Herram. manual",
-  "8523", "Discos, cintas, dispositivos de almacenamiento de estado sólido y demás soportes para grabar sonido u otros fenómenos, grabados o no", "Almacenamiento",
-  "8525", "Aparatos emisores de radiotelefonía, radiotelegrafía, radiodifusión o televisión; cámaras de televisión", "Transmisión",
-  "8531", "Aparatos eléctricos de señalización acústica o visual (timbres, sirenas, paneles, etc.)", "Señalización",
-  "8541", "Dispositivos semiconductores; dispositivos fotosensibles semiconductores; diodos emisores de luz", "Semiconductores",
-  "8542", "Circuitos integrados electrónicos",                                                       "Circuitos integ."
-)
-
-cat("\n=== Verificación: ¿alguna partida en tabla_overlap sin traducir? ===\n")
-sin_traducir <- tabla_overlap |> anti_join(traducciones_partidas, by = "Cod_partida")
-if (nrow(sin_traducir) > 0) {
-  cat("¡Atención! Faltan traducciones para:\n")
-  print(sin_traducir |> select(Cod_partida, Cap_corto, Desc_api_partida))
-} else {
-  cat("Todas las partidas de tabla_overlap tienen traducción.\n")
-}
+# Nombres cortos de partida: del diccionario del SA (RDS/hs_dictionary.rds;
+# se editan en Excel/hs_nombres_cortos.csv). Se detiene si falta alguno.
 
 tabla_overlap_es <- tabla_overlap |>
-  left_join(traducciones_partidas, by = "Cod_partida")
+  hs_etiquetas_partida() |>
+  rename(Nombre_corto_partida = Part_corto,
+         Nombre_tabla_partida = Part_tabla)
 
 # Sección 8. Guardado de los datos de la tabla (antes de dar formato)   ####
 # Se guardan en dólares corrientes (sin dividir ni redondear) para no atar
@@ -248,7 +204,7 @@ meta_query12 <- list(
   período_valor     = "Suma de valor mensual 2024–2025",
   período_crec      = "Comparación años completos 2018 vs. 2025",
   umbral_volumen    = "Valor mínimo del Top-50-por-valor depurado de cada país (criterio igual al de México en Query10)",
-  categorías_excluidas = categorias_excluir,
+  capítulos_excluidos  = capitulos_excluir,
   notas             = "tabla_competencia: unión de las listas finales NS-relevantes de los 3 países
                         (todas las partidas, independientemente de cuántos países la comparten).
                         tabla_overlap / tabla_overlap_es: subconjunto con n_paises >= 2 — partidas
@@ -281,7 +237,7 @@ tabla_flex_datos <- tabla_overlap_es |>
   select(
     Capítulo = Capítulo_lbl,
     Partida  = Cod_partida,
-    Descripción = Nombre_corto_partida,
+    Descripción = Nombre_tabla_partida,
 
     México, Vietnam, Taiwán
   )

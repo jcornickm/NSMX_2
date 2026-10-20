@@ -344,17 +344,8 @@ Los ganadores y perdedores de cada unos de estos tres períodos se muestran en l
 #| echo: false
 #| eval: false
 
-impPais_Perc <- impPais |>
-  filter(grupo %in% c("Top20", "Resto")) |>
-  arrange(País, fecha) |>
-  group_by(País, rank) |>
-  mutate(Imp_mes_sa = sa_adj(Imp_mes, fecha, freq = 12)) |>
-  group_by(País, rank, año = lubridate::year(fecha)) |>
-  summarise(Imp_anual = sum(Imp_mes_sa, na.rm = TRUE), .groups = "drop") |>
-  group_by(año) |>
-  mutate(share = Imp_anual / sum(Imp_anual)) |>
-  ungroup() |>
-  select(año, País, rank, Imp_anual, share)
+# Calculado en Scripts/Prep_imp_pais_mex.R
+impPais_Perc <- readRDS(here::here("RDS", "impPais_Perc.rds"))
 ```
 
 ```{r}
@@ -511,14 +502,6 @@ rm(impPais, impPais_Perc)
 
 ## Cambios en la composición de Las exportaciones mexicanas a EUA
 
-```{r}
-#| label: load-imp-mex
-#| echo: false
-#| eval: false
-
-impMex <- readRDS(here::here("RDS", "imp_mex_sec_cap.rds"))
-```
-
 <!-- Todo el código usado para preparar los gráficos de esta sección se coloca al inicio, y posteriormente se incluye nada más el código necesario para insertar los gráficos en el texto -->
 
 ```{r}
@@ -527,16 +510,8 @@ impMex <- readRDS(here::here("RDS", "imp_mex_sec_cap.rds"))
 #| eval: false
 #| code-summary: "Preparación datos Sección: porcentajes anuales"
 
-# Participaciones anuales por Sección del SA enero–diciembre
-impMex_sec_pct <- map_dfr(2010:2025, function(año) {
-  impMex |>
-    filter(year(fecha) == año) |>
-    group_by(año = year(fecha), Sección, Sección_corto, Sección_desc_es) |>
-    summarise(Val_anual = sum(Val_mes, na.rm = TRUE), .groups = "drop") |>
-    group_by(año) |>
-    mutate(pct = Val_anual / sum(Val_anual)) |>
-    ungroup()
-})
+# Calculado en Scripts/Prep_imp_pais_mex.R
+impMex_sec_pct <- readRDS(here::here("RDS", "impMex_sec_pct.rds"))
 ```
 
 ```{r}
@@ -598,9 +573,9 @@ p <- local({
         cambio_pp   = (.data[[col_fin]] - .data[[col_ini]]) * 100,
         Sección     = fct_reorder(Sección, cambio_pp),
         color_grupo = case_when(
-          Sección_corto == "Transporte"   ~ "transporte",
-          Sección_corto == "Maquinaria"   ~ "maquinaria",
-          Sección_corto == "Instrumentos" ~ "instrumentos",
+          Sección == "XVII"  ~ "transporte",
+          Sección == "XVI"   ~ "maquinaria",
+          Sección == "XVIII" ~ "instrumentos",
           cambio_pp > 0                   ~ "positivo",
           TRUE                            ~ "negativo"
         )
@@ -691,37 +666,13 @@ knitr::include_graphics(here::here("Plots", "impMex_sec_perc.png"))
 #| label: prep-caps
 #| include: false
 #| eval: false
-secc_romano <- c(
-  "Maquinaria"   = "XVI",
-  "Transporte"   = "XVII",
-  "Instrumentos" = "XVIII"
-)
-
-secciones_interes <- c("Maquinaria", "Transporte", "Instrumentos")
-
-df_caps_2025 <- impMex |>
-  filter(Sección_corto %in% secciones_interes, year(fecha) == 2025) |>
-  group_by(Sección_corto, Capítulo, Cap_corto, Cap_desc_es) |>
-  summarise(Val_anual = sum(Val_mes, na.rm = TRUE), .groups = "drop") |>
-  mutate(Cap_corto = if_else(Cap_corto == "Automóviles", "EquipTransporte", Cap_corto)) |>
-  mutate(Cap_corto = if_else(Cap_corto == "Óptica", "Instrumentos", Cap_corto)) |>
-  group_by(Sección_corto) |>
+# Datos: Scripts/Prep_imp_pais_mex.R (Capítulos de las Secciones XVI–XVIII, 2025).
+# Aquí solo se arman las etiquetas del treemap (número de capítulo + nombre).
+df_caps_2025 <- readRDS(here::here("RDS", "impMex_caps_2025.rds")) |>
   mutate(
-    pct      = Val_anual / sum(Val_anual),
-    etiqueta = paste0("Cap. ", Capítulo, "\n", Cap_corto, "\n", percent(pct, accuracy = 1)),
-    strip_label = paste0(
-      "Sección ",
-      case_when(
-        Sección_corto == "Maquinaria"   ~ "XVI",
-        Sección_corto == "Transporte"   ~ "XVII",
-        Sección_corto == "Instrumentos" ~ "XVIII"
-      ),
-      "  —  ", Sección_corto
-    )
-  ) |>
-  ungroup()
-
-rm(impMex)
+    etiqueta    = paste0("Cap. ", Capítulo, "\n", Cap_corto, "\n", percent(pct, accuracy = 1)),
+    strip_label = paste0("Sección ", Sección, "  —  ", Sección_corto)
+  )
 ```
 
 ```{r}
@@ -757,7 +708,7 @@ rm(p)
 #| code-fold: true
 #| code-summary: "Tablas por partida, Capítulos 84, 85, 87 y 90"
 
-tcac_shares <- readRDS(here::here("RDS", "TCAC_y_shares_84858790.rds"))
+tcac_shares <- readRDS(here::here("RDS", "TCAC_y_shares_84858790.rds")) |> hs_relabel()
 
 # flextable en vez de gt() -- gt() no emite anchos de columna (<w:tblGrid>) al
 # exportar a Word en esta versión, lo que produce columnas angostas con texto
@@ -850,139 +801,10 @@ rm(tcac_shares, tabla_cap)
 #| include: false
 #| eval: false
 
-# Detección de quiebres estructurales (Bai-Perron, paquete strucchange) para
-# las partidas presentadas INDIVIDUALMENTE (es decir, Cod_partida != "Resto")
-# en las tablas de los Capítulos 84, 85, 87 y 90 (tcac_shares, chunk
-# prep-tablas-cap). A diferencia de la versión anterior (chunk
-# prep-top-partidas-quiebres-old-v1), que usaba el top-30 global de
-# partidas_valor_depurado.rds, aquí el universo de partidas graficadas queda
-# alineado con el de las tablas: solo se incluyen las que superan el criterio
-# de 80% acumulado del capítulo; el resto queda fuera del panel (igual que
-# queda agrupado en "Resto" en la tabla). Esto reduce el número de partidas
-# por capítulo respecto a la versión anterior: Cap. 84 pasa de 13 a 9,
-# Cap. 85 de ~11 a 10, Cap. 87 a 3 y Cap. 90 a 7 (verificar y actualizar la
-# prosa descriptiva que menciona conteos y partidas específicas, p. ej. el
-# párrafo "Empezamos con el Capítulo 84... hemos seleccionado 13 partidas...").
-
-pacman::p_load(strucchange)
-
-imp_mex_hs4 <- readRDS(here::here("RDS", "imp_mex_hs4.rds"))
-
-# tcac_shares ya existe en el entorno (chunk prep-tablas-cap); se vuelve a
-# leer aquí por si este chunk se ejecuta de forma aislada.
-tcac_shares <- readRDS(here::here("RDS", "TCAC_y_shares_84858790.rds"))
-
-partidas_individuales <- tcac_shares |>
-  filter(Capítulo %in% c(84, 85, 87, 90), Cod_partida != "Resto") |>
-  distinct(Cod_partida, Nombre_corto_partida = Part_corto)
-
-partidas_panel <- imp_mex_hs4 |>
-  filter(
-    Cod_partida %in% partidas_individuales$Cod_partida,
-    fecha >= as.Date("2010-01-01"),
-    fecha <= as.Date("2025-12-31")
-  ) |>
-  left_join(partidas_individuales, by = "Cod_partida") |>
-  arrange(Cap_corto, Cod_partida, fecha)
-
-partidas_sa <- partidas_panel |>
-  group_by(Cod_partida) |>
-  arrange(fecha, .by_group = TRUE) |>
-  mutate(
-    Val_mes_sa = tryCatch(
-      sa_adj(Val_mes, fecha),
-      error = function(e) Val_mes
-    )
-  ) |>
-  ungroup()
-
-partidas_indices <- partidas_sa |>
-  group_by(Cod_partida) |>
-  mutate(
-    base_ene2018 = Val_mes_sa[fecha == as.Date("2018-01-01")][1],
-    Indice       = (Val_mes_sa / base_ene2018) * 100
-  ) |>
-  ungroup()
-
-H_MIN_SEGMENTO <- 24   # mínimo de meses por segmento entre quiebres (2 años)
-
-fit_quiebre <- function(df) {
-  df  <- df |> filter(!is.na(Indice))
-  cod <- first(df$Cod_partida)
-
-  vacio <- function(d) list(
-    datos    = d,
-    quiebres = tibble(Cod_partida = cod, psi_fecha = as.Date(character()))
-  )
-
-  if (nrow(df) < 2 * H_MIN_SEGMENTO) {
-    df$Indice_tendencia <- NA_real_
-    return(vacio(df))
-  }
-
-  df_reg <- df |> mutate(x = as.numeric(fecha), y = Indice)
-
-  bp_full <- tryCatch(
-    suppressWarnings(strucchange::breakpoints(y ~ x, data = df_reg, h = H_MIN_SEGMENTO)),
-    error = function(e) NULL
-  )
-
-  if (is.null(bp_full)) {
-    df$Indice_tendencia <- fitted(lm(y ~ x, data = df_reg))
-    return(vacio(df))
-  }
-
-  bp_optimo <- tryCatch(
-    suppressWarnings(strucchange::breakpoints(bp_full)),
-    error = function(e) NULL
-  )
-
-  sin_quiebres <- is.null(bp_optimo) ||
-    length(bp_optimo$breakpoints) == 0 ||
-    all(is.na(bp_optimo$breakpoints))
-
-  if (sin_quiebres) {
-    df$Indice_tendencia <- fitted(lm(y ~ x, data = df_reg))
-    return(vacio(df))
-  }
-
-  idx_quiebre <- bp_optimo$breakpoints
-  psi_fecha   <- df_reg$fecha[idx_quiebre]
-  psi_x       <- as.numeric(psi_fecha)
-
-  for (i in seq_along(psi_x)) {
-    df_reg[[paste0("hinge", i)]] <- pmax(df_reg$x - psi_x[i], 0)
-  }
-  formula_continua <- as.formula(
-    paste("y ~ x +", paste(paste0("hinge", seq_along(psi_x)), collapse = " + "))
-  )
-  modelo_continuo     <- lm(formula_continua, data = df_reg)
-  df$Indice_tendencia <- fitted(modelo_continuo)
-  quiebres            <- tibble(Cod_partida = cod, psi_fecha = psi_fecha)
-
-  list(datos = df, quiebres = quiebres)
-}
-
-resultados_quiebre <- partidas_indices |>
-  arrange(Cod_partida, fecha) |>
-  group_by(Cod_partida) |>
-  group_split() |>
-  map(fit_quiebre)
-
-partidas_tendencia <- map_dfr(resultados_quiebre, "datos") |>
-  mutate(
-    num_cap       = as.integer(Cod_partida) %/% 100,
-    label_partida = paste0(sprintf("%04d", as.integer(Cod_partida)), " — ", Nombre_corto_partida)
-  )
-
-quiebres_partida <- map_dfr(resultados_quiebre, "quiebres") |>
-  left_join(
-    partidas_tendencia |> distinct(Cod_partida, label_partida, num_cap),
-    by = "Cod_partida"
-  )
-
-rm(imp_mex_hs4, tcac_shares, partidas_individuales, partidas_panel, partidas_sa,
-   partidas_indices, resultados_quiebre, fit_quiebre, H_MIN_SEGMENTO)
+# Quiebres estructurales (Bai-Perron) y tendencia por partida, calculados en
+# Scripts/Prep_partidas_quiebres.R (correrlo cuando cambien los datos).
+partidas_tendencia <- readRDS(here::here("RDS", "partidas_tendencia.rds"))
+quiebres_partida   <- readRDS(here::here("RDS", "quiebres_partida.rds"))
 ```
 
 ```{r}
@@ -1270,66 +1092,23 @@ pacman::p_load(sf, cowplot, ggrepel)
 # abreviadas por estado, leyenda a la derecha en una sola columna.
 # Guarda mapa_xmex_3periodos_tcac.pdf / .png
 
-x_ef      <- readRDS(here::here("RDS", "xmex_total_ef.rds"))
-meta_x_ef <- readRDS(here::here("RDS", "meta_xmex_total_ef.rds"))
-
-### Cálculo: valor exportado anual por estado (xmex_val) ----
-xmex_val <- x_ef |>
-  group_by(cve_geo, nombre, año) |>
-  summarise(val_estado = sum(val_miles, na.rm = TRUE), .groups = "drop")
-
-# Categorías de TCAC -- 7 grupos, límite inferior en -5%.
-breaks_tcac <- c(-Inf, -5, -2.5, 0, 2.5, 5, 7.5, Inf)
-labels_tcac <- c("< −5%", "−5 a −2.5%", "−2.5 a 0%", "0 a 2.5%",
-                  "2.5 a 5%", "5 a 7.5%", "> 7.5%")
-
-# Paleta manual -- naranja (negativo) a azul (positivo).
-paleta_tcac <- c(
-  "< −5%"       = "#E66100",
-  "−5 a −2.5%"  = "#F4A261",
-  "−2.5 a 0%"   = "#FFE8A3",
-  "0 a 2.5%"    = "#D6E9F8",
-  "2.5 a 5%"    = "#A8C8DE",
-  "5 a 7.5%"    = "#5B8FB9",
-  "> 7.5%"      = "#1F4E79"
-)
+# Datos preparados por Scripts/Prep_tcac_estados.R (TCAC por estado y período,
+# abreviaturas y nombres GADM). Categorías y paleta: breaks_tcac, labels_tcac y
+# paleta_tcac, definidas en Scripts/funciones.R.
+tcac_estados   <- readRDS(here::here("RDS", "tcac_estados.rds"))
+estados_lookup <- readRDS(here::here("RDS", "estados_lookup.rds"))
 
 p <- local({
   # Lectura desde caché local (gadm41_MEX_1_pk.rds) -- sin llamada al servidor.
   mexico_sf <- here::here("geodata", "gadm", "gadm41_MEX_1_pk.rds") |>
     readRDS() |>
+    terra::unwrap() |>
     sf::st_as_sf() |>
     mutate(
-      nombre_join = case_when(
-        NAME_1 == "México"           ~ "Estado de México",
-        NAME_1 == "Distrito Federal" ~ "Ciudad de México",
-        NAME_1 == "Michoacán"        ~ "Michoacán",
-        NAME_1 == "Nuevo León"       ~ "Nuevo León",
-        NAME_1 == "Querétaro"        ~ "Querétaro",
-        NAME_1 == "San Luis Potosí"  ~ "San Luis Potosí",
-        NAME_1 == "Yucatán"          ~ "Yucatán",
-        TRUE ~ NAME_1
-      )
+      nombre_join = coalesce(unname(estados_lookup$gadm_a_nombre[NAME_1]), NAME_1)
     )
 
-  abreviaturas <- c(
-    "Aguascalientes"      = "AGS",   "Baja California"     = "BC",
-    "Baja California Sur" = "BCS",   "Campeche"            = "Camp.",
-    "Coahuila"            = "Coah.", "Colima"              = "Col.",
-    "Chiapas"             = "Chis.", "Chihuahua"           = "Chih.",
-    "Ciudad de México"    = "CDMX",  "Durango"             = "Dgo.",
-    "Guanajuato"          = "Gto.",  "Guerrero"            = "Gro.",
-    "Hidalgo"             = "Hgo.",  "Jalisco"             = "Jal.",
-    "Estado de México"    = "Méx.",  "Michoacán"           = "Mich.",
-    "Morelos"             = "Mor.",  "Nayarit"             = "Nay.",
-    "Nuevo León"          = "NL",    "Oaxaca"              = "Oax.",
-    "Puebla"              = "Pue.",  "Querétaro"           = "Qro.",
-    "Quintana Roo"        = "QRoo",  "San Luis Potosí"     = "SLP",
-    "Sinaloa"             = "Sin.",  "Sonora"              = "Son.",
-    "Tabasco"             = "Tab.",  "Tamaulipas"          = "Tamps.",
-    "Tlaxcala"            = "Tlax.", "Veracruz"            = "Ver.",
-    "Yucatán"             = "Yuc.",  "Zacatecas"           = "Zac."
-  )
+  abreviaturas <- estados_lookup$abreviaturas
 
   centroides_sf <- suppressWarnings(
     mexico_sf |>
@@ -1338,14 +1117,9 @@ p <- local({
   )
 
   tcac_periodo <- function(año_ini, año_fin) {
-    n_años <- año_fin - año_ini
-    xmex_val |>
-      filter(año %in% c(año_ini, año_fin)) |>
-      select(nombre, año, val_estado) |>
-      pivot_wider(names_from = año, values_from = val_estado, names_prefix = "y") |>
-      mutate(
-        tcac_pct = ((get(paste0("y", año_fin)) / get(paste0("y", año_ini)))^(1 / n_años) - 1) * 100
-      )
+    tcac_estados |>
+      filter(año_ini == !!año_ini, año_fin == !!año_fin) |>
+      select(nombre, tcac_pct)
   }
 
   make_map <- function(año_ini, año_fin) {
@@ -1442,49 +1216,15 @@ knitr::include_graphics(here::here("Plots", "mapa_xmex_3periodos_tcac.png"))
 # subperíodos del mapa anterior (2010-2018, 2018-2024, 2024-2025). Mismo
 # cálculo de TCAC y misma paleta/bins que el mapa, para consistencia visual.
 
-x_ef      <- readRDS(here::here("RDS", "xmex_total_ef.rds"))
-meta_x_ef <- readRDS(here::here("RDS", "meta_xmex_total_ef.rds"))
-
-### Cálculo: valor exportado anual por estado (xmex_val) ----
-xmex_val <- x_ef |>
-  group_by(cve_geo, nombre, año) |>
-  summarise(val_estado = sum(val_miles, na.rm = TRUE), .groups = "drop")
-
-# Categorías y paleta de TCAC -- idénticas a las del mapa, para que el color
-# de cada celda coincida con la categoría del mapa.
-breaks_tcac <- c(-Inf, -5, -2.5, 0, 2.5, 5, 7.5, Inf)
-labels_tcac <- c("< −5%", "−5 a −2.5%", "−2.5 a 0%", "0 a 2.5%",
-                  "2.5 a 5%", "5 a 7.5%", "> 7.5%")
-paleta_tcac <- c(
-  "< −5%"       = "#E66100",
-  "−5 a −2.5%"  = "#F4A261",
-  "−2.5 a 0%"   = "#FFE8A3",
-  "0 a 2.5%"    = "#D6E9F8",
-  "2.5 a 5%"    = "#A8C8DE",
-  "5 a 7.5%"    = "#5B8FB9",
-  "> 7.5%"      = "#1F4E79"
-)
-
-# TCAC del valor exportado entre año_ini y año_fin, por estado -- misma
-# lógica que en el mapa, parametrizada para nombrar la columna resultante.
-tcac_periodo <- function(año_ini, año_fin, nombre_col) {
-  n_años <- año_fin - año_ini
-  xmex_val |>
-    filter(año %in% c(año_ini, año_fin)) |>
-    select(cve_geo, nombre, año, val_estado) |>
-    pivot_wider(names_from = año, values_from = val_estado, names_prefix = "y") |>
-    mutate(
-      "{nombre_col}" := ((get(paste0("y", año_fin)) / get(paste0("y", año_ini)))^(1 / n_años) - 1) * 100
-    ) |>
-    select(cve_geo, nombre, all_of(nombre_col))
-}
+# TCAC por estado y período: Scripts/Prep_tcac_estados.R
+# (categorías y paleta: breaks_tcac / paleta_tcac en Scripts/funciones.R)
+tcac_estados <- readRDS(here::here("RDS", "tcac_estados.rds"))
 
 ### Construcción: tabla_tcac (una fila por estado, una columna por período) ----
-tabla_tcac <- tcac_periodo(2010, 2018, "tcac_2010_2018") |>
-  left_join(tcac_periodo(2018, 2024, "tcac_2018_2024"), by = c("cve_geo", "nombre")) |>
-  left_join(tcac_periodo(2024, 2025, "tcac_2024_2025"), by = c("cve_geo", "nombre")) |>
-  arrange(nombre) |>
-  select(-cve_geo)
+tabla_tcac <- tcac_estados |>
+  select(nombre, col, tcac_pct) |>
+  pivot_wider(names_from = col, values_from = tcac_pct) |>
+  arrange(nombre)
 
 ### Reestructuración a 8 columnas / 16 filas ----
 # 32 estados en 4 columnas x 32 filas desborda una página. Partimos la lista
@@ -1562,8 +1302,7 @@ tabla_tcac_wide |>
   add_footer_lines("Elaboración propia con base en datos de comercio exterior.") |>
   fontsize(size = 8, part = "footer")
 
-rm(x_ef, meta_x_ef, xmex_val, breaks_tcac, labels_tcac, paleta_tcac, tcac_periodo,
-   tabla_tcac, tabla_izq, tabla_der, tabla_tcac_wide, n_estados, mitad, cols_izq, cols_der)
+rm(tcac_estados, tabla_tcac, tabla_izq, tabla_der, tabla_tcac_wide, n_estados, mitad, cols_izq, cols_der)
 ```
 
 ### Exportaciones de los estados de la frontera, partidas seleccionadas
@@ -1920,18 +1659,8 @@ knitr::include_graphics(here::here("Plots", "fig-immex-empleo.png"))
 #| include: false
 #| eval: false
 
-immex_pct <- immex |>
-  filter(ID_MES == 12, !CVE_ENT %in% c("ZLF", "TOT")) |>
-  group_by(año) |>
-  mutate(total_anual = sum(emp_total, na.rm = TRUE)) |>
-  ungroup() |>
-  group_by(nombre, año) |>
-  summarise(
-    emp_estado  = sum(emp_total, na.rm = TRUE),
-    total_anual = first(total_anual),
-    .groups     = "drop"
-  ) |>
-  mutate(pct = emp_estado / total_anual)
+# Participación estatal en el empleo IMMEX: Scripts/Prep_immex.R
+immex_pct <- readRDS(here::here("RDS", "immex_pct.rds"))
 
 breaks_pp_immex       <- c(-Inf, -2, -0.5, 0.5, 2, Inf)
 labels_pp_immex       <- c("< −2 pp", "−2 a −0.5 pp", "±0.5 pp", "+0.5 a +2 pp", "> +2 pp")
@@ -1951,35 +1680,18 @@ paleta_discreta_immex <- c(
 
 pacman::p_load(sf, cowplot, ggrepel, patchwork)
 
+# Abreviaturas y nombres GADM de los estados: Scripts/Prep_tcac_estados.R
+estados_lookup <- readRDS(here::here("RDS", "estados_lookup.rds"))
+
 p <- local({
-  mexico_sf <- readRDS(here::here("geodata", "gadm41_MEX_1_pk.rds")) |>
+  mexico_sf <- readRDS(here::here("geodata", "gadm", "gadm41_MEX_1_pk.rds")) |>
+    terra::unwrap() |>
     sf::st_as_sf() |>
     mutate(
-      nombre_join = case_when(
-        NAME_1 == "México"           ~ "Estado de México",
-        NAME_1 == "Distrito Federal" ~ "Ciudad de México",
-        TRUE ~ NAME_1
-      )
+      nombre_join = coalesce(unname(estados_lookup$gadm_a_nombre[NAME_1]), NAME_1)
     )
 
-  abreviaturas <- c(
-    "Aguascalientes"      = "AGS",   "Baja California"     = "BC",
-    "Baja California Sur" = "BCS",   "Campeche"            = "Camp.",
-    "Coahuila"            = "Coah.", "Colima"              = "Col.",
-    "Chiapas"             = "Chis.", "Chihuahua"           = "Chih.",
-    "Ciudad de México"    = "CDMX",  "Durango"             = "Dgo.",
-    "Guanajuato"          = "Gto.",  "Guerrero"            = "Gro.",
-    "Hidalgo"             = "Hgo.",  "Jalisco"             = "Jal.",
-    "Estado de México"    = "Méx.",  "Michoacán"           = "Mich.",
-    "Morelos"             = "Mor.",  "Nayarit"             = "Nay.",
-    "Nuevo León"          = "NL",    "Oaxaca"              = "Oax.",
-    "Puebla"              = "Pue.",  "Querétaro"           = "Qro.",
-    "Quintana Roo"        = "QRoo",  "San Luis Potosí"     = "SLP",
-    "Sinaloa"             = "Sin.",  "Sonora"              = "Son.",
-    "Tabasco"             = "Tab.",  "Tamaulipas"          = "Tamps.",
-    "Tlaxcala"            = "Tlax.", "Veracruz"            = "Ver.",
-    "Yucatán"             = "Yuc.",  "Zacatecas"           = "Zac."
-  )
+  abreviaturas <- estados_lookup$abreviaturas
 
   centroides_sf <- suppressWarnings(
     mexico_sf |>
@@ -2337,38 +2049,11 @@ Este pobre desempeño en atracción de IED no refleja una tendencia general en l
 #| label: save-fig-ied-pib-comparadores
 #| include: false
 #| eval: false
-#| code-summary: "Descarga WDI y gráfico comparativo IED/PIB"
+#| code-summary: "Gráfico comparativo IED/PIB (WDI)"
 
-pacman::p_load(WDI)
-
-# Fuente: World Bank, World Development Indicators (WDI)
-# Indicador: BX.KLT.DINV.WD.GD.ZS — "Foreign direct investment, net inflows (% of GDP)"
-# La actualización más reciente del WDI puede no cubrir 2025 para todos los países.
-
-pacman::p_load(WDI)
-
-paises <- c("MX", "CR", "VN", "DO")
-
-ied_pib_wdi <- WDI(
-  indicator = "BX.KLT.DINV.WD.GD.ZS",
-  country   = paises,
-  start     = 2010,
-  end       = 2025
-)
-
-nombres_es <- c(
-  "MX" = "México", "CR" = "Costa Rica",
-  "VN" = "Vietnam", "DO" = "República Dominicana"
-)
-
-ied_pib_comp <- ied_pib_wdi |>
-  rename(ied_pib_pct = BX.KLT.DINV.WD.GD.ZS) |>
-  filter(!is.na(ied_pib_pct)) |>
-  mutate(país = nombres_es[iso2c]) |>
-  select(país, year, ied_pib_pct) |>
-  arrange(país, year)
-
-saveRDS(ied_pib_comp, here::here("RDS", "ied_pib_wdi_comp.rds"))
+# Datos: Scripts/Query13_WDI_IED_PIB.R (descarga del World Bank, WDI;
+# indicador BX.KLT.DINV.WD.GD.ZS).
+ied_pib_comp <- readRDS(here::here("RDS", "ied_pib_wdi_comp.rds"))
 
 p <- local({
   mi_paleta <- colorRampPalette(c(
@@ -2400,7 +2085,7 @@ p <- local({
 
 ggsave(here::here("Plots", "ied_pib_comparativo_wdi.pdf"), plot = p, width = 9, height = 5.5, device = cairo_pdf)
 ggsave(here::here("Plots", "ied_pib_comparativo_wdi.png"), plot = p, width = 9, height = 5.5, dpi = 150)
-rm(p, ied_pib_wdi, ied_pib_comp, nombres_es, paises)
+rm(p, ied_pib_comp)
 ```
 
 ```{r}
