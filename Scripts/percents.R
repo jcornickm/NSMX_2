@@ -12,7 +12,7 @@ impMex_sec_pct <- map_dfr(2010:2025, function(año) {
       fecha <= fecha_fin
     ) |>
     mutate(año = year(fecha)) |> 
-    group_by(año, Sección, Sección_corto, Sección_desc_es) |>
+    group_by(año, Sección, Sección_corto) |>
     summarise(Val_anual = sum(Val_mes, na.rm = TRUE), .groups = "drop") |>
     group_by(año) |>
     mutate(pct = Val_anual / sum(Val_anual)) |>

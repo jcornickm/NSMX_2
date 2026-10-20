@@ -35,144 +35,12 @@ stopifnot("CENSUS_API_KEY no encontrado — definir en .Renviron" =
 dir.create(here("RDS", "raw"), recursive = TRUE, showWarnings = FALSE)
 
 
-## Tablas de referencia                                                     ####
+source(here("Scripts", "funciones.R"))   # hs_agregar_etiquetas(), hs_etiquetas_partida(), sa_adj()
 
-# Secciones del SA
+# Etiquetas del SA: salen de RDS/hs_dictionary.rds (Scripts/build_hs_dictionary.R;
+# nombres cortos editables en Excel/hs_nombres_cortos.csv). Sin tribbles ad hoc.
+capitulos_es <- hs_tablas()$capitulos |> tibble::as_tibble()   # Capítulo, Sección, Cap_corto, Cap_tabla
 
-secciones_sa <- tribble(
-  ~Sección, ~Sección_corto,   ~Sección_desc_es,                                              ~Sección_desc_orig,                                          ~cap_desde, ~cap_hasta,
-  "I",      "Animales",       "Animales vivos y productos del reino animal",                  "Live animals; animal products",                                  1,   5,
-  "II",     "Vegetales",      "Productos del reino vegetal",                                  "Vegetable products",                                             6,  14,
-  "III",    "GrasasAceites",  "Grasas y aceites animales o vegetales",                        "Animal or vegetable fats and oils",                             15,  15,
-  "IV",     "Alimentos",      "Productos de las industrias alimentarias; bebidas y tabaco",   "Prepared foodstuffs; beverages; tobacco",                        16,  24,
-  "V",      "Minerales",      "Productos minerales",                                          "Mineral products",                                              25,  27,
-  "VI",     "Químicos",       "Productos de las industrias químicas",                         "Chemical and allied industries",                                28,  38,
-  "VII",    "PlásticosHule",  "Plásticos y caucho",                                           "Plastics and rubber",                                           39,  40,
-  "VIII",   "Cuero",          "Pieles, cueros y sus manufacturas",                            "Raw hides, skins, leather, furskins",                           41,  43,
-  "IX",     "Madera",         "Madera, carbón vegetal y sus manufacturas",                    "Wood and articles of wood",                                     44,  46,
-  "X",      "Papel",          "Pasta de madera; papel y cartón",                              "Pulp of wood; paper and paperboard",                            47,  49,
-  "XI",     "Textiles",       "Materias textiles y sus manufacturas",                         "Textiles and textile articles",                                 50,  63,
-  "XII",    "Calzado",        "Calzado, sombreros y artículos similares",                     "Footwear, headgear, umbrellas",                                 64,  67,
-  "XIII",   "PiedraCerámica", "Manufacturas de piedra, yeso, cerámica y vidrio",              "Articles of stone, plaster, ceramics, glass",                   68,  70,
-  "XIV",    "Joyería",        "Perlas, piedras preciosas y metales preciosos",                "Natural or cultured pearls, precious metals",                   71,  71,
-  "XV",     "MetalesBase",    "Metales comunes y sus manufacturas",                           "Base metals and articles",                                      72,  83,
-  "XVI",    "Maquinaria",     "Máquinas, aparatos y material eléctrico",                      "Machinery and mechanical appliances; electrical equipment",      84,  85,
-  "XVII",   "Transporte",     "Material de transporte",                                       "Vehicles, aircraft, vessels",                                   86,  89,
-  "XVIII",  "Instrumentos",   "Instrumentos de óptica, fotografía y medicina",                "Optical, photographic, medical instruments",                     90,  92,
-  "XIX",    "Armas",          "Armas y municiones",                                           "Arms and ammunition",                                           93,  93,
-  "XX",     "Manufactura",    "Mercancías y productos diversos",                              "Miscellaneous manufactured articles",                           94,  96,
-  "XXI",    "Arte",           "Objetos de arte, de colección o de antigüedad",                "Works of art, collectors' pieces",                              97,  99
-) |>
-  rowwise() |>
-  mutate(Capítulo = list(cap_desde:cap_hasta)) |>
-  unnest(Capítulo) |>
-  select(Capítulo, Sección, Sección_corto, Sección_desc_es, Sección_desc_orig)
-
-niveles_sección <- c("I","II","III","IV","V","VI","VII","VIII","IX","X",
-                     "XI","XII","XIII","XIV","XV","XVI","XVII","XVIII","XIX","XX","XXI")
-
-# Capítulos del SA (nombres en español)
-capitulos_es <- tribble(
-  ~Capítulo, ~Cap_corto,          ~Cap_desc_es,
-  1,  "AnimalesVivos",     "Animales vivos",
-  2,  "Carnes",            "Carne y despojos comestibles",
-  3,  "Pescados",          "Pescados y crustáceos",
-  4,  "Lácteos",           "Leche, productos lácteos y huevos",
-  5,  "OtrosAnimales",     "Otros productos de origen animal",
-  6,  "PlantasVivas",      "Plantas vivas y productos de floricultura",
-  7,  "Hortalizas",        "Hortalizas y plantas",
-  8,  "FrutasNueces",      "Frutas y frutos secos",
-  9,  "Café",              "Café, té, yerba mate y especias",
-  10,  "Cereales",          "Cereales",
-  11,  "Molinería",         "Productos de molinería",
-  12,  "Semillas",          "Semillas y frutos oleaginosos",
-  13,  "GomasResinas",      "Gomas, resinas y demás jugos vegetales",
-  14,  "MatVegetal",        "Materias trenzables y vegetales",
-  15,  "GrasasAceites",     "Grasas y aceites animales o vegetales",
-  16,  "PrepCarnes",        "Preparaciones de carne o pescado",
-  17,  "Azúcares",          "Azúcares y artículos de confitería",
-  18,  "Cacao",             "Cacao y sus preparaciones",
-  19,  "PrepCereales",      "Preparaciones a base de cereales",
-  20,  "PrepHortalizas",    "Preparaciones de hortalizas y frutas",
-  21,  "PrepAlim",          "Preparaciones alimenticias diversas",
-  22,  "Bebidas",           "Bebidas, líquidos alcohólicos y vinagre",
-  23,  "ResiduosAlim",      "Residuos de las industrias alimentarias",
-  24,  "Tabaco",            "Tabaco y sucedáneos del tabaco",
-  25,  "Sal",               "Sal, azufre, tierras y piedras",
-  26,  "Minerales",         "Minerales metalíferos, escorias y cenizas",
-  27,  "Combustibles",      "Combustibles y aceites minerales",
-  28,  "QuímInorg",         "Productos químicos inorgánicos",
-  29,  "QuímOrg",           "Productos químicos orgánicos",
-  30,  "Farmacéuticos",     "Productos farmacéuticos",
-  31,  "Fertilizantes",     "Fertilizantes",
-  32,  "Tintes",            "Extractos curtientes y tintóreos",
-  33,  "Perfumes",          "Aceites esenciales y perfumería",
-  34,  "Jabones",           "Jabones y preparaciones de limpieza",
-  35,  "MatAlbuminoideas",  "Materias albuminoideas y almidones",
-  36,  "Explosivos",        "Explosivos y artículos de pirotecnia",
-  37,  "FotoCine",          "Productos fotográficos o cinematográficos",
-  38,  "QuímDiversos",      "Productos químicos diversos",
-  39,  "Plásticos",         "Plásticos y sus manufacturas",
-  40,  "Caucho",            "Caucho y sus manufacturas",
-  41,  "PielesCuero",       "Pieles y cueros",
-  42,  "ArtCuero",          "Manufacturas de cuero",
-  43,  "Peletería",         "Peletería y confecciones de peletería",
-  44,  "Madera",            "Madera y sus manufacturas",
-  45,  "Corcho",            "Corcho y sus manufacturas",
-  46,  "Cestería",          "Manufacturas de espartería o cestería",
-  47,  "PastaPapel",        "Pasta de madera y demás materias fibrosas",
-  48,  "Papel",             "Papel, cartón y sus manufacturas",
-  49,  "ArtEditorial",      "Productos editoriales e impresos",
-  50,  "Seda",              "Seda",
-  51,  "LanaFibras",        "Lana y pelo fino u ordinario",
-  52,  "Algodón",           "Algodón",
-  53,  "FibrasVeg",         "Fibras vegetales textiles",
-  54,  "FilasSint",         "Filamentos sintéticos o artificiales",
-  55,  "FibrasSint",        "Fibras discontinuas sintéticas o artificiales",
-  56,  "Guatas",            "Guatas, fieltros y telas sin tejer",
-  57,  "Alfombras",         "Alfombras y revestimientos textiles para el suelo",
-  58,  "TejidosEsp",        "Tejidos especiales",
-  59,  "TejidosImp",        "Telas impregnadas y recubiertas",
-  60,  "TejidosPunto",      "Tejidos de punto",
-  61,  "PrendaPunto",       "Prendas de vestir de punto",
-  62,  "PrendaNoTejida",    "Prendas de vestir (excepto las de punto)",
-  63,  "ArtTextilHogar",    "Artículos textiles confeccionados para el hogar",
-  64,  "Calzado",           "Calzado",
-  65,  "Sombreros",         "Sombreros y artículos de tocado",
-  66,  "Paraguas",          "Paraguas y sombrillas",
-  67,  "PlumasFlores",      "Plumas preparadas y flores artificiales",
-  68,  "PiedraCem",         "Manufacturas de piedra, yeso y cemento",
-  69,  "Cerámica",          "Productos cerámicos",
-  70,  "Vidrio",            "Vidrio y sus manufacturas",
-  71,  "Joyería",           "Perlas, piedras y metales preciosos",
-  72,  "HierroAcero",       "Fundición, hierro y acero",
-  73,  "ArtHierroAcero",    "Manufacturas de fundición, hierro o acero",
-  74,  "Cobre",             "Cobre y sus manufacturas",
-  75,  "Níquel",            "Níquel y sus manufacturas",
-  76,  "Aluminio",          "Aluminio y sus manufacturas",
-  78,  "Plomo",             "Plomo y sus manufacturas",
-  79,  "Zinc",              "Zinc y sus manufacturas",
-  80,  "Estaño",            "Estaño y sus manufacturas",
-  81,  "OtrosMetales",      "Otros metales comunes y sus manufacturas",
-  82,  "HerramMetal",       "Herramientas y útiles de metal común",
-  83,  "ArtMetal",          "Manufacturas diversas de metal común",
-  84,  "Maquinaria",        "Reactores nucleares, calderas y maquinaria",
-  85,  "Eléctrico",         "Máquinas y aparatos eléctricos",
-  86,  "Ferroviario",       "Vehículos y material para vías férreas",
-  87,  "Automóviles",       "Automóviles y vehículos terrestres",
-  88,  "Aeronaves",         "Aeronaves y artefactos espaciales",
-  89,  "Barcos",            "Barcos y embarcaciones",
-  90,  "Óptica",            "Instrumentos de óptica, fotografía y medicina",
-  91,  "Relojería",         "Relojería",
-  92,  "InstMúsica",        "Instrumentos musicales",
-  93,  "Armas",             "Armas y municiones",
-  94,  "Muebles",           "Muebles y artículos de alumbrado",
-  95,  "Juguetes",          "Juguetes y artículos deportivos",
-  96,  "ManufDiversas",     "Manufacturas diversas",
-  97,  "Arte",              "Objetos de arte, de colección o de antigüedad",
-  98,  "EspecialEUA",       "Provisiones especiales de clasificación EUA",
-  99,  "OtrasEspeciales",   "Otras provisiones especiales"
-)
 
 
 
@@ -264,36 +132,6 @@ USallImpMex |> count(nivel) |> print()
 # ==============================================================================
 
 # — Función auxiliar: aplicar etiquetas de Sección y Capítulo como factores ---
-agregar_etiquetas <- function(df) {
-  df |>
-    left_join(secciones_sa,  by = "Capítulo") |>
-    left_join(capitulos_es,  by = "Capítulo") |>
-    mutate(
-      Sección         = factor(Sección,         levels = niveles_sección, ordered = TRUE),
-      Sección_corto   = factor(Sección_corto,
-                               levels = secciones_sa |>
-                                 distinct(Sección, Sección_corto) |>
-                                 arrange(factor(Sección, levels = niveles_sección)) |>
-                                 pull(Sección_corto),
-                               ordered = TRUE),
-      Sección_desc_es = factor(Sección_desc_es,
-                               levels = secciones_sa |>
-                                 distinct(Sección, Sección_desc_es) |>
-                                 arrange(factor(Sección, levels = niveles_sección)) |>
-                                 pull(Sección_desc_es),
-                               ordered = TRUE),
-      Cap_corto       = factor(Cap_corto,
-                               levels = capitulos_es |>
-                                 arrange(Capítulo) |>
-                                 pull(Cap_corto),
-                               ordered = TRUE),
-      Cap_desc_es     = factor(Cap_desc_es,
-                               levels = capitulos_es |>
-                                 arrange(Capítulo) |>
-                                 pull(Cap_desc_es),
-                               ordered = TRUE)
-    )
-}
 
 # ---- 4a. Partidas (HS4) ------------------------------------------------------
 
@@ -301,7 +139,7 @@ message("\n=== Construyendo imp_mex_hs4_all (todos los capítulos) ===")
 
 imp_mex_hs4_all <- raw_df |>
   filter(nivel == "HS4") |>
-  agregar_etiquetas() |>
+  hs_agregar_etiquetas() |>
   mutate(
     Desc_api_partida = as.character(I_COMMODITY_LDESC)
   ) |>
@@ -309,10 +147,8 @@ imp_mex_hs4_all <- raw_df |>
     fecha,
     Sección,
     Sección_corto,
-    Sección_desc_es,
     Capítulo,
     Cap_corto,
-    Cap_desc_es,
     Cod_partida      = cod,
     Desc_api_partida,
     Val_mes,
@@ -336,7 +172,7 @@ message("\n=== Construyendo imp_mex_hs6_all (todos los capítulos) ===")
 
 imp_mex_hs6_all <- raw_df |>
   filter(nivel == "HS6") |>
-  agregar_etiquetas() |>
+  hs_agregar_etiquetas() |>
   mutate(
     Cod_partida      = substr(cod, 1, 4),
     Desc_api_subpart = as.character(I_COMMODITY_LDESC)
@@ -345,10 +181,8 @@ imp_mex_hs6_all <- raw_df |>
     fecha,
     Sección,
     Sección_corto,
-    Sección_desc_es,
     Capítulo,
     Cap_corto,
-    Cap_desc_es,
     Cod_partida,
     Cod_subpartida   = cod,
     Desc_api_subpart,
@@ -382,38 +216,6 @@ cat("Filas en imp_mex_hs6_84858790:", nrow(imp_mex_hs6_84858790), "\n")
 # 1. Nombres en español (largo y corto) por partida
 # Hay "trampa" en el código, en el sentido de que primero se identificaron las partidas más importantes y luego se creó esta tabla
 
-nombres_partidas <- tribble(
-  ~Cod_partida, ~Part_corto,       ~Part_desc_es,
-  "8471", "Computadoras",    "Máquinas automáticas de procesamiento de datos",
-  "8415", "AireAcond",       "Máquinas de aire acondicionado y sus partes",
-  "8418", "Refrigeración",   "Refrigeradores, congeladores y equipo de refrigeración",
-  "8421", "Centrifugadoras", "Centrifugadoras; máquinas para filtrar o depurar",
-  "8407", "MotoresComb",     "Motores de émbolo de encendido por chispa",
-  "8409", "PartesMotores",   "Partes para motores de combustión interna",
-  "8481", "Válvulas",        "Grifos, llaves, válvulas y accesorios similares",
-  "8414", "BombasAire",      "Bombas de aire/vacío, compresores y ventiladores",
-  "8413", "BombasLiq",       "Bombas para líquidos y elevadores de líquidos",
-  "8544", "CablesElec",      "Hilos, cables y conductores eléctricos aislados",
-  "8517", "Teléfonos",       "Teléfonos, smartphones y aparatos de telecomunicación",
-  "8528", "Televisores",     "Receptores de televisión, monitores y proyectores",
-  "8537", "Tableros",        "Cuadros, paneles y consolas para control eléctrico",
-  "8504", "Transformadores", "Transformadores eléctricos y convertidores estáticos",
-  "8543", "MaqElecEsp",      "Máquinas y aparatos eléctricos de función propia",
-  "8536", "AparatosConex",   "Aparatos para corte o protección de circuitos ≤1000V",
-  "8501", "MotoresElec",     "Motores y generadores eléctricos",
-  "8512", "IluminaciónVeh",  "Equipo eléctrico de iluminación/señalización para vehículos",
-  "8516", "CalefElec",       "Calentadores eléctricos y aparatos electrotérmicos",
-  "8703", "AutosPasajeros",  "Automóviles y vehículos para transporte de personas",
-  "8704", "CamionesVeh",     "Vehículos para transporte de mercancías",
-  "8708", "PartesAutos",     "Partes y accesorios para vehículos automotores",
-  "9018", "InstMédicos",     "Instrumentos para medicina, cirugía y veterinaria",
-  "9021", "OrtopedAud",      "Aparatos ortopédicos, prótesis y audífonos",
-  "9028", "Medidores",       "Contadores de gas, líquidos y electricidad",
-  "9032", "Reguladores",     "Instrumentos de regulación y control automático",
-  "9019", "AparatosTerapia", "Aparatos de mecanoterapia, masaje y respiración",
-  "9029", "Velocímetros",    "Cuentarrevoluciones, velocímetros y estroboscopios",
-  "9026", "MedPresión",      "Instrumentos para medición de flujo, nivel y presión"
-)
 
 # 2. Identificar top partidas con base en 2024-2025
 codigos_top <- imp_mex_hs4_84858790 |>
@@ -434,11 +236,11 @@ codigos_top <- imp_mex_hs4_84858790 |>
 # 3. Serie mensual completa 2010-2025, solo top partidas, con nombres en español
 imp_mex_top_hs4 <- imp_mex_hs4_84858790 |>
   filter(Cod_partida %in% codigos_top) |>
-  left_join(nombres_partidas, by = "Cod_partida")
+  hs_etiquetas_partida()
 
 # 4. Verificación
 imp_mex_top_hs4 |>
-  distinct(Capítulo, Cap_corto, Cod_partida, Part_corto, Part_desc_es) |>
+  distinct(Capítulo, Cap_corto, Cod_partida, Part_corto, Part_tabla) |>
   arrange(Capítulo, Cod_partida) |>
   print(n = 50)
 
@@ -600,7 +402,7 @@ total_gral_anual <- imp_mex_sec_cap |>
 # — Paso 3: totales anuales por partida (top partidas) -------------------------
 partidas_anual <- imp_mex_top_hs4 |>
   filter(year(fecha) %in% años_ref) |>
-  group_by(Capítulo, Cap_corto, Cod_partida, Part_corto, Part_desc_es,
+  group_by(Capítulo, Cap_corto, Cod_partida, Part_corto, Part_tabla,
            Año = year(fecha)) |>
   summarise(Val_partida = sum(Val_mes, na.rm = TRUE), .groups = "drop")
 
@@ -635,7 +437,7 @@ resto_ancha <- resto_anual |>
   mutate(
     Cod_partida  = "Resto",
     Part_corto   = "Resto",
-    Part_desc_es = "Resto del capítulo"
+    Part_tabla   = "Resto"
   )
 
 # — Paso 6: combinar partidas + resto ------------------------------------------
@@ -674,7 +476,7 @@ TCAC_y_shares_84858790 <- tabla_tasas |>
     Cap_corto,
     Cod_partida,
     Part_corto,
-    Part_desc_es,
+    Part_tabla,
     val_2010,
     val_2018,
     val_2024,

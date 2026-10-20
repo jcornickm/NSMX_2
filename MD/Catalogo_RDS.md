@@ -80,7 +80,7 @@ Snapshot taken 2026-10-19, before the reorganization of the repository. Purpose:
 | `media_cloud_mensual.rds` | 1.6 KB | 98 × 4 | Monthly aggregation (mentions, total, ratio) | derived from `media_cloud_raw` | Query9_NS_MentionsMX |
 | `meta_media_cloud.rds` | 0.3 KB | 1 × 7 | Provenance | | Query9_NS_MentionsMX |
 | **J. Reference** | | | | | |
-| `hs_dictionary.rds` | 15 KB | 299 × 5 | HS dictionary: 21 Secciones, 96 Capítulos, 182 Partidas (Caps. 84, 85, 87, 90 only), with parent code, short name, official Spanish name | WCO Trade Tools HS 2022 / NALADISA 2022 | `build_hs_dictionary.R` |
+| `hs_dictionary.rds` | 57 KB | 1,347 × 7 | HS dictionary: 21 Secciones, 98 Capítulos (96 SA + 98/99 EUA), 1,228 Partidas (all of NALADISA), with parent code, `nombre_corto`, `nombre_tabla`, official Spanish name and source | WCO Trade Tools HS 2022 / NALADISA 2022 / `Excel/hs_nombres_cortos.csv` | `build_hs_dictionary.R` |
 | **K. Unsorted: no producer script** | | | | | |
 | `impMex_sec_pct` (no extension) | 5.7 KB | 336 × 6 | Annual import value and share by Sección, 2010–2025 | derived from `imp_mex_sec_cap` | Quarto (see §3) |
 | **L. Written by scripts, NOT on disk today** | | | | | |
@@ -102,11 +102,11 @@ Snapshot taken 2026-10-19, before the reorganization of the repository. Purpose:
 
 ### B. US imports from Mexico by HS (Query2, Query3)
 - Source: Census Intl Trade API, Mexico (`CTY_CODE = 2010`). Query2 downloaded 2026-04-19, Query3 on 2026-04-29. Period 2010-01 to 2025-12.
-- **`imp_mex_sec_cap.rds`**: `fecha, Sección (ordered I–XXI), Sección_corto, Sección_desc_es, Sección_desc_orig, Capítulo (1–99), Cap_corto, Cap_desc_es, Cap_desc_api, Val_mes, Val_acum, Val_mes_sa`. `Val_mes_sa` is a seasonally adjusted monthly value (X-13, `sa_adj()` in `funciones.R`). Sección is derived by grouping capítulos.
+- **`imp_mex_sec_cap.rds`**: `fecha, Sección (ordered I–XXI), Sección_corto, Capítulo (1–99), Cap_corto, Cap_desc_api, Val_mes, Val_acum, Val_mes_sa`. `Val_mes_sa` is a seasonally adjusted monthly value (X-13, `sa_adj()` in `funciones.R`). Sección is derived by grouping capítulos.
 - **`raw_df.rds` / `USallImpMex.rds`**: `time ("YYYY-MM"), I_COMMODITY (HS 2–10 digit), I_COMMODITY_LDESC, GEN_VAL_MO, GEN_VAL_YR, CTY_CODE`. 24,349 distinct commodity codes. Assembled from the per-year files in `raw/raw_hs6_YYYY.rds`. Query3 saves the same object under both names.
 - **`imp_mex_hs4.rds`** (HS4) and **`imp_mex_hs6.rds`** (HS6): `fecha, Sección*, Cap*, Cod_partida, [Cod_subpartida], Desc_api_*, Val_mes, Val_acum`. Obtained by filtering `nchar(I_COMMODITY)` to 4 or 6, joined to Sección/Capítulo labels. The `_84858790` versions keep Capítulos 84, 85, 87 and 90 (machinery, electrical, vehicles, optics).
-- **`imp_mex_top_hs4.rds`**: the 29 top partidas within Caps. 84/85/87/90. It adds `Part_corto, Part_desc_es`.
-- **`TCAC_y_shares_84858790.rds`**: `Capítulo, Cap_corto, Cod_partida, Part_corto, Part_desc_es, val_2010, val_2018, val_2024, val_2025, TCAC_1018, TCAC_1824, Crec_2425, pct_cap, pct_total`. Values are 12-month sums per year. TCAC is NA when the initial value is 0. The "Resto" row is the chapter total minus the listed partidas. Definitions are in `meta_TCAC_y_shares`.
+- **`imp_mex_top_hs4.rds`**: the 29 top partidas within Caps. 84/85/87/90. It adds `Part_corto, Part_tabla` (the old `Part_desc_es` is gone).
+- **`TCAC_y_shares_84858790.rds`**: `Capítulo, Cap_corto, Cod_partida, Part_corto, Part_tabla, val_2010, val_2018, val_2024, val_2025, TCAC_1018, TCAC_1824, Crec_2425, pct_cap, pct_total`. Values are 12-month sums per year. TCAC is NA when the initial value is 0. The "Resto" row is the chapter total minus the listed partidas. Definitions are in `meta_TCAC_y_shares`.
 
 ### C. Curated partida lists
 - **`partidas_valor_depurado.rds`** (Query10): the top 30 HS4 partidas by 2024–2025 value after removing special classification categories. Columns: `ranking, Cod_partida, Cap_corto, Desc_api_partida, Val_2024_2025, Desc_es, Nombre_corto_partida`.
@@ -152,7 +152,7 @@ Snapshot taken 2026-10-19, before the reorganization of the repository. Purpose:
 - **`media_cloud_raw.rds`**: `date, count, total_count, ratio`. Daily counts from a Media Cloud CSV export (`Excel/mc-onlinenews-mediacloud-20260611141803-counts.csv`), search "nearshoring Mexico", downloaded 2026-06-11. **`media_cloud_mensual.rds`**: `anio_mes, menciones, total_dias, ratio_mensual`.
 
 ### J. Reference
-- **`hs_dictionary.rds`**: `nivel (Sección/Capítulo/Partida), codigo, codigo_padre, nombre_corto, nombre_oficial`. Secciones (21) come from WCO Trade Tools HS 2022 in Spanish, transcribed by hand. Capítulos and Partidas come from `Excel/naladisa_2022.xlsx` (NALADISA 2022). Capítulos cover the 96 active ones, excluding 77 and the US-specific 98/99. Partidas are included only for Caps. 84, 85, 87 and 90. `nombre_corto` is defined for Sección and Capítulo only (NA for Partida). Built by `Scripts/build_hs_dictionary.R`.
+- **`hs_dictionary.rds`** (rebuilt 2026-10-19): `nivel (Sección/Capítulo/Partida), codigo, codigo_padre, nombre_corto, nombre_tabla, nombre_oficial, fuente`. Secciones (21) from WCO Trade Tools HS 2022 (hand-transcribed); Capítulos (96) and Partidas (all 1,228) from `Excel/naladisa_2022.xlsx`; Caps. 98/99 added by hand. `nombre_corto` / `nombre_tabla` come ONLY from `Excel/hs_nombres_cortos.csv` (editable; empty `nombre_tabla` falls back to `nombre_corto`). Short names exist for all Secciones and Capítulos and for the 42 partidas used so far; the build script reports the rest. Built by `Scripts/build_hs_dictionary.R`.
 
 ---
 
@@ -191,3 +191,29 @@ These files are the only copy of the source for the `.rds` files that come from 
 | `Excel/naladisa_2022.xlsx` | NALADISA 2022 nomenclature (sheet NALADISA 2022) | `hs_dictionary` | build_hs_dictionary.R |
 
 The sheet "Por entidad federativa" in `IED_flujos.xlsx` is not read by any script (SE assigns investment to legal domicile, which makes it unsuitable for geographic analysis).
+
+
+## 6. Label reorganization (2026-10-19)
+
+- **Single source of names:** `RDS/hs_dictionary.rds`, built by `Scripts/build_hs_dictionary.R` from `Excel/naladisa_2022.xlsx` + `Excel/hs_nombres_cortos.csv`. To rename anything, edit the CSV and rerun the build script.
+- **Helpers in `Scripts/funciones.R`:** `hs_cargar()`, `hs_tablas()`, `hs_agregar_etiquetas()`, `hs_etiquetas_partida()` (stops on a missing partida name unless `estricto = FALSE`), and `hs_relabel()` (re-applies current names to an existing data frame; used when the qmd loads an RDS).
+- **Query2/3/11:** name tribbles removed; `*_desc_es` and `Sección_desc_orig` columns dropped; Q3 `nombres_partidas` replaced by `hs_etiquetas_partida()` (`Part_corto`, `Part_tabla`).
+- **Query10/12:** `traducciones_partidas` removed; exclusions are now by chapter NUMBER (verified equivalent to the old name lists); output columns `Nombre_corto_partida` and `Nombre_tabla_partida`. Query10's gt tables are now flextable.
+- **Not rerun:** the existing RDS still carry the old column names/labels until the data pulls are rerun; the qmd applies `hs_relabel()` on load so it already shows the new names. Name changes are listed in `MD/cambios_nombres_capitulos.csv`.
+- **Backup of pre-change files:** `_backup_2026-10-19/` (untracked).
+
+### 6b. Prep scripts and new outputs (2026-10-19)
+
+| Script | Replaces (qmd chunk) | Writes |
+|---|---|---|
+| `Scripts/Prep_imp_pais_mex.R` | `origAnualPerc`, `prep-sec-pct`, `prep-caps` | `impPais_Perc.rds`, `impMex_sec_pct.rds` (now with extension; the extensionless file is obsolete), `impMex_caps_2025.rds` |
+| `Scripts/Prep_tcac_estados.R` | the state-TCAC calculation duplicated in `save-fig-tcac-estados` and `tbl-tcac-estados`; state abbreviations (also duplicated in the IMMEX map) | `tcac_estados.rds`, `estados_lookup.rds` |
+| `Scripts/Prep_partidas_quiebres.R` | `prep-top-partidas-quiebres` (X-13 + Bai-Perron) | `partidas_tendencia.rds`, `quiebres_partida.rds` |
+| `Scripts/Prep_immex.R` | `prep-mapa-immex-4periodos` | `immex_pct.rds` |
+| `Scripts/Query13_WDI_IED_PIB.R` (a data pull) | WDI download inside `save-fig-ied-pib-comparadores` | `ied_pib_wdi_comp.rds` |
+
+Palette and bins for the state-TCAC map/table now live in `Scripts/funciones.R` (`breaks_tcac`, `labels_tcac`, `paleta_tcac`).
+
+**Query2, Query3 and Query11 now have `repull <- FALSE` at the top:** with it off they do not call the API and rebuild everything from the saved raw data (`imp_mex_sec_cap.rds`, `raw_df.rds`, `raw_df_mex_vnm_twn.rds`). `USallImpMex.rds` is now the cleaned version of `raw_df.rds` (adds `fecha`, `cod`, `nivel`, `Capítulo`).
+
+**Suggested run order (RStudio):** `build_hs_dictionary.R` → Query2 → Query3 → Query11 → Query10 → Query12 → `Prep_imp_pais_mex.R` → `Prep_tcac_estados.R` → `Prep_partidas_quiebres.R` → `Prep_immex.R`.
