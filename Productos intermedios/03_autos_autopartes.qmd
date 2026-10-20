@@ -1,0 +1,288 @@
+---
+title: "Autos y Autopartes: Aranceles y Reglas de Origen bajo la Segunda Administración Trump"
+subtitle: "Documento de trabajo N.º 3 — Deep dive por producto: México, Japón, Corea y la Unión Europea"
+author: "DRP Research"
+date: "2026-08-29"
+format:
+  docx:
+    toc: true
+    number-sections: true
+lang: es
+---
+
+# Nota metodológica
+
+Este documento es el primero de una serie de "deep dives" sectoriales que profundizan la clasificación de instrumentos por producto y país anunciada en el documento de trabajo N.º 2. Se enfoca en **vehículos de pasajeros, camiones ligeros y autopartes** (Capítulo 87 del Arancel Armonizado), y compara el tratamiento de cuatro socios comerciales clave: **México, Japón, Corea del Sur y la Unión Europea**.
+
+El eje analítico central es la distinción planteada por el usuario: dos importaciones pueden enfrentar el **mismo arancel nominal** y aun así generar una carga muy distinta, porque (a) una de ellas debe certificar cumplimiento de reglas de origen —con el costo administrativo y el riesgo de auditoría que eso implica— y (b) esas reglas de origen pueden hacer que el **arancel efectivo** (aplicado solo sobre una porción del valor) difiera sustancialmente del arancel nominal. Este documento muestra que ese es exactamente el caso de México frente a Japón, Corea y la UE en el sector automotor.
+
+Fuentes primarias: Federal Register, proclamaciones presidenciales, USTR, CBP, Department of Commerce/BIS, Congressional Research Service (CRS). Complementadas con análisis de bufetes de comercio internacional (Kelley Drye, Greenberg Traurig, ArentFox Schiff, Barnes Richardson, Butzel Long, Freshfields, Troutman Pepper Locke) y cobertura especializada. Las fuentes se citan en el texto en formato APA y se listan completas en la sección de Referencias al final.
+
+---
+
+# 1. Marco legal: la Proclamación 10908 (Sección 232)
+
+- **Base legal:** Sección 232 de la Trade Expansion Act de 1962 (seguridad nacional), la misma base que acero y aluminio. **No** se apoya en IEEPA y por lo tanto **no fue afectada** por el fallo de la Corte Suprema en *Learning Resources, Inc. v. Trump* (20 de febrero de 2026) que invalidó los aranceles IEEPA — ver documento de trabajo N.º 2.
+- **Proclamación 10908**, firmada el 26 de marzo de 2025 al amparo de la investigación de Sección 232 iniciada en 2019 (Federal Register, 2025).
+- **Vehículos de pasajeros y camiones ligeros:** arancel del **25%**, efectivo el **3 de abril de 2025**.
+- **Autopartes:** arancel del **25%**, efectivo el **3 de mayo de 2025**, aplicado inicialmente a un anexo de **130 líneas arancelarias (HTS)** (Kelley Drye & Warren LLP, 2025; ArentFox Schiff LLP, 2025).
+- **Vehículos usados:** exentos si fueron manufacturados hace 25 años o más antes de la fecha de entrada.
+- **Estabilidad jurídica:** la Corte Suprema ha rehusado históricamente revisar el fondo de las determinaciones de Sección 232 (deferencia a la rama ejecutiva sobre "seguridad nacional"); a diferencia de IEEPA, no hay litigio activo con probabilidad relevante de derogar este arancel (Metals Service Center Institute, s.f.). Debe tratarse como el instrumento más estable del arsenal arancelario de la administración en este sector.
+
+## 1.1 Códigos HS/HTS cubiertos
+
+| Categoría | Códigos HTS (2025) | Arancel S. 232 |
+|---|---|---|
+| Vehículos de pasajeros (sedanes, SUV, crossover, minivans) | 8703.22.01, 8703.23.01, 8703.24.01, 8703.31.01, 8703.32.01, 8703.33.01, 8703.40.00, 8703.50.00, 8703.60.00, 8703.70.00, 8703.80.00, 8703.90.01 | 25% |
+| Camiones ligeros y furgonetas de carga | 8704.21.01, 8704.31.01, 8704.41.00, 8704.51.00, 8704.60.00 | 25% |
+| Línea arancelaria general de entrada | 9903.94.01 (autos/camiones ligeros); 9903.94.06 (autopartes calificadas USMCA) | — |
+| Autopartes (motores, transmisiones, componentes eléctricos, etc.) | ~130 líneas HTS bajo el Anexo de la Proclamación 10908 (mayormente subpartidas de la partida **8708** — partes y accesorios de vehículos —, además de partes específicas de motores en el Cap. 84 y componentes eléctricos del Cap. 85 identificadas en el anexo) | 25% |
+
+*Fuente: Federal Register (2025); Kelley Drye & Warren LLP (2025).*
+
+Nota: el Departamento de Comercio administra desde junio de 2025 un **proceso trimestral de inclusión** (ventanas de dos semanas en enero, abril, julio y octubre) mediante el cual fabricantes nacionales pueden solicitar que se agreguen nuevas autopartes a la lista (GingerControl, s.f.). No existe, en cambio, un proceso establecido para **retirar** partes ya incluidas — la exposición arancelaria, una vez creada, tiende a ser permanente.
+
+Adicionalmente, en una acción relacionada pero distinta (misma base legal, proclamación separada), desde el **1 de noviembre de 2025** el gobierno impuso aranceles de Sección 232 sobre **camiones medianos y pesados y autobuses** (25% camiones, 10% autobuses), con su propio mecanismo de *offset* por contenido estadounidense (Troutman Pepper Locke, 2025). No se profundiza aquí por estar fuera del alcance de vehículos ligeros/autopartes, pero se señala como parte del mismo arco de política sectorial.
+
+---
+
+# 2. El mecanismo de "US content offset" para ensambladores en EE.UU.
+
+Un elemento crítico —y una de las victorias de cabildeo más claras del sector (ver sección 6)— es el **"import adjustment offset"**, que reduce la factura arancelaria de autopartes importadas por fabricantes que ensamblan vehículos en EE.UU. (Mondaq, 2025; GingerControl, s.f.):
+
+- **Año 1 (3 abr. 2025 – 30 abr. 2026):** crédito equivalente al **3.75%** del valor agregado (MSRP) de los vehículos ensamblados en EE.UU. (resulta de aplicar 25% sobre el 15% del valor del vehículo que corresponde, en promedio, a autopartes importadas).
+- **Año 2 (originalmente 1 may. 2026 – 30 abr. 2027):** crédito del **2.5%** del MSRP agregado (25% sobre 10% del valor).
+- **Extensión (17 de octubre de 2025):** ante el cabildeo directo de las automotrices —Ford declaró una factura arancelaria proyectada de USD 2,000 millones para 2025 y su CEO, Jim Farley, presionó activamente por alivio— la administración **extendió el programa de dos a cinco años**, cubriendo el resto del mandato presidencial, para atender el problema de que los componentes cruzan las fronteras de América del Norte **múltiples veces** antes del ensamblaje final, acumulando aranceles en cada cruce (NBC News, 2025; Detroit News, 2025).
+- **Elegibilidad:** solo vehículos con ensamblaje final en EE.UU.; el importador de registro debe estar autorizado por el fabricante; el crédito está limitado a la responsabilidad arancelaria del fabricante bajo la Proclamación 10908.
+
+Este mecanismo beneficia a la producción **en EE.UU.**, no a las exportaciones mexicanas, japonesas, coreanas o europeas — es un dato de contexto importante pero no resuelve la pregunta central de este documento.
+
+---
+
+# 3. Los tres regímenes negociados: Japón, Corea y la Unión Europea
+
+A partir de mediados/finales de 2025, EE.UU. cerró acuerdos bilaterales que sustituyeron el 25% de la Proclamación 10908 por un **techo (o piso, según el caso) plano del 15%** para autos y autopartes — sin ningún mecanismo de contenido ni certificación de origen adicional. Los tres casos comparten la lógica de "tasa combinada", pero difieren en detalles técnicos:
+
+## 3.1 Japón
+
+- **Marco:** acuerdo comercial EE.UU.-Japón, implementado por Orden Ejecutiva del **4 de septiembre de 2025** (The White House, 2025).
+- **Tasa:** **15% "inclusivo"** — combina el arancel NMF preexistente (2.5% para autos de pasajeros bajo el arancel base de EE.UU.) con el arancel "recíproco"/Sección 232, de modo que el total pagado por autos y autopartes japonesas **no excede 15%** (no se apilan tasas) (Barnes Richardson & Colburn LLP, 2025).
+- **Retroactividad:** aplicable a mercancía ingresada desde el **7 de agosto de 2025**; entrada en vigor operativa el **16 de septiembre de 2025** (Freshfields Bruckhaus Deringer, 2025).
+- **Cobertura:** autos **y** autopartes por igual.
+- **Certificación de origen:** **ninguna** — es una tasa arancelaria plana aplicada por país de origen declarado, sin requisito de contenido regional ni de valor agregado (Congressional Research Service [CRS], 2025c).
+
+## 3.2 Corea del Sur
+
+- **Marco:** acuerdo estratégico de comercio e inversión (vinculado al paquete de inversión de USD 350,000 millones); implementado mediante modificación del HTSUS con efecto el **1 de noviembre de 2025** (Federal Register, 4 de diciembre de 2025) (Federal Register, 2025).
+- **Tasa:** para autos y autopartes coreanas con arancel preexistente **menor a 15%**, el total se eleva a **15% ad valorem**; para líneas que ya estaban en o por encima de 15%, no se añade nada adicional (CRS, 2025b).
+- **Cobertura:** aplica tanto a los aranceles de Sección 232 (Proclamación 10908) como al arancel "recíproco" IEEPA/E.O. 14257.
+- **Beneficio adicional:** Corea quedó **excluida** de los aranceles de Sección 232 sobre acero, aluminio, cobre y madera — una ventaja que ni México ni, hasta donde se ha confirmado, Japón o la UE, tienen de forma tan explícita (Korea Economic Institute of America [KEIA], 2025).
+- **Certificación de origen:** ninguna para acceder al 15% plano; el KORUS FTA preexistente mantiene sus propios criterios de elegibilidad para otros fines, pero no es prerrequisito para el techo del 15%.
+
+## 3.3 Unión Europea
+
+- **Marco:** "Joint Statement on a United States-European Union Framework" (21 de agosto de 2025), implementado por proclamación con efecto retroactivo al **1 de agosto de 2025**; operativo desde fines de septiembre de 2025 (Comisión Europea, Dirección General de Comercio, 2025).
+- **Tasa:** **15%, o la tasa NMF (Most Favored Nation) del HTSUS, la que sea mayor** — es decir, un **piso** de 15% y no un techo estricto: si el arancel NMF de un producto específico ya supera el 15%, se mantiene esa tasa más alta (Butzel Long, 2025).
+- **Cobertura:** autos y autopartes europeas quedan sujetas a esta fórmula bajo la Proclamación 10908.
+- **Certificación de origen:** ninguna — igual que Japón y Corea, es una tasa por país de origen sin requisito de contenido regional (BusinessWorld, 2025).
+
+## 3.4 Cuadro comparativo
+
+| País/bloque | Arancel nominal efectivo (autos y autopartes) | Vigencia / retroactividad | ¿Requiere certificación de origen? | Base legal combinada |
+|---|---|---|---|---|
+| Japón | 15% inclusivo (techo) | Retroactivo al 7 ago. 2025; vigente 16 sep. 2025 | No | S. 232 + IEEPA/recíproco, unificados en 15% |
+| Corea del Sur | 15% (para líneas <15%; sin cambio si ya ≥15%) | Vigente 1 nov. 2025 | No | S. 232 + recíproco |
+| Unión Europea | 15% o NMF, el mayor (piso) | Retroactivo al 1 ago. 2025; vigente fines sep. 2025 | No | S. 232 + recíproco |
+| **México** | **25% nominal, pero solo sobre el contenido no estadounidense de vehículos calificados bajo el T-MEC** (ver sección 4) | Vigente desde el 3 abr./3 may. 2025, sin cambios negociados a la fecha | **Sí — doble certificación** (T-MEC + "US content" S. 232) | S. 232 puro, sin acuerdo bilateral de sustitución |
+
+*Fuente: elaboración propia a partir de The White House (2025); Barnes Richardson & Colburn LLP (2025); Federal Register (2025); CRS (2025b, 2025c); Comisión Europea (2025); Butzel Long (2025).*
+
+---
+
+# 4. México: el T-MEC no es un arancel plano, es un régimen de certificación
+
+A diferencia de Japón, Corea y la UE, **México no ha negociado una tasa plana sustitutiva**. Sigue bajo el régimen general de la Proclamación 10908, pero con un mecanismo de alivio parcial condicionado al cumplimiento del T-MEC (USMCA). Esto crea exactamente la asimetría que motivó este deep dive.
+
+## 4.1 Dos certificaciones distintas, no una
+
+Es clave no confundir dos procesos de origen que son **legalmente independientes** (Office of the United States Trade Representative [USTR], s.f.-a; Prodensa, s.f.):
+
+**(A) Certificado de origen T-MEC (regla de origen "tradicional"):** determina si el vehículo o autoparte accede a la tasa NMF preferencial (0% en la mayoría de líneas automotrices) bajo el tratado. Requiere:
+
+- **Contenido de valor regional (RVC):** **75%** para vehículos de pasajeros y camiones ligeros (frente a 62.5% bajo el TLCAN); las **partes centrales** (motor, transmisión, chasis, ejes, batería de VE) deben calificar como originarias **por separado**, con su propio umbral, antes de contarse como contenido regional del vehículo terminado.
+- **Contenido de valor laboral (LVC):** **40–45%** del contenido del vehículo debe provenir de plantas que pagan un salario promedio de al menos **USD 16/hora**.
+- **Acero y aluminio:** al menos **70%** de las compras de acero y aluminio del productor deben originarse en América del Norte.
+- **Autocertificación** por el productor/exportador/importador, con obligación de mantener registros de RVC, LVC y abastecimiento de acero/aluminio disponibles para verificación aduanera de CBP.
+
+**(B) Certificación de "contenido estadounidense" para efectos de la Proclamación 10908 (Sección 232):** un proceso **separado y más reciente**, que usa un criterio de **"transformación sustancial"** —distinto del método de RVC/cambio de clasificación arancelaria del T-MEC— para determinar qué porción del valor del vehículo es atribuible a partes "obtenidas en su totalidad, producidas enteramente, o sustancialmente transformadas" en EE.UU. Solo vehículos que ya califican bajo el T-MEC pueden acceder a este proceso (Greenberg Traurig, LLP, 2025).
+
+## 4.2 Cómo se calcula el arancel efectivo para un vehículo mexicano calificado
+
+Si un vehículo ensamblado en México **sí califica** bajo el T-MEC (contenido de valor regional [RVC] ≥75% — ver 4.1) y su fabricante **sí obtiene**, además, la certificación de contenido *específicamente estadounidense* que exige la Proclamación 10908, el 25% de la Sección 232 se aplica **únicamente sobre el valor no estadounidense** del vehículo — el contenido estadounidense certificado se deduce de la base imponible antes de aplicar la tasa.
+
+Conviene no confundir los dos umbrales: el 75% de RVC del T-MEC es contenido *regional* (EE.UU. + México + Canadá) y decide si el vehículo califica para el tratado; el contenido *específicamente estadounidense* —usualmente menor, porque buena parte del RVC regional proviene de valor agregado mexicano— es lo que efectivamente se resta de la base gravable de la Sección 232. Son dos procesos de certificación distintos, tal como se explicó en 4.1.
+
+**Ejemplo ilustrativo** (con datos reales de la industria: la Comisión de Comercio Internacional de EE.UU. estima que los vehículos ensamblados en México tienen en promedio 30–40% de contenido específicamente estadounidense):
+
+| Contenido de EE.UU. certificado | Base gravable (no EE.UU.) | Arancel efectivo sobre el valor total del vehículo |
+|---|---|---|
+| 30% | 70% | 17.50% |
+| 40% | 60% | 15.00% |
+
+Con el rango típico de contenido estadounidense (30–40%), el arancel efectivo mexicano (15.00%–17.50%) queda apenas por encima —o exactamente al nivel— del 15% plano que reciben Japón, Corea y la UE **sin necesidad de certificar nada**. En este rango típico, México no obtiene una ventaja de tasa nominal clara sobre sus competidores asiáticos y europeos; lo que sí conserva es la posibilidad de mejorar el arancel efectivo si su cadena de suministro logra certificar un contenido estadounidense más alto — un margen de maniobra que, como se ve en 4.3, viene acompañado de un riesgo de auditoría retroactiva que Japón, Corea y la UE no enfrentan.
+
+## Autopartes: confirmación del arancel cero para autopartes calificadas bajo el T-MEC
+
+**Sí: cuando una autoparte mexicana califica como originaria bajo las reglas de origen del T-MEC, el arancel de la Sección 232 aplicable es 0% — no un descuento parcial sobre la base gravable (como en vehículos, secc. 4.2), sino una exención total.** Esto es explícito en el propio texto de la Proclamación 10908: su cláusula (4) establece que el arancel ad valorem de 25% "no aplicará a las autopartes que califiquen para tratamiento preferencial bajo el T-MEC, hasta que el Secretario [de Comercio], en consulta con la CBP, establezca un proceso para aplicar el arancel exclusivamente al valor del contenido no estadounidense de dichas autopartes y publique el aviso correspondiente en el *Federal Register*" (Federal Register, 2025, cláusula 4; traducción propia). Es decir, la exención de autopartes T-MEC **no es un beneficio permanente otorgado por el tratado**, sino una **suspensión condicional** del arancel de Sección 232 mientras el Departamento de Comercio no defina un mecanismo de deducción por contenido no estadounidense — mecanismo que, a la fecha de este documento (septiembre de 2026), **no se ha publicado**. A diferencia de los vehículos terminados (secc. 4.2), donde el descuento por contenido estadounidense ya opera de forma proporcional, en autopartes el resultado es hoy binario: **0% si la parte califica bajo el T-MEC, 25% si no califica**.
+
+Una autoparte que califica ingresa por la línea arancelaria **9903.94.06** del HTSUS y no paga el arancel de Sección 232. Hacia enero de 2026, cerca del 85% de las autopartes mexicanas y canadienses importadas reclamaban esta exención, con un arancel efectivo promedio inferior al 5% una vez incluidos los aranceles NMF de base sobre las líneas no exentas (GingerControl, s.f.; International Trade Insights, 2025).
+
+### ¿Cuáles son las reglas de origen que debe cumplir una autoparte?
+
+Aquí hay un matiz importante que conviene precisar: **no existe una única regla de origen aplicable a "las autopartes" en general** — el T-MEC opera con dos regímenes distintos según si la parte está o no enumerada taxativamente en el llamado **Apéndice Automotor** del Anexo 4-B del tratado (implementado en la legislación de EE.UU. en **19 U.S.C. § 4532**; USTR, s.f.-b; CRS, s.f.):
+
+**(A) Partes enumeradas en las Tablas A.1, B y C del Apéndice Automotor** ("core", "principal" y "complementary" parts, respectivamente): para estas partes específicamente listadas, la regla de origen es un umbral de **contenido de valor regional (RVC) por sí solo — sin prueba adicional de cambio de clasificación arancelaria**. Si la parte alcanza el RVC exigido, califica como originaria; si no lo alcanza, no califica, sin importar de dónde provengan sus insumos individuales (USTR, 2022, Art. 3 del Apéndice Automotor, citado en el informe del panel *United States – Automotive Rules of Origin*, USA-MEX-CDA-2022-31-01). Los umbrales, ya en su nivel final desde 2023 (tras la transición 2020-2023), son:
+
+| Categoría (según Apéndice Automotor) | RVC requerido | Ejemplos (Tablas A.1/B/C) |
+|---|---|---|
+| **Partes centrales ("core", Tabla A.1)** | 75% | Motor, transmisión, batería avanzada (VE) |
+| **Partes principales ("principal", Tabla B)** | 70% | Aire acondicionado, asientos, bolsas de aire, flechas de transmisión, sistemas electrónicos de frenos, embragues |
+| **Partes complementarias ("complementary", Tabla C)** | 65% | Motores eléctricos pequeños, faros/luces, arneses de cableado |
+
+*Fuente: 19 U.S.C. § 4532; USTR (2022), informe del panel USA-MEX-CDA-2022-31-01; BLG (2018); Dickinson Wright PLLC (s.f.).* El Apéndice Automotor prevé también Tablas D y E, cuyo contenido específico no se pudo confirmar con una fuente primaria disponible en línea al momento de este documento — se señala como pendiente de verificación.
+
+Esta misma calificación —originaria o no, según el RVC de la tabla que corresponda— es además la que se usa para la regla de "trazabilidad" (*tracing*) que determina cuánto de esa parte cuenta como contenido regional al calcular el RVC del **vehículo terminado** (Art. 3.7 del Apéndice Automotor): es decir, el mismo test cumple una doble función, calificar a la parte en sí y alimentar el cálculo del vehículo.
+
+**(B) Cualquier otra autoparte no enumerada en esas tablas** (la mayoría de las fracciones arancelarias del Cap. 87 y afines que no aparecen en el Apéndice Automotor) se rige, en cambio, por las **reglas de origen generales** del T-MEC (Anexo 4-B, Reglas Específicas por Producto), implementadas domésticamente en **19 CFR Parte 182, Apéndice A**: para la mayoría de las fracciones, esto combina un **cambio de clasificación arancelaria** (la parte debe producirse a partir de materiales no originarios clasificados en una partida/subpartida distinta) con, en varias fracciones, un requisito de RVC alternativo o adicional — el mecanismo estándar de "tariff shift" que aplica a bienes no automotrices bajo el tratado (USTR, s.f.-b).
+
+El método de cálculo de RVC (costo neto o valor de transacción) y la obligación de autocertificación son los mismos descritos en 4.1 para vehículos: el productor, exportador o importador autocertifica el cumplimiento y debe conservar los registros de respaldo disponibles para verificación de CBP. A diferencia de los vehículos, las autopartes **no** están sujetas al requisito de contenido de valor laboral (LVC, 40–45% del contenido en plantas con salario promedio de USD 16/hora) ni al requisito de abastecimiento de acero/aluminio (70% norteamericano de las compras del productor) — ambos aplican al **productor del vehículo terminado**, no a cada autoparte individualmente considerada (Dickinson Wright PLLC, s.f.; USTR, s.f.-a).
+
+Una autoparte que **no** califica bajo estos umbrales paga el 25% pleno de la Proclamación 10908 sobre el valor total — el mismo salto binario que enfrentaron Japón, Corea y la UE antes de sus acuerdos bilaterales (secc. 3), sin el margen intermedio que sí tienen los vehículos calificados. Para el gráfico comparativo de autopartes (ver Plots/), esto simplifica el caso mexicano a un solo escenario representativo: **T-MEC calificado (0%)**, con el caso no calificado (25%) señalado solo en el texto por ser, en la práctica, poco representativo del comercio efectivo (85% de las autopartes ya califican).
+
+## 4.3 El riesgo asimétrico: auditoría y retroactividad
+
+El costo de cumplimiento de México no es solo administrativo — lleva un riesgo financiero que Japón, Corea y la UE simplemente no enfrentan:
+
+- Si CBP determina en una auditoría posterior que el contenido estadounidense declarado fue **sobreestimado**, el **arancel del 25% completo se aplica retroactiva y prospectivamente a todo el modelo**, para el mismo importador, no solo al embarque en cuestión.
+- Un vehículo mexicano que **no califica** bajo el T-MEC (por ejemplo, por no alcanzar el RVC de 75% o el LVC de 40–45%) pierde también el acceso al mecanismo de "contenido estadounidense": paga el 25% sobre el **100%** del valor del vehículo, más el arancel NMF de base — una posición peor que la de Japón, Corea o la UE.
+- Acero y aluminio incorporados en autopartes mexicanas que no cumplan el 70% de abastecimiento norteamericano quedan expuestos, además, a los aranceles de Sección 232 sobre metales (25%/50% según el metal), un frente adicional del que Corea, por ejemplo, fue explícitamente eximida en su acuerdo (KEIA, 2025).
+
+En síntesis: Japón, Corea y la UE compran **certeza** —una tasa fija, conocida de antemano, sin papeleo de origen— a cambio de un techo de 15%. México compra **la posibilidad de un arancel efectivo más bajo que 15%**, pero solo si su cadena de suministro logra certificar un contenido estadounidense alto, mantiene esa certificación bajo escrutinio de auditoría constante, y arriesga que un error retroactivo eleve la factura al 25% completo sobre el valor total. Es, precisamente, la trampa que anticipó la pregunta que originó este documento.
+
+## 4.4 Negociación en curso (Revisión T-MEC 2026)
+
+México no se ha quedado de brazos cruzados frente a esta asimetría. En la revisión conjunta del T-MEC (el tratado exige una revisión formal en 2026), el Secretario de Economía Marcelo Ebrard ha planteado explícitamente tres pedidos relacionados con este análisis (Rio Times, 2026; Mexico Business News, 2026; Center for Strategic and International Studies [CSIS], s.f.):
+
+1. **Elevar el umbral de contenido "exento"** — ampliar qué cuenta como contenido norteamericano para efectos de la Proclamación 10908, de modo que una mayor porción del valor del vehículo quede fuera de la base gravable.
+2. **Bajar la tasa general** del 25% hacia algo cercano al 15% que ya disfrutan Japón, Corea y la UE — es decir, buscar precisamente la paridad de tasa nominal que hoy no existe.
+3. **Reducir los aranceles de metales** (Sección 232 sobre acero/aluminio, actualmente en 25%/50%) que afectan a las autopartes mexicanas de forma transversal.
+
+Una cuarta ronda de conversaciones está prevista para septiembre de 2026 en Washington, descrita por funcionarios como "compleja". Este es un punto que debe monitorearse de cerca para la cronología del proyecto.
+
+---
+
+# 5. Litigio y estabilidad jurídica
+
+A diferencia de los aranceles IEEPA (documento de trabajo N.º 2), la Sección 232 automotriz descansa en una base legal distinta —determinaciones de seguridad nacional del Departamento de Comercio bajo la Trade Expansion Act de 1962— que los tribunales han tratado históricamente con **amplia deferencia** hacia el Ejecutivo, incluyendo negativas de la Corte Suprema a revisar el fondo de determinaciones de Sección 232 en casos previos (acero/aluminio, 2018-2023) (Metals Service Center Institute, s.f.). No se identificó litigio activo con probabilidad relevante de revertir la Proclamación 10908 a la fecha de este documento (25 de agosto de 2026). Esto refuerza la relevancia de un análisis detallado por país: a diferencia de IEEPA/S.122/S.301, este instrumento no está en riesgo de desaparecer por vía judicial en el corto plazo.
+
+---
+
+# 6. Cabildeo industrial
+
+El sector automotor es uno de los que más ha invertido en cabildeo federal durante este período, con evidencia razonablemente clara de un resultado concreto: el mecanismo de *offset* (sección 2) y su extensión de dos a cinco años.
+
+- **Gasto de cabildeo (primer trimestre de 2026, todos los temas, no exclusivo de aranceles):** General Motors, USD 11.38 millones; Alliance for Automotive Innovation (cámara del sector), USD 1.37 millones; Toyota Motor North America, USD 1.24 millones; FCA US/Stellantis, USD 1.01 millones; Ford Motor Co., USD 0.97 millones (OpenSecrets.org, s.f.-a, s.f.-b).
+- **Resultado documentado:** en abril de 2025, ante el anuncio inicial del 25% sobre vehículos y autopartes, Stellantis y Ford respaldaron públicamente el alivio ya negociado sobre acero/aluminio y créditos por doble arancel (CBS News, 2025). Seis meses después, en octubre de 2025, con Ford proyectando una factura arancelaria de USD 2,000 millones para el año y su CEO Jim Farley presionando directamente a la administración, el gobierno **extendió el programa de offset de dos a cinco años**, alegando la necesidad de mantener competitivos a los fabricantes que ensamblan en EE.UU. frente al problema de que los componentes cruzan las fronteras de Norteamérica múltiples veces antes del ensamblaje final (NBC News, 2025; Detroit News, 2025).
+- **Limitación de la evidencia:** el gasto de cabildeo reportado a OpenSecrets cubre todos los temas del cliente (no solo aranceles), por lo que la cifra debe leerse como indicador de la intensidad de la actividad de cabildeo del sector, no como gasto exclusivamente atribuible a este tema. La correlación temporal entre las declaraciones públicas de las automotrices y la extensión del offset es, sin embargo, consistente con una relación causal directa, documentada en cobertura de prensa especializada (CBS News, 2025; NBC News, 2025; Detroit News, 2025).
+
+---
+
+# 7. Síntesis para el informe final
+
+Para el capítulo de instrumentos por producto/país del informe de 20-25 páginas, los puntos que este deep dive aporta son:
+
+1. Autos y autopartes están regidos por un instrumento (Sección 232, Proclamación 10908) **jurídicamente más estable** que los aranceles horizontales (IEEPA/S.122/S.301), lo cual lo hace un buen "ancla" para el análisis de largo plazo.
+2. Japón, Corea y la UE alcanzaron **paridad de tasa nominal (15%)** mediante acuerdos bilaterales, sin ningún requisito de origen — una solución administrativamente simple pero sin margen de mejora adicional salvo renegociación.
+3. México, en cambio, permanece bajo un régimen **estructuralmente más complejo**: nominalmente enfrenta el 25% "genérico", pero puede terminar pagando un arancel efectivo **menor o mayor a 15%** dependiendo del contenido estadounidense certificado de cada modelo — con un costo de cumplimiento (doble certificación T-MEC + Sección 232) y un riesgo de auditoría retroactiva que ninguno de los otros tres socios enfrenta.
+4. Esto valida cuantitativamente la intuición que motivó el deep dive: **mismo arancel nominal ≠ misma carga real**, y las reglas de origen —no solo la tasa— son un determinante central de la competitividad relativa entre socios comerciales.
+5. La revisión del T-MEC en 2026 es el vehículo institucional donde México busca activamente cerrar esta brecha; su resultado (cuarta ronda, septiembre de 2026) debe incorporarse a la cronología del proyecto en cuanto se conozca.
+
+---
+
+# Referencias
+
+ArentFox Schiff LLP. (2025, marzo). *New 25% auto tariffs announced under Section 232: What importers and auto suppliers need to know*. https://www.afslaw.com/perspectives/alerts/new-25-auto-tariffs-announced-under-section-232-what-importers-and-auto
+
+Barnes Richardson & Colburn LLP. (2025, septiembre). *U.S.–Japan trade deal clarified to 15% inclusive, retroactive tariff*. https://www.barnesrichardson.com/usjapan-trade-deal-clarified-to-15-inclusive-retroactive-tariff
+
+BLG (Borden Ladner Gervais LLP). (2018, noviembre). *USMCA automotive rules of origin*. https://www.blg.com/en/insights/2018/11/usmca-automotive-rules-of-origin
+
+BusinessWorld. (2025, 25 de septiembre). *US implements EU trade deal, 15% autos tariffs retroactive to Aug 1*. https://www.bworldonline.com/world/2025/09/25/700827/us-implements-eu-trade-deal-15-autos-tariffs-retroactive-to-aug-1/
+
+Butzel Long. (2025, septiembre). *US implements EU trade deal, reducing tariffs on EU autos & parts and eliminating tariffs on certain other products*. https://www.butzel.com/alert-us-implements-eu-trade-deal-reducing-tariffs-on-eu-autos-parts-and-eliminating-tariffs-on-certain-other-products
+
+CBS News. (2025, 29 de abril). *Trump to ease tariffs on automakers by rolling back some import duties*. https://www.cbsnews.com/news/trump-tariffs-automakers-gm-ford-stellantis-aluminum-steel/
+
+Center for Strategic and International Studies. (s.f.). *USMCA review 2026* [portal de análisis]. Recuperado el 29 de agosto de 2026, de https://www.csis.org/analysis/usmca-review-2026
+
+Code of Federal Regulations. (s.f.). *Title 19, Part 182, Appendix A — Product-specific rules of origin*. Recuperado el 17 de septiembre de 2026, de https://www.ecfr.gov/current/title-19/chapter-I/part-182/appendix-Appendix%20A%20to%20Part%20182
+
+Comisión Europea, Dirección General de Comercio. (2025, 21 de agosto). *Joint statement on a United States-European Union framework on an agreement on reciprocal, fair and balanced trade*. https://policy.trade.ec.europa.eu/news/joint-statement-united-states-european-union-framework-agreement-reciprocal-fair-and-balanced-trade-2025-08-21_en
+
+Congressional Research Service. (2025a, 14 de mayo). *Section 232 automotive tariffs: Issues for Congress* (IN12545). https://www.congress.gov/crs_external_products/IN/PDF/IN12545/IN12545.2.pdf
+
+Congressional Research Service. (2025b, junio). *U.S. tariff actions and U.S.-South Korea trade* (IN12569). https://www.congress.gov/crs_external_products/IN/PDF/IN12569/IN12569.2.pdf
+
+Congressional Research Service. (2025c). *U.S. tariffs and the 2025 U.S.-Japan framework agreement* (IN12608). https://www.congress.gov/crs_external_products/IN/PDF/IN12608/IN12608.3.pdf
+
+Congressional Research Service. (s.f.). *USMCA: Automotive rules of origin* (IF12082). https://www.congress.gov/crs-product/IF12082
+
+Detroit News. (2025, 17 de octubre). *Trump extends auto tariff offsets, details duties on medium- and heavy-duty trucks*. https://www.detroitnews.com/story/business/autos/2025/10/17/trump-extends-auto-tariff-offsets-details-duties-heavier-trucks/86751845007/
+
+Dickinson Wright PLLC. (s.f.). *Summary of automotive provisions of USMCA*. Recuperado el 17 de septiembre de 2026, de https://www.dwlaw.com/news-alerts/summary-of-automotive-provisions-of-usmca
+
+Federal Register. (2025, 3 de abril). *Adjusting imports of automobiles and automobile parts into the United States*. https://www.federalregister.gov/documents/2025/04/03/2025-05930/adjusting-imports-of-automobiles-and-automobile-parts-into-the-united-states
+
+Federal Register. (2025, 4 de diciembre). *Implementing certain tariff-related elements of the U.S.-Korea strategic trade and investment deal*. https://www.federalregister.gov/documents/2025/12/04/2025-21940/implementing-certain-tariff-related-elements-of-the-us-korea-strategic-trade-and-investment-deal
+
+Freshfields Bruckhaus Deringer. (2025, septiembre). *New executive order implements the United States–Japan trade agreement*. https://www.freshfields.com/en/our-thinking/blogs/a-fresh-take/new-executive-order-implements-the-united-statesjapan-trade-agreement-102l47q
+
+GingerControl. (s.f.). *Section 232 auto parts tariffs: Inclusions process, offsets, and what importers need to know* [entrada de blog]. Recuperado el 29 de agosto de 2026, de https://gingercontrol.com/blog/section-232-auto-parts-tariffs
+
+International Trade Insights. (2025, 4 de agosto). *Summary of tariff requirements*. https://www.internationaltradeinsights.com/2025/08/summary-of-tariff-requirements-updated-august-4-2025/
+
+Greenberg Traurig, LLP. (2025, abril). *25% tariff on automobiles and automobile parts begins April 3; USMCA vehicles may qualify for partial relief*. https://www.gtlaw.com/en/insights/2025/4/25-tariff-on-automobiles-and-automobile-parts-begins-april-3-usmca-vehicles-may-qualify-for-partial-relief
+
+Kelley Drye & Warren LLP. (2025, 3 de abril). *Tariff update: List of products covered by the autos tariffs*. https://www.kelleydrye.com/viewpoints/blogs/trade-and-manufacturing-monitor/tariff-update-list-of-products-covered-by-the-autos-tariffs
+
+Korea Economic Institute of America. (2025, octubre). *U.S., South Korea move to lock in lower tariff rate with $350 billion deal*. https://keia.org/the-peninsula/u-s-south-korea-move-to-lock-in-lower-tariff-rate-with-350-billion-deal/
+
+Metals Service Center Institute. (s.f.). *U.S. Supreme Court refuses to hear Section 232 tariff case*. Recuperado el 29 de agosto de 2026, de https://www.msci.org/u-s-supreme-court-refuses-to-hear-section-232-tariff-case/
+
+Mexico Business News. (2026, agosto). *Mexico, US set fourth round of USMCA review talks for September*. https://mexicobusiness.news/trade-and-investment/news/mexico-us-set-fourth-round-usmca-review-talks-september
+
+Mondaq. (2025, junio). *Automobile parts: Import adjustment offset to Section 232 duties*. https://www.mondaq.com/unitedstates/international-trade-investment/1620210/automobile-partsimport-adjustment-offset-to-section-232-duties
+
+NBC News. (2025, 17 de octubre). *Trump extends tariff relief for the U.S. auto industry*. https://www.nbcnews.com/business/autos/trump-extends-tariff-relief-us-auto-industry-rcna238260
+
+Office of the United States Trade Representative. (s.f.-a). *Fact sheet: Automobiles and automotive parts (USMCA)*. Recuperado el 29 de agosto de 2026, de https://ustr.gov/sites/default/files/files/Press/fs/USMCA/USMCA-Autos_and_Auto_Parts.pdf
+
+Office of the United States Trade Representative. (s.f.-b). *USMCA text, Chapter 4: Rules of origin*. Recuperado el 17 de septiembre de 2026, de https://ustr.gov/sites/default/files/files/agreements/FTA/USMCA/Text/04-Rules-of-Origin.pdf
+
+Office of the United States Trade Representative. (2022). *United States – Automotive Rules of Origin, informe del panel* (USA-MEX-CDA-2022-31-01). https://ustr.gov/sites/default/files/enforcement/FTA/USMCA%2031/USMCAAutomotive%20ROO.pdf
+
+OpenSecrets.org. (s.f.-a). *Alliance for Automotive Innovation: Lobbying profile*. Recuperado el 29 de agosto de 2026, de https://www.opensecrets.org/federal-lobbying/clients/summary?id=D000072796
+
+OpenSecrets.org. (s.f.-b). *Auto manufacturers: Industry lobbying summary*. Recuperado el 29 de agosto de 2026, de https://www.opensecrets.org/federal-lobbying/industries/summary?id=T2100
+
+Prodensa. (s.f.). *USMCA automotive rules of origin: Mexico 2026 guide*. Recuperado el 29 de agosto de 2026, de https://www.prodensa.com/insights/blog/usmca-automotive-rules-of-origin
+
+Rio Times. (2026, agosto). *Mexico pushes for lower US auto tariffs as the T-MEC review heads to a fourth round*. https://www.riotimesonline.com/mexico-auto-tariffs-tmec-review-2026/
+
+The White House. (2025, 4 de septiembre). *Implementing the United States–Japan agreement* [Orden ejecutiva]. https://www.whitehouse.gov/presidential-actions/2025/09/implementing-the-united-states-japan-agreement/
+
+Troutman Pepper Locke. (2025, noviembre). *Tariffs imposed on medium- and heavy-duty vehicles, parts, and buses under Section 232*. https://www.troutman.com/insights/tariffs-imposed-on-medium-and-heavy-duty-vehicles-parts-and-buses-under-section-232/
+
+U.S. Code. (s.f.). *19 U.S.C. § 4532 — Special rules for automotive goods*. Recuperado el 17 de septiembre de 2026, de https://uscode.house.gov/view.xhtml?req=granuleid:USC-prelim-title19-section4532
+
+U.S. Customs and Border Protection. (s.f.). *Section 232 additional FAQs, automobiles and auto parts*. Recuperado el 29 de agosto de 2026, de https://www.cbp.gov/trade/programs-administration/entry-summary/section-232-additional-faqs-autos

@@ -1,0 +1,268 @@
+---
+title: "Acero y Aluminio: Aranceles sobre Metales y sus Derivados bajo la Segunda Administración Trump"
+subtitle: "Documento de trabajo N.º 4 — Deep dive por producto: de jure vs. de facto en Sección 232"
+author: "DRP Research"
+date: "2026-08-29"
+format:
+  docx:
+    toc: true
+    number-sections: true
+lang: es
+---
+
+# Nota metodológica
+
+Este es el segundo "deep dive" sectorial de la serie (después del documento N.º 3, autos y autopartes). Cubre **acero (Capítulo 72-73 del Arancel Armonizado) y aluminio (Capítulo 76)**, con dos componentes que deben analizarse por separado, tal como los planteó el usuario:
+
+1. **Aranceles sobre metal primario/semielaborado** (planchas, bobinas, lingotes, perfiles) — el arancel "puro" de Sección 232.
+2. **Aranceles sobre productos derivados** — bienes manufacturados que *contienen* acero o aluminio (tornillería, electrodomésticos, muebles metálicos, partes industriales, etc.), donde el arancel en teoría solo grava la porción de valor atribuible al metal.
+
+El eje analítico central, igual que en el documento N.º 3, es la brecha entre **regla escrita (de jure) y aplicación real (de facto)**. En este sector la brecha es más profunda que en autos: no se trata solo de que un país tenga que certificar origen para acceder a una tasa más baja, sino de que **el propio gobierno de EE.UU. reconoció, en abril de 2026, que su mecanismo de facturación por "contenido de metal" —vigente desde junio de 2025— era objeto de sub-declaración de valor y lo reemplazó** por un sistema de valor íntegro. Es decir, hubo un período de aproximadamente diez meses en que la regla publicada decía una cosa (arancel solo sobre el valor del metal) y la aplicación real, documentada en litigio activo, era distinta y contenciosa. Las reglas de origen "melted and poured" (acero) y "smelted and cast" (aluminio) —clave para el T-MEC y para las excepciones por país— son la otra pieza de este documento.
+
+Fuentes primarias: Federal Register, proclamaciones presidenciales, CBP (incluyendo CSMS y guías del Base Metals Center of Excellence and Expertise), Bureau of Industry and Security (BIS/Comercio), Congressional Research Service (CRS). Complementadas con bufetes de comercio internacional (White & Case, Perkins Coie, Phillips Lytle, BDO, ArentFox Schiff, Barnes Richardson) y cobertura especializada (OpenSecrets, prensa sectorial). Las fuentes se citan en el texto en formato APA y se listan completas en la sección de Referencias al final.
+
+---
+
+# 1. Marco legal: tres proclamaciones en catorce meses
+
+A diferencia de autos (una sola proclamación base, luego moderada por acuerdos bilaterales), acero y aluminio han pasado por **tres rediseños sucesivos** de la misma base legal (Sección 232, Trade Expansion Act de 1962) en poco más de un año:
+
+| Fecha | Instrumento | Cambio principal |
+|---|---|---|
+| **10 feb. 2025** | Proclamación 10895 (aluminio) y Proclamación 10896 (acero) | Restablecen el arancel al **25%** para ambos metales (el aluminio venía de 10% desde 2018) y **eliminan todas las exenciones y cuotas por país** vigentes desde el primer mandato (UE, Canadá, México, Japón, Australia, Corea del Sur, Brasil, Argentina, Reino Unido). Efectivo **12 de marzo de 2025** (The White House, 2025b; Federal Register, 2025d, 2025e). |
+| **3 jun. 2025** | Proclamación 10947 | Duplica el arancel de **25% a 50%** para acero y aluminio (y sus derivados) de forma general. Efectivo **4 de junio de 2025, 00:01 h**. El **Reino Unido queda excluido de la duplicación** (se mantiene en 25%), condicionado al cumplimiento del Acuerdo de Prosperidad Económica EE.UU.-Reino Unido del 8 de mayo de 2025 (Federal Register, 2025a; The White House, 2025a; White & Case LLP, 2025a). |
+| **19 ago. 2025** | Ampliación del proceso de inclusión de derivados (BIS/Comercio) | Se agregan **407 nuevas categorías de producto (códigos HTS)** a la lista de "derivados" sujetos al arancel — el mayor lote de adiciones hasta la fecha, cubriendo desde muebles metálicos hasta componentes eléctricos y de maquinaria (Federal Register, 2025c; Bureau of Industry and Security [BIS], 2025). |
+| **2 abr. 2026** | Proclamación 11021 | Reestructuración integral: elimina el sistema de "solo el valor del contenido metálico" para derivados y lo reemplaza por un sistema de **tasas escalonadas sobre el valor íntegro (full customs value)** del producto, definidas por **umbral de peso** del contenido metálico. Efectivo **6 de abril de 2026, 00:01 h**. Ver sección 4 (Federal Register, 2026; White & Case LLP, 2026; Perkins Coie LLP, 2026; Phillips Lytle LLP, 2026; BDO, 2026). |
+
+**Nota sobre estabilidad:** estas cuatro acciones son, en sí mismas, la base legal más antigua y probada del arsenal arancelario de la administración — la investigación de Sección 232 sobre acero y aluminio data originalmente de **2018** (primer mandato) (Congressional Research Service [CRS], 2025a), por lo que no hay debate sobre si la "amenaza a la seguridad nacional" subyacente es válida; el litigio y el debate público se concentran, en cambio, en el **diseño técnico** de cómo se factura el arancel sobre los derivados (sección 4-5), no en la legalidad del instrumento en sí.
+
+## 1.1 Códigos HS/HTS cubiertos
+
+| Categoría | Capítulo/partidas | Arancel S. 232 (ago. 2026) |
+|---|---|---|
+| Acero primario y semielaborado (planchas, bobinas, barras, tubos, perfiles) | Mayormente Cap. **72-73** | 50% sobre valor íntegro |
+| Aluminio primario y semielaborado (lingotes, planchas, láminas, extrusiones, papel aluminio) | Cap. **76** | 50% sobre valor íntegro |
+| Derivados "sustancialmente" metálicos (tornillería, cables, estructuras, partes de maquinaria) | Anexo I-B de la Proclamación 11021 — códigos dispersos en Caps. 73, 76, 82, 83, 84, 85, 94, entre otros | 25% sobre valor íntegro |
+| Equipo industrial/eléctrico intensivo en metal (transformadores, tableros eléctricos) | Anexo III — categoría transitoria, expira **31 dic. 2027** | 15% (combinado con arancel NMF preexistente) |
+| Artículos con menos de 15% de peso en acero/aluminio/cobre | — | **0% — exentos de Sección 232** (de minimis por peso) |
+| Derivados con ≥85% del metal de origen o fundición estadounidense certificada | Varios | **10%** |
+
+*Fuente: Federal Register (2026); BDO (2026).*
+
+Nota: el umbral de minimis (menos de 15% del peso del artículo) **no aplica** a mercancía clasificada directamente en los capítulos 72, 73, 74 (cobre) o 76 — es decir, el metal primario y semielaborado nunca puede beneficiarse del umbral de peso; este solo protege a productos manufacturados con bajo contenido metálico relativo (p. ej. electrodomésticos con carcasa plástica y pocos componentes metálicos).
+
+---
+
+# 2. Tasas nominales por país/bloque: la brecha entre el titular de prensa y el arancel real
+
+Este es, para efectos del informe final, el hallazgo más importante del documento. Durante 2025, EE.UU. cerró "marcos comerciales" de alto perfil con la UE, Japón y Corea del Sur que la prensa general describió como acuerdos que "bajan los aranceles". **Ninguno de esos tres acuerdos redujo el arancel de Sección 232 sobre acero o aluminio primario.** La reducción negociada (a 15%) se limitó, en los tres casos, a autos/autopartes y —solo en el caso de Corea— también a madera, y en algunos productos "recíprocos" no cubiertos por Sección 232. El acero y el aluminio (y, desde agosto de 2025, el cobre) quedaron **fuera** de esas concesiones y siguen al 50% general.
+
+| País/bloque | Arancel acero/aluminio primario | ¿Incluido en el "marco comercial" de 2025? | Fuente del marco | Nota |
+|---|---|---|---|---|
+| **Reino Unido** | **25%** (Anexo I-A) / **15%** (Anexo I-B, derivados) desde abr. 2026 | Sí — único caso con reducción real de metales | Acuerdo de Prosperidad Económica, 8 may. 2025 (White & Case LLP, 2025c) | Además mantiene una **cuota arancelaria (TRQ)** heredada de 2022: 0.5 millones de toneladas de acero y 21,600 toneladas de aluminio al **0%** dentro de cuota, 25%/10% fuera de cuota. Requiere fundido y colado ("melted and poured") en el Reino Unido. |
+| **Unión Europea** | **50%** | El "Joint Statement" del 21 ago. 2025 solo fijó 15% para autos y la mayoría de bienes; para acero/aluminio únicamente se acordó "explorar" una fórmula de cuota arancelaria futura, sin plazo. | Comisión Europea / EUROFER (Eurofer, 2026) | EUROFER advirtió en 2026 que "cuanto más se mantenga el arancel del 50%, más probable es que también esas exportaciones desaparezcan". |
+| **Japón** | **50%** | El marco del 4 sep. 2025 cubrió autos/autopartes (15%) y bienes recíprocos; **no incluyó acero ni aluminio**. Japón solicitó públicamente su exclusión del arancel de 25-50% sin obtenerla a la fecha de este documento. | White House E.O., 4 sep. 2025 (CRS, 2025b; Yahoo News, 2025) | — |
+| **Corea del Sur** | **50%** | El acuerdo (implementado nov. 2025) reduce a 15% únicamente autos, autopartes, **madera, aduela de madera y derivados de madera**. El texto del *fact sheet* de la Casa Blanca **no menciona acero, aluminio ni cobre** entre los sectores rebajados. | White House Fact Sheet, nov. 2025 (Metals Service Center Institute, 2025) | Corrige una referencia previa de este proyecto (documento N.º 3) que había señalado a Corea como excluida de Sección 232 en metales; la evidencia primaria (fact sheet) solo confirma la exclusión para madera. |
+| **México** | **50%** en la tasa general; posibilidad de reducción a **25%** solo para productores que se comprometan a construir/ampliar capacidad de fundición primaria en EE.UU. (mecanismo específico, no una excepción general) | No — México no tiene un marco comercial general equivalente a UE/Japón/Corea | Proceso de Comercio anunciado abr.-may. 2026 (Supply Chain Dive, 2026) | Ver sección 3.3. Adicionalmente, desde jul. 2026 rige un mecanismo bilateral de verificación de "melted and poured" para bloquear transbordo de acero chino vía México (sección 5; International Trade Council, 2026). |
+| **Canadá** | **50%** en la tasa general; mismo mecanismo de reducción condicionada a inversión en EE.UU. que México (abr.-may. 2026) | No | ídem (Supply Chain Dive, 2026) | Canadá anunció aranceles de represalia de hasta 50% sobre bienes estadounidenses el 25 de agosto de 2026 (fuera del alcance específico de acero/aluminio, pero parte del mismo deterioro bilateral; monitorear para la cronología). |
+| **China / Rusia / Bielorrusia / Irán** | 50% general; aluminio con contenido primario de estos cuatro países enfrenta un recargo específico (hasta **200%** para Rusia) independientemente de dónde se transformó por última vez | No aplica | Proclamación 10895 y modificaciones posteriores | Ver regla de "país de fundición" en sección 3.2. |
+
+**Síntesis de la brecha de percepción:** de los tres socios que en 2025 negociaron reducciones arancelarias ampliamente cubiertas como "acuerdos comerciales históricos" (UE, Japón, Corea), **ninguno obtuvo alivio en acero o aluminio**. Únicamente el Reino Unido —el primer país en cerrar un marco comercial, en mayo de 2025— consiguió una reducción real sobre metales. Este es un caso claro de brecha entre la narrativa pública ("EE.UU. cierra acuerdo con la UE/Japón/Corea") y el detalle jurídico real (esos acuerdos son, en lo que toca a metales, prácticamente irrelevantes).
+
+---
+
+# 3. Reglas de origen: "melted and poured" (acero) y "smelted / cast" (aluminio)
+
+## 3.1 Por qué existen
+
+Desde 2018, la industria siderúrgica de EE.UU. documentó un patrón de **transbordo**: acero producido con sobrecapacidad china (subsidiada) se reexportaba desde terceros países —frecuentemente México, Vietnam o Turquía— con una transformación mínima, para eludir los aranceles antidumping/compensatorios y de Sección 232 dirigidos a China. La respuesta de política es exigir no solo el "país de exportación" declarado en la factura, sino el **país donde el acero fue físicamente fundido y colado por primera vez** ("melted and poured"), y para aluminio, el **país de fundición primaria y el país de colada más reciente** ("country of smelt and most recent cast") (White & Case LLP, 2025b).
+
+## 3.2 Cómo funciona la regla
+
+- **Acero:** el importador debe declarar el código ISO del país de fundido y colado en cada línea de entrada (obligatorio desde 2020, reforzado en 2025). Si el acero fue fundido y colado en EE.UU., se declara "US" y aplica una tasa preferencial (0% bajo HTS 9903.81.92 en el esquema pre-2026; 10% en el esquema de 2026 para derivados con alto contenido estadounidense). Para cualquier otro país, se declara "OTH" y aplica la tasa plena (Barnes Richardson & Colburn LLP, 2025).
+- **Aluminio:** la regla es más estricta para un grupo de países. Aluminio cuyo país de fundición primaria, fundición secundaria o colada más reciente sea **China, Rusia, Bielorrusia o Irán** enfrenta un recargo — 10% adicional en general, hasta **200%** si el metal es de origen ruso — sin importar en qué país se realizó la transformación final o el ensamblaje del producto derivado.
+- **México (regla específica, reforzada jul. 2026):** el acero importado de México debe haber sido fundido y colado **en Norteamérica** (EE.UU., México o Canadá) para calificar para trato preferencial bajo el T-MEC; de lo contrario paga el 25%/50% de Sección 232 según corresponda. El aluminio mexicano no puede contener metal primario fundido en China, Rusia, Bielorrusia o Irán (White & Case LLP, 2025b; International Trade Council, 2026).
+
+## 3.3 El mecanismo de "inversión a cambio de tasa reducida" (Canadá y México, 2026)
+
+En abril-mayo de 2026, el Departamento de Comercio abrió un proceso —distinto de una excepción general por país— mediante el cual productores de acero o aluminio en Canadá o México pueden solicitar una reducción del **50% al 25%** a cambio de (Supply Chain Dive, 2026):
+
+- Ser proveedores actuales de acero/aluminio para fabricantes de vehículos (ligeros o pesados) en EE.UU.;
+- Que sus exportaciones califiquen bajo el T-MEC;
+- Comprometerse de forma vinculante a **construir o ampliar capacidad de fundición primaria en territorio estadounidense** (no basta con modernizar una planta existente);
+- Cumplir hitos verificables (compra de terreno, diseño de planta, construcción, arranque de producción).
+
+La reducción está limitada en **volumen** (al output proyectado de la nueva planta en EE.UU.) y en **tiempo** (plazo fijo determinado por Comercio). Es decir, no es una exención de Sección 232 en el sentido tradicional, sino un incentivo de re-localización industrial empaquetado como alivio arancelario parcial y condicional — estructuralmente distinto del alivio por "contenido estadounidense certificado" que existe para autos mexicanos (documento N.º 3), aunque comparte la misma lógica de premiar producción en EE.UU.
+
+---
+
+# 4. El corazón de la brecha de jure/de facto: cómo se factura (y cómo se facturaba) el arancel sobre derivados
+
+## 4.1 El diseño original (junio 2025 – abril 2026): arancel solo sobre "contenido de metal"
+
+Cuando la Proclamación 10947 (jun. 2025) extendió el arancel de Sección 232 a productos derivados fuera de los capítulos 72/73/76 (por ejemplo, tornillos, muebles metálicos, partes de maquinaria), estableció —siguiendo el mismo principio usado en autos— que el arancel debía aplicarse **únicamente al valor del contenido de acero o aluminio** dentro del producto, no al valor total del artículo. El mecanismo, según la guía pública de CBP (Mohawk Global, s.f.; GHY International, s.f.):
+
+1. El importador debe coordinar con el proveedor para reportar **dos valores separados** en la factura comercial: el valor total del artículo y el valor específico del contenido metálico (con su peso en kilogramos).
+2. Si el valor del contenido metálico **no se puede determinar o es igual al valor total**, el arancel de Sección 232 se aplica sobre el **100% del valor** — es decir, la falta de desagregación castiga al importador con la tasa más alta, no con la más baja.
+3. Cuando el valor del contenido sí se desagrega, se presentan dos líneas de entrada: una para el contenido no-metálico (con los aranceles ordinarios que le correspondan) y otra para el contenido metálico (con el arancel de Sección 232 más el peso en kilogramos reportado por separado).
+
+## 4.2 De jure vs. de facto: el problema de la sub-declaración y el litigio *Express Fasteners*
+
+Este diseño —arancel solo sobre el "contenido de metal declarado"— creaba, en teoría, exactamente el mismo tipo de incentivo que en autos: cuanto menor sea el valor de metal declarado, menor el arancel pagado. A diferencia de autos, donde la certificación de "contenido estadounidense" pasa por un proceso formal de Comercio/CBP con auditoría explícita, aquí la desagregación dependía en gran medida de la **factura del proveedor extranjero**, sin un protocolo de verificación público y uniforme.
+
+En la práctica, el **Base Metals Center of Excellence and Expertise de CBP** —la oficina especializada que administra estos aranceles— comenzó, hacia fines de 2025, a cuestionar declaraciones de valor de contenido que consideraba artificialmente bajas. En al menos un sector documentado (tornillería y sujetadores/*fasteners*), CBP emitió Formularios 28 y 29 (solicitudes de información y avisos de reclasificación) aplicando el arancel de Sección 232 sobre el **valor íntegro de aduana** —incluyendo maquinado, fabricación, gastos generales y margen del fabricante— en vez de limitarlo al valor de la materia prima de acero pagada por el proveedor extranjero, que es lo que las FAQ públicas de CBP parecían indicar.
+
+Un importador de tornillería (**Express Fasteners**) demandó a EE.UU. ante la Corte de Comercio Internacional (CIT) en enero de 2026, alegando dos cosas (Diaz Trade Law, 2026; International Trade Today, 2026; Fastener World, s.f.):
+
+- **Sustantiva:** que las FAQ públicas de CBP limitan el arancel al valor pagado por el acero/aluminio en bruto, no al valor del producto terminado, y que CBP se apartó de esa guía sin justificación.
+- **Procesal:** que CBP cambió su interpretación mediante instrucciones internas informales (no publicadas ni sometidas a un proceso de comentario público), lo cual —según el demandante— viola los requisitos de la Administrative Procedure Act (APA) para este tipo de cambios de política.
+
+El caso, presentado como *Express Fasteners v. United States*, no ha sido resuelto a la fecha de este documento (26 de agosto de 2026), pero expone con claridad la brecha de jure/de facto que motivó este deep dive: **la regla publicada decía "arancel solo sobre el contenido metálico"; la práctica administrativa real —al menos para un sector— fue aplicar el arancel sobre el valor íntegro, mediante guía informal no vinculante, dejando a los importadores sin certeza sobre qué regla regía su propia declaración.**
+
+## 4.3 La reforma de abril de 2026: de "contenido declarado" a "valor íntegro por umbral de peso"
+
+La Proclamación 11021 (2 abr. 2026) resolvió esta ambigüedad, pero no a favor de la fórmula original: **eliminó por completo el concepto de "arancel solo sobre el contenido de metal"** y lo sustituyó por el sistema de tasas escalonadas sobre el valor íntegro, descrito en la tabla de la sección 1.1, con el umbral definido por **porcentaje de peso** (no de valor) del contenido metálico (Federal Register, 2026; GHY International, 2026). La justificación oficial citada en la proclamación es "fortalecer la eficacia y durabilidad" del programa arancelario frente a la "sobrecapacidad global" y "prácticas comerciales distorsivas"; no cita explícitamente la sub-declaración de valor como motivo, pero el cambio de metodología —de un criterio de *valor* fácilmente manipulable por precios de transferencia entre proveedor e importador, a un criterio de *peso físico* verificable en aduana— es exactamente la corrección técnica que un problema de sub-declaración de valor requeriría. El Instituto Americano del Hierro y el Acero (AISI, 2026) celebró la medida explícitamente por "simplificar el proceso de aplicación de los aranceles a productos derivados críticos" y garantizar "el pleno beneficio del arancel del 50%" para tubería de acero — es decir, una confirmación indirecta, desde el lado de la industria beneficiaria, de que el sistema anterior no estaba capturando el valor completo que la política pretendía gravar.
+
+## 4.4 Ejemplo numérico ilustrativo
+
+La siguiente tabla ilustra, con cifras hipotéticas pero representativas, cómo cambió la factura arancelaria de un mismo artículo derivado de acero (valor de aduana total: USD 100,000; peso: 40% acero) bajo los dos regímenes:
+
+| Escenario | Valor declarado como base gravable | Tasa aplicada | Arancel resultante | Arancel efectivo sobre el valor total |
+|---|---|---|---|---|
+| Régimen jun. 2025-abr. 2026, contenido de metal declarado de buena fe (ej. USD 45,000 de valor de acero) | USD 45,000 | 50% | USD 22,500 | 22.5% |
+| Régimen jun. 2025-abr. 2026, contenido de metal **sub-declarado** (ej. USD 20,000 de "valor de acero" en factura, cuestionado por CBP) | USD 20,000 | 50% | USD 10,000 | 10% |
+| Régimen jun. 2025-abr. 2026, CBP "rate-advances" el mismo artículo al valor íntegro (disputa *Express Fasteners*) | USD 100,000 | 50% | USD 50,000 | 50% |
+| Régimen abr. 2026 en adelante (peso ≥15%, artículo "sustancialmente" metálico → Anexo I-B) | USD 100,000 (valor íntegro, fijado por umbral de peso, no de valor) | 25% | USD 25,000 | 25% |
+
+Nótese el rango: bajo el régimen anterior, el mismo artículo físico podía pagar entre **10% y 50%** de arancel efectivo dependiendo únicamente de qué valor de "contenido metálico" declarara el proveedor y de si CBP decidía o no cuestionarlo — una variación de cinco veces sin que cambiara nada del producto. El nuevo régimen elimina esa variabilidad al fijar la tasa (25% o 50%) según una categoría de producto y un umbral de peso, ambos verificables físicamente, aunque a costa de gravar el valor íntegro en la mayoría de los casos — es decir, resuelve la incertidumbre subiendo, en promedio, la carga fiscal real más que bajándola.
+
+---
+
+# 5. De jure vs. de facto en las reglas de origen: transbordo y verificación tardía
+
+Un segundo frente de brecha entre regla y práctica se dio en la verificación de "melted and poured". Cuando estas reglas se aplicaron a México en 2024-2025 (originadas en una proclamación de la administración Biden de julio de 2024, mantenida por la administración Trump) (White & Case LLP, 2025b), la propia industria legal documentó que, **al momento de entrar en vigor, CBP aún no había publicado las clasificaciones HTS que debían declararse ni los detalles del "certificado de análisis" requerido** — es decir, la regla existía de jure desde julio de 2024, pero los mecanismos administrativos para verificarla no estaban operativos. Esto dejó una ventana de facto en la que el cumplimiento dependía de declaraciones no verificadas de manera sistemática.
+
+La respuesta llegó recién en **julio de 2026**, casi dos años después, cuando EE.UU. y México anunciaron **medidas conjuntas de aplicación aduanera** específicamente dirigidas a bloquear el transbordo de acero y aluminio de origen chino a través de territorio mexicano — la confirmación explícita, por parte de ambos gobiernos, de que la brecha de cumplimiento identificada en 2024 era real y estaba siendo explotada (International Trade Council, 2026). Desde entonces, el estándar es más estricto: acero mexicano no fundido y colado en Norteamérica pierde el trato preferencial T-MEC y paga el arancel de Sección 232 pleno; aluminio mexicano con metal primario de China, Rusia, Bielorrusia o Irán pierde también su preferencia.
+
+**Síntesis de la sección:** en dos frentes distintos —valoración de contenido metálico en derivados (sección 4) y verificación de origen de fundición (sección 5)— la evidencia documentada muestra el mismo patrón: **la regla se anuncia primero, la capacidad de verificarla llega después** (meses o años), y en el intervalo la aplicación real depende de declaraciones de los propios importadores/proveedores, sujetas a disputa posterior. Esto es consistente con lo observado en el deep dive de autos (documento N.º 3), donde el riesgo de auditoría retroactiva era el problema central para México; aquí, el problema es más amplio porque afecta la fórmula misma de cálculo del arancel, no solo el porcentaje de contenido nacional.
+
+---
+
+# 6. Litigio y estabilidad jurídica
+
+Como en autos, el arancel base de Sección 232 sobre acero y aluminio **no fue afectado** por los fallos que invalidaron IEEPA (*Learning Resources, Inc. v. Trump*, Corte Suprema, 20 feb. 2026) ni por el fin de la Sección 122 — descansa en base legal distinta (documento de trabajo N.º 2). Existe, sin embargo, litigio activo específico de este sector, distinto en naturaleza al de IEEPA:
+
+- ***Express Fasteners v. United States*** (CIT, presentado ene. 2026): disputa procesal y sustantiva sobre la metodología de valoración de contenido metálico en derivados, descrita en la sección 4.2 (Diaz Trade Law, 2026; International Trade Today, 2026). No resuelto a la fecha de este documento; en principio parcialmente superado por la Proclamación 11021 (que cambió la metodología de origen), pero el reclamo por el periodo jun. 2025-abr. 2026 permanece vigente.
+- **Precedente histórico (primer mandato):** en 2021, la CIT declaró inválidos los aranceles de Sección 232 sobre "derivados" de acero bajo la Proclamación 9980 (2020), por vicios de procedimiento (plazos incumplidos bajo la propia Sección 232) (Global Trade Magazine, 2021). Ese fallo fue relevante porque estableció que los tribunales **sí revisan el procedimiento** con el que se amplía la lista de derivados, aunque no cuestionen la determinación de fondo sobre "seguridad nacional". Es el antecedente directo que explica por qué la administración, en 2025-2026, ha sido cuidadosa en documentar el "proceso de inclusión" de nuevos derivados como un procedimiento formal con ventanas de comentario público (a diferencia del cambio de metodología de valoración, que es precisamente lo que se litiga en *Express Fasteners*).
+- No se identificó litigio con probabilidad relevante de anular el arancel de 50% en sí mismo, ni sobre acero ni sobre aluminio como categorías primarias — la deferencia judicial a las determinaciones de "seguridad nacional" de Sección 232 sigue firme.
+
+**Conclusión de estabilidad:** el "ancla" de acero/aluminio es jurídicamente estable en su nivel de tasa (50%/25% general), pero **inestable en su diseño técnico** — tres rediseños de la fórmula de cálculo en catorce meses, con litigio activo sobre el más reciente cambio de metodología. Para el informe final, esto sugiere describir a Sección 232 metales como "estable en el qué, volátil en el cómo".
+
+---
+
+# 7. Cabildeo industrial: productores a favor, usuarios industriales en contra
+
+Este sector tiene, de forma más nítida que autos, dos bloques de cabildeo con intereses opuestos y ambos activos (OpenSecrets News, 2025; JIA, 2025):
+
+## 7.1 A favor del arancel (productores primarios)
+
+- **American Iron and Steel Institute (AISI):** ha respaldado públicamente cada endurecimiento del arancel, incluyendo un comunicado de abril de 2026 celebrando la Proclamación 11021 por "garantizar el pleno beneficio del 50%" para tubería de acero y "simplificar" la aplicación a derivados (AISI, 2026) — evidencia directa de que la industria consideraba insuficiente la recaudación bajo el esquema de "contenido declarado" (sección 4.3).
+- **Aluminum Association:** incrementó su gasto de cabildeo reportado de USD 80,000 (T1 2024) a **USD 230,000 (T1 2025)**, con foco declarado en "temas de comercio y aranceles del aluminio" (OpenSecrets News, 2025).
+- **Century Aluminum:** incrementó su gasto de USD 119,000 a **USD 229,000** en el mismo periodo, cabildeando explícitamente **a favor** de mantener y elevar los aranceles sobre acero y aluminio de origen chino (OpenSecrets News, 2025; JIA, 2025).
+- Ambas asociaciones citan, como resultado favorable documentado, el aumento de la utilización de capacidad instalada doméstica que la propia Proclamación 11021 reporta: aluminio de 39% a 50.4%, acero de 72.3% a 77.2% (cifras de la administración, no verificadas de forma independiente por este documento).
+
+## 7.2 En contra / buscando alivio (usuarios industriales de metal)
+
+- **Can Manufacturers Institute (CMI):** cabildea activamente por "alivio arancelario dirigido" sobre aluminio (latas de bebidas) y acero (latas de alimentos/hojalata), argumentando impacto en el costo de alimentos y seguridad alimentaria; señala que EE.UU. pasó de doce a solo tres líneas de hojalata en operación como evidencia de la contracción de la industria doméstica que depende del metal como insumo (Al Circle, s.f.). No se documentó, a la fecha de este informe, ninguna exención o reducción concreta obtenida por el sector de envases metálicos — el cabildeo permanece, hasta ahora, sin resultado tangible, a diferencia del caso de autos (documento N.º 3), donde Ford/GM/Stellantis sí lograron la extensión del mecanismo de *offset*.
+- Cobertura de prensa especializada (Food Dive, 2025) documenta cabildeo paralelo de fabricantes de electrodomésticos y de la industria de la construcción, con el mismo patrón: solicitudes de alivio, sin resultado documentado a la fecha.
+
+**Contraste con autos:** en el documento N.º 3, el cabildeo de las automotrices (usuarios de acero/aluminio, no productores) sí produjo un resultado concreto (extensión del *offset* de 2 a 5 años). En metales primarios, el patrón se invierte: quienes han obtenido resultados documentados son los **productores** (AISI, Aluminum Association, Century Aluminum), no los usuarios industriales — consistente con que el objetivo declarado de la política es proteger la producción primaria doméstica, no moderar el costo para manufactureros que usan el metal como insumo.
+
+---
+
+# 8. Síntesis para el informe final
+
+1. Acero y aluminio son, junto con autos, el otro pilar "sectorial" (S. 232) del arsenal arancelario — jurídicamente más estable que IEEPA/S.122/S.301 en cuanto al *nivel* de la tasa, pero el instrumento **con más cambios de diseño técnico** de todo el arsenal (tres proclamaciones y una reestructuración integral en catorce meses).
+2. La narrativa pública de "acuerdos comerciales" con la UE, Japón y Corea en 2025 **no se extiende a acero ni aluminio** — de los tres, ninguno logró reducción; solo el Reino Unido tiene una tasa preferencial real. Este es un ejemplo claro, y verificable con fuentes primarias, de brecha entre cobertura mediática y contenido jurídico real — el mismo tipo de brecha de jure/de facto que motivó este documento, aplicada esta vez a la política exterior en vez de a la valoración aduanera.
+3. El caso más importante de brecha de jure/de facto documentada en este proyecto hasta la fecha: durante ~10 meses (jun. 2025-abr. 2026), la regla publicada preveía arancel solo sobre el "contenido de metal" declarado, pero la aplicación real —al menos en un sector, con litigio activo (*Express Fasteners*)— fue distinta y contenciosa, lo que llevó a un rediseño completo hacia un sistema de valor íntegro por umbral de peso, técnicamente más verificable pero también, en la mayoría de los casos, más gravoso.
+4. Las reglas de origen "melted and poured"/"smelted and cast" muestran el mismo patrón en el frente de origen geográfico: la regla existió meses o años antes de que CBP tuviera capacidad operativa de verificarla, con el caso de México como ejemplo documentado (regla desde jul. 2024, mecanismo de verificación conjunta recién en jul. 2026).
+5. El cabildeo en este sector muestra un patrón inverso al de autos: los productores primarios (no los usuarios industriales) son quienes han obtenido resultados de política documentados.
+6. Punto de monitoreo para la cronología del proyecto: la resolución de *Express Fasteners v. United States* y la implementación del mecanismo de inversión-por-tasa-reducida para Canadá/México (sección 3.3), ambos aún abiertos a la fecha de este documento.
+
+---
+
+# Referencias
+
+Al Circle. (s.f.). *Can Manufacturers Institute advocates for metal tariff relief and addresses rising costs affecting the US industry*. Recuperado el 29 de agosto de 2026, de https://www.alcircle.com/news/can-manufacturers-institute-advocates-for-metal-tariff-relief-and-addresses-rising-costs-affecting-the-us-industry-117459
+
+American Iron and Steel Institute. (2026, abril). *AISI applauds action to maintain the effectiveness and durability of the Section 232 steel tariffs*. https://www.steel.org/2026/04/aisi-applauds-action-to-maintain-the-effectiveness-and-durability-of-the-section-232-steel-tariffs/
+
+Barnes Richardson & Colburn LLP. (2025, junio). *CBP guidance on duties on imports of steel and steel derivative products*. https://www.barnesrichardson.com/cbp-guidance-on-duties-on-imports-of-steel-and-steel-derivative-products
+
+BDO. (2026). *Section 232 metals tariffs expanded and recalibrated: What importers need to know*. https://www.bdo.com/insights/tax/section-232-metals-tariffs-expanded-and-recalibrated-what-importers-need-to-know
+
+Bureau of Industry and Security, U.S. Department of Commerce. (2025, 19 de agosto). *Department of Commerce adds 407 product categories to steel and aluminum tariffs* [comunicado de prensa]. https://www.bis.gov/press-release/department-commerce-adds-407-product-categories-steel-aluminum-tariffs
+
+Congressional Research Service. (2025a). *Section 232 tariffs on steel and aluminum* (IN12519). https://www.congress.gov/crs_external_products/IN/PDF/IN12519/IN12519.10.pdf
+
+Congressional Research Service. (2025b). *U.S. tariffs and the 2025 U.S.-Japan framework agreement* (IN12608). https://www.congress.gov/crs_external_products/IN/PDF/IN12608/IN12608.3.pdf
+
+Diaz Trade Law. (2026, 11 de febrero). *Section 232 valuation in a gray area: What importers need to know*. https://diaztradelaw.com/section-232-valuation-in-a-gray-area-what-importers-need-to-know/
+
+Eurofer. (2026). *EU-U.S. statement: Co-operation on steel is intentionally confirmed but uncertainty remains as 50% tariff continues*. https://www.eurofer.eu/press-releases/eu-u-s-statement-co-operation-on-steel-is-intentionally-confirmed-but-uncertainty-remains-as-50-tariff-continues
+
+Fastener World. (s.f.). *Fastener importer challenges CBP's Section 232 tariff valuation method in U.S. CIT lawsuit*. Recuperado el 29 de agosto de 2026, de https://www.fastener-world.com/en/article/9410.html
+
+Federal Register. (2025a, 9 de junio). *Adjusting imports of aluminum and steel into the United States*. https://www.federalregister.gov/documents/2025/06/09/2025-10524/adjusting-imports-of-aluminum-and-steel-into-the-united-states
+
+Federal Register. (2025b, 2 de mayo). *Adoption and procedures of the Section 232 steel and aluminum tariff inclusions process*. https://www.federalregister.gov/documents/2025/05/02/2025-07676/adoption-and-procedures-of-the-section-232-steel-and-aluminum-tariff-inclusions-process
+
+Federal Register. (2025c, 19 de agosto). *Adoption and procedures of the Section 232 steel and aluminum tariff inclusions process* [407 categorías adicionales]. https://www.federalregister.gov/documents/2025/08/19/2025-15819/adoption-and-procedures-of-the-section-232-steel-and-aluminum-tariff-inclusions-process
+
+Federal Register. (2025d, 5 de marzo). *Implementation of duties on aluminum pursuant to Proclamation 10895*. https://www.federalregister.gov/documents/2025/03/05/2025-03596/implementation-of-duties-on-aluminum-pursuant-to-proclamation-10895-adjusting-imports-of-aluminum
+
+Federal Register. (2025e, 16 de junio). *Implementation of duties on steel pursuant to Proclamation 10896*. https://www.federalregister.gov/documents/2025/06/16/2025-11067/implementation-of-duties-on-steel-pursuant-to-proclamation-10896-adjusting-imports-of-steel-into-the
+
+Federal Register. (2026, 9 de abril). *Strengthening actions taken to adjust imports of aluminum, steel, and copper into the United States*. https://www.federalregister.gov/documents/2026/04/09/2026-06960/strengthening-actions-taken-to-adjust-imports-of-aluminum-steel-and-copper-into-the-united-states
+
+Food Dive. (2025). *Packaging sector warns 50% tariffs on steel and aluminum will drive up food costs*. https://www.fooddive.com/news/packaging-manufacturers-tariffs-steel-aluminum-doubled/749792/
+
+GHY International. (2026). *U.S. adjusts Section 232 tariffs on aluminum, steel and copper (full customs value now applies)*. https://www.ghy.com/trade-compliance/us-adjusts-section-232-tariffs-on-aluminum-steel-and-copper-full-customs-value-now-applies/
+
+GHY International. (s.f.). *CBP Base Metals Center: Updated guidance on Section 232 content reporting*. Recuperado el 29 de agosto de 2026, de https://www.ghy.com/trade-compliance/cbp-base-metals-center-updated-guidance-on-section-232-content-reporting/
+
+GingerControl. (s.f.). *Section 232 steel and aluminum tariffs: What importers need to know* [entrada de blog]. Recuperado el 29 de agosto de 2026, de https://gingercontrol.com/blog/section-232-steel-aluminum-tariffs
+
+Global Trade Magazine. (2021, abril). *CIT declares Section 232 steel tariffs on "derivatives" under Proclamation 9980 invalid and contrary to law*. https://www.globaltrademag.com/cit-declares-section-232-steel-tariffs-on-derivatives-under-proclamation-9980-invalid-and-contrary-to-law/
+
+International Trade Council. (2026, julio). *US and Mexico establish joint enforcement measures to prevent tariff evasion on steel and aluminum*. https://tradecouncil.org/us-and-mexico-establish-joint-enforcement-measures-to-prevent-tariff-evasion-on-steel-and-aluminum/
+
+International Trade Today. (2026, 28 de enero). *CBP failed to follow procedures for Section 232 steel content valuation policy, lawsuit says*. https://internationaltradetoday.com/article/2026/01/28/cbp-failed-to-follow-procedures-for-section-232-steel-content-valuation-policy-lawsuit-says-2601280033
+
+JIA (Johns Hopkins SAIS). (2025, julio). *Lobbying Trump's tariffs*. https://www.jiaponline.org/2025/07/lobbying-trumps-tariffs.html
+
+Metals Service Center Institute. (2025, agosto). *White House provides more information on trade deal with South Korea*. https://www.msci.org/white-house-provides-more-information-on-trade-deal-with-south-korea/
+
+Mohawk Global. (s.f.). *Steel & aluminum derivatives: Key invoice & duty FAQs*. Recuperado el 29 de agosto de 2026, de https://mohawkglobal.com/word-from-the-white-house/steel-aluminum-derivatives-key-invoice-duty-guidelines/
+
+OpenSecrets News. (2025, julio). *Tariff-related lobbying surged in the first quarter of 2025*. https://www.opensecrets.org/news/2025/07/tariff-related-lobbying-surged-in-the-first-quarter-of-2025
+
+Perkins Coie LLP. (2026, abril). *Restructured and additional Section 232 tariffs on aluminum, steel, and copper*. https://perkinscoie.com/insights/update/restructured-and-additional-section-232-tariffs-aluminum-steel-and-copper
+
+Phillips Lytle LLP. (2026, abril). *Administration restructures Section 232 tariffs on metal and derivative products*. https://phillipslytle.com/administration-restructures-section-232-tariffs-on-metal-and-derivative-products/
+
+Supply Chain Dive. (2026, mayo). *US offers lower steel, aluminum tariffs for Canada, Mexico producers*. https://www.supplychaindive.com/news/us-offers-lower-steel-aluminum-tariffs-for-canada-mexico-producers/819705/
+
+The White House. (2025a, junio). *Fact sheet: President Donald J. Trump increases Section 232 tariffs on steel and aluminum*. https://www.whitehouse.gov/fact-sheets/2025/06/fact-sheet-president-donald-j-trump-increases-section-232-tariffs-on-steel-and-aluminum/
+
+The White House. (2025b, febrero). *Fact sheet: President Donald J. Trump restores Section 232 tariffs*. https://www.whitehouse.gov/fact-sheets/2025/02/fact-sheet-president-donald-j-trump-restores-section-232-tariffs/
+
+White & Case LLP. (2025a, junio). *Trump administration increases steel and aluminum Section 232 tariffs to 50% and narrows reciprocal tariff exception*. https://www.whitecase.com/insight-alert/trump-administration-increases-steel-and-aluminum-section-232-tariffs-50-and-narrows
+
+White & Case LLP. (2025b). *United States imposes Section 232 requirements for imports from Mexico: "Melt and pour" for steel; "country of smelt and recent cast" for aluminum*. https://www.whitecase.com/insight-alert/united-states-imposes-section-232-requirements-imports-mexico-melt-and-pour-steel
+
+White & Case LLP. (2025c, mayo). *United States to replace Section 232 tariff on UK steel with tariff-rate quota; UK to eliminate retaliatory tariffs*. https://www.whitecase.com/insight-alert/united-states-replace-section-232-tariff-uk-steel-tariff-rate-quota-uk-eliminate
+
+White & Case LLP. (2026, abril). *United States modifies steel, aluminum, and copper Section 232 tariffs*. https://www.whitecase.com/insight-alert/united-states-modifies-steel-aluminum-and-copper-section-232-tariffs
+
+Yahoo News. (2025). *Japan says it has asked the US to exclude it from 25% steel and aluminum tariffs*. https://www.yahoo.com/news/japan-says-asked-us-exclude-094236636.html

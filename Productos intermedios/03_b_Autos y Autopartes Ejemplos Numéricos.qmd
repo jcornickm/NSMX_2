@@ -1,0 +1,140 @@
+---
+title: "Autos y Autopartes: Ejemplos Numéricos del Mecanismo de Contenido EE.UU. (Sección 232)"
+subtitle: "Documento de trabajo N.º 3.b — Complemento al documento N.º 3, caso México"
+author: "DRP Research"
+date: "2026-08-29"
+format:
+  docx:
+    toc: true
+    number-sections: true
+lang: es
+---
+
+# Nota metodológica
+
+Este documento complementa el documento de trabajo N.º 3 (*Autos y Autopartes: Aranceles y Reglas de Origen*). Desarrolla, con ejemplos numéricos ilustrativos, el mecanismo por el cual el arancel efectivo de la Sección 232 sobre vehículos ensamblados en México varía según el porcentaje de contenido estadounidense certificado.
+
+**Advertencia sobre los datos:** las cifras de contenido EE.UU. usadas aquí como ejemplo (10%, 20%, 35%, 45%) son **aproximaciones razonadas basadas en patrones típicos de la industria por nacionalidad de fabricante**, no cifras oficiales de un modelo o embarque específico. Se incluyen para ilustrar el mecanismo de cálculo, no como datos de comercio real. Ver sección 4 para las fuentes que respaldan el orden de magnitud. Las fuentes se citan en el texto en formato APA y se listan completas en la sección de Referencias al final.
+
+---
+
+# 1. Caso base: auto mexicano que NO califica bajo T-MEC
+
+Cuando un vehículo ensamblado en México **no** alcanza los umbrales de origen del T-MEC (ver sección 2), no tiene acceso al mecanismo de deducción de contenido EE.UU. de la Sección 232 (Federal Register, 2025a). Paga:
+
+- **25%** (Proclamación 10908) sobre el **100%** del valor del vehículo, **más**
+- el arancel NMF de base del HTSUS para esa línea (típicamente **2.5%** para autos de pasajeros).
+
+**Arancel efectivo total ≈ 27.5%** — una posición peor que la de Japón, Corea o la Unión Europea, que pagan un 15% plano (techo o piso, según el acuerdo) sin ningún trámite de origen (ver documento de trabajo N.º 3 de este proyecto).
+
+---
+
+# 2. Requisitos de origen T-MEC (para calificar)
+
+Calificar bajo el T-MEC es un requisito **previo e independiente** del mecanismo de contenido EE.UU. de la Sección 232. Los umbrales relevantes para vehículos de pasajeros y camiones ligeros son (ver documento de trabajo N.º 3 de este proyecto):
+
+| Requisito | Umbral |
+|---|---|
+| Contenido de valor regional (RVC, Norteamérica) | **75%** |
+| Contenido de valor laboral (LVC, salario ≥ USD 16/hora) | **40–45%** |
+| Acero y aluminio de origen norteamericano | **70%** de las compras del productor |
+
+Las **partes centrales** (motor, transmisión, chasis, ejes, batería de VE) deben calificar como originarias **por separado**, con su propio umbral, antes de contarse como contenido regional del vehículo terminado. La certificación es por **autocertificación** del productor/exportador/importador, con registros disponibles para verificación de CBP.
+
+---
+
+# 3. Dos certificaciones distintas, no una
+
+Es clave no confundir dos procesos de origen legalmente independientes:
+
+**(A) Certificado de origen T-MEC** (sección 2, arriba): determina si el vehículo accede a la tasa NMF preferencial del tratado (0% en la mayoría de líneas automotrices).
+
+**(B) Certificación de "contenido estadounidense" para efectos de la Proclamación 10908 (Sección 232):** un proceso **separado**, exclusivo de este arancel, que determina qué porción del valor del vehículo es deducible de la base gravable del 25%. Solo un vehículo que **ya calificó** bajo T-MEC puede intentar este segundo trámite — pero calificar T-MEC no lo certifica automáticamente. Un fabricante que calificó T-MEC pero **no** obtiene (o no busca) la certificación de contenido EE.UU. queda en la misma posición que el caso de la sección 1: paga el 25% sobre el 100% del valor.
+
+## 3.1 Definición oficial del "contenido EE.UU." (Sección 232)
+
+Según la normativa que implementa la Proclamación 10908 (Federal Register, 2025b):
+
+- **Definición:** contenido EE.UU. = valor del vehículo atribuible a partes "obtenidas en su totalidad, producidas enteramente, o sustancialmente transformadas" en EE.UU. ("producción" interpretada según el Artículo 4.1 del T-MEC).
+- **Valuación:** valor declarado en aduana bajo 19 U.S.C. § 1401a al momento de la importación.
+- **Fórmula:** Contenido no-EE.UU. = Valor total del vehículo − Valor EE.UU.
+- **Proceso:** no existe un porcentaje fijo publicado por marca o modelo (a diferencia de la AALA — ver sección 4). El importador **autocertifica** la cifra por **línea de modelo**, con documentación de abastecimiento certificada por un funcionario financiero senior; el Departamento de Comercio revisa y aprueba. Si CBP determina en auditoría posterior que el contenido fue sobreestimado, el 25% completo se aplica retroactiva y prospectivamente a todo el modelo, para el mismo importador.
+
+---
+
+# 4. Órdenes de magnitud típicos por nacionalidad de fabricante (aproximación)
+
+No existe una cifra oficial pública de contenido EE.UU. (definición de la sección 3.1) desagregada por marca. Como proxy direccional se usan los reportes de la **American Automobile Labeling Act (AALA)**, que miden contenido **EE.UU. + Canadá combinado** (una base más amplia que la del criterio 232, que es EE.UU. solamente) y por lo tanto sirven como **techo razonable**, no como cifra sustituta (National Highway Traffic Safety Administration [NHTSA], s.f., 2025; Kogod School of Business, American University, 2025):
+
+| Nacionalidad del fabricante | Contenido doméstico típico (AALA/Kogod, EE.UU.+Canadá) | Contenido EE.UU. (solo) estimado para efectos 232 |
+|---|---|---|
+| Estadounidenses (GM, Ford, Stellantis) | 50–55% | ~35–45% |
+| Europeas (VW, BMW, Audi) | 20–30% | ~10–20% |
+| Japonesas/Coreanas (Toyota, Nissan, Hyundai/Kia; Honda es la excepción, más alto) | 20–35% | ~10–20% |
+
+*Fuentes: NHTSA (s.f., 2025); Kogod School of Business, American University (2025).*
+
+La brecha entre la columna AALA (EE.UU.+Canadá) y la estimación "solo EE.UU." es la razón por la cual estos números se presentan como **aproximación razonada, no como dato verificado por modelo**.
+
+---
+
+# 5. Mecanismo de cálculo del arancel efectivo
+
+Una vez que un vehículo mexicano **califica T-MEC y certifica contenido EE.UU.** (sección 3), el arancel de la Proclamación 10908 se aplica así:
+
+- **0%** sobre el valor certificado como contenido EE.UU.
+- **25%** sobre el resto del valor (contenido no-EE.UU., incluyendo el componente canadiense o mexicano).
+
+$$
+\text{Arancel efectivo} = 25\% \times (1 - \%\text{ contenido EE.UU.})
+$$
+
+## 5.1 Ejemplos numéricos ilustrativos
+
+Usando los órdenes de magnitud de la sección 4 como puntos de referencia (10%, 20%, 35% y 45% de contenido EE.UU.):
+
+| % contenido EE.UU. (ejemplo) | Base gravable (no-EE.UU.) | Arancel efectivo |
+|---|---|---|
+| 10% | 90% | **22.5%** |
+| 20% | 80% | **20.0%** |
+| 35% | 65% | **16.25%** |
+| 45% | 55% | **13.75%** |
+
+**Lectura:**
+
+- Con **40%** de contenido EE.UU. el arancel efectivo converge exactamente en **15%** — el mismo techo/piso plano que reciben Japón, Corea y la Unión Europea sin ningún trámite de origen. Este es el "punto de indiferencia".
+- Por encima de 40% (ej. 45%), el fabricante mexicano paga **menos** que sus competidores asiáticos y europeos (13.75% vs. 15%).
+- Por debajo de 40% (ej. 10%, 20%, 35%) — que es el rango típico de fabricantes europeos y asiático-coreanos según la sección 4 — el arancel efectivo mexicano **supera** el 15% plano, a pesar de operar dentro de un tratado de libre comercio con EE.UU.
+- Los fabricantes estadounidenses (GM, Ford, Stellantis), con contenido EE.UU. estimado más cercano a 35–45%, se ubican cerca o por debajo del punto de indiferencia.
+
+---
+
+# 6. Síntesis
+
+| Escenario | Arancel efectivo |
+|---|---|
+| No califica T-MEC | ~27.5% (25% + NMF ~2.5%, sobre 100% del valor) |
+| Califica T-MEC pero no certifica contenido EE.UU. | ~27.5% (mismo tratamiento que el caso anterior) |
+| Califica T-MEC y certifica 10% contenido EE.UU. | 22.5% |
+| Califica T-MEC y certifica 20% contenido EE.UU. | 20.0% |
+| Califica T-MEC y certifica 35% contenido EE.UU. | 16.25% |
+| Califica T-MEC y certifica 45% contenido EE.UU. | 13.75% |
+| Japón / Corea / UE (sin trámite de origen) | 15% (techo o piso, según acuerdo) |
+
+---
+
+# Referencias
+
+Federal Register. (2025a, 3 de abril). *Adjusting imports of automobiles and automobile parts into the United States*. https://www.federalregister.gov/documents/2025/04/03/2025-05930/adjusting-imports-of-automobiles-and-automobile-parts-into-the-united-states
+
+Federal Register. (2025b, 20 de mayo). *Procedures for submissions by importers of automobiles qualifying for preferential tariff treatment under the USMCA to determine U.S. content*. https://www.federalregister.gov/documents/2025/05/20/2025-08917/procedures-for-submissions-by-importers-of-automobiles-qualifying-for-preferential-tariff-treatment
+
+Federal Register. (2025c, 13 de junio). *Procedures to administer import adjustment offset amounts for certain imports of automobile parts under Proclamation 10908, as amended*. https://www.federalregister.gov/documents/2025/06/13/2025-10740/procedures-to-administer-import-adjustment-offset-amounts-for-certain-imports-of-automobile-parts
+
+Kogod School of Business, American University. (2025). *Made in America auto index 2025*. https://kogod.american.edu/autoindex/2025
+
+National Highway Traffic Safety Administration. (s.f.). *Part 583 American Automobile Labeling Act reports*. Recuperado el 29 de agosto de 2026, de https://www.nhtsa.gov/part-583-american-automobile-labeling-act-reports
+
+National Highway Traffic Safety Administration. (2025, 17 de enero). *MY2025 AALA percentage report* [PDF]. https://www.nhtsa.gov/sites/nhtsa.gov/files/2025-01/MY2025-AALA-Percentage-1.17.25.pdf
+
+*Nota: este documento se apoya además en el marco legal y las fuentes primarias generales desarrolladas en el documento de trabajo N.º 3 de este proyecto (03_autos_autopartes.qmd), que no se repiten aquí.*
