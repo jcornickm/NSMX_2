@@ -30,10 +30,16 @@
 pacman::p_load(httr, jsonlite, forcats, zoo, tidyverse,
                here, janitor, censusapi, scales)
 
+# — Interruptor de descarga ----------------------------------------------------
+# repull = FALSE (default): NO se llama al API. Se toma RDS/imp_mex_sec_cap.rds
+# ya guardado, se re-etiqueta con el diccionario del SA y se vuelve a guardar.
+# repull = TRUE: vuelve a descargar y reconstruye (requiere CENSUS_API_KEY).
+repull <- FALSE
+
 # — Clave del API -------------------------------------------------------------
 api_key <- Sys.getenv("CENSUS_API_KEY")
 stopifnot("Clave del Census API no encontrada — definir CENSUS_API_KEY en .Renviron" =
-            nchar(api_key) > 0)
+            !repull || nchar(api_key) > 0)
 
 # — Años a descargar ----------------------------------------------------------
 años <- 2010:2025
@@ -65,48 +71,57 @@ descargar_mexico_hs2 <- function(año) {
   })
 }
 
-# — Descarga ------------------------------------------------------------------
-message("\n=== Descargando: importaciones de EUA desde México por Capítulo SA ===")
-raw_list <- map(años, descargar_mexico_hs2)
+if (!repull) {
+  message("\n=== repull = FALSE: se re-etiqueta RDS/imp_mex_sec_cap.rds (sin llamar al API) ===")
+  imp_mex_sec_cap <- readRDS(here("RDS", "imp_mex_sec_cap.rds")) |>
+    hs_relabel() |>
+    select(-any_of(c("Sección_desc_es", "Sección_desc_orig", "Cap_desc_es"))) |>
+    select(fecha, Sección, Sección_corto, Capítulo, Cap_corto,
+           any_of("Cap_desc_api"), Val_mes, Val_acum, any_of("Val_mes_sa"))
+} else {
+  # — Descarga ------------------------------------------------------------------
+  message("\n=== Descargando: importaciones de EUA desde México por Capítulo SA ===")
+  raw_list <- map(años, descargar_mexico_hs2)
 
-# — Limpieza y construcción del tibble final ----------------------------------
-imp_mex_sec_cap <- raw_list |>
-  compact() |>
-  bind_rows() |>
-  as_tibble() |>
-  mutate(
-    fecha    = as.Date(paste0(time, "-01")),
-    capitulo = as.integer(I_COMMODITY),
-    val_mes  = as.numeric(GEN_VAL_MO),
-    val_acum = as.numeric(GEN_VAL_YR)
-  ) |>
-  hs_agregar_etiquetas(col_cap = "capitulo") |>
-  select(
-    fecha,
-    Sección,
-    Sección_corto,
-    Capítulo          = capitulo,
-    Cap_corto,
-    Cap_desc_api      = I_COMMODITY_LDESC,
-    Val_mes           = val_mes,
-    Val_acum          = val_acum
-  ) |>
-  arrange(fecha, Capítulo)
+  # — Limpieza y construcción del tibble final ----------------------------------
+  imp_mex_sec_cap <- raw_list |>
+    compact() |>
+    bind_rows() |>
+    as_tibble() |>
+    mutate(
+      fecha    = as.Date(paste0(time, "-01")),
+      capitulo = as.integer(I_COMMODITY),
+      val_mes  = as.numeric(GEN_VAL_MO),
+      val_acum = as.numeric(GEN_VAL_YR)
+    ) |>
+    hs_agregar_etiquetas(col_cap = "capitulo") |>
+    select(
+      fecha,
+      Sección,
+      Sección_corto,
+      Capítulo          = capitulo,
+      Cap_corto,
+      Cap_desc_api      = I_COMMODITY_LDESC,
+      Val_mes           = val_mes,
+      Val_acum          = val_acum
+    ) |>
+    arrange(fecha, Capítulo)
 
-# — Seasonal adjustment -------------------------------------------------------
-imp_mex_sec_cap <- imp_mex_sec_cap |>
-  group_by(Capítulo) |>
-  arrange(fecha, .by_group = TRUE) |>
-  mutate(
-    Val_mes_sa = tryCatch(
-      sa_adj(Val_mes, fecha),
-      error = function(e) {
-        message("  SA failed for Capítulo ", first(Capítulo), " — returning unadjusted values. Reason: ", conditionMessage(e))
-        Val_mes
-      }
-    )
-  ) |>
-  ungroup()
+  # — Seasonal adjustment -------------------------------------------------------
+  imp_mex_sec_cap <- imp_mex_sec_cap |>
+    group_by(Capítulo) |>
+    arrange(fecha, .by_group = TRUE) |>
+    mutate(
+      Val_mes_sa = tryCatch(
+        sa_adj(Val_mes, fecha),
+        error = function(e) {
+          message("  SA failed for Capítulo ", first(Capítulo), " — returning unadjusted values. Reason: ", conditionMessage(e))
+          Val_mes
+        }
+      )
+    ) |>
+    ungroup()
+}
 
 # — Verificación de NAs en columnas clave ------------------------------------
 nas_sección  <- sum(is.na(imp_mex_sec_cap$Sección))
@@ -148,7 +163,7 @@ if (!is.null(imp_por_pais)) {
     summarise(suma_caps = sum(Val_mes, na.rm = TRUE), .groups = "drop")
   
   total_q1 <- imp_por_pais |>
-    filter(fecha %in% fechas_comunes, iso3 == "MEX") |>
+    filter(fecha %in% fechas_comunes, CTY_CODE == "2010") |>
     select(fecha, val_q1 = Imp_mes)
   
   verificación <- left_join(total_caps, total_q1, by = "fecha") |>

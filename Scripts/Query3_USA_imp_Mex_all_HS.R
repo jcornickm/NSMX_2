@@ -29,9 +29,14 @@ pacman::p_load(httr, jsonlite, forcats, zoo, tidyverse,
 #  Sección 1. Tareas preparatorias                                          ####
 
 ## Api y directorio para resultados intermedios                             ####
+# — Interruptor de descarga ----------------------------------------------------
+# repull = FALSE (default): NO se llama al API; se reconstruye todo (etiquetas,
+# derivados, guardado) desde los datos crudos ya guardados en RDS/.
+# repull = TRUE: vuelve a descargar (requiere CENSUS_API_KEY).
+repull <- FALSE
 api_key <- Sys.getenv("CENSUS_API_KEY")
 stopifnot("CENSUS_API_KEY no encontrado — definir en .Renviron" =
-            nchar(api_key) > 0)
+            !repull || nchar(api_key) > 0)
 dir.create(here("RDS", "raw"), recursive = TRUE, showWarnings = FALSE)
 
 
@@ -65,6 +70,7 @@ capitulos_es <- hs_tablas()$capitulos |> tibble::as_tibble()   # Capítulo, Secc
    })
  }
 
+if (repull) {
  años     <- 2025:2025  # we run one year at a time
 
  message("\n=== Descargando datos — México → EUA ===")
@@ -72,25 +78,30 @@ capitulos_es <- hs_tablas()$capitulos |> tibble::as_tibble()   # Capítulo, Secc
  
  años_fail <- años[map_lgl(raw_list, is.null)]
  if (length(años_fail) > 0) message("Años con error: ", paste(años_fail, collapse = ", "))
-
+}
 
 # SECCIÓN 3.  Ensamblaje de los archvivos con datos anuales
 
-message("\n=== Ensamblando archivos raw (2010–2025) ===")
+if (!repull && file.exists(here("RDS", "raw_df.rds"))) {
+  message("\n=== repull = FALSE: se usa RDS/raw_df.rds (sin llamar al API) ===")
+  raw_df <- readRDS(here("RDS", "raw_df.rds"))
+} else {
+  message("\n=== Ensamblando archivos raw (2010–2025) ===")
 
-raw_list <- map(
-  2010:2025,
-  ~ readRDS(here("RDS", "raw", paste0("raw_hs6_", .x, ".rds")))
-)
+  raw_list <- map(
+    2010:2025,
+    ~ readRDS(here("RDS", "raw", paste0("raw_hs6_", .x, ".rds")))
+  )
 
-raw_df <- raw_list |>
-  compact() |>
-  bind_rows() |>
-  as_tibble()
+  raw_df <- raw_list |>
+    compact() |>
+    bind_rows() |>
+    as_tibble()
+
+  saveRDS(raw_df, here("RDS", "raw_df.rds")) # Importaciones USA desde MX, todos los niveles de agregación
+}
 
 cat("Filas en raw_df:", nrow(raw_df), "\n")
-
-saveRDS(raw_df, here("RDS", "raw_df.rds")) # Importaciones USA desde MX, todos los niveles de agregación
 
 # ==============================================================================
 # SECCIÓN 3: LIMPIEZA — variables derivadas, nivel de agregación, filtro
@@ -121,7 +132,7 @@ USallImpMex <- raw_df |>
     Val_acum = as.numeric(GEN_VAL_YR)
   )
 
-saveRDS(raw_df, here("RDS", "USallImpMex.rds")) # Importaciones USA desde MX, todos los niveles de agregación
+saveRDS(USallImpMex, here("RDS", "USallImpMex.rds")) # Importaciones USA desde MX con fecha, cod, nivel y Capítulo derivados (raw_df.rds = crudo)
 # Diagnóstico de niveles recibidos
 cat("\nDistribución de niveles en USallImpMex:\n")
 USallImpMex |> count(nivel) |> print()
@@ -137,7 +148,7 @@ USallImpMex |> count(nivel) |> print()
 
 message("\n=== Construyendo imp_mex_hs4_all (todos los capítulos) ===")
 
-imp_mex_hs4_all <- raw_df |>
+imp_mex_hs4_all <- USallImpMex |>
   filter(nivel == "HS4") |>
   hs_agregar_etiquetas() |>
   mutate(
@@ -170,7 +181,7 @@ cat("Filas en imp_mex_hs4_all:", nrow(imp_mex_hs4_all), "\n")
 
 message("\n=== Construyendo imp_mex_hs6_all (todos los capítulos) ===")
 
-imp_mex_hs6_all <- raw_df |>
+imp_mex_hs6_all <- USallImpMex |>
   filter(nivel == "HS6") |>
   hs_agregar_etiquetas() |>
   mutate(

@@ -182,3 +182,4 @@ if (nrow(largos) > 0) warning("nombre_corto con más de 26 caracteres: ",
 
 saveRDS(hs_dictionary, here("RDS", "hs_dictionary.rds"))
 message("✔  hs_dictionary.rds guardado. Filas: ", nrow(hs_dictionary))
+

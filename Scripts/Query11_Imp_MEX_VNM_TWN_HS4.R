@@ -31,11 +31,17 @@
 pacman::p_load(httr, jsonlite, forcats, zoo, tidyverse,
                here, janitor, censusapi, scales)
 
+# — Interruptor de descarga ----------------------------------------------------
+# repull = FALSE (default): NO se llama al API; se reconstruye todo (etiquetas,
+# derivados, guardado) desde los datos crudos ya guardados en RDS/.
+# repull = TRUE: vuelve a descargar (requiere CENSUS_API_KEY).
+repull <- FALSE
+
 #  Sección 1. Tareas preparatorias                                          ####
 
 api_key <- Sys.getenv("CENSUS_API_KEY")
 stopifnot("CENSUS_API_KEY no encontrado — definir en .Renviron" =
-            nchar(api_key) > 0)
+            !repull || nchar(api_key) > 0)
 dir.create(here("RDS", "raw"), recursive = TRUE, showWarnings = FALSE)
 
 ## Países incluidos                                                         ####
@@ -53,86 +59,90 @@ source(here("Scripts", "funciones.R"))   # hs_agregar_etiquetas(), hs_etiquetas_
 capitulos_es <- hs_tablas()$capitulos |> tibble::as_tibble()   # Capítulo, Sección, Cap_corto, Cap_tabla
 
 
-# Sección 2. Descarga de datos — por país y año   ####
+if (!repull && file.exists(here("RDS", "raw_df_mex_vnm_twn.rds"))) {
+  message("\n=== repull = FALSE: se usa RDS/raw_df_mex_vnm_twn.rds (sin llamar al API) ===")
+  raw_df <- readRDS(here("RDS", "raw_df_mex_vnm_twn.rds"))
+} else {
+  # Sección 2. Descarga de datos — por país y año   ####
 
-descargar_periodo <- function(cty_code, pais, etiqueta_periodo, time_str) {
-  archivo <- here("RDS", "raw", paste0("raw_hs_", cty_code, "_", etiqueta_periodo, ".rds"))
-  if (file.exists(archivo)) {
-    message("  [", pais, " ", etiqueta_periodo, "] ya existe — se omite descarga.")
-    return(readRDS(archivo))
+  descargar_periodo <- function(cty_code, pais, etiqueta_periodo, time_str) {
+    archivo <- here("RDS", "raw", paste0("raw_hs_", cty_code, "_", etiqueta_periodo, ".rds"))
+    if (file.exists(archivo)) {
+      message("  [", pais, " ", etiqueta_periodo, "] ya existe — se omite descarga.")
+      return(readRDS(archivo))
+    }
+    message("  [", pais, " ", etiqueta_periodo, "] descargando...")
+    tryCatch({
+      resultado <- getCensus(
+        name     = "timeseries/intltrade/imports/hs",
+        vars     = c("I_COMMODITY", "I_COMMODITY_LDESC", "GEN_VAL_MO", "GEN_VAL_YR"),
+        time     = time_str,
+        key      = api_key,
+        CTY_CODE = cty_code
+      ) |>
+        mutate(CTY_CODE_dl = cty_code, Pais = pais)
+      saveRDS(resultado, archivo)
+      message("  [", pais, " ", etiqueta_periodo, "] guardado: ", basename(archivo))
+      resultado
+    }, error = function(e) {
+      message("  ERROR [", pais, " ", etiqueta_periodo, "]: ", conditionMessage(e))
+      NULL
+    })
   }
-  message("  [", pais, " ", etiqueta_periodo, "] descargando...")
-  tryCatch({
-    resultado <- getCensus(
-      name     = "timeseries/intltrade/imports/hs",
-      vars     = c("I_COMMODITY", "I_COMMODITY_LDESC", "GEN_VAL_MO", "GEN_VAL_YR"),
-      time     = time_str,
-      key      = api_key,
-      CTY_CODE = cty_code
-    ) |>
-      mutate(CTY_CODE_dl = cty_code, Pais = pais)
-    saveRDS(resultado, archivo)
-    message("  [", pais, " ", etiqueta_periodo, "] guardado: ", basename(archivo))
-    resultado
-  }, error = function(e) {
-    message("  ERROR [", pais, " ", etiqueta_periodo, "]: ", conditionMessage(e))
-    NULL
-  })
+
+  años_completos <- 2010:2025
+
+  # — Años completos 2010–2025, por país ----------------------------------------
+  message("\n=== Descargando años completos 2010–2025 — México, Vietnam, Taiwán ===")
+
+  plan_años <- expand_grid(paises, año = años_completos)
+
+  raw_list_años <- pmap(
+    plan_años,
+    function(CTY_CODE, Pais, año) {
+      descargar_periodo(
+        cty_code         = CTY_CODE,
+        pais             = Pais,
+        etiqueta_periodo = as.character(año),
+        time_str         = paste0("from ", año, " to ", año)
+      )
+    }
+  )
+
+  # — Período parcial 2026 (enero–julio), por país -------------------------------
+  message("\n=== Descargando enero–julio 2026 — México, Vietnam, Taiwán ===")
+
+  raw_list_2026 <- pmap(
+    paises,
+    function(CTY_CODE, Pais) {
+      descargar_periodo(
+        cty_code         = CTY_CODE,
+        pais             = Pais,
+        etiqueta_periodo = "2026_ene_jul",
+        time_str         = "from 2026-01 to 2026-07"
+      )
+    }
+  )
+
+  raw_list <- c(raw_list_años, raw_list_2026)
+
+  fallos <- sum(map_lgl(raw_list, is.null))
+  if (fallos > 0) message(fallos, " descargas fallaron — revisar mensajes anteriores y volver a correr el script (se omiten las que ya tienen RDS).")
+
+  # Sección 3. Ensamblaje   ####
+
+  message("\n=== Ensamblando archivos raw (México, Vietnam, Taiwán — 2010 a jul-2026) ===")
+
+  raw_df <- raw_list |>
+    compact() |>
+    bind_rows() |>
+    as_tibble()
+
+  cat("Filas en raw_df:", nrow(raw_df), "\n")
+  cat("\nFilas por país:\n")
+  raw_df |> count(Pais) |> print()
+  saveRDS(raw_df, here("RDS", "raw_df_mex_vnm_twn.rds"))
 }
-
-años_completos <- 2010:2025
-
-# — Años completos 2010–2025, por país ----------------------------------------
-message("\n=== Descargando años completos 2010–2025 — México, Vietnam, Taiwán ===")
-
-plan_años <- expand_grid(paises, año = años_completos)
-
-raw_list_años <- pmap(
-  plan_años,
-  function(CTY_CODE, Pais, año) {
-    descargar_periodo(
-      cty_code         = CTY_CODE,
-      pais             = Pais,
-      etiqueta_periodo = as.character(año),
-      time_str         = paste0("from ", año, " to ", año)
-    )
-  }
-)
-
-# — Período parcial 2026 (enero–julio), por país -------------------------------
-message("\n=== Descargando enero–julio 2026 — México, Vietnam, Taiwán ===")
-
-raw_list_2026 <- pmap(
-  paises,
-  function(CTY_CODE, Pais) {
-    descargar_periodo(
-      cty_code         = CTY_CODE,
-      pais             = Pais,
-      etiqueta_periodo = "2026_ene_jul",
-      time_str         = "from 2026-01 to 2026-07"
-    )
-  }
-)
-
-raw_list <- c(raw_list_años, raw_list_2026)
-
-fallos <- sum(map_lgl(raw_list, is.null))
-if (fallos > 0) message(fallos, " descargas fallaron — revisar mensajes anteriores y volver a correr el script (se omiten las que ya tienen RDS).")
-
-# Sección 3. Ensamblaje   ####
-
-message("\n=== Ensamblando archivos raw (México, Vietnam, Taiwán — 2010 a jul-2026) ===")
-
-raw_df <- raw_list |>
-  compact() |>
-  bind_rows() |>
-  as_tibble()
-
-cat("Filas en raw_df:", nrow(raw_df), "\n")
-cat("\nFilas por país:\n")
-raw_df |> count(Pais) |> print()
-
-saveRDS(raw_df, here("RDS", "raw_df_mex_vnm_twn.rds"))
 
 # Sección 4. Limpieza — variables derivadas, nivel de agregación   ####
 
