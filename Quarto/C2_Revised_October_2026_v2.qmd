@@ -222,41 +222,37 @@ p <- local({
   mex_10 <- val_anual(anuales, "México", 2010)
   mex_18 <- val_anual(anuales, "México", 2018)
   mex_24 <- val_anual(anuales, "México", 2024)
-  mex_25 <- val_anual(anuales, "México", 2025)
   chn_10 <- val_anual(anuales, "China",  2010)
   chn_18 <- val_anual(anuales, "China",  2018)
   chn_24 <- val_anual(anuales, "China",  2024)
-  chn_25 <- val_anual(anuales, "China",  2025)
 
   # — 6. Etiquetas -----------------------------------------------------------
   # y_pos se ancla a valores mensuales promedio (~total anual / 12)
   etiquetas_mex <- tibble(
-    fecha = as.Date(c("2014-01-01", "2021-06-01", "2024-06-01")),
-    y_pos = c(mex_18 / 12 + 1.5, mex_24 / 12 - 9, mex_25 / 12 + 1.5),
+    fecha = as.Date(c("2014-01-01", "2021-06-01")),
+    y_pos = c(mex_18 / 12 + 1.5, mex_24 / 12 - 9),
     label = c(
       paste0("TCAC MEX 10-18: ", round(cagr(mex_18, mex_10, 8), 1), "%"),
-      paste0("TCAC MEX 18-24: ", round(cagr(mex_24, mex_18, 6), 1), "%"),
-      paste0("Var. MEX 24-25: ", round((mex_25 / mex_24 - 1) * 100, 1), "%")
+      paste0("TCAC MEX 18-24: ", round(cagr(mex_24, mex_18, 6), 1), "%")
     )
   )
 
   etiquetas_chn <- tibble(
-    fecha = as.Date(c("2014-01-01", "2021-06-01", "2024-06-01")),
-    y_pos = c(chn_18 / 12 + 1.5, chn_24 / 12 + 6, chn_25 / 12 - 3),
+    fecha = as.Date(c("2014-01-01", "2021-06-01")),
+    y_pos = c(chn_18 / 12 + 1.5, chn_24 / 12 + 6),
     label = c(
       paste0("TCAC CHN 10-18: ", round(cagr(chn_18, chn_10, 8), 1), "%"),
-      paste0("TCAC CHN 18-24: ", round(cagr(chn_24, chn_18, 6), 1), "%"),
-      paste0("Var. CHN 24-25: ", round((chn_25 / chn_24 - 1) * 100, 1), "%")
+      paste0("TCAC CHN 18-24: ", round(cagr(chn_24, chn_18, 6), 1), "%")
     )
   )
 
   # — 7. Gráfico -------------------------------------------------------------
   imp_chn_mex |>
-    filter(year(fecha) >= 2010) |>
+    filter(year(fecha) >= 2010, fecha <= FECHA_FIN) |>   # corte solo al graficar (X-13 sobre serie completa)
     ggplot(aes(x = fecha, y = Imp_bn_sa, color = País)) +
     geom_line(linewidth = 1) +
     geom_vline(
-      xintercept = as.Date(c("2018-01-01", "2024-01-01")),
+      xintercept = as.Date("2018-01-01"),
       linetype = "dotted", color = "red", linewidth = 0.7
     ) +
     geom_label(
@@ -415,17 +411,17 @@ p <- local({
       )
   }
 
-  periodos      <- list(c(2010, 2018), c(2018, 2024), c(2024, 2025))
-  divbar_paises <- map(periodos, \(p) hacer_divbar_paises(p[1], p[2], impPais_Perc))
+  periodos      <- list(c(2010, 2018), c(2018, 2024))
+  divbar_paises <- map(periodos, \(pr) hacer_divbar_paises(pr[1], pr[2], impPais_Perc))
 
-  divbar_paises[[1]] / divbar_paises[[2]] / divbar_paises[[3]] +
+  reduce(divbar_paises, `/`) +
     plot_annotation(caption = "Elaboración propia con base en US Census Bureau") &
     theme(plot.caption = element_text(hjust = 1))
 })
 
 print(p)
-ggsave(here::here("Plots", "fig-imp-cambio-pais.pdf"), plot = p, width = 8, height = 10.5, device = cairo_pdf)
-ggsave(here::here("Plots", "fig-imp-cambio-pais.png"), plot = p, width = 8, height = 10.5, dpi = 150)
+ggsave(here::here("Plots", "fig-imp-cambio-pais.pdf"), plot = p, width = 8, height = 7.5, device = cairo_pdf)
+ggsave(here::here("Plots", "fig-imp-cambio-pais.png"), plot = p, width = 8, height = 7.5, dpi = 150)
 ```
 
 ```{r}
@@ -452,12 +448,12 @@ El relativo estancamiento de las exportaciones mexicanas a EUA también puede se
 p <- local({
   impPais_Perc |>
     #filter(País %in% c("México", "China", "Taiwán", "Vietnam", "Suiza", "Irlanda")) |>
-    filter(País %in% c("México", "Taiwán", "Vietnam")) |>
+    filter(País %in% c("México", "Taiwán", "Vietnam"), año <= ANIO_FIN) |>
     ggplot(aes(x = año, y = share, color = País)) +
     geom_line(linewidth = 1) +
     geom_point(size = 2) +
-    geom_vline(xintercept = c(2018, 2024), linetype = "dotted", color = "red", linewidth = 0.7) +
-    scale_x_continuous(breaks = 2010:2025) +
+    geom_vline(xintercept = 2018, linetype = "dotted", color = "red", linewidth = 0.7) +
+    scale_x_continuous(breaks = 2010:ANIO_FIN) +
     scale_y_continuous(
       breaks = seq(0,1, by = 0.01),
       labels = percent_format(accuracy = 1)
@@ -526,7 +522,7 @@ p <- local({
   mi_paleta <- colorRampPalette(RColorBrewer::brewer.pal(11, "Spectral"))(n_sec)
 
   impMex_sec_pct |>
-    filter(año == 2025) |>
+    filter(año == ANIO_FIN) |>
     mutate(etiqueta = paste0(Sección, ". ", Sección_corto, "\n", percent(pct, accuracy = 1))) |> 
     ggplot(aes(area = pct, fill = Sección_corto, label = etiqueta)) +
     geom_treemap(layout = "squarified", color = "white", size = 1) +
@@ -607,16 +603,16 @@ p <- local({
       )
   }
 
-  periodos   <- list(c(2010, 2018), c(2018, 2024), c(2024, 2025))
-  divbar_sec <- map(periodos, \(p) hacer_divbar_sec(p[1], p[2], impMex_sec_pct))
+  periodos   <- list(c(2010, 2018), c(2018, 2024))
+  divbar_sec <- map(periodos, \(pr) hacer_divbar_sec(pr[1], pr[2], impMex_sec_pct))
 
-  divbar_sec[[1]] / divbar_sec[[2]] / divbar_sec[[3]] +
+  reduce(divbar_sec, `/`) +
     plot_annotation(caption = "Elaboración propia con base en US Census Bureau") &
     theme(plot.caption = element_text(hjust = 1))
 })
 
-ggsave(here::here("Plots", "fig-imp-cambio-sec-mex.pdf"), plot = p, width = 8, height = 10.5, device = cairo_pdf)
-ggsave(here::here("Plots", "fig-imp-cambio-sec-mex.png"), plot = p, width = 8, height = 10.5, dpi = 150)
+ggsave(here::here("Plots", "fig-imp-cambio-sec-mex.pdf"), plot = p, width = 8, height = 7.5, device = cairo_pdf)
+ggsave(here::here("Plots", "fig-imp-cambio-sec-mex.png"), plot = p, width = 8, height = 7.5, dpi = 150)
 
 rm(p, impMex_sec_pct)
 ```
@@ -666,9 +662,16 @@ knitr::include_graphics(here::here("Plots", "impMex_sec_perc.png"))
 #| label: prep-caps
 #| include: false
 #| eval: false
-# Datos: Scripts/Prep_imp_pais_mex.R (Capítulos de las Secciones XVI–XVIII, 2025).
-# Aquí solo se arman las etiquetas del treemap (número de capítulo + nombre).
-df_caps_2025 <- readRDS(here::here("RDS", "impMex_caps_2025.rds")) |>
+# impMex_caps_2025.rds (Prep_imp_pais_mex.R) solo trae 2025; para 2024 se agregan
+# aquí los Capítulos de las Secciones XVI-XVIII desde imp_mex_sec_cap.rds (misma lógica del Prep).
+df_caps_2024 <- readRDS(here::here("RDS", "imp_mex_sec_cap.rds")) |>
+  hs_relabel() |>
+  filter(Sección %in% c("XVI", "XVII", "XVIII"), year(fecha) == ANIO_FIN) |>
+  group_by(Sección, Sección_corto, Capítulo, Cap_corto) |>
+  summarise(Val_anual = sum(Val_mes, na.rm = TRUE), .groups = "drop") |>
+  group_by(Sección) |>
+  mutate(pct = Val_anual / sum(Val_anual)) |>
+  ungroup() |>
   mutate(
     etiqueta    = paste0("Cap. ", Capítulo, "\n", Cap_corto, "\n", percent(pct, accuracy = 1)),
     strip_label = paste0("Sección ", Sección, "  —  ", Sección_corto)
@@ -681,7 +684,7 @@ df_caps_2025 <- readRDS(here::here("RDS", "impMex_caps_2025.rds")) |>
 #| eval: false
 
 p <- local({
-  ggplot(df_caps_2025, aes(area = Val_anual, fill = Cap_corto, label = etiqueta)) +
+  ggplot(df_caps_2024, aes(area = Val_anual, fill = Cap_corto, label = etiqueta)) +
     geom_treemap(layout = "squarified", color = "white", size = 1.5) +
     geom_treemap_text(
       place = "centre", size = 13, colour = "black",
@@ -833,8 +836,9 @@ ALTO_BASE     <- 1.1      # espacio fijo para subtítulo, ejes y caption (pulgad
 CAPTION_PANEL <- "Elaboración propia con base en US Census Bureau. Serie mensual ajustada por estacionalidad (X-13ARIMA-SEATS)"
 
 construir_panel <- function(num_cap_obj, ncol_facet = NCOL_FACET, incluir_caption = TRUE) {
-  datos_cap    <- partidas_tendencia |> filter(num_cap == num_cap_obj)
-  quiebres_cap <- quiebres_partida   |> filter(num_cap == num_cap_obj)
+  # Tendencias y quiebres se estimaron con la serie completa; aquí solo se corta lo dibujado
+  datos_cap    <- partidas_tendencia |> filter(num_cap == num_cap_obj, fecha <= FECHA_FIN)
+  quiebres_cap <- quiebres_partida   |> filter(num_cap == num_cap_obj, psi_fecha <= FECHA_FIN)
 
   # Sin título: el capítulo y rango de años ya están en el fig-cap de Quarto
   # (ver @fig-capXX-partidas). Sin mención de "ajustado por estacionalidad"
@@ -1167,18 +1171,18 @@ p <- local({
       )
   }
 
-  periodos <- list(c(2010, 2018), c(2018, 2024), c(2024, 2025))
+  periodos <- list(c(2010, 2018), c(2018, 2024))
   plots    <- map(periodos, \(pr) make_map(pr[1], pr[2]))
 
-  # Leyenda extraída de plots[[3]] -- comparte exactamente la misma escala
-  # (colores y niveles) que los tres paneles realmente dibujados.
+  # Leyenda extraída del último panel ya construido -- comparte exactamente
+  # la misma escala (colores y niveles) que los paneles realmente dibujados.
   leyenda <- cowplot::get_legend(
-    plots[[3]] +
+    plots[[length(plots)]] +
       theme(legend.position = "right", legend.text = element_text(size = 8),
             legend.key.size = unit(0.5, "cm"))
   )
 
-  mapas_col <- cowplot::plot_grid(plots[[1]], plots[[2]], plots[[3]], ncol = 1)
+  mapas_col <- cowplot::plot_grid(plotlist = plots, ncol = 1)
 
   # Layout final: columna de mapas a la izquierda, leyenda vertical a la
   # derecha -- en vez de mapas arriba + leyenda en una fila abajo.
@@ -1191,9 +1195,9 @@ p <- local({
 
 print(p)
 ggsave(here::here("Plots", "mapa_xmex_3periodos_tcac.pdf"), plot = p,
-       width = 11, height = 13, device = cairo_pdf)
+       width = 11, height = 9, device = cairo_pdf)
 ggsave(here::here("Plots", "mapa_xmex_3periodos_tcac.png"), plot = p,
-       width = 11, height = 13, dpi = 150)
+       width = 11, height = 9, dpi = 150)
 ```
 
 ```{r}
@@ -1391,8 +1395,9 @@ p <- local({
         fecha  >= "2010-01-01"
       )
 
+    # Último trimestre dentro de la ventana (para umbral y orden de etiquetas)
     ultimo_trimestre <- datos_sector |>
-      filter(!is.na(val_miles_usd)) |>
+      filter(!is.na(val_miles_usd), fecha <= FECHA_FIN) |>
       slice_max(fecha, n = 1, with_ties = FALSE) |>
       pull(fecha)
 
@@ -1415,7 +1420,8 @@ p <- local({
           sa_adj(val_miles_usd, fecha, freq = 4)
         }
       ) |>
-      ungroup()
+      ungroup() |>
+      filter(fecha <= FECHA_FIN)   # corte solo al graficar (X-13 sobre serie completa)
 
     etiquetas <- datos_plot |>
       filter(!is.na(val_sa)) |>
@@ -1428,7 +1434,7 @@ p <- local({
     datos_plot |>
       ggplot(aes(x = fecha, y = val_sa, color = entidad)) +
       geom_vline(
-        xintercept = seq(as.Date("2010-01-01"), as.Date("2025-01-01"), by = "year"),
+        xintercept = seq(as.Date("2010-01-01"), as.Date("2024-01-01"), by = "year"),
         color      = "grey85",
         linewidth  = 0.3
       ) +
@@ -1530,7 +1536,7 @@ p <- local({
     filter(
       CVE_ENT %in% c("TOT", "ZLF"),
       ID_MES == 12,
-      año >= 2010, año <= 2025
+      año >= 2010, año <= ANIO_FIN
     ) |>
     mutate(
       serie     = if_else(CVE_ENT == "TOT", "Total", "ZLFN"),
@@ -1557,52 +1563,49 @@ p <- local({
   cagr <- function(v_fin, v_ini, n) ((v_fin / v_ini)^(1 / n) - 1) * 100
 
   tot_10 <- val_en("Total", 2010);  tot_18 <- val_en("Total", 2018)
-  tot_24 <- val_en("Total", 2024);  tot_25 <- val_en("Total", 2025)
+  tot_24 <- val_en("Total", 2024)
 
   zlf_10 <- val_en("ZLFN",  2010);  zlf_18 <- val_en("ZLFN",  2018)
-  zlf_24 <- val_en("ZLFN",  2024);  zlf_25 <- val_en("ZLFN",  2025)
+  zlf_24 <- val_en("ZLFN",  2024)
 
   dif_10 <- val_en("Resto", 2010);  dif_18 <- val_en("Resto", 2018)
-  dif_24 <- val_en("Resto", 2024);  dif_25 <- val_en("Resto", 2025)
+  dif_24 <- val_en("Resto", 2024)
 
   etiquetas_total <- tibble(
-    fecha = as.Date(c("2014-06-01", "2021-06-01", "2024-06-01")),
-    y_pos = c(tot_18 + 15, tot_24 - 30, tot_25 - 60),
+    fecha = as.Date(c("2014-06-01", "2021-06-01")),
+    y_pos = c(tot_18 + 15, tot_24 - 30),
     label = c(
       paste0("TCAC Total 10-18: ", round(cagr(tot_18, tot_10, 8), 1), "%"),
-      paste0("TCAC Total 18-24: ", round(cagr(tot_24, tot_18, 6), 1), "%"),
-      paste0("Var. Total 24-25: ", round((tot_25 / tot_24 - 1) * 100, 1), "%")
+      paste0("TCAC Total 18-24: ", round(cagr(tot_24, tot_18, 6), 1), "%")
     )
   )
 
   etiquetas_zlfn <- tibble(
-    fecha = as.Date(c("2014-06-01", "2021-06-01", "2024-06-01")),
-    y_pos = c(zlf_18 - 40, zlf_24 + 130, zlf_25 - 35),
+    fecha = as.Date(c("2014-06-01", "2021-06-01")),
+    y_pos = c(zlf_18 - 40, zlf_24 + 130),
     label = c(
       paste0("TCAC ZLFN 10-18: ", round(cagr(zlf_18, zlf_10, 8), 1), "%"),
-      paste0("TCAC ZLFN 18-24: ", round(cagr(zlf_24, zlf_18, 6), 1), "%"),
-      paste0("Var. ZLFN 24-25: ", round((zlf_25 / zlf_24 - 1) * 100, 1), "%")
+      paste0("TCAC ZLFN 18-24: ", round(cagr(zlf_24, zlf_18, 6), 1), "%")
     )
   )
 
   etiquetas_dif <- tibble(
-    fecha = as.Date(c("2014-06-01", "2021-06-01", "2024-06-01")),
-    y_pos = c(dif_18 - 20, dif_24 - 20, dif_25 + 80),
+    fecha = as.Date(c("2014-06-01", "2021-06-01")),
+    y_pos = c(dif_18 - 20, dif_24 - 20),
     label = c(
       paste0("TCAC Resto 10-18: ", round(cagr(dif_18, dif_10, 8), 1), "%"),
-      paste0("TCAC Resto 18-24: ", round(cagr(dif_24, dif_18, 6), 1), "%"),
-      paste0("Var. Resto 24-25: ", round((dif_25 / dif_24 - 1) * 100, 1), "%")
+      paste0("TCAC Resto 18-24: ", round(cagr(dif_24, dif_18, 6), 1), "%")
     )
   )
 
-  breaks_x <- as.Date(paste0(2010:2025, "-12-31"))
-  labels_x <- as.character(2010:2025)
+  breaks_x <- as.Date(paste0(2010:ANIO_FIN, "-12-31"))
+  labels_x <- as.character(2010:ANIO_FIN)
 
   emp_plot |>
     ggplot(aes(x = fecha, y = emp_miles, color = serie)) +
     geom_line(linewidth = 1) +
     geom_vline(
-      xintercept = as.Date(c("2018-12-31", "2024-12-31")),
+      xintercept = as.Date("2018-12-31"),
       linetype = "dotted", color = "red", linewidth = 0.7
     ) +
     geom_label(
@@ -1750,8 +1753,12 @@ p <- local({
       )
   }
 
+  periodos <- list(c(2010, 2024), c(2010, 2018), c(2018, 2024))
+  plots    <- map(periodos, \(pr) make_map(pr[1], pr[2]))
+
+  # Leyenda extraída de un panel ya construido (todos los niveles presentes)
   leyenda <- cowplot::get_legend(
-    make_map(2010, 2025) +
+    plots[[1]] +
       theme(
         legend.position  = "bottom",
         legend.text      = element_text(size = 8),
@@ -1760,21 +1767,19 @@ p <- local({
       )
   )
 
-  periodos <- list(c(2010, 2025), c(2010, 2018), c(2018, 2024), c(2024, 2025))
-  plots    <- map(periodos, \(p) make_map(p[1], p[2]))
 
   cowplot::plot_grid(
-    (plots[[1]] + plots[[2]]) / (plots[[3]] + plots[[4]]),
+    cowplot::plot_grid(plotlist = plots, nrow = 1),
     leyenda,
     ncol        = 1,
-    rel_heights = c(1, 0.08)
+    rel_heights = c(1, 0.1)
   )
 })
 
 ggsave(here::here("Plots", "mapa_immex_4periodos.pdf"),
-       plot = p, width = 7.5, height = 7.3, device = cairo_pdf)
+       plot = p, width = 11, height = 4, device = cairo_pdf)
 ggsave(here::here("Plots", "mapa_immex_4periodos.png"),
-       plot = p, width = 7.5, height = 7.3, dpi = 150)
+       plot = p, width = 11, height = 4, dpi = 150)
 rm(p)
 ```
 
@@ -1826,7 +1831,7 @@ Como sucede también con otras variables, el impacto de Trump-Biden se hace evid
 #| label: prep-save-fig-ied-total
 #| eval: false
 #| include: false
-#| code-summary: "IED total 2010-2025 y composición por país de origen (treemaps 2010 vs. 2025)"
+#| code-summary: "IED total 2010-2024 y composición por país de origen (treemaps 2010 vs. 2024)"
 
 pacman::p_load(cowplot, treemapify, patchwork)
 
@@ -1834,25 +1839,14 @@ local({
 
   ied_por_origen <- readRDS(here::here("RDS", "ied_por_origen.rds"))
 
-  ultimo_trim_2025 <- ied_por_origen |>
-    filter(año == 2025) |>
-    pull(trim) |>
-    max(na.rm = TRUE)
-
   ied_anual <- ied_por_origen |>
-    filter(
-      año >= 2010,
-      (año < 2025 & trim == 4) |
-        (año == 2025 & trim == ultimo_trim_2025)
-    ) |>
+    filter(año >= 2010, año <= ANIO_FIN, trim == 4) |>
     group_by(año) |>
     summarise(ied_mdd = sum(ied_mdd, na.rm = TRUE), .groups = "drop")
 
-  # Top 10 orígenes por suma 2024 (Q4) + 2025 (último trimestre disponible)
+  # Top 10 orígenes en 2024 (Q4 = año completo)
   top10_nombres <- ied_por_origen |>
-    filter(
-      (año == 2024 & trim == 4) | (año == 2025 & trim == ultimo_trim_2025)
-    ) |>
+    filter(año == ANIO_FIN, trim == 4) |>
     group_by(origen) |>
     summarise(total = sum(ied_mdd, na.rm = TRUE), .groups = "drop") |>
     filter(!origen %in% c("Total general", "Otro origen")) |>
@@ -1869,8 +1863,16 @@ local({
     "Australia"                 = "Australia",
     "Corea, República de"       = "Corea del Sur",
     "Suiza"                     = "Suiza",
-    "Argentina"                 = "Argentina"
+    "Argentina"                 = "Argentina",
+    "Bélgica"                                                 = "Bélgica",
+    "China, República Popular de"                             = "China",
+    "Reino Unido de la Gran Bretaña e Irlanda del Norte"       = "R. Unido"
   )
+
+  # Con el top 10 solo de 2024 puede entrar un origen sin nombre corto/continente
+  faltan <- setdiff(top10_nombres, names(nombres_cortos))
+  if (length(faltan) > 0)
+    stop("Orígenes sin nombre corto/continente: ", paste(faltan, collapse = ", "))
 
   continentes <- tribble(
     ~grupo,          ~continente,
@@ -1884,6 +1886,9 @@ local({
     "España",        "Europa",
     "P. Bajos",      "Europa",
     "Suiza",         "Europa",
+    "Bélgica",       "Europa",
+    "China",         "Asia",
+    "R. Unido",      "Europa",
     "Resto",         "Resto"
   )
 
@@ -1907,7 +1912,7 @@ local({
   }
 
   tm_2010 <- prep_treemap(2010, 4)
-  tm_2025 <- prep_treemap(2025, ultimo_trim_2025)
+  tm_2024 <- prep_treemap(ANIO_FIN, 4)
 
   make_treemap <- function(dat, titulo) {
     dat |>
@@ -1930,9 +1935,9 @@ local({
   }
 
   p_tm10 <- make_treemap(tm_2010, "2010 (año completo)")
-  p_tm25 <- make_treemap(tm_2025, paste0("2025 (hasta trimestre ", ultimo_trim_2025, ")"))
+  p_tm24 <- make_treemap(tm_2024, "2024 (año completo)")
 
-  p_leyenda <- ggplot(tm_2025, aes(fill = continente, x = 1, y = 1)) +
+  p_leyenda <- ggplot(tm_2024, aes(fill = continente, x = 1, y = 1)) +
     geom_col() +
     scale_fill_brewer(palette = "Paired", name = "Continente") +
     theme_void() +
@@ -1943,8 +1948,7 @@ local({
     ggplot(aes(x = año, y = ied_mdd / 1e3)) +
     geom_line(color = "#457b9d", linewidth = 0.9) +
     geom_point(color = "#457b9d", size = 2.2) +
-    geom_point(data = ~filter(., año == 2025), shape = 1, size = 3.5, color = "#457b9d") +
-    scale_x_continuous(breaks = seq(2010, 2025, by = 1)) +
+    scale_x_continuous(breaks = 2010:ANIO_FIN) +
     scale_y_continuous(
       labels = scales::label_number(suffix = " mmd", accuracy = 1),
       limits = c(0, NA)
@@ -1955,7 +1959,7 @@ local({
       x = NULL, y = "Miles de millones USD",
       caption = "Elaboración propia con base en Secretaría de Economía")
 
-  fila_treemaps <- p_tm10 + plot_spacer() + p_tm25 + plot_layout(widths = c(1, 0.04, 1))
+  fila_treemaps <- p_tm10 + plot_spacer() + p_tm24 + plot_layout(widths = c(1, 0.04, 1))
 
   p <- p_serie / fila_treemaps / cowplot::plot_grid(leyenda) +
     plot_layout(heights = c(1.2, 1.2, 0.15))
@@ -1993,10 +1997,10 @@ pacman::p_load(patchwork)
 
 p <- local({
   ied_pib_anual  <- readRDS(here::here("RDS", "ied_pib.rds"))  |>
-    filter(frecuencia == "anual", año >= 2010)
+    filter(frecuencia == "anual", año >= 2010, año <= ANIO_FIN)
 
   ied_fbkf_anual <- readRDS(here::here("RDS", "ied_fbkf.rds")) |>
-    filter(frecuencia == "anual", año >= 2010)
+    filter(frecuencia == "anual", año >= 2010, año <= ANIO_FIN)
 
   col_pib  <- "#457b9d"
   col_fbkf <- "#2a9d8f"
@@ -2053,7 +2057,8 @@ Este pobre desempeño en atracción de IED no refleja una tendencia general en l
 
 # Datos: Scripts/Query13_WDI_IED_PIB.R (descarga del World Bank, WDI;
 # indicador BX.KLT.DINV.WD.GD.ZS).
-ied_pib_comp <- readRDS(here::here("RDS", "ied_pib_wdi_comp.rds"))
+ied_pib_comp <- readRDS(here::here("RDS", "ied_pib_wdi_comp.rds")) |>
+  filter(year <= ANIO_FIN)
 
 p <- local({
   mi_paleta <- colorRampPalette(c(
@@ -2148,7 +2153,7 @@ datos_fig <- ied_por_actividad |>
     ) |>
   group_by(año, nivel) |>
   summarise(ied_mdd = sum(ied_mdd, na.rm = TRUE), .groups = "drop") |>
-  filter(año >= 2010) |>
+  filter(año >= 2010, año <= ANIO_FIN) |>
   pivot_wider(names_from = nivel, values_from = ied_mdd) |>
   rename(total = total, manuf = sector) |>
   mutate(resto = total - manuf) |>
@@ -2173,7 +2178,7 @@ p1 <- ggplot(datos_fig, aes(x = año, y = ied_mdd, colour = serie)) +
                  "Resto" = col_resto),
       name = NULL
       ) +
-      scale_x_continuous(breaks = seq(2010, 2025, by = 1)) +
+      scale_x_continuous(breaks = 2010:ANIO_FIN) +
       scale_y_continuous(labels = scales::comma_format(suffix = " mdd")) +
       labs(x = NULL, y = "Millones de dólares") +
       theme_bw() +
@@ -2208,7 +2213,7 @@ p2 <- ggplot(datos_barras, aes(x = año, y = pct, fill = serie)) +
                  "Resto" = col_resto),
           name = NULL
         ) +
-        scale_x_continuous(breaks = seq(2010, 2025, by = 1)) +
+        scale_x_continuous(breaks = 2010:ANIO_FIN) +
         scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
         labs(x = NULL, y = "Porcentaje del total") +
         theme_bw() +
@@ -2265,7 +2270,7 @@ datos_fig_sub <- ied_por_actividad |>
   ) |>
   group_by(codigo_scian, año) |>
   summarise(ied_mdd = sum(ied_mdd, na.rm = TRUE), .groups = "drop") |>
-  filter(año >= 2010)
+  filter(año >= 2010, año <= ANIO_FIN)
 
 total_3133 <- datos_fig_sub |>
   filter(codigo_scian == "31") |>
@@ -2332,7 +2337,7 @@ p <- local({
     scale_colour_manual(values = escala_col, name = NULL) +
     scale_linewidth_manual(values = c(`TRUE` = 1.4, `FALSE` = 0.9), guide = "none") +
     scale_alpha_manual(   values = c(`TRUE` = 1.0, `FALSE` = 0.85), guide = "none") +
-    scale_x_continuous(breaks = seq(2006, 2024, by = 1)) +
+    scale_x_continuous(breaks = 2010:ANIO_FIN) +
     scale_y_continuous(labels = scales::comma_format(suffix = " mdd")) +
     labs(x = NULL, y = "Millones de dólares") +
     theme_bw() +
@@ -2364,7 +2369,7 @@ p <- local({
       values = escala_col[names(escala_col) != "31-33 Total manufactura"],
       name   = NULL
     ) +
-    scale_x_continuous(breaks = seq(2006, 2024, by = 1)) +
+    scale_x_continuous(breaks = 2010:ANIO_FIN) +
     scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
     labs(x = NULL, y = "Participación en manufactura") +
     theme_bw() +

@@ -1,4 +1,10 @@
 # En Scripts/funciones.R
+
+# ── Ventana temporal del Capítulo 2 ───────────────────────────────────────────
+# Todos los gráficos y tablas derivadas del Capítulo 2 terminan en diciembre
+# de 2024. El Capítulo 3 usa los datos más recientes y NO usa estas constantes.
+ANIO_FIN  <- 2024L
+FECHA_FIN <- as.Date("2024-12-31")
 # ── sa_adj(): ajuste estacional genérico ──────────────────────────────────────
 # Acepta cualquier vector + columna fecha Date.
 # Detecta la frecuencia automáticamente desde la mediana del intervalo entre

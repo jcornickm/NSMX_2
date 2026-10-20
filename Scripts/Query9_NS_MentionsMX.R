@@ -4,6 +4,7 @@
 # =============================================================================
 
 pacman::p_load(tidyverse, here, lubridate, zoo, scales)
+source(here::here("Scripts", "funciones.R"))   # FECHA_FIN (ventana del Capítulo 2)
 
 # -----------------------------------------------------------------------------
 # 1. Lectura y limpieza
@@ -68,13 +69,12 @@ media_cloud_mensual <- media_cloud_mensual |>
 hitos <- tibble(
   fecha = as.Date(c("2018-07-06",   # Aranceles China Ronda 1 (Lista 1)
                     "2020-07-01",   # Entrada en vigor T-MEC
-                    "2022-02-01",   # Inicio publicación masiva nearshoring MX
-                    "2025-01-20")), # Regreso Trump / aranceles 2025
-  etiqueta = c("Aranceles\nEE.UU.-China", "T-MEC", "Auge\nnearshoring", "Aranceles\nTrump 2025")
+                    "2022-02-01")), # Inicio publicación masiva nearshoring MX
+  etiqueta = c("Aranceles\nEE.UU.-China", "T-MEC", "Auge\nnearshoring")
 )
 
 p <- media_cloud_mensual |>
-  filter(anio_mes >= as.Date("2018-01-01")) |>
+  filter(anio_mes >= as.Date("2018-01-01"), anio_mes <= FECHA_FIN) |>
   ggplot(aes(x = anio_mes)) +
   # Barras de conteo mensual
   geom_col(aes(y = menciones), fill = "#457b9d", alpha = 0.7, width = 25) +
@@ -87,7 +87,7 @@ p <- media_cloud_mensual |>
   geom_text(data = hitos, aes(x = fecha, y = Inf, label = etiqueta),
             vjust = 1.3, hjust = -0.07, size = 2.8, color = "grey30", lineheight = 0.9) +
   scale_x_date(
-    breaks = seq(as.Date("2018-01-01"), as.Date("2026-01-01"), by = "1 year"),
+    breaks = seq(as.Date("2018-01-01"), as.Date("2024-01-01"), by = "1 year"),
     date_labels = "%Y",
     expand = expansion(mult = c(0.01, 0.04))
   ) +
