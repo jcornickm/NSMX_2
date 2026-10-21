@@ -3,7 +3,7 @@
 # Antes se calculaban dentro de los chunks origAnualPerc, prep-sec-pct y
 # prep-caps de C2_Revised_*.qmd.
 #
-# Entradas: RDS/imp_por_pais.rds (Query1), RDS/imp_mex_sec_cap.rds (Query2)
+# Entradas: RDS/imp_por_pais.rds (Query01), RDS/imp_mex_sec_cap.rds (Query03)
 # Salidas:
 #   RDS/impPais_Perc.rds      — importaciones anuales de EUA por país (ajustadas
 #                               estacionalmente) y participación, 2010–2025

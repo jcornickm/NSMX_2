@@ -717,7 +717,7 @@ rm(p)
 tcac_shares <- readRDS(here::here("RDS", "TCAC_y_shares_84858790.rds")) |> hs_relabel()
 
 # El Capítulo 2 termina en 2024: las participaciones se toman de las columnas
-# *_2024 (Scripts/Query3_USA_imp_Mex_all_HS.R, sección 7). Si faltan, re-ejecutar
+# *_2024 (Scripts/Query04_USA_imp_Mex_all_HS.R, sección 7). Si faltan, re-ejecutar
 # esa sección.
 stopifnot("Faltan pct_cap_2024 / pct_total_2024 en TCAC_y_shares_84858790.rds" =
             all(c("pct_cap_2024", "pct_total_2024") %in% names(tcac_shares)))
@@ -2063,7 +2063,7 @@ Este pobre desempeño en atracción de IED no refleja una tendencia general en l
 #| eval: false
 #| code-summary: "Gráfico comparativo IED/PIB (WDI)"
 
-# Datos: Scripts/Query13_WDI_IED_PIB.R (descarga del World Bank, WDI;
+# Datos: Scripts/Query10_WDI_IED_PIB.R (descarga del World Bank, WDI;
 # indicador BX.KLT.DINV.WD.GD.ZS).
 ied_pib_comp <- readRDS(here::here("RDS", "ied_pib_wdi_comp.rds")) |>
   filter(year <= ANIO_FIN)

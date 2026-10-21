@@ -39,14 +39,25 @@ documents in [Quarto/](Quarto); data pipelines are standalone R scripts in
     tribbles in query scripts or `.qmd` files.
   - `breaks_tcac`, `labels_tcac`, `paleta_tcac` — shared CAGR/TCAC bins and
     palette so maps and tables stay visually consistent.
-- **Quarto chunk pattern in `.qmd` chapters**: plot-generating chunks (which
-  build a `ggplot` object and `ggsave()` it to `Plots/`) are marked
-  `#| eval: false` and do **not** run during a normal `quarto render` —
-  they must be run manually/interactively whenever their code or upstream
-  data changes. The actual in-document chunk for a figure typically just
-  does `knitr::include_graphics(here::here("Plots", "<file>.png"))` and
-  runs on every render. When asked to "rerun the plot chunks," this means
-  running the `eval: false` chunks, not just re-rendering.
+- **Quarto chunk pattern in `.qmd` chapters**: plot-generating chunks are
+  placed at the front of each document section, before the prose that
+  discusses them, and are marked `#| eval: false` so they do **not** run
+  during a normal `quarto render` — they must be run manually/interactively
+  whenever their code or upstream data changes. When asked to "rerun the
+  plot chunks," this means running the `eval: false` chunks, not just
+  re-rendering. Within a plot chunk:
+  - The plot itself is built with `p <- local({ ... })` so intermediate
+    objects used only to construct the plot don't leak into the global
+    environment.
+  - The result is always saved as both `.png` and `.pdf` via two `ggsave()`
+    calls to `Plots/`.
+  - The actual in-document chunk for a figure (the one that *does* run on
+    every render) just does
+    `knitr::include_graphics(here::here("Plots", "<file>.png"))`.
+  - At the end of each document section, a cleanup chunk (also
+    `eval: false`) `rm()`s objects that were only needed within that
+    section, keeping the environment uncluttered for everything that
+    follows.
 - Heavy/plot-only packages (`patchwork`, `sf`, `cowplot`, `ggrepel`,
   `treemapify`, `glue`, `WDI`) are loaded lazily inside the `eval: false`
   chunks that need them, not in the top-level `loadlibs` chunk, to keep

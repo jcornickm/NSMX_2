@@ -1,5 +1,5 @@
 # ============================================================================
-# Query5_XMex_estado.R
+# Query08_XMex_estado.R
 # Exportaciones mexicanas por entidad federativa — ETEF / BIE INEGI
 # Fuente: INEGI Banco de Información Económica (BIE)
 # Período: 2007/Q1 – 2025/Q4 | Frecuencia: trimestral

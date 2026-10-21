@@ -1,5 +1,5 @@
 # ============================================================================
-# Query8_IED.R
+# Query13_IED.R
 #
 # Objetivo: ingestar los archivos Excel de IED publicados por la Secretaría
 #   de Economía y producir cinco RDS en formato tidy.
@@ -437,7 +437,7 @@ message("NAs (C): ",     sum(is.na(ied_flujos_tipo$ied_mdd)))
 saveRDS(ied_flujos_tipo, here("RDS", "ied_flujos_tipo.rds"))
 message("✓ Guardado: RDS/ied_flujos_tipo.rds")
 
-message("\n══ Query8_IED.R completado — 5 RDS guardados en RDS/ ══════════════════════")
+message("\n══ Query13_IED.R completado — 5 RDS guardados en RDS/ ══════════════════════")
 
 meta_ied <- list(
   fuente         = "Secretaría de Economía — Inversión Extranjera Directa",

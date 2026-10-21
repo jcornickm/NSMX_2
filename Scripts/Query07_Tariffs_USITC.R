@@ -1,5 +1,5 @@
 # ============================================================================
-# Query4_Tariffs_USITC.R
+# Query07_Tariffs_USITC.R
 #
 # USITC DataWeb — Aranceles mensuales
 # Partida HTS 8703 (automóviles para pasajeros)

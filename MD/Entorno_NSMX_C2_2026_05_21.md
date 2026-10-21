@@ -164,7 +164,7 @@ theme(axis.text.x = element_text(angle = 0))
 
 ### `imp_mex_top_hs4` — Importaciones EUA desde México, top partidas
 
-- **Origen:** pipeline Query3; filtrado al 80% del valor por capítulo (top partidas que acumulan el 80%)
+- **Origen:** pipeline Query04; filtrado al 80% del valor por capítulo (top partidas que acumulan el 80%)
 - **Consecuencia del filtro:** el 20% restante de cada capítulo queda excluido. Al construir tablas de partidas, agregar siempre una fila "Resto" que represente ese 20%.
 - **Total de referencia:** el escalar `total_gral_2025` proviene de `impMex` (todas las secciones), **no** de `imp_mex_top_hs4`.
 - **Fórmula de `pct_total`** para partidas: `(total_cap_2025 / total_gral_2025) * pct_cap`, donde `total_cap_2025` es el total del capítulo en `impMex` y `pct_cap` es la participación de la partida dentro de su capítulo.
@@ -172,12 +172,12 @@ theme(axis.text.x = element_text(angle = 0))
 ### `ied_por_actividad` — IED por sector económico (SCIAN)
 
 - Datos trimestrales; agregar con `sum()` por año para obtener totales anuales.
-- El sector manufacturero "31-33" aparece en el Excel como "31-33 Industrias manufactureras". El parser de Query8 aplica `str_extract(actividad, "^\\d+")`, extrayendo `"31"` con `nchar == 2` → `nivel = "sector"`. Filtro correcto: `codigo_scian == "31" & nivel == "sector"`.
+- El sector manufacturero "31-33" aparece en el Excel como "31-33 Industrias manufactureras". El parser de Query13 aplica `str_extract(actividad, "^\\d+")`, extrayendo `"31"` con `nchar == 2` → `nivel = "sector"`. Filtro correcto: `codigo_scian == "31" & nivel == "sector"`.
 - IED negativa (desinversión) es posible. En gráficos de participación porcentual, truncar con `pmax(ied_mdd, 0)` antes de calcular proporciones y documentarlo explícitamente en el `fig-cap`.
 
 ### RDS de IED
 
-Los cinco RDS producidos por `Query8_IED.R`:
+Los cinco RDS producidos por `Query13_IED.R`:
 
 | Archivo | Contenido |
 |---|---|

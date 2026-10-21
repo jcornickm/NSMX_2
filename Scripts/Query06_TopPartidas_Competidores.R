@@ -1,11 +1,11 @@
-# Query12_TopPartidas_Competidores.R   ####
+# Query06_TopPartidas_Competidores.R   ####
 # Identificación de las Partidas (HS4) más importantes para México, Vietnam
 # y Taiwán en sus exportaciones a EUA, y de las Partidas en que México
 # compite con uno o ambos de los otros dos países.
 # Fuente: imp_competidores_hs4.rds (Query 11 — US Census Bureau,
 #         todos los capítulos, 2010 – jul. 2026)
 #
-# Método (igual al usado para México en Query10, aplicado ahora a los tres
+# Método (igual al usado para México en Query05, aplicado ahora a los tres
 # países):
 # a. Top 50 Partidas por valor — suma 2024 + 2025 — depurado de categorías
 #    sin interés para nearshoring (commodities, alimentos, combustibles,
@@ -15,7 +15,7 @@
 #    criterio de depuración. Se revisa si alguna partida de esta lista
 #    alcanzó, para 2025, un volumen comparable al de la Partida #50 de la
 #    lista (a) de ese mismo país; si no, se descarta (igual que para México
-#    en Query10, donde ninguna calificó).
+#    en Query05, donde ninguna calificó).
 # c. Unión de las listas finales (a) de los tres países → universo para
 #    identificar partidas en que 2 o más países aparecen simultáneamente
 #    ("partidas en competencia").
@@ -43,7 +43,7 @@ desc_partida_pais <- imp_competidores_hs4 |>
 # Aplicadas de forma uniforme a los tres países para mantener comparabilidad.
 # Incluye: alimentos/agro/animal (Secciones I–IV), minerales/combustibles
 # (Sección V), plásticos/caucho y joyería/muebles (precedente de México en
-# Query10), partidas especiales de clasificación de EUA, y — por instrucción
+# Query05), partidas especiales de clasificación de EUA, y — por instrucción
 # explícita para este ejercicio — textiles y calzado (Secciones XI y XII),
 # cuero, juguetes y vidrio.
 
@@ -121,7 +121,7 @@ top50_crecimiento_dep <- top50_crecimiento_todos |>
   ungroup()
 
 # Umbral de volumen de referencia: valor mínimo (2024-2025) del Top 50 por
-# valor depurado, por país — mismo criterio usado para México en Query10.
+# valor depurado, por país — mismo criterio usado para México en Query05.
 umbral_valor <- top50_valor_dep |>
   group_by(Pais) |>
   summarise(umbral_val_24_25 = min(Val_2024_2025), .groups = "drop")
@@ -134,7 +134,7 @@ crecimiento_candidatos <- top50_crecimiento_dep |>
 cat("\n=== Partidas de alto crecimiento (2018→2025) que alcanzan el umbral de volumen ===\n")
 n_supera <- sum(crecimiento_candidatos$supera_umbral)
 if (n_supera == 0) {
-  cat("(ninguna, en ninguno de los tres países — igual que para México en Query10)\n")
+  cat("(ninguna, en ninguno de los tres países — igual que para México en Query05)\n")
 } else {
   print(crecimiento_candidatos |> filter(supera_umbral))
 }
@@ -199,11 +199,11 @@ tabla_overlap_es <- tabla_overlap |>
 # el .rds a una unidad de presentación específica.
 
 meta_query12 <- list(
-  fuente            = "US Census Bureau — International Trade API (vía Query11)",
+  fuente            = "US Census Bureau — International Trade API (vía Query02)",
   países            = "México, Vietnam, Taiwán",
   período_valor     = "Suma de valor mensual 2024–2025",
   período_crec      = "Comparación años completos 2018 vs. 2025",
-  umbral_volumen    = "Valor mínimo del Top-50-por-valor depurado de cada país (criterio igual al de México en Query10)",
+  umbral_volumen    = "Valor mínimo del Top-50-por-valor depurado de cada país (criterio igual al de México en Query05)",
   capítulos_excluidos  = capitulos_excluir,
   notas             = "tabla_competencia: unión de las listas finales NS-relevantes de los 3 países
                         (todas las partidas, independientemente de cuántos países la comparten).

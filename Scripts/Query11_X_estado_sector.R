@@ -1,5 +1,5 @@
 # ============================================================================
-# Query6_ETEF_procesamiento.R
+# Query11_X_estado_sector.R
 #
 # Objetivo: leer ETEF_Entidad_Subsector.xlsx del INEGI y producir un
 #   tibble tidy guardado como RDS con exportaciones por entidad fedrativa y sector

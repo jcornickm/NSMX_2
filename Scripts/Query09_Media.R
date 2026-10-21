@@ -8,7 +8,7 @@ plot(res)
 
 
 # ============================================================================
-# Query9_GDELT.R
+# Query09_Media.R
 #
 # Objetivo: Contar menciones mensuales del término "nearshoring" en noticias
 #   indexadas por GDELT con geocódigo México, desde enero 2018.
