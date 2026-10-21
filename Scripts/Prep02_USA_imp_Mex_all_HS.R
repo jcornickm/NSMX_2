@@ -1,10 +1,10 @@
-# Query04_USA_imp_Mex_all_HS.R   ####
+# Prep02_USA_imp_Mex_all_HS.R   ####
 # Importaciones de EUA desde México por Partida (HS4) y Subpartida (HS6),
 # partidas principales de los Caps. 84/85/87/90 y tabla de TCAC y shares.
 #
 # NO descarga nada: se DERIVA de RDS/raw_df_mex_vnm_twn.rds (Query02) y usa
-# RDS/imp_mex_sec_cap.rds (Query03) como denominador de los shares.
-# Orden: Query01 → Query02 → Query03 → Query04.
+# RDS/imp_mex_sec_cap.rds (Prep01) como denominador de los shares.
+# Orden: Query01 → Query02 → Prep01 → Prep02.
 #
 # Niveles en I_COMMODITY:  "-" total | 2 dígitos Capítulo | 4 Partida |
 #                          6 Subpartida | 10 Schedule B.
@@ -128,7 +128,7 @@ tol <- 1   # USD
 
 imp_mex_sec_cap <- readRDS(here("RDS", "imp_mex_sec_cap.rds"))
 
-## 4a. Suma de Partidas (HS4) por Capítulo vs. imp_mex_sec_cap (Query03)      ####
+## 4a. Suma de Partidas (HS4) por Capítulo vs. imp_mex_sec_cap (Prep01)      ####
 verif_hs4 <- imp_mex_hs4_all |>
   group_by(fecha, Capítulo) |>
   summarise(suma_partidas = sum(Val_mes, na.rm = TRUE), .groups = "drop") |>
@@ -138,7 +138,7 @@ verif_hs4 <- imp_mex_hs4_all |>
          Val_cap       = replace_na(Val_cap, 0),
          diferencia    = suma_partidas - Val_cap)
 
-cat("\n=== HS4 vs. Capítulos (Query03) ===\n")
+cat("\n=== HS4 vs. Capítulos (Prep01) ===\n")
 cat("Meses × Capítulos comparados:", nrow(verif_hs4),
     "| diferencia máxima (USD):", comma(max(abs(verif_hs4$diferencia))), "\n")
 if (all(abs(verif_hs4$diferencia) <= tol)) {
@@ -308,7 +308,7 @@ TCAC_y_shares_84858790 |> count(Capítulo, Cap_corto) |> print()
 cat("\nFilas con val_ytd_", anio_act, " == 0: ", sum(TCAC_y_shares_84858790[[col_ytd_act]] == 0), "\n", sep = "")
 
 meta_TCAC_y_shares <- list(
-  fuente         = "US Census Bureau — International Trade API (Query02 → Query04)",
+  fuente         = "US Census Bureau — International Trade API (Query02 → Prep02)",
   objetos_base   = c("imp_mex_top_hs4", "imp_mex_sec_cap"),
   fecha_creación = Sys.time(),
   capítulos      = "84 (Maquinaria), 85 (Eléctrico), 87 (Automóviles), 90 (Óptica)",

@@ -1,4 +1,4 @@
-# Prep_partidas_quiebres.R   ####
+# Prep06_partidas_quiebres.R   ####
 # (antes: chunk prep-top-partidas-quiebres de C2_Revised_*.qmd)
 #
 # Detección de quiebres estructurales (Bai-Perron, paquete strucchange) para
@@ -15,7 +15,7 @@
 # prosa descriptiva que menciona conteos y partidas específicas, p. ej. el
 # párrafo "Empezamos con el Capítulo 84... hemos seleccionado 13 partidas...").
 #
-# Entradas: RDS/imp_mex_hs4.rds, RDS/TCAC_y_shares_84858790.rds
+# Entradas: RDS/imp_mex_hs4.rds, RDS/TCAC_y_shares_84858790.rds (ambos de Prep02)
 # Salidas:  RDS/partidas_tendencia.rds, RDS/quiebres_partida.rds
 
 pacman::p_load(tidyverse, here, strucchange)

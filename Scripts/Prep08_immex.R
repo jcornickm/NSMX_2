@@ -1,8 +1,8 @@
-# Prep_immex.R   ####
+# Prep08_immex.R   ####
 # Participación de cada entidad en el empleo IMMEX (diciembre de cada año).
 # (Antes: chunk prep-mapa-immex-4periodos de C2_Revised_*.qmd.)
 #
-# Entrada: RDS/immex_empleo.rds
+# Entrada: RDS/immex_empleo.rds (Query08)
 # Salida:  RDS/immex_pct.rds  (nombre, año, emp_estado, total_anual, pct)
 
 pacman::p_load(tidyverse, here)

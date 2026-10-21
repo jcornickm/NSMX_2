@@ -1,4 +1,4 @@
-# Query03_Imp_Mex_SecCap.R   ####
+# Prep01_Imp_Mex_SecCap.R   ####
 # Importaciones de EUA desde México por Capítulo del SA (HS2), con ajuste estacional.
 #
 # NO descarga nada: se DERIVA de RDS/raw_df_mex_vnm_twn.rds (Query02, fuente

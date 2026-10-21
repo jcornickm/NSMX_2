@@ -1,5 +1,5 @@
 # ============================================================================
-# Query13_IED.R
+# Query09_IED.R
 #
 # Objetivo: ingestar los archivos Excel de IED publicados por la Secretaría
 #   de Economía y producir cinco RDS en formato tidy.

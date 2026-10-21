@@ -1,10 +1,10 @@
-# Prep_tcac_estados.R   ####
+# Prep07_tcac_estados.R   ####
 # TCAC de las exportaciones estatales por subperíodo + tablas de apoyo para el
 # mapa y la tabla del Capítulo 2 (chunks save-fig-tcac-estados y tbl-tcac-estados).
 # Antes este cálculo estaba DUPLICADO en los dos chunks del qmd; ahora se hace
 # una sola vez aquí.
 #
-# Entradas: RDS/xmex_total_ef.rds (Fuente: ver MD/Catalogo_RDS.md)
+# Entradas: RDS/xmex_total_ef.rds (Query04; fuente: ver MD/Catalogo_RDS.md)
 # Salidas:  RDS/tcac_estados.rds   — formato largo: cve_geo, nombre, col, año_ini,
 #                                    año_fin, tcac_pct (en %, p. ej. 5.2 = 5.2%)
 #           RDS/estados_lookup.rds — list(abreviaturas, gadm_a_nombre)

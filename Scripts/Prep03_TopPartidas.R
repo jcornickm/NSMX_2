@@ -1,7 +1,11 @@
-# Top_Partidas_HS4.R   ####
+# Prep03_TopPartidas.R   ####
+# PENDIENTE: este script debe reescribirse. (1) Se descartó el Top 50 por
+# crecimiento (sección 4); (2) los años de referencia están hard-coded
+# (2024–2025 y 2018) y el periodo de identificación de las partidas principales
+# sigue por decidir (ver Scripts/Explora_Top_Partidas_Periodos.R).
 # Identificación de las Partidas (HS4) más importantes y de mayor crecimiento
 # en las importaciones de EUA provenientes de México.
-# Fuente: imp_mex_hs4.rds (Query 3 — US Census Bureau, todos los capítulos)
+# Fuente: imp_mex_hs4.rds (Prep02, derivado de Query02 — US Census Bureau, todos los capítulos)
 # (Cobertura anual 2018/2024/2025 ya verificada — no se repite aquí)
 #
 # a. Top 50 Partidas por valor — suma 2024 + 2025 — depurado de categorías

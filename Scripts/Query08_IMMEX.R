@@ -1,4 +1,4 @@
-# Query12_IMMEX_empleo.R
+# Query08_IMMEX.R
 # Empleo IMMEX segmento manufacturero por entidad federativa y Zona Libre
 # de la Frontera Norte (ZLFN)
 # Fuente: INEGI – Datos abiertos IMMEX

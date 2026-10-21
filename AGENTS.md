@@ -6,9 +6,9 @@ documents in [Quarto/](Quarto); data pipelines are standalone R scripts in
 
 ## Project layout
 
-- `Scripts/` — one `QueryN_*.R` script per data source/API pull (US Census
-  Intl Trade API, USITC tariffs, WDI, IMMEX, Media Cloud, etc.), plus
-  `Prep_*.R` scripts that build derived/analysis-ready tables, and
+- `Scripts/` — `QueryNN_*.R` scripts ingest an external source (API pull or hand-downloaded Excel/CSV: US Census
+  Intl Trade API, USITC tariffs, WDI, IMMEX, Media Cloud, etc.) and run first; then
+  `PrepNN_*.R` scripts (numbered in run order) that use only data already stored locally to build derived/analysis-ready tables; `Explora_*.R` are exploratory and outside the pipeline; and
   `funciones.R`, sourced by everything else (see below).
 - `RDS/` — intermediate and final data objects (`raw/` subfolder holds raw
   per-year API pulls). Treat as a cache: re-derivable from `Scripts/`.
@@ -17,6 +17,8 @@ documents in [Quarto/](Quarto); data pipelines are standalone R scripts in
   chapter (Ch. 2); `C3_Tiempos_turbulentos_v2.qmd` is Ch. 3.
 - `Plots/` — `.png`/`.pdf` figures saved by the `.qmd` files' plot-generation
   chunks; referenced back into the documents via `knitr::include_graphics()`.
+- `Tablas/` — formatted tables saved as flextable `.rds` by the scripts; the
+  `.qmd` only does `readRDS()` and prints them (table counterpart of `Plots/`).
 - `Excel/` — manually curated lookup tables (e.g. `hs_nombres_cortos.csv`
   for HS short names), edited by hand, not generated.
 - `geodata/` — cached `sf`/GADM shapefiles for Mexico state maps.

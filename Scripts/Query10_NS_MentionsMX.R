@@ -1,5 +1,5 @@
 # =============================================================================
-# Query 9 — Menciones de nearshoring en medios (Media Cloud)
+# Query10_NS_MentionsMX.R — Menciones de nearshoring en medios (Media Cloud)
 # Fuente: Media Cloud, búsqueda "nearshoring Mexico", datos diarios 2018-2026
 # =============================================================================
 
@@ -14,7 +14,7 @@ ruta_csv <- here::here("Excel", "mc-onlinenews-mediacloud-20260611141803-counts.
 
 media_cloud_raw <- read_csv(ruta_csv, col_types = cols(
   date        = col_date(format = "%Y-%m-%d"),
-  count       = col_intewger(),
+  count       = col_integer(),
   total_count = col_integer(),
   ratio       = col_double()
 ))

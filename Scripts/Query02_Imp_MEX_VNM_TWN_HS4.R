@@ -4,10 +4,11 @@
 # niveles del SA mezclados (total, HS2, HS4, HS6, HS10), mensual desde 2010.
 # Fuente: US Census Bureau — International Trade API
 #
-# Los objetos de México que antes bajaba cada Query por separado (Query03: por
-# Capítulo; Query04: por Partida/Subpartida) ahora se DERIVAN de aquí, para que
+# Los objetos de México que antes bajaba cada Query por separado (Prep01: por
+# Capítulo; Prep02: por Partida/Subpartida) ahora se DERIVAN de aquí, para que
 # todo salga de una sola descarga y una sola versión de los datos de Census.
-# Orden de corrida: Query01 → Query02 → Query03 → Query04 → Query05 → Query06.
+# Orden de corrida: primero los Query (ingesta externa) y después los Prep (datos
+# locales). Cadena de esta fuente: Query01 → Query02 → Prep01 → Prep02 → Prep03/04.
 #
 # ACTUALIZACIÓN INCREMENTAL: no se vuelve a bajar toda la historia. Se descarga
 # desde ANIO_SOLAPE hasta el último mes disponible (Census revisa los años

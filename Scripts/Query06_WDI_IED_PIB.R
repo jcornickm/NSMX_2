@@ -1,4 +1,4 @@
-# Query10_WDI_IED_PIB.R   ####
+# Query06_WDI_IED_PIB.R   ####
 # IED (flujos netos de entrada) como % del PIB — México, Costa Rica, Vietnam y
 # República Dominicana. (Antes: chunk save-fig-ied-pib-comparadores de
 # C2_Revised_*.qmd.)

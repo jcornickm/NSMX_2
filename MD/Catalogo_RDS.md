@@ -15,6 +15,46 @@ Snapshot taken 2026-10-19, before the reorganization of the repository. Purpose:
 
 ---
 
+## 0. Script renaming (2026-10-21): READ THIS FIRST
+
+Rule: **`Query` = ingests an external source** (API call, or a raw Excel/CSV file placed by hand). **`Prep` = works only with data already stored locally.** Query scripts run first (they are largely independent of one another), then the Prep scripts, in numeric order. `Explora_*` scripts are exploratory and outside the pipeline. The tables in sections 1 to 6 below are a snapshot taken before this change and still use the OLD names; translate them with this map. No `.rds` file was renamed (e.g. `meta_query3.rds` and `meta_query11.rds` keep their historical names).
+
+| New script | Old name | Type | Reads from |
+|---|---|---|---|
+| `Query01_USA_imports_by_country` | Query01 | API | Census |
+| `Query02_Imp_MEX_VNM_TWN_HS4` | Query02 (and old "Query 11") | API | Census |
+| `Query03_Tariffs_USITC` | Query07 | API | USITC DataWeb |
+| `Query04_XMex_estado` | Query08 | API | INEGI BIE |
+| `Query05_Media` | Query09_Media | API | GDELT / Media Cloud |
+| `Query06_WDI_IED_PIB` | Query10 | API | World Bank WDI |
+| `Query07_X_estado_sector` | Query11 | Excel by hand | ETEF xlsx |
+| `Query08_IMMEX` | Query12 | CSV by hand | INEGI IMMEX CSVs |
+| `Query09_IED` | Query13 | Excel by hand | SE xlsx |
+| `Query10_NS_MentionsMX` | Query14 | CSV by hand | Media Cloud CSV |
+| `Prep01_Imp_Mex_SecCap` | Query03 | derived | Query02 |
+| `Prep02_USA_imp_Mex_all_HS` | Query04 | derived | Query02, Prep01 |
+| `Prep03_TopPartidas` | Query05 | derived (**to be rewritten**) | Prep02 |
+| `Prep04_TopPartidas_Competidores` | Query06 | derived | Query02 |
+| `Prep05_imp_pais_mex` | Prep_imp_pais_mex | derived | Query01, Prep01 |
+| `Prep06_partidas_quiebres` | Prep_partidas_quiebres | derived | Prep02 |
+| `Prep07_tcac_estados` | Prep_tcac_estados | derived | Query04 |
+| `Prep08_immex` | Prep_immex | derived | Query08 |
+| `top_hs4_Pendiente` | top_hs4 | **pending review** | `imp_mex_top_hs4`, `imp_mex_sec_cap` |
+
+Open items: (1) `top_hs4_Pendiente.R`: check whether the .qmd files use its results, or whether it is redundant. (2) `Prep03_TopPartidas.R` must be rewritten: drop the growth ranking, remove the hard-coded years, and use the reference period still to be decided. (3) Not yet written for the final version: add 8703 (passenger cars) to the top partidas by historical importance.
+
+### New outputs (2026-10-21)
+
+| File | Content | Producer |
+|---|---|---|
+| `RDS/top_partidas_periodos.rds` | list: `tabla` (union of the top partidas of Caps. 84/85/87/90 under 2024, 2025 and Jan–Aug 2026 identification, with value, share, rank and flags), `periodos`, `umbral`, `forzadas`, `ultimo_mes`, `fecha_creación` | `Explora_Top_Partidas_Periodos.R` |
+| `Tablas/top_partidas_periodos.rds` | formatted flextable of the above, to be loaded by the qmd (`readRDS`) | `Explora_Top_Partidas_Periodos.R` |
+| `Tablas/top_partidas_periodos.docx` | same table as a Word copy for review | `Explora_Top_Partidas_Periodos.R` |
+
+`Tablas/` is the table counterpart of `Plots/`: a table is saved once as a flextable object and the qmd only loads and prints it.
+
+---
+
 ## 1. Summary table
 
 | File | Size | Rows × cols | Content (one line) | Source | Producer |
@@ -216,4 +256,4 @@ Palette and bins for the state-TCAC map/table now live in `Scripts/funciones.R` 
 
 **Query03, Query04 and Query02 now have `repull <- FALSE` at the top:** with it off they do not call the API and rebuild everything from the saved raw data (`imp_mex_sec_cap.rds`, `raw_df.rds`, `raw_df_mex_vnm_twn.rds`). `USallImpMex.rds` is now the cleaned version of `raw_df.rds` (adds `fecha`, `cod`, `nivel`, `Capítulo`).
 
-**Suggested run order (RStudio):** `build_hs_dictionary.R` → Query01 → Query02 (master Census pull) → Query03 → Query04 → Query05 → Query06 → Query07–Query10 (API) → Query11–Query14 (hand-downloaded Excel/CSV) → `Prep_imp_pais_mex.R` → `Prep_tcac_estados.R` → `Prep_partidas_quiebres.R` → `Prep_immex.R`.
+**Suggested run order (RStudio), updated 2026-10-21:** `build_hs_dictionary.R` → Query01 → Query02 → Query03 → … → Query10 (APIs first, then the hand-downloaded Excel/CSV ones) → Prep01 → Prep02 → … → Prep08. Names before 2026-10-21 are translated in section 0.
