@@ -10,8 +10,13 @@
 #                          6 Subpartida | 10 Schedule B.
 #
 # Parámetros ---------------------------------------------------------------
-# · ANIOS_TOP:  años COMPLETOS con que se elige el conjunto de partidas
-#               principales (regla: partidas que acumulan el 80% del capítulo).
+# · ANIOS_TOP:  años COMPLETOS que, junto con enero–último mes del año actual, definen
+#               el conjunto de partidas principales. Regla: partidas que acumulan el
+#               80% del capítulo EN CADA periodo; el conjunto final es la UNIÓN de los
+#               periodos (decisión 22-oct-2026: las diferencias entre 2024, 2025 y
+#               2026 son mínimas, se conserva todo lo que aparece al menos una vez).
+# · PARTIDAS_FORZADAS: partidas que se incluyen siempre, aunque ya no sean
+#               principales (8703, autos, por su importancia histórica).
 # · ANIOS_REF:  años de referencia de la tabla TCAC (anuales, 12 meses).
 # · Los valores "ytd" (enero–último mes disponible) se calculan para
 #   ANIOS_REF, el año anterior al actual y el año actual, para comparar
@@ -22,6 +27,7 @@ pacman::p_load(tidyverse, here, scales)
 source(here("Scripts", "funciones.R"))   # hs_agregar_etiquetas(), hs_etiquetas_partida(), hs_tablas()
 
 ANIOS_TOP          <- 2024:2025
+PARTIDAS_FORZADAS  <- "8703"
 ANIOS_REF          <- c(2010L, 2018L, 2024L, 2025L)
 caps_seleccionados <- c(84, 85, 87, 90)
 
@@ -93,11 +99,19 @@ imp_mex_hs6_84858790 <- imp_mex_hs6_all |> filter(Capítulo %in% caps_selecciona
 rm(imp_mex_all); invisible(gc())
 
 #  Sección 3. Partidas principales de los Caps. 84, 85, 87 y 90             ####
-# Dentro de cada capítulo, partidas ordenadas por valor en ANIOS_TOP; se incluyen
-# hasta cruzar el 80% acumulado. Serie mensual completa de esas partidas.
+# Por periodo: dentro de cada capítulo, partidas ordenadas por valor; se incluyen
+# hasta cruzar el 80% acumulado. El conjunto final es la UNIÓN de los periodos más
+# PARTIDAS_FORZADAS. Serie mensual completa de esas partidas.
 
-codigos_top <- imp_mex_hs4_84858790 |>
-  filter(year(fecha) %in% ANIOS_TOP) |>
+fecha_max_hs4 <- max(imp_mex_hs4_84858790$fecha)
+periodos_top  <- tibble(
+  anio      = c(ANIOS_TOP, year(fecha_max_hs4)),
+  mes_hasta = c(rep(12L, length(ANIOS_TOP)), month(fecha_max_hs4))
+)
+
+# Partidas que acumulan el 80% de su capítulo en UN periodo (enero–mes_hasta de anio)
+codigos_periodo <- function(anio, mes_hasta) imp_mex_hs4_84858790 |>
+  filter(year(fecha) == anio, month(fecha) <= mes_hasta) |>
   group_by(Capítulo, Cap_corto, Cod_partida, Desc_api_partida) |>
   summarise(Val_total = sum(Val_mes, na.rm = TRUE), .groups = "drop") |>
   group_by(Capítulo, Cap_corto) |>
@@ -111,11 +125,19 @@ codigos_top <- imp_mex_hs4_84858790 |>
   ungroup() |>
   pull(Cod_partida)
 
+# Unión de los periodos + partidas forzadas
+codigos_por_periodo <- pmap(periodos_top, \(anio, mes_hasta) codigos_periodo(anio, mes_hasta))
+codigos_top <- sort(union(unique(unlist(codigos_por_periodo)), PARTIDAS_FORZADAS))
+
+cat("\nPartidas por periodo:",
+    paste0(periodos_top$anio, " (ene–", sprintf("%02d", periodos_top$mes_hasta), "): ",
+           lengths(codigos_por_periodo), collapse = " | "), "\n")
+
 imp_mex_top_hs4 <- imp_mex_hs4_84858790 |>
   filter(Cod_partida %in% codigos_top) |>
   hs_etiquetas_partida()
 
-cat("\nPartidas principales (", min(ANIOS_TOP), "–", max(ANIOS_TOP), "): ",
+cat("\nPartidas principales (unión de ", paste(ANIOS_TOP, collapse = ", "), " y enero–", format(fecha_max_hs4, "%Y-%m"), " + forzadas): ",
     length(codigos_top), "\n", sep = "")
 imp_mex_top_hs4 |>
   distinct(Capítulo, Cap_corto, Cod_partida, Part_corto, Part_tabla) |>
@@ -166,7 +188,8 @@ meta_query4 <- list(
   fuente             = "US Census Bureau — International Trade API (vía Query02: raw_df_mex_vnm_twn.rds)",
   país_origen        = "México (CTY_CODE = 2010)",
   caps_seleccionados = "84 (Maquinaria), 85 (Eléctrico), 87 (Automóviles), 90 (Óptica)",
-  criterio_top       = paste0("Partidas que acumulan 80% del capítulo, con base en ", min(ANIOS_TOP), "–", max(ANIOS_TOP)),
+  criterio_top       = paste0("Unión de las partidas que acumulan 80% del capítulo en ", paste(ANIOS_TOP, collapse = ", "),
+                              " y enero–", format(fecha_max_hs4, "%Y-%m"), "; más forzadas: ", paste(PARTIDAS_FORZADAS, collapse = ", ")),
   período_hs4        = paste(range(imp_mex_hs4_all$fecha), collapse = " – "),
   período_hs6        = paste(range(imp_mex_hs6_all$fecha), collapse = " – "),
   fecha_creación     = Sys.time(),

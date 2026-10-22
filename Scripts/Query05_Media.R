@@ -1,12 +1,3 @@
-#======
-# Query google trends
-#======
-
-pacman::p_load(gtrendsR)
-res <- gtrends("nearshoring", geo = "MX", time = "2018-01-01 2026-01-01")
-plot(res)
-
-
 # ============================================================================
 # Query05_Media.R
 #
@@ -154,22 +145,11 @@ gdelt_mx |>
 #=======
 # query Media cloud
 # ==============
-mc_dir <- mc_api$DirectoryApi(mc_key)
-resultados <- mc_dir$collection_list(name = "Mexico")
-print(resultados)
-
-resultado <- mc_search$story_count(
-  query          = "nearshoring",
-  start_date     = as.Date("2024-01-01"),
-  end_date       = as.Date("2024-12-31"),
-  collection_ids = list(34412427L)
-)
-
-print(resultado)
+# (bloque de pruebas eliminado 22-oct-2026: usaba mc_api / mc_key antes de definirlos)
 
 
 # ============================================================================
-# Query10_MediaCloud.R
+# Media Cloud (parte de Query05_Media.R; no confundir con Query10, que es CSV manual)
 #
 # Objetivo: Contar menciones mensuales de "nearshoring" en medios nacionales
 #   de México indexados por Media Cloud, desde enero 2018.
@@ -207,8 +187,10 @@ COLECCION_MX <- 34412427L   # Mexico - National
 # ----------------------------------------------------------------------------
 # Iterar por mes desde enero 2018
 # ----------------------------------------------------------------------------
-# Generamos una secuencia de fechas de inicio de cada mes
-fechas_inicio <- seq(as.Date("2018-01-01"), as.Date("2026-05-01"), by = "month")
+# Generamos una secuencia de fechas de inicio de cada mes, hasta el último mes
+# COMPLETO (el mes en curso queda fuera: su conteo es parcial)
+ULTIMO_MES   <- floor_date(Sys.Date(), "month") %m-% months(1)
+fechas_inicio <- seq(as.Date("2018-01-01"), ULTIMO_MES, by = "month")
 fechas_fin    <- ceiling_date(fechas_inicio, "month") - days(1)
 
 message("Descargando conteos mensuales (", length(fechas_inicio), " meses)...")

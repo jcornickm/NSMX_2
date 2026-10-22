@@ -2,7 +2,7 @@
 # Query04_XMex_estado.R
 # Exportaciones mexicanas por entidad federativa — ETEF / BIE INEGI
 # Fuente: INEGI Banco de Información Económica (BIE)
-# Período: 2007/Q1 – 2025/Q4 | Frecuencia: trimestral
+# Período: 2007/Q1 – último trimestre publicado | Frecuencia: trimestral
 # Unidad: miles de dólares estadounidenses
 # ============================================================================
 
@@ -147,11 +147,11 @@ meta_xmex_total_ef <- list(
                     usando el RENEM como eje de unión.",
   notas          = "Descarga entidad por entidad (geo = '01' a '32'); el parámetro
                     geo = '99' (todas las entidades) no es compatible con este indicador.
-                    Los datos de 2024–2025 son preliminares (sujetos a revisión).
+                    Los datos más recientes son preliminares (sujetos a revisión); por eso
+                    cada actualización vuelve a bajar la serie completa.
                     La ETEF no incluye exportaciones de Comercio y Servicios, ni
                     operaciones aduanales no vinculables al RENEM (~9–10% del total
-                    de la Balanza Comercial).
-                    Última actualización INEGI: 31/03/2026."
+                    de la Balanza Comercial)."
 )
 
 
@@ -171,29 +171,3 @@ tryCatch({
   message("✗ ERROR guardando meta_xmex_total_ef.rds: ", conditionMessage(e))
 })
 
-
-#  Parte 2 Transportes  --------------------------------------------------------
-
-CLAVE_TRANSPORTE <- "6207095715"
-
-# Prueba con una sola entidad (Coahuila = "05", importante para autos)
-test_336 <- fetch_bie_entidad(CLAVE_TRANSPORTE, "05")
-
-cat("Filas devueltas:", nrow(test_336), "\n")
-cat("Rango temporal:", min(test_336$TIME_PERIOD), "—", max(test_336$TIME_PERIOD), "\n")
-print(head(test_336, 8))
-
-
-# Prueba nacional (geo = "00")
-test_336_nacional <- fetch_bie_entidad(CLAVE_TRANSPORTE, "00")
-
-cat("Filas devueltas:", nrow(test_336_nacional), "\n")
-print(head(test_336_nacional, 5))
-
-
-# Prueba: Transporte nacional, serie completa
-test_336_nacional <- fetch_bie_entidad(CLAVE_TRANSPORTE, "00")
-
-cat("Filas devueltas:", nrow(test_336_nacional), "\n")
-cat("Rango temporal:", min(test_336_nacional$TIME_PERIOD), "—", max(test_336_nacional$TIME_PERIOD), "\n")
-print(head(test_336_nacional, 8))

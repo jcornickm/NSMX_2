@@ -1,10 +1,14 @@
 # ============================================================================
-# Query03_Tariffs_USITC.R
+# Query03_Tariffs_USITC_Autos_Autopartes.R
 #
 # USITC DataWeb — Aranceles mensuales
-# Partida HTS 8703 (automóviles para pasajeros)
-# Países: México (2010) y Corea del Sur (5800)
-# Período: 2010–2025
+# Partidas HTS: 8703 (automóviles para pasajeros) y 8708 (autopartes)
+# Países: México (2010), Corea del Sur (5800), Japón (5880) y Alemania (4280;
+#         representa a la UE, que tiene un arancel común)
+# Período: 2010 – último mes disponible (se recorta al último mes con datos)
+#
+# Para otras partidas o conjuntos de países, copiar este script y cambiar
+# HTS_CODES y paises (y el nombre del archivo y de los RDS de salida).
 #
 # Tres medidas:
 #   CONS_CUSTOMS_VALUE          → val_imp      (valor de importación, USD)
@@ -17,7 +21,8 @@
 #
 # ============================================================================
 
-pacman::p_load(httr2, jsonlite, tidyverse, lubridate)
+pacman::p_load(httr2, jsonlite, tidyverse, lubridate, here)
+source(here("Scripts", "funciones_datos.R"))   # actualizar_rds()
 
 # ── 0. Configuración ──────────────────────────────────────────────────────────
 
@@ -25,13 +30,23 @@ BASE_URL  <- "https://datawebws.usitc.gov/dataweb"
 API_TOKEN <- Sys.getenv("DATAWEB_TOKEN")
 stopifnot("DATAWEB_TOKEN no encontrado en .Renviron" = nchar(API_TOKEN) > 0)
 
-HTS_CODE <- "8703"
-YEARS    <- 2010:2025
+# Partidas HTS4: código = descripción (la descripción solo se usa como etiqueta)
+HTS_CODES <- c(
+  "8703" = "MOTOR VEHICLES FOR TRANSPORT OF PERSONS",
+  "8708" = "PARTS AND ACCESSORIES OF THE MOTOR VEHICLES OF HEADINGS 8701 TO 8705"
+)
+YEARS <- 2010:year(Sys.Date())   # DataWeb devuelve los meses disponibles del año en curso
 
 paises <- list(
   list(code = "2010", nombre = "Mexico - MX - MEX"),
-  list(code = "5800", nombre = "Korea, South - KR - KOR")
+  list(code = "5800", nombre = "Korea, South - KR - KOR"),
+  list(code = "5880", nombre = "Japan - JP - JPN"),
+  list(code = "4280", nombre = "Germany - DE - DEU")
 )
+
+ARCHIVO_RDS      <- here("RDS", "aranceles_autos_autopartes_mensual.rds")
+ARCHIVO_ANTERIOR <- here("RDS", "aranceles_hts8703_mex_kor_mensual.rds")   # versión previa (solo 8703, México y Corea)
+DESDE_SOLAPE     <- as.Date("2023-01-01")   # desde aquí se reportan revisiones
 
 # ── 1. Query body ─────────────────────────────────────────────────────────────
 
@@ -76,12 +91,10 @@ query_body <- list(
       groupGranularity    = NULL,
       searchGranularity   = NULL,
       showHTSValidDetails = "",
-      commoditiesManual   = HTS_CODE,
+      commoditiesManual   = paste(names(HTS_CODES), collapse = ","),
       commodityGroups     = list(systemGroups = list(), userGroups = list()),
-      commodities         = list(HTS_CODE),
-      commoditiesExpanded = list(
-        list(name = "MOTOR VEHICLES FOR TRANSPORT OF PERSONS", value = HTS_CODE)
-      )
+      commodities         = as.list(names(HTS_CODES)),
+      commoditiesExpanded = imap(HTS_CODES, \(nom, cod) list(name = nom, value = cod)) |> unname()
     ),
     
 # El código que sigue serviría para filtrar los datos.  Aquí estamos escogiendo no filtarar, así que el código es un "place holder" por si en algún momento quisiéramos filtar por alguno de estos criterios
@@ -119,8 +132,8 @@ query_body <- list(
 
 # ── 2. Enviar solicitud ───────────────────────────────────────────────────────
 
-message("Consultando DataWeb: HTS ", HTS_CODE,
-        " | México + Corea del Sur",
+message("Consultando DataWeb: HTS ", paste(names(HTS_CODES), collapse = " + "),
+        " | ", length(paises), " países",
         " | Años ", min(YEARS), "-", max(YEARS), " | Mensual")
 
 resp <- request(paste0(BASE_URL, "/api/v2/report2/runReport")) |>
@@ -167,7 +180,8 @@ parse_table <- function(table_obj, nombre_var) {
           paste(head(col_labels, 8), collapse = " | "),
           if (length(col_labels) > 8) " ..." else "")
   
-  rows <- table_obj$row_groups[[1]]$rowsNew
+  # Con varios países y partidas puede haber más de un grupo de filas
+  rows <- unlist(map(table_obj$row_groups, "rowsNew"), recursive = FALSE)
   
   wide <- map_dfr(rows, function(row) {
     vals <- map_chr(row$rowEntries, \(e) as.character(e$value))
@@ -219,20 +233,57 @@ aranceles <- map2(
          tasa_efectiva, tasa_implicita) |>
   arrange(pais, cod_hts, fecha)
 
+# Verificación: deben venir todas las series país × partida solicitadas
+n_series_esperadas <- length(paises) * length(HTS_CODES)
+n_series           <- n_distinct(aranceles$pais, aranceles$cod_hts)
+if (n_series != n_series_esperadas)
+  warning("Series recibidas: ", n_series, " (esperadas: ", n_series_esperadas, "). Revisar abajo.")
+
+# ── 4b. Recorte al último mes con datos y guardado ────────────────────────────
+# Para el año en curso DataWeb puede devolver meses futuros con valor 0.
+
+ultimo_mes <- aranceles |> filter(val_imp > 0) |> pull(fecha) |> max(na.rm = TRUE)
+aranceles  <- aranceles |> filter(fecha <= ultimo_mes)
+message("Último mes con datos: ", format(ultimo_mes, "%Y-%m"))
+
+# La consulta baja toda la historia (una sola llamada), así que no hay que
+# acumular: el archivo se sobrescribe completo. Antes se reporta cuánto se
+# revisaron los datos ya publicados desde DESDE_SOLAPE, comparando contra el
+# archivo nuevo previo si existe o, en la primera corrida, contra la versión
+# anterior (solo las series que ésta contenía).
+archivo_comp <- c(ARCHIVO_RDS, ARCHIVO_ANTERIOR)
+archivo_comp <- archivo_comp[file.exists(archivo_comp)][1]
+
+if (!is.na(archivo_comp)) {
+  message("Comparando contra: ", basename(archivo_comp))
+  viejo <- readRDS(archivo_comp)
+  invisible(actualizar_rds(
+    viejo  = viejo,
+    nuevo  = semi_join(aranceles, viejo, by = c("pais", "cod_hts")),
+    llaves = c("pais", "cod_hts"),
+    valor  = "val_imp",
+    desde  = DESDE_SOLAPE,
+    nombre = "aranceles autos y autopartes"
+  ))
+}
+
+saveRDS(aranceles, ARCHIVO_RDS)
+message("✔ Guardado: RDS/", basename(ARCHIVO_RDS))
+
 # ── 5. Diagnóstico rápido ─────────────────────────────────────────────────────
 
 cat("\nRango de fechas:", format(min(aranceles$fecha, na.rm = TRUE)),
     "→", format(max(aranceles$fecha, na.rm = TRUE)), "\n")
 cat("Filas:", nrow(aranceles), " | NAs en fecha:",
     sum(is.na(aranceles$fecha)), "\n")
-cat("\nFilas por país:\n")
-aranceles |> count(pais) |> print()
+cat("\nFilas por país y partida:\n")
+aranceles |> count(pais, cod_hts) |> print()
 
 # ── 6. Muestra de resultados ──────────────────────────────────────────────────
 
-cat("\n=== Muestra — HTS", HTS_CODE, "| México y Corea del Sur ===\n\n")
+cat("\n=== Muestra — últimos 3 meses ===\n\n")
 aranceles |>
-  filter(fecha >= "2024-01-01") |>
+  filter(fecha >= ultimo_mes %m-% months(2)) |>
   mutate(
     val_imp        = scales::comma(val_imp),
     val_gravable   = scales::comma(val_gravable),
@@ -240,55 +291,40 @@ aranceles |>
     tasa_efectiva  = scales::percent(tasa_efectiva,  accuracy = 0.001),
     tasa_implicita = scales::percent(tasa_implicita, accuracy = 0.001)
   ) |>
-  print(width = 120)
+  print(n = Inf, width = 120)
 
-# ── 7. Guardar ────────────────────────────────────────────────────────────────
+# ── 7. Gráfico: estilo IDB Tariff Tracker ─────────────────────────────────────
 
-# saveRDS(aranceles, here::here("RDS", "aranceles_hts8703_mex_kor_mensual.rds"))
-# write_csv(aranceles, here::here("RDS", "aranceles_hts8703_mex_kor_mensual.csv"))
-# message("Guardado: RDS/aranceles_hts8703_mex_kor_mensual.rds / .csv")
+etiquetas_pais <- c("Mexico" = "México", "South Korea" = "Corea del Sur",
+                    "Japan"  = "Japón",  "Germany"     = "Alemania")
+etiquetas_hts  <- c("8703" = "8703 · Automóviles", "8708" = "8708 · Autopartes")
 
-# ── 8. Gráfico: estilo IDB Tariff Tracker ─────────────────────────────────────
+colores_pais <- c("México" = "#00BFC4", "Corea del Sur" = "#F8766D",
+                  "Japón"  = "#7CAE00", "Alemania"      = "#C77CFF")
 
-aranceles_graf <- aranceles |>
-  mutate(
-    pais_label = case_when(
-      pais == "Mexico"      ~ "Mex",
-      pais == "South Korea" ~ "Kor",
-      TRUE                  ~ pais
-    )
-  ) |>
+aranceles |>
+  filter(fecha >= as.Date("2025-01-01")) |>
   pivot_longer(
     cols      = c(tasa_efectiva, tasa_implicita),
     names_to  = "tipo",
     values_to = "tasa"
   ) |>
   mutate(
-    tipo_label  = if_else(tipo == "tasa_efectiva", "efec", "imp"),
-    serie_label = paste0(pais_label, "_", tipo_label)
-  )
-
-niveles   <- c("Mex_efec", "Mex_imp", "Kor_efec", "Kor_imp")
-colores   <- c("#00BFC4",  "#00BFC4", "#F8766D",  "#F8766D")
-linetypes <- c("solid",    "dotted",  "solid",    "dotted")
-names(colores)   <- niveles
-names(linetypes) <- niveles
-
-aranceles_graf |>
-  filter(fecha >= "2025-01-01") |>
-  mutate(serie_label = factor(serie_label, levels = niveles)) |>
-  ggplot(aes(x = fecha, y = tasa,
-             color    = serie_label,
-             linetype = serie_label)) +
-  geom_step(linewidth = 1) +
-  scale_color_manual(values = colores) +
-  scale_linetype_manual(values = linetypes) +
-  scale_x_date(date_labels = "%b %Y", date_breaks = "1 month") +
+    pais_label = coalesce(unname(etiquetas_pais[pais]), pais),
+    hts_label  = coalesce(unname(etiquetas_hts[cod_hts]), cod_hts),
+    tipo_label = if_else(tipo == "tasa_efectiva", "Efectiva", "Implícita")
+  ) |>
+  ggplot(aes(x = fecha, y = tasa, color = pais_label, linetype = tipo_label)) +
+  geom_step(linewidth = 0.9) +
+  facet_wrap(~ hts_label, ncol = 1) +
+  scale_color_manual(values = colores_pais) +
+  scale_linetype_manual(values = c("Efectiva" = "solid", "Implícita" = "dotted")) +
+  scale_x_date(date_labels = "%b %Y", date_breaks = "2 months") +
   scale_y_continuous(labels = scales::percent_format(accuracy = 1),
                      limits = c(0, NA)) +
   labs(
-    title    = "Aranceles EUA sobre automóviles (HTS 8703)",
-    subtitle = "México y Corea del Sur, 2025",
+    title    = "Aranceles EUA sobre automóviles y autopartes",
+    subtitle = "México, Corea del Sur, Japón y Alemania, desde enero de 2025",
     x        = NULL,
     y        = "Tasa arancelaria (%)",
     color    = NULL,
@@ -302,17 +338,16 @@ aranceles_graf |>
     axis.text.x      = element_text(angle = 90, vjust = 0.5)
   )
 
-saveRDS(aranceles, here::here("RDS", "aranceles_hts8703_mex_kor_mensual.rds"))
-
-# ── 9. Metadatos ──────────────────────────────────────────────────────────────
+# ── 8. Metadatos ──────────────────────────────────────────────────────────────
 
 meta_aranceles <- list(
   fuente         = "USITC DataWeb",
   endpoint       = "https://datawebws.usitc.gov/dataweb/api/v2/report2/runReport",
   fecha_descarga = Sys.time(),
-  cod_hts        = HTS_CODE,
-  desc_hts       = "Motor vehicles for transport of persons",
-  países         = "México (CTY_CODE 2010), Corea del Sur (CTY_CODE 5800)",
+  cod_hts        = names(HTS_CODES),
+  desc_hts       = HTS_CODES,
+  países         = paste0(map_chr(paises, \(p) p$nombre), " (CTY_CODE ", map_chr(paises, \(p) p$code), ")"),
+  nota_países    = "Alemania (4280) se usa como representante de la UE, que aplica un arancel común.",
   período        = paste(range(aranceles$fecha, na.rm = TRUE), collapse = " – "),
   frecuencia     = "Mensual",
   unidad         = "Dólares corrientes (val_imp, val_gravable, derechos); proporción 0–1 (tasas)",
@@ -326,5 +361,5 @@ meta_aranceles <- list(
                     Ambas tasas pueden ser NA o Inf cuando val_imp = 0."
 )
 
-saveRDS(meta_aranceles, here::here("RDS", "meta_aranceles_hts8703.rds"))
-message("✔ Guardado: RDS/meta_aranceles_hts8703.rds")
+saveRDS(meta_aranceles, here("RDS", "meta_aranceles_autos_autopartes.rds"))
+message("✔ Guardado: RDS/meta_aranceles_autos_autopartes.rds")

@@ -33,7 +33,7 @@ Rule: **`Query` = ingests an external source** (API call, or a raw Excel/CSV fil
 | `Query10_NS_MentionsMX` | Query14 | CSV by hand | Media Cloud CSV |
 | `Prep01_Imp_Mex_SecCap` | Query03 | derived | Query02 |
 | `Prep02_USA_imp_Mex_all_HS` | Query04 | derived | Query02, Prep01 |
-| `Prep03_TopPartidas` | Query05 | derived (**to be rewritten**) | Prep02 |
+| ~~`Prep03_TopPartidas`~~ | Query05 | **retired 2026-10-22**; moved to `_backup_2026-10-19/Scripts/`. Its output `partidas_valor_depurado.rds` is read by no qmd and no script; Prep02 now selects the partidas. The number 03 is left unused | Prep02 |
 | `Prep04_TopPartidas_Competidores` | Query06 | derived | Query02 |
 | `Prep05_imp_pais_mex` | Prep_imp_pais_mex | derived | Query01, Prep01 |
 | `Prep06_partidas_quiebres` | Prep_partidas_quiebres | derived | Prep02 |
@@ -41,7 +41,7 @@ Rule: **`Query` = ingests an external source** (API call, or a raw Excel/CSV fil
 | `Prep08_immex` | Prep_immex | derived | Query08 |
 | `top_hs4_Pendiente` | top_hs4 | **pending review** | `imp_mex_top_hs4`, `imp_mex_sec_cap` |
 
-Open items: (1) `top_hs4_Pendiente.R`: check whether the .qmd files use its results, or whether it is redundant. (2) `Prep03_TopPartidas.R` must be rewritten: drop the growth ranking, remove the hard-coded years, and use the reference period still to be decided. (3) Not yet written for the final version: add 8703 (passenger cars) to the top partidas by historical importance.
+Open items: (1) `top_hs4_Pendiente.R`: check whether the .qmd files use its results, or whether it is redundant. (2) Decision 2026-10-22: the set of top partidas is the UNION of those crossing 80% of their chapter in 2024, 2025 and Jan–latest month of 2026, plus 8703; implemented in `Prep02`. `Prep03_TopPartidas.R` was retired (see table above).
 
 ### New outputs (2026-10-21)
 

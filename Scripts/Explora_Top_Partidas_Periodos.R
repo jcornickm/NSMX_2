@@ -192,7 +192,9 @@ tabla_flex
 # · RDS/top_partidas_periodos.rds    : lista con los datos (tabla, periodos, parámetros).
 #                                      Robusto a cambios de versión de paquetes.
 # · Tablas/top_partidas_periodos.rds : objeto flextable; el qmd lo lee y lo imprime.
-# · Tablas/top_partidas_periodos.docx: copia para revisión fuera de RStudio.
+# · Tablas/top_partidas_periodos.docx: copia para revisión (hoja horizontal, 9" de ancho).
+#   Nota: el .rds del flextable queda a ancho natural; para un qmd en hoja vertical
+#   (6" útiles) habrá que aplicar fit_to_width(max_width = 6, unit = "in") al cargarlo.
 
 dir.create(here("Tablas"), showWarnings = FALSE)
 
@@ -214,7 +216,21 @@ tryCatch({
 }, error = function(e) message("✗  ERROR: ", conditionMessage(e)))
 
 tryCatch({
-  flextable::save_as_docx(tabla_flex, path = here("Tablas", "top_partidas_periodos.docx"))
+  # Hoja horizontal carta (márgenes de 0.75"; ancho útil 9.5") y tabla ajustada
+  # a 9" de ancho: con 11 columnas no cabe en hoja vertical.
+  tabla_docx <- tabla_flex |>
+    flextable::fontsize(size = 9, part = "all") |>
+    flextable::autofit() |>
+    flextable::fit_to_width(max_width = 9, unit = "in")
+  
+  flextable::save_as_docx(
+    tabla_docx,
+    path = here("Tablas", "top_partidas_periodos.docx"),
+    pr_section = officer::prop_section(
+      page_size    = officer::page_size(orient = "landscape", width = 8.5, height = 11),
+      page_margins = officer::page_mar(left = 0.75, right = 0.75, top = 0.75, bottom = 0.75)
+    )
+  )
   message("✔  Tablas/top_partidas_periodos.docx guardado.")
 }, error = function(e) message("✗  ERROR: ", conditionMessage(e)))
 

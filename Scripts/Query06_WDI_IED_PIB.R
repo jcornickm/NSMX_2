@@ -18,7 +18,7 @@ ied_pib_wdi <- WDI(
   indicator = "BX.KLT.DINV.WD.GD.ZS",
   country   = paises,
   start     = 2010,
-  end       = 2025
+  end       = lubridate::year(Sys.Date())   # el WDI devuelve NA donde aún no hay dato
 )
 
 nombres_es <- c(
@@ -32,6 +32,12 @@ ied_pib_comp <- ied_pib_wdi |>
   mutate(país = nombres_es[iso2c]) |>
   select(país, year, ied_pib_pct) |>
   arrange(país, year)
+
+cat("\nÚltimo año con dato por país:\n")
+ied_pib_comp |>
+  group_by(país) |>
+  summarise(primer_año = min(year), último_año = max(year), n = n(), .groups = "drop") |>
+  print()
 
 tryCatch({
   saveRDS(ied_pib_comp, here("RDS", "ied_pib_wdi_comp.rds"))
