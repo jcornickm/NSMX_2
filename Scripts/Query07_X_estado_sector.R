@@ -210,6 +210,20 @@ etef_tidy |>
   summarise(min_año = min(año), max_año = max(año)) |>
   print()
 
+cat("\nÚltimo trimestre con dato (exportaciones totales) por entidad:\n")
+etef_tidy |>
+  filter(es_total, !is.na(val_miles_usd)) |>
+  group_by(entidad) |>
+  summarise(ultimo = max(fecha), .groups = "drop") |>
+  count(ultimo) |>
+  print()
+
+cat("\nFilas por año y trimestre (años recientes):\n")
+etef_tidy |>
+  filter(año >= max(año) - 1) |>
+  count(año, trimestre) |>
+  print()
+
 cat("\nSubsectores SCIAN presentes:\n")
 etef_tidy |>
   filter(!es_total, !es_no_especificado, !is.na(codigo_scian)) |>
@@ -367,7 +381,7 @@ meta_etef <- list(
     es_total = TRUE   : fila de Exportaciones totales de la entidad.
     es_no_especificado: residual de datos suprimidos; incluido en el total ETEF.
     fecha             : primer día del trimestre (ene/abr/jul/oct).
-    2018 publicado con sufijo 'R/' (revisado); 2025 con 'P/' (preliminar).
+    Años con sufijo 'R/' (revisado) o 'P/' (preliminar) en la fila de años del Excel.
     Los sufijos se remueven; el año queda limpio en la columna 'año'.
     Asignación geográfica: entidad de ORIGEN de la producción (no aduana de salida).
     Subsectores NS relevantes: 333 (maquinaria), 334 (electrónica),

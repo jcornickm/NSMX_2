@@ -3,6 +3,17 @@
 # de la Frontera Norte (ZLFN)
 # Fuente: INEGI – Datos abiertos IMMEX
 # https://www.inegi.org.mx/programas/immex/#datos_abiertos
+#
+# Estructura de la fuente (descarga "Por municipio", un CSV por año):
+#   - Estados SIN desglose municipal (01, 09, 10, 30): una fila estatal
+#     (CVE_MUN vacío o "000").
+#   - Estados CON desglose municipal: una fila por municipio con datos más una
+#     fila "otros municipios" (CVE_MUN = "999"). NO existe fila de total
+#     estatal; el total se construye sumando todas las filas de la entidad.
+#   - CVE_ENT = "99": "Otras entidades" (no se incluye en los estados).
+# Nota: en los archivos anteriores a oct-2026 la fila "otros municipios" venía
+# con CVEGEO de 2 dígitos ("08"), lo que se confundía con un total estatal.
+# Revisión 22-oct-2026: los totales estatales se construyen siempre por suma.
 
 pacman::p_load(tidyverse, here)
 
@@ -21,7 +32,7 @@ cvegeo_zlfn <- c(
   "28032"   # Reynosa,       Tamaulipas
 )
 
-# ── 2. Leer todos los archivos anuales (2010–2026) ───────────────────────────
+# ── 2. Leer todos los archivos anuales (2010 en adelante) ───────────────────
 ruta_csv <- here::here("Excel", "IMMEX")
 
 archivos <- list.files(
@@ -44,14 +55,12 @@ immex_raw <- archivos |>
 # ── 3. Limpiar claves y calcular variables de empleo ────────────────────────
 immex_emp <- immex_raw |>
   mutate(
-    # Limpiar espacios en todas las claves de texto
+    # Limpiar espacios y tabulaciones en las claves de texto
     CVEGEO  = str_trim(CVEGEO),
     CVE_ENT = str_trim(CVE_ENT),
     CVE_MUN = str_trim(CVE_MUN),
-    # Pad de dos dígitos solo para CVEGEO de estado (los municipales tienen 5)
-    CVEGEO  = if_else(str_length(CVEGEO) < 5,
-                      str_pad(CVEGEO, width = 2, side = "left", pad = "0"),
-                      CVEGEO),
+    # Fila estatal única (estados sin desglose municipal): CVE_MUN vacío o "000"
+    es_fila_estatal = is.na(CVE_MUN) | CVE_MUN %in% c("", "000"),
     # Variables de empleo
     emp_prod_directo = H114A,           # obreros propios
     emp_prod_externo = I400A,           # obreros subcontratados
@@ -62,10 +71,32 @@ immex_emp <- immex_raw |>
     emp_total        = H114A + I400A + H200A + I500A
   )
 
-# ── 4. Catálogo de entidades (excluye BC — sin fila de total en fuente) ──────
+vars_suma <- c("NUM_DE_ESTAB_ACT",
+               "emp_prod_directo", "emp_prod_externo", "emp_prod_total",
+               "emp_adm_directo",  "emp_adm_externo",  "emp_adm_total",
+               "emp_total")
+
+# Verificación de la estructura: un estado-mes tiene o bien UNA fila estatal,
+# o bien filas municipales; nunca ambas (sumar todo duplicaría el conteo).
+chk_estructura <- immex_emp |>
+  filter(CVE_ENT != "99") |>
+  group_by(ANIO, ID_MES, CVE_ENT) |>
+  summarise(n_estatal = sum(es_fila_estatal),
+            n_munic   = sum(!es_fila_estatal),
+            .groups   = "drop")
+
+stopifnot(
+  "Hay estados con fila estatal Y municipal en el mismo mes: sumar duplicaría" =
+    !any(chk_estructura$n_estatal > 0 & chk_estructura$n_munic > 0),
+  "Hay estados con más de una fila estatal en un mes" =
+    !any(chk_estructura$n_estatal > 1)
+)
+
+# ── 4. Catálogo de entidades (17 estados con IMMEX manufacturero) ───────────
 cat_entidades <- tribble(
   ~CVE_ENT, ~nombre,               ~abrev,
   "01",     "Aguascalientes",       "AGS",
+  "02",     "Baja California",      "BC",
   "05",     "Coahuila",             "Coah.",
   "08",     "Chihuahua",            "Chih.",
   "09",     "Ciudad de México",     "CDMX",
@@ -83,68 +114,32 @@ cat_entidades <- tribble(
   "31",     "Yucatán",              "Yuc."
 )
 
-# ── 5. Agregado por entidad federativa (16 estados con fila propia en fuente) ─
+# ── 5. Agregado por entidad federativa (suma de todas las filas del estado) ──
 immex_ef <- immex_emp |>
-  filter(str_length(CVEGEO) == 2, CVE_ENT != "99") |>
+  filter(CVE_ENT != "99") |>
+  group_by(ANIO, ID_MES, CVE_ENT) |>
+  summarise(
+    across(all_of(vars_suma), \(x) sum(x, na.rm = TRUE)),
+    ESTATUS = {u <- unique(ESTATUS[!is.na(ESTATUS)]); if (length(u) == 1L) u else "Mixto"},
+    .groups = "drop"
+  ) |>
   mutate(fecha = as.Date(paste(ANIO, ID_MES, "01", sep = "-"))) |>
   left_join(cat_entidades, by = "CVE_ENT") |>
   rename(año = ANIO) |>
   select(fecha, año, ID_MES, CVE_ENT, nombre, abrev,
-         NUM_DE_ESTAB_ACT,
-         emp_prod_directo, emp_prod_externo, emp_prod_total,
-         emp_adm_directo,  emp_adm_externo,  emp_adm_total,
-         emp_total, ESTATUS)
+         all_of(vars_suma), ESTATUS)
 
 # Verificación: sin NAs en nombre tras el join
 stopifnot("CVE_ENT sin nombre — revisar cat_entidades" =
             sum(is.na(immex_ef$nombre)) == 0)
 
-# ── 6. BC: construir total estatal sumando sus cuatro municipios ─────────────
-# INEGI no publica fila de total estatal para BC.
-# Todos los municipios (incluido Ensenada 02001) se suman para el total estatal.
-# Ensenada se excluye solo del agregado ZLFN (paso 7).
-bc_ef <- immex_emp |>
-  filter(CVE_ENT == "02", str_length(CVEGEO) == 5) |>
-  group_by(ANIO, ID_MES) |>
-  summarise(
-    NUM_DE_ESTAB_ACT = sum(NUM_DE_ESTAB_ACT, na.rm = TRUE),
-    emp_prod_directo = sum(emp_prod_directo, na.rm = TRUE),
-    emp_prod_externo = sum(emp_prod_externo, na.rm = TRUE),
-    emp_prod_total   = sum(emp_prod_total,   na.rm = TRUE),
-    emp_adm_directo  = sum(emp_adm_directo,  na.rm = TRUE),
-    emp_adm_externo  = sum(emp_adm_externo,  na.rm = TRUE),
-    emp_adm_total    = sum(emp_adm_total,    na.rm = TRUE),
-    emp_total        = sum(emp_total,        na.rm = TRUE),
-    .groups = "drop"
-  ) |>
-  mutate(
-    fecha   = as.Date(paste(ANIO, ID_MES, "01", sep = "-")),
-    CVE_ENT = "02",
-    nombre  = "Baja California",
-    abrev   = "BC",
-    ESTATUS = NA_character_
-  ) |>
-  rename(año = ANIO) |>
-  select(fecha, año, ID_MES, CVE_ENT, nombre, abrev,
-         NUM_DE_ESTAB_ACT,
-         emp_prod_directo, emp_prod_externo, emp_prod_total,
-         emp_adm_directo,  emp_adm_externo,  emp_adm_total,
-         emp_total, ESTATUS)
-
-# ── 7. Agregado Zona Libre de la Frontera Norte ──────────────────────────────
+# ── 6. Agregado Zona Libre de la Frontera Norte ─────────────────────────────
 # Ensenada (02001) excluida: su actividad IMMEX no es fronteriza en sentido estricto
 immex_zlfn <- immex_emp |>
   filter(CVEGEO %in% cvegeo_zlfn) |>
   group_by(ANIO, ID_MES) |>
   summarise(
-    NUM_DE_ESTAB_ACT = sum(NUM_DE_ESTAB_ACT, na.rm = TRUE),
-    emp_prod_directo = sum(emp_prod_directo, na.rm = TRUE),
-    emp_prod_externo = sum(emp_prod_externo, na.rm = TRUE),
-    emp_prod_total   = sum(emp_prod_total,   na.rm = TRUE),
-    emp_adm_directo  = sum(emp_adm_directo,  na.rm = TRUE),
-    emp_adm_externo  = sum(emp_adm_externo,  na.rm = TRUE),
-    emp_adm_total    = sum(emp_adm_total,    na.rm = TRUE),
-    emp_total        = sum(emp_total,        na.rm = TRUE),
+    across(all_of(vars_suma), \(x) sum(x, na.rm = TRUE)),
     .groups = "drop"
   ) |>
   mutate(
@@ -156,35 +151,26 @@ immex_zlfn <- immex_emp |>
   ) |>
   rename(año = ANIO) |>
   select(fecha, año, ID_MES, CVE_ENT, nombre, abrev,
-         NUM_DE_ESTAB_ACT,
-         emp_prod_directo, emp_prod_externo, emp_prod_total,
-         emp_adm_directo,  emp_adm_externo,  emp_adm_total,
-         emp_total, ESTATUS)
+         all_of(vars_suma), ESTATUS)
 
-# ── 8. Total nacional (16 estados + BC; excluye ZLFN para evitar doble conteo) ─
-immex_total_nacional <- bind_rows(immex_ef, bc_ef) |>
+# ── 7. Total nacional (17 estados; excluye ZLFN para evitar doble conteo) ────
+# No incluye CVE_ENT = "99" (Otras entidades).
+immex_total_nacional <- immex_ef |>
   group_by(fecha, año, ID_MES) |>
   summarise(
-    CVE_ENT          = "TOT",
-    nombre           = "Total nacional",
-    abrev            = "Total",
-    NUM_DE_ESTAB_ACT = sum(NUM_DE_ESTAB_ACT, na.rm = TRUE),
-    emp_prod_directo = sum(emp_prod_directo, na.rm = TRUE),
-    emp_prod_externo = sum(emp_prod_externo, na.rm = TRUE),
-    emp_prod_total   = sum(emp_prod_total,   na.rm = TRUE),
-    emp_adm_directo  = sum(emp_adm_directo,  na.rm = TRUE),
-    emp_adm_externo  = sum(emp_adm_externo,  na.rm = TRUE),
-    emp_adm_total    = sum(emp_adm_total,    na.rm = TRUE),
-    emp_total        = sum(emp_total,        na.rm = TRUE),
-    ESTATUS          = NA_character_,
-    .groups          = "drop"
+    CVE_ENT = "TOT",
+    nombre  = "Total nacional",
+    abrev   = "Total",
+    across(all_of(vars_suma), \(x) sum(x, na.rm = TRUE)),
+    ESTATUS = NA_character_,
+    .groups = "drop"
   )
 
-# ── 9. Combinar todo en un solo objeto ───────────────────────────────────────
-immex_empleo <- bind_rows(immex_ef, bc_ef, immex_zlfn, immex_total_nacional) |>
+# ── 8. Combinar todo en un solo objeto ──────────────────────────────────────
+immex_empleo <- bind_rows(immex_ef, immex_zlfn, immex_total_nacional) |>
   arrange(fecha, CVE_ENT)
 
-# ── 10. Guardar ──────────────────────────────────────────────────────────────
+# ── 9. Guardar ──────────────────────────────────────────────────────────────
 saveRDS(immex_empleo, here::here("RDS", "immex_empleo.rds"))
 
 message("immex_empleo guardado: ", nrow(immex_empleo), " filas | ",
@@ -194,7 +180,22 @@ distinct(immex_empleo, CVE_ENT, nombre, abrev) |>
   arrange(CVE_ENT) |>
   print(n = 25)
 
-# ── 10b. Metadatos ───────────────────────────────────────────────────────────
+cat("\nÚltimo mes en immex_empleo:", as.character(max(immex_empleo$fecha)), "\n")
+cat("\nFilas por ESTATUS (excluye filas construidas):\n")
+immex_empleo |> filter(!is.na(ESTATUS)) |> count(ESTATUS) |> print()
+cat("\nMeses por entidad/agregado en el último mes (debe ser 1 por clave):\n")
+immex_empleo |> filter(fecha == max(fecha)) |> count(CVE_ENT) |> print(n = 25)
+
+# Verificación de cordura: empleo total de los estados en el último mes
+cat("\nEmpleo total (personas) por entidad en el último mes, de mayor a menor:\n")
+immex_empleo |>
+  filter(fecha == max(fecha)) |>
+  select(CVE_ENT, nombre, emp_total) |>
+  arrange(desc(emp_total)) |>
+  mutate(emp_total = scales::comma(emp_total)) |>
+  print(n = 25)
+
+# ── 9b. Metadatos ───────────────────────────────────────────────────────────
 meta_immex_empleo <- list(
   fuente         = "INEGI — Estadística Mensual sobre Establecimientos con Programa IMMEX (Segmento Manufacturero)",
   url_fuente     = "https://www.inegi.org.mx/programas/immex/#datos_abiertos",
@@ -213,18 +214,22 @@ meta_immex_empleo <- list(
     emp_total         : suma de las seis componentes anteriores
   ",
   agregados_especiales = "
-    CVE_ENT = '02' (BC): total estatal construido sumando los cuatro municipios
-      (02001 Ensenada, 02002 Mexicali, 02003 Tecate, 02004 Tijuana).
-      INEGI no publica fila de total estatal para BC. ESTATUS = NA.
+    Totales estatales: se construyen SIEMPRE sumando todas las filas de la entidad
+      (municipios con datos + 'otros municipios', CVE_MUN = 999; o la fila estatal
+      única en los estados sin desglose municipal: 01, 09, 10, 30). INEGI no
+      publica fila de total estatal para los estados con desglose municipal.
+      La versión anterior de este script tomaba las filas 'otros municipios' como
+      si fueran el total estatal, por lo que subestimaba 12 estados y el total nacional.
     CVE_ENT = 'ZLF' (ZLFN): suma de municipios fronterizos con salario mínimo
       diferenciado (Decreto DOF 2018). Excluye Ensenada. ESTATUS = NA.
-    CVE_ENT = 'TOT' (Total nacional): suma de 17 estados. Excluye ZLF
-      para evitar doble conteo. ESTATUS = NA.
+    CVE_ENT = 'TOT' (Total nacional): suma de los 17 estados. Excluye ZLF
+      para evitar doble conteo y excluye CVE_ENT = '99' (Otras entidades).
+      ESTATUS = NA.
   ",
   notas          = "
     Segmento manufacturero únicamente; excluye segmento no manufacturero.
-    ESTATUS = 'Cifras Definitivas' o 'Cifras Preliminares' según INEGI;
-    NA en filas construidas (BC, ZLF, TOT).
+    ESTATUS = 'Cifras Definitivas', 'Cifras Preliminares' o 'Cifras Oportunas' según INEGI;
+    'Mixto' si el estado-mes combina más de un estatus; NA en filas construidas (ZLF, TOT).
     Serie iniciada en 2010; datos anteriores disponibles en fuente pero
     excluidos de este objeto.
   "
@@ -233,7 +238,7 @@ meta_immex_empleo <- list(
 saveRDS(meta_immex_empleo, here::here("RDS", "meta_immex_empleo.rds"))
 message("meta_immex_empleo guardado")
 
-# ── 11. Limpieza de memoria ──────────────────────────────────────────────────
-rm(immex_raw, immex_emp, immex_ef, bc_ef, immex_zlfn,
-   immex_total_nacional, immex_empleo, cat_entidades, cvegeo_zlfn,
-   archivos, ruta_csv)
+# ── 10. Limpieza de memoria ─────────────────────────────────────────────────
+rm(immex_raw, immex_emp, immex_ef, immex_zlfn, immex_total_nacional,
+   immex_empleo, cat_entidades, cvegeo_zlfn, archivos, ruta_csv,
+   chk_estructura, vars_suma)

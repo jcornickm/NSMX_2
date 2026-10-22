@@ -19,6 +19,8 @@
 #   census_descargar()        una descarga (con caché en disco y reintentos)
 #   census_descargar_anios()  varias descargas, una por año, y las une
 #   actualizar_rds()          une datos viejos y nuevos y reporta revisiones
+#   buscar_en_repo()          "grep" sobre el repo: en qué archivos/líneas aparece un texto
+#                             (p. ej. el nombre de un RDS, para saber quién lo lee)
 
 pacman::p_load(tidyverse, here, lubridate, censusapi, httr)
 
@@ -205,4 +207,35 @@ actualizar_rds <- function(viejo, nuevo, llaves, valor, desde,
     arrange(across(all_of(llaves_f)))
 
   list(datos = datos, revision = revision)
+}
+
+
+# ── buscar_en_repo() ─────────────────────────────────────────────────────────────────────
+# Equivalente a un grep sobre el repo: devuelve un tibble con el archivo, la línea
+# y el texto donde aparece `patron`. Sirve, por ejemplo, para saber qué qmd o
+# script lee un RDS:
+#   buscar_en_repo("immex_empleo")
+#   buscar_en_repo("TCAC_y_shares", ext = "\\.(R|qmd)$")     # solo código
+#   buscar_en_repo("immex_(pct|empleo)", fixed = FALSE)      # expresión regular
+# Por defecto busca en .R, .qmd, .Rmd y .md (incluye Catalogo_RDS.md) y excluye
+# copias de respaldo (_backup*), Quarto/OldQmd y carpetas de render. Para incluir
+# CSV, pasar ext = "\\.(R|qmd|Rmd|md|csv)$" (puede ser lento si hay CSV grandes).
+buscar_en_repo <- function(patron,
+                           ext     = "\\.(R|qmd|Rmd|md)$",
+                           fixed   = TRUE,
+                           excluir = "_backup|OldQmd|\\.Rproj\\.user|renv/|_freeze|_files/") {
+  
+  archivos <- list.files(here::here(), pattern = ext, recursive = TRUE,
+                         full.names = TRUE, ignore.case = TRUE)
+  archivos <- archivos[!grepl(excluir, archivos)]
+  raiz     <- nchar(here::here()) + 2L   # para dejar la ruta relativa al proyecto
+  
+  map_dfr(archivos, \(f) {
+    lineas <- tryCatch(readLines(f, warn = FALSE, encoding = "UTF-8"),
+                       error = \(e) character(0))
+    i <- tryCatch(grep(patron, lineas, fixed = fixed, useBytes = TRUE),
+                  error = \(e) integer(0))
+    if (length(i) == 0L) return(NULL)
+    tibble(archivo = substring(f, raiz), linea = i, texto = str_squish(lineas[i]))
+  })
 }

@@ -1,0 +1,47 @@
+CVEGEO,CVE_ENT,CVE_MUN,NOM_MUN
+	01,	01,	000,Total por Entidad
+	02001,	02,	001,Ensenada
+	02002,	02,	002,Mexicali
+	02003,	02,	003,Tecate
+	02004,	02,	004,Tijuana
+	05002,	05,	002,Acuña
+	05027,	05,	027,Ramos Arizpe
+	05030,	05,	030,Saltillo
+	05035,	05,	035,Torreón
+	05999,	05,	999,Otros municipios
+	08019,	08,	019,Chihuahua
+	08037,	08,	037,Juárez
+	08999,	08,	999,Otros municipios
+	09,	09,	000,Total por Entidad
+	10,	10,	000,Total por Entidad
+	11020,	11,	020,León
+	11999,	11,	999,Otros municipios
+	14039,	14,	039,Guadalajara
+	14120,	14,	120,Zapopan
+	14999,	14,	999,Otros municipios
+	15104,	15,	104,Tlalnepantla de Baz
+	15106,	15,	106,Toluca
+	15999,	15,	999,Otros municipios
+	19006,	19,	006,Apodaca
+	19026,	19,	026,Guadalupe
+	19039,	19,	039,Monterrey
+	19046,	19,	046,San Nicolás de los Garza
+	19048,	19,	048,Santa Catarina
+	19999,	19,	999,Otros municipios
+	21114,	21,	114,Puebla
+	21999,	21,	999,Otros municipios
+	22014,	22,	014,Querétaro
+	22999,	22,	999,Otros municipios
+	24028,	24,	028,San Luis Potosí
+	24999,	24,	999,Otros municipios
+	26030,	26,	030,Hermosillo
+	26043,	26,	043,Nogales
+	26999,	26,	999,Otros municipios
+	28022,	28,	022,Matamoros
+	28027,	28,	027,Nuevo Laredo
+	28032,	28,	032,Reynosa
+	28999,	28,	999,Otros municipios
+	30,	30,	000,Total por Entidad
+	31050,	31,	050,Mérida
+	31999,	31,	999,Otros municipios
+	99998,	99,	998,Otras entidades

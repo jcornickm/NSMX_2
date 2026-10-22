@@ -8,7 +8,7 @@
 #   Inversión Extranjera Directa | Secretaría de Economía
 #   https://www.gob.mx/se/acciones-y-programas/competitividad-y-normatividad-
 #   inversion-extranjera-directa
-#   Información al 31 de diciembre de 2025.
+#   Información al último trimestre publicado (ver rango en la consola y en meta_ied.rds).
 #
 # Archivos de entrada (carpeta Excel/):
 #   IED_flujos.xlsx   → hojas: Por origen, Por actividad económica,
@@ -437,13 +437,16 @@ message("NAs (C): ",     sum(is.na(ied_flujos_tipo$ied_mdd)))
 saveRDS(ied_flujos_tipo, here("RDS", "ied_flujos_tipo.rds"))
 message("✓ Guardado: RDS/ied_flujos_tipo.rds")
 
-message("\n══ Query13_IED.R completado — 5 RDS guardados en RDS/ ══════════════════════")
+message("\n══ Query09_IED.R completado — 5 RDS guardados en RDS/ ══════════════════════")
 
 meta_ied <- list(
   fuente         = "Secretaría de Economía — Inversión Extranjera Directa",
   url            = "https://www.gob.mx/se/acciones-y-programas/competitividad-y-normatividad-inversion-extranjera-directa",
   fecha_descarga = Sys.Date(),
-  cobertura      = "1999–2025 (datos al 31 de diciembre de 2025)",
+  cobertura      = paste0("Flujos trimestrales por origen, ",
+                          format(min(ied_por_origen$fecha), "%Y"), " – ",
+                          format(max(ied_por_origen$fecha), "%Y"), " T",
+                          max(ied_por_origen$trim[ied_por_origen$fecha == max(ied_por_origen$fecha)])),
   archivos_fuente = c("IED_flujos.xlsx", "IED_PIB_6.xlsx", "IED_FBKF_7.xlsx"),
   rds_producidos = c(
     "ied_por_origen.rds",

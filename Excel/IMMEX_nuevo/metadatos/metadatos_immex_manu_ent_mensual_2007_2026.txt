@@ -1,0 +1,34 @@
+identifier: MEX-INEGI.EEC6.03-IMMEX-2026
+
+title: Estadística Integral del Programa de la Industria Manufacturera, Maquiladora y de Servicios de Exportación 2007-2026 IMMEX. Información mensual, cifras preliminares al mes de julio.
+
+description: La Estadística Integral del Programa de la Industria Manufacturera, Maquiladora y de Servicios de Exportación (IMMEX), del Segmento Manufacturero tiene como objetivo disponer de información de corto plazo que muestren las características y evolución de las actividades económicas en el contexto del Programa de Fomento IMMEX, para un mejor análisis y comprensión de la actividad de las empresas incorporadas en el mismo. 
+La aportación de las unidades económicas que cuentan con este programa expedido por la Secretaría de Economía; es particularmente importante, por constituir una de las principales fuentes generadoras de empleos y divisas para el país. 
+Las cifras generadas por la estadística IMMEX, ofrecen información censal en el corto plazo a nivel nacional, estatal y municipal sobre la evolución del empleo y la actividad económica de los establecimientos; asimismo, brinda datos para los cálculos anuales y de coyuntura del Sistema de Cuentas Nacionales de México. 
+Para la generación de la Estadística IMMEX, las unidades económicas remiten su información mediante un cuestionario impreso o electrónico vía internet; la estadística cuenta con dos tipos de cuestionarios en los cuales se consignan los datos estadísticos solicitados, para la designación del instrumento de captación se considera la actividad económica que realizan los establecimientos.
+Cobertura geográfica: Estatal y Municipal.
+Nota: A partir de la publicación de los datos abiertos de 2026 febrero (22 de abril de 2026), cambió el nombre del campo ID_ENTIDAD por CVE_ENT y ID_MUNICIPIO por CVE_MUN. Así mismo, con la finalidad de facilitar la vinculación de la información estadística con el Marco Geoestadístico, se incorporó la clave geoestadística CVEGEO. Para más información referente a las claves que se obtienen del Catálogo Único de Claves de Áreas Geoestadísticas Estatales, Municipales y Localidades, 
+consultar el enlace https://www.inegi.org.mx/app/ageeml/
+
+modified: 2026-09-23
+
+publisher: Instituto Nacional de Estadística y Geografía, INEGI
+
+mbox: atencion.usuarios@inegi.org.mx
+
+license: https://www.inegi.org.mx/inegi/terminos.html
+
+dataDictionary: https://www.inegi.org.mx/rnm/index.php/catalog/1092/data-dictionary
+
+keyword: "IMMEX", "establecimiento", "manufacturero", "no manufacturero", "personal", "remuneraciones", "ingreso", "insumo", "consumo", "servicios", "exportación"
+
+contactPoint: Mtro. J. Armando Aguiar Rodríguez, 800 111 4634
+
+temporal: 2007-01-01-2026-07-31
+
+spatial: Estados Unidos Mexicanos
+
+accrualPeriodicity: Mensualmente
+
+distribution: https://www.inegi.org.mx/programas/immex/
+
