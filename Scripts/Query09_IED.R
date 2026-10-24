@@ -23,6 +23,17 @@
 #   ied_fbkf.rds
 #   ied_flujos_tipo.rds
 #
+# IMPORTANTE — flujos ACUMULADOS (hojas de IED_flujos.xlsx):
+#   Cada columna trimestral es el flujo acumulado del año hasta ese trimestre
+#   (T1 = enero-marzo; T2 = enero-junio; T3 = enero-septiembre; T4 = año completo).
+#   Por eso la columna se llama `ied_acum_mdd` (mdd = millones de dólares).
+#   Dato anual = acumulado del trimestre 4 (años completos). NO sumar trimestres.
+#   Un año en curso solo tiene acumulado parcial (p. ej. 2026 T1).
+#   Esto NO aplica a ied_pib: su `ied_mdd` trimestral es el flujo DEL trimestre
+#   (verificado 2024: 27,219 + 6,491 + 3,075 + 1,185 = 37,969 = valor anual) y
+#   `ied_pib_pct` trimestral = flujo trimestral / PIB trimestral (no anualizado,
+#   no comparable con el % anual). ied_fbkf: presumiblemente igual, sin verificar.
+#
 # Convenciones de fecha:
 #   Variable `fecha` = primer día del trimestre (Date)
 #   Variable `año`   = integer
@@ -53,6 +64,17 @@ trim_a_fecha <- function(año, trim) {
   ymd(paste0(año, "-", str_pad(mes, 2, pad = "0"), "-01"))
 }
 
+# Función auxiliar: localiza una hoja por patrón (sin distinguir mayúsculas).
+# La SE cambió "Por origen" -> "Por Origen" entre descargas; así no dependemos de eso.
+hoja_xl <- function(ruta, patron) {
+  hojas <- readxl::excel_sheets(ruta)
+  hit   <- hojas[str_detect(hojas, regex(patron, ignore_case = TRUE))]
+  if (length(hit) != 1L)
+    stop("Patrón '", patron, "' coincide con ", length(hit), " hojas en ",
+         basename(ruta), ". Hojas: ", paste(hojas, collapse = " | "))
+  hit
+}
+
 # Función auxiliar: parsea columna de valores de flujos (puede contener "C")
 parse_flujos <- function(x) {
   suppressWarnings(
@@ -79,13 +101,14 @@ message("\n── Parte 1: ied_por_origen ────────────�
 
 raw_origen <- read_excel(
   ruta_flujos,
-  sheet     = "Por origen",
+  sheet     = hoja_xl(ruta_flujos, "^por origen$"),
   col_names = FALSE,
   col_types = "text"
 )
 
 # Reconstruir encabezados: años (fila 3 en R) + trimestres (fila 4 en R)
-años_raw  <- as.character(raw_origen[3, ])
+# str_extract: la SE a veces marca el año (p. ej. "2025-4" en la hoja de actividad)
+años_raw  <- str_extract(as.character(raw_origen[3, ]), "^\\d{4}")
 trims_raw <- as.character(raw_origen[4, ])
 
 # Fill-forward de años (merged: el año aparece solo en la primera col del grupo)
@@ -105,8 +128,11 @@ names(datos_origen) <- col_nombres
 datos_origen <- datos_origen |>
   filter(
     !is.na(origen),
-    !str_detect(origen, "^\\*/|^Fuente|^Nota")
-  )
+    !str_detect(origen, "^\\*/|^Fuente|^Nota|^C:")   # '^C:' = nota 'C: Cifra confidencial...'
+  ) |>
+  # la SE alterna "Total general" / "Total General"; se normaliza para los consumidores
+  mutate(origen = if_else(str_to_lower(str_trim(origen)) == "total general",
+                          "Total general", origen))
 
 # Pivot a formato largo
 ied_por_origen <- datos_origen |>
@@ -114,22 +140,22 @@ ied_por_origen <- datos_origen |>
     cols      = -origen,
     names_to  = c("año", "trim"),
     names_sep = "_T",
-    values_to = "ied_mdd"
+    values_to = "ied_acum_mdd"
   ) |>
   mutate(
-    año     = as.integer(año),
-    trim    = as.integer(trim),
-    ied_mdd = parse_flujos(ied_mdd),
-    fecha   = trim_a_fecha(año, trim)
+    año          = as.integer(año),
+    trim         = as.integer(trim),
+    ied_acum_mdd = parse_flujos(ied_acum_mdd),
+    fecha        = trim_a_fecha(año, trim)
   ) |>
   filter(!is.na(año), !is.na(trim)) |>
-  select(origen, año, trim, fecha, ied_mdd) |>
+  select(origen, año, trim, fecha, ied_acum_mdd) |>
   arrange(origen, fecha)
 
 message("Filas: ",             nrow(ied_por_origen))
 message("Países/orígenes: ",   n_distinct(ied_por_origen$origen))
 message("Rango temporal: ",    min(ied_por_origen$fecha), " → ", max(ied_por_origen$fecha))
-message("NAs (supresión C): ", sum(is.na(ied_por_origen$ied_mdd)))
+message("NAs (supresión C): ", sum(is.na(ied_por_origen$ied_acum_mdd)))
 
 saveRDS(ied_por_origen, here("RDS", "ied_por_origen.rds"))
 message("✓ Guardado: RDS/ied_por_origen.rds")
@@ -152,13 +178,14 @@ message("\n── Parte 2: ied_por_actividad ───────────�
 
 raw_act <- read_excel(
   ruta_flujos,
-  sheet     = "Por actividad económica",
+  sheet     = hoja_xl(ruta_flujos, "^por actividad"),
   col_names = FALSE,
   col_types = "text"
 )
 
 # Encabezados (misma lógica que Parte 1)
-años_raw  <- as.character(raw_act[3, ])
+# str_extract: la hoja de actividad trae "2025-4" en la columna del 4T 2025
+años_raw  <- str_extract(as.character(raw_act[3, ]), "^\\d{4}")
 trims_raw <- as.character(raw_act[4, ])
 
 años_ff <- tibble(x = ifelse(str_detect(años_raw, "^\\d{4}"), años_raw, NA_character_)) |>
@@ -174,8 +201,10 @@ names(datos_act) <- col_nombres
 datos_act <- datos_act |>
   filter(
     !is.na(actividad),
-    !str_detect(actividad, "^\\*/|^Fuente|^Nota|^Clasificación")
-  )
+    !str_detect(actividad, "^\\*/|^Fuente|^Nota|^Clasificación|^C:")
+  ) |>
+  mutate(actividad = if_else(str_to_lower(str_trim(actividad)) == "total general",
+                             "Total general", actividad))
 
 # Extraer código SCIAN y nivel jerárquico
 datos_act <- datos_act |>
@@ -197,23 +226,23 @@ ied_por_actividad <- datos_act |>
     cols      = starts_with("20"),
     names_to  = c("año", "trim"),
     names_sep = "_T",
-    values_to = "ied_mdd"
+    values_to = "ied_acum_mdd"
   ) |>
   mutate(
-    año     = as.integer(año),
-    trim    = as.integer(trim),
-    ied_mdd = parse_flujos(ied_mdd),
-    fecha   = trim_a_fecha(año, trim)
+    año          = as.integer(año),
+    trim         = as.integer(trim),
+    ied_acum_mdd = parse_flujos(ied_acum_mdd),
+    fecha        = trim_a_fecha(año, trim)
   ) |>
   filter(!is.na(año), !is.na(trim)) |>
-  select(codigo_scian, nivel, descripcion, año, trim, fecha, ied_mdd) |>
+  select(codigo_scian, nivel, descripcion, año, trim, fecha, ied_acum_mdd) |>
   arrange(nivel, codigo_scian, fecha)
 
 message("Filas: ",              nrow(ied_por_actividad))
 message("Actividades únicas: ", n_distinct(ied_por_actividad$descripcion))
 message("Niveles: ",            paste(sort(unique(ied_por_actividad$nivel)), collapse = ", "))
 message("Rango temporal: ",     min(ied_por_actividad$fecha), " → ", max(ied_por_actividad$fecha))
-message("NAs (supresión C): ",  sum(is.na(ied_por_actividad$ied_mdd)))
+message("NAs (supresión C): ",  sum(is.na(ied_por_actividad$ied_acum_mdd)))
 
 saveRDS(ied_por_actividad, here("RDS", "ied_por_actividad.rds"))
 message("✓ Guardado: RDS/ied_por_actividad.rds")
@@ -239,7 +268,7 @@ trim_romano <- c("I" = 1L, "II" = 2L, "III" = 3L, "IV" = 4L)
 # ── 3a. Hoja trimestral ──────────────────────────────────────────────────────
 pib_trim_raw <- read_excel(
   ruta_pib,
-  sheet     = "IED_PIB_Trimestral",
+  sheet     = hoja_xl(ruta_pib, "trimestral"),
   col_names = FALSE,
   col_types = "text",
   skip      = 6
@@ -266,7 +295,7 @@ pib_trim <- pib_trim_raw |>
 # ── 3b. Hoja anual ───────────────────────────────────────────────────────────
 pib_anual_raw <- read_excel(
   ruta_pib,
-  sheet     = "IED_PIB_Anual",
+  sheet     = hoja_xl(ruta_pib, "anual"),
   col_names = FALSE,
   col_types = "text",
   skip      = 6
@@ -312,7 +341,7 @@ message("\n── Parte 4: ied_fbkf ──────────────�
 # ── 4a. Hoja trimestral ──────────────────────────────────────────────────────
 fbkf_trim_raw <- read_excel(
   ruta_fbkf,
-  sheet     = "IED_FBKF_Trimestral",
+  sheet     = hoja_xl(ruta_fbkf, "trimestral"),
   col_names = FALSE,
   col_types = "text",
   skip      = 6
@@ -339,7 +368,7 @@ fbkf_trim <- fbkf_trim_raw |>
 # ── 4b. Hoja anual ───────────────────────────────────────────────────────────
 fbkf_anual_raw <- read_excel(
   ruta_fbkf,
-  sheet     = "IED_FBKF_Anual",
+  sheet     = hoja_xl(ruta_fbkf, "anual"),
   col_names = FALSE,
   col_types = "text",
   skip      = 6
@@ -386,13 +415,13 @@ message("\n── Parte 5: ied_flujos_tipo ────────────�
 
 raw_tipo <- read_excel(
   ruta_flujos,
-  sheet     = "Por tipo de inversión",
+  sheet     = hoja_xl(ruta_flujos, "^por tipo"),
   col_names = FALSE,
   col_types = "text"
 )
 
 # Encabezados (misma lógica que Partes 1 y 2)
-años_raw  <- as.character(raw_tipo[3, ])
+años_raw  <- str_extract(as.character(raw_tipo[3, ]), "^\\d{4}")
 trims_raw <- as.character(raw_tipo[4, ])
 
 años_ff <- tibble(x = ifelse(str_detect(años_raw, "^\\d{4}"), años_raw, NA_character_)) |>
@@ -408,8 +437,10 @@ names(datos_tipo) <- col_nombres
 datos_tipo <- datos_tipo |>
   filter(
     !is.na(tipo),
-    !str_detect(tipo, "^\\*/|^Fuente|^Nota")
-  )
+    !str_detect(tipo, "^\\*/|^Fuente|^Nota|^C:")
+  ) |>
+  mutate(tipo = if_else(str_to_lower(str_trim(tipo)) == "total general",
+                        "Total general", tipo))
 
 # Pivot a formato largo
 ied_flujos_tipo <- datos_tipo |>
@@ -417,22 +448,22 @@ ied_flujos_tipo <- datos_tipo |>
     cols      = starts_with("20"),
     names_to  = c("año", "trim"),
     names_sep = "_T",
-    values_to = "ied_mdd"
+    values_to = "ied_acum_mdd"
   ) |>
   mutate(
-    año     = as.integer(año),
-    trim    = as.integer(trim),
-    ied_mdd = parse_flujos(ied_mdd),
-    fecha   = trim_a_fecha(año, trim)
+    año          = as.integer(año),
+    trim         = as.integer(trim),
+    ied_acum_mdd = parse_flujos(ied_acum_mdd),
+    fecha        = trim_a_fecha(año, trim)
   ) |>
   filter(!is.na(año), !is.na(trim)) |>
-  select(tipo, año, trim, fecha, ied_mdd) |>
+  select(tipo, año, trim, fecha, ied_acum_mdd) |>
   arrange(tipo, fecha)
 
 message("Filas: ",       nrow(ied_flujos_tipo))
 message("Tipos: ",       paste(unique(ied_flujos_tipo$tipo), collapse = " | "))
 message("Rango: ",       min(ied_flujos_tipo$fecha), " → ", max(ied_flujos_tipo$fecha))
-message("NAs (C): ",     sum(is.na(ied_flujos_tipo$ied_mdd)))
+message("NAs (C): ",     sum(is.na(ied_flujos_tipo$ied_acum_mdd)))
 
 saveRDS(ied_flujos_tipo, here("RDS", "ied_flujos_tipo.rds"))
 message("✓ Guardado: RDS/ied_flujos_tipo.rds")
@@ -455,7 +486,8 @@ meta_ied <- list(
     "ied_fbkf.rds",
     "ied_flujos_tipo.rds"
   ),
-  unidades       = "Miles de millones de dólares (MDD); IED/PIB en porcentaje",
+  unidades       = "Millones de dólares (mdd); IED/PIB en porcentaje",
+  nota_acumulado = "En ied_por_origen, ied_por_actividad e ied_flujos_tipo la columna ied_acum_mdd es el flujo ACUMULADO del año hasta el trimestre (T4 = año completo). Dato anual = trim 4; no sumar trimestres.",
   notas          = "Valores 'C' → NA_real_ (supresión por confidencialidad).
                     Frecuencia mixta: trimestral y anual según hoja de origen."
 )

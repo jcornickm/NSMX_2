@@ -48,7 +48,17 @@ sa_adj <- function(x, dates, freq = NULL) {
   # — Construir serie de tiempo y ajustar ----------------------------------
   y_ts <- ts(x, start = c(start_year, start_period), frequency = freq)
   
-  seasonal::seas(y_ts) |>
+  # Si la selección automática de modelo falla (p. ej. matriz de covarianza
+  # singular), se reintenta con un modelo airline fijo (0 1 1)(0 1 1).
+  m <- tryCatch(
+    seasonal::seas(y_ts),
+    error = function(e) {
+      message("  ↺ seas() automático falló; reintentando con airline (0 1 1)(0 1 1)")
+      seasonal::seas(y_ts, automdl = NULL, arima.model = "(0 1 1)(0 1 1)")
+    }
+  )
+  
+  m |>
     seasonal::final()  |>
     as.numeric()
 }

@@ -1,4 +1,4 @@
-# Prep08_immex.R   ####
+# Prep07_immex.R   ####
 # Participación de cada entidad en el empleo IMMEX (diciembre de cada año).
 # (Antes: chunk prep-mapa-immex-4periodos de C2_Revised_*.qmd.)
 #

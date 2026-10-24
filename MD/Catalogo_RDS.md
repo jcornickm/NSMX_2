@@ -33,12 +33,12 @@ Rule: **`Query` = ingests an external source** (API call, or a raw Excel/CSV fil
 | `Query10_NS_MentionsMX` | Query14 | CSV by hand | Media Cloud CSV |
 | `Prep01_Imp_Mex_SecCap` | Query03 | derived | Query02 |
 | `Prep02_USA_imp_Mex_all_HS` | Query04 | derived | Query02, Prep01 |
-| ~~`Prep03_TopPartidas`~~ | Query05 | **retired 2026-10-22**; moved to `_backup_2026-10-19/Scripts/`. Its output `partidas_valor_depurado.rds` is read by no qmd and no script; Prep02 now selects the partidas. The number 03 is left unused | Prep02 |
-| `Prep04_TopPartidas_Competidores` | Query06 | derived | Query02 |
-| `Prep05_imp_pais_mex` | Prep_imp_pais_mex | derived | Query01, Prep01 |
-| `Prep06_partidas_quiebres` | Prep_partidas_quiebres | derived | Prep02 |
-| `Prep07_tcac_estados` | Prep_tcac_estados | derived | Query04 |
-| `Prep08_immex` | Prep_immex | derived | Query08 |
+| ~~`Prep03_TopPartidas`~~ | Query05 | **retired 2026-10-22**; moved to `_backup_2026-10-19/Scripts/`. Its output `partidas_valor_depurado.rds` is read by no qmd and no script; Prep02 now selects the partidas. The number 03 was reassigned on 2026-10-24 when the Preps were renumbered in run order | Prep02 |
+| `Prep03_TopPartidas_Competidores` | Query06 | derived | Query02 |
+| `Prep04_imp_pais_mex` | Prep_imp_pais_mex | derived | Query01, Prep01 |
+| `Prep05_partidas_quiebres` | Prep_partidas_quiebres | derived | Prep02 |
+| `Prep06_tcac_estados` | Prep_tcac_estados | derived | Query04 |
+| `Prep07_immex` | Prep_immex | derived | Query08 |
 | `top_hs4_Pendiente` | top_hs4 | **pending review** | `imp_mex_top_hs4`, `imp_mex_sec_cap` |
 
 Open items: (1) `top_hs4_Pendiente.R`: check whether the .qmd files use its results, or whether it is redundant. (2) Decision 2026-10-22: the set of top partidas is the UNION of those crossing 80% of their chapter in 2024, 2025 and Jan–latest month of 2026, plus 8703; implemented in `Prep02`. `Prep03_TopPartidas.R` was retired (see table above).
@@ -106,19 +106,19 @@ Open items: (1) `top_hs4_Pendiente.R`: check whether the .qmd files use its resu
 | `immex_empleo_zlfn.rds` | 5 KB | 194 × 11 | Same variables, ZLFN aggregate only | derived from `immex_empleo` | **producer not found** |
 | `meta_immex_empleo.rds` | 1 KB | list (10) | Provenance and variable definitions | | Query12 |
 | **H. Foreign direct investment (Secretaría de Economía)** | | | | | |
-| `ied_por_origen.rds` | 44 KB | 12,166 × 5 | Quarterly FDI flows by origin country (154) | SE Excel `IED_flujos.xlsx` | Query13 |
-| `ied_por_actividad.rds` | 194 KB | 31,363 × 7 | Quarterly FDI flows by SCIAN activity (396 codes; total/sector/subsector/rama) | SE Excel `IED_flujos.xlsx` | Query13 |
-| `ied_flujos_tipo.rds` | 3 KB | 316 × 5 | Quarterly FDI flows by type (new investment, reinvested earnings, intercompany accounts, total) | SE Excel `IED_flujos.xlsx` | Query13 |
-| `ied_pib.rds` | 4 KB | 135 × 7 | FDI, GDP and FDI/GDP %, annual + quarterly, 1999–2025 | SE Excel `IED_PIB_6.xlsx` | Query13 |
-| `ied_fbkf.rds` | 4 KB | 135 × 7 | FDI, gross fixed capital formation and FDI/GFCF %, annual + quarterly | SE Excel `IED_FBKF_7.xlsx` | Query13 |
-| `meta_ied.rds` | 0.6 KB | list (8) | Provenance | | Query13 |
+| `ied_por_origen.rds` | – | 12,474 × 5 | Quarterly CUMULATIVE FDI flows (`ied_acum_mdd`, year-to-date, millions USD) by origin country (154), 2006Q1–2026Q1. Annual value = `trim == 4`. Rebuilt 2026-10-22 | SE Excel `IED_flujos.xlsx` | Query09_IED |
+| `ied_por_actividad.rds` | – | ≈32,076 × 7 | Quarterly CUMULATIVE FDI flows (`ied_acum_mdd`) by SCIAN activity (396 rows × 81 quarters; total/sector/subsector/rama), 2006Q1–2026Q1. Annual value = `trim == 4`. Row count derived, not read from disk. Rebuilt 2026-10-22 | SE Excel `IED_flujos.xlsx` | Query09_IED |
+| `ied_flujos_tipo.rds` | – | 324 × 5 | Quarterly CUMULATIVE FDI flows (`ied_acum_mdd`) by type (new investment, reinvested earnings, intercompany accounts, total), 2006Q1–2026Q1. Rebuilt 2026-10-22 | SE Excel `IED_flujos.xlsx` | Query09_IED |
+| `ied_pib.rds` | – | 137 × 7 | FDI, GDP and FDI/GDP %: annual 1999–2025 (27 rows) + quarterly 1999Q1–2026Q2 (110 rows). Quarterly `ied_mdd` is the quarter's FLOW (not cumulative); quarterly % is not annualized. Rebuilt 2026-10-22 | SE Excel `IED_PIB_6.xlsx` | Query09_IED |
+| `ied_fbkf.rds` | – | 137 × 7 | FDI, gross fixed capital formation and FDI/GFCF %: annual 1999–2025 + quarterly 1999Q1–2026Q2 (flow vs cumulative not verified; presumably flow like `ied_pib`). Rebuilt 2026-10-22 | SE Excel `IED_FBKF_7.xlsx` | Query09_IED |
+| `meta_ied.rds` | – | list (9) | Provenance (units corrected to millions USD; `nota_acumulado` field) | | Query09_IED |
 | `ied_pib_wdi_comp.rds` | 1 KB | 63 × 3 | FDI/GDP % for Mexico, Costa Rica, Dominican Republic, Vietnam, 2010–2025 | World Bank WDI | Quarto/Rmd chunk (see §3) |
 | **I. Media and attention to nearshoring** | | | | | |
 | `gdelt_nearshoring_mx.rds` | 0.6 KB | 74 × 4 | Monthly count of GDELT articles on "nearshoring" located in Mexico, 2018-03 to 2026-06 | GDELT GKG v2 via BigQuery | Query09_Media |
 | `meta_gdelt_nearshoring_mx.rds` | 0.5 KB | list (7) | Provenance and method | | Query09_Media |
-| `media_cloud_raw.rds` | 31 KB | 2,954 × 4 | Daily mentions of "nearshoring Mexico", 2018-05-10 to 2026-06-10 | Media Cloud (CSV export) | Query14_NS_MentionsMX |
-| `media_cloud_mensual.rds` | 1.6 KB | 98 × 4 | Monthly aggregation (mentions, total, ratio) | derived from `media_cloud_raw` | Query14_NS_MentionsMX |
-| `meta_media_cloud.rds` | 0.3 KB | 1 × 7 | Provenance | | Query14_NS_MentionsMX |
+| `media_cloud_diario.rds` | 58 KB | 6,434 × 5 (derived: 3,216 México + 3,218 EUA; not read from disk) | Daily mentions of "nearshoring OR reshoring", long format with `pais` ("México" = Media Cloud Mexico National collection 34412427, to 2026-10-21; "EUA" = USA collection 34412234, to 2026-10-23). Same search in both, so the series are comparable. Columns: `pais, date, count, total_count, ratio`. **Replaces** `media_cloud_raw.rds` and `media_cloud_raw_usa.rds` (both deleted 2026-10-24) | Media Cloud CSV exports `Excel/mc-onlinenews-mediacloud-october2026.csv`, `Excel/mc-onlinenews-mediacloud_USA.csv` | Query10_NS_MentionsMX |
+| `media_cloud_mensual.rds` | 3.6 KB | 210 × 6 (derived: 105 months × 2 countries; not read from disk) | Monthly aggregation by country, 2018-01 to 2026-09 (last complete month). Columns: `pais, anio_mes, menciones, total_dias, ratio_mensual, mm3` (`mm3` = 3-month moving average, now saved). Input of the Query10 plot function. **Replaces** the old Mexico-only file and `media_cloud_mensual_usa.rds` | derived from `media_cloud_diario` | Query10_NS_MentionsMX |
+| `meta_media_cloud.rds` | 0.5 KB | 2 × 13 (derived; not read from disk) | Provenance, one row per country (collection, file, dates, rows, download date, last complete month, note). **Replaces** the old 1-row file and `meta_media_cloud_usa.rds` | | Query10_NS_MentionsMX |
 | **J. Reference** | | | | | |
 | `hs_dictionary.rds` | 57 KB | 1,347 × 7 | HS dictionary: 21 Secciones, 98 Capítulos (96 SA + 98/99 EUA), 1,228 Partidas (all of NALADISA), with parent code, `nombre_corto`, `nombre_tabla`, official Spanish name and source | WCO Trade Tools HS 2022 / NALADISA 2022 / `Excel/hs_nombres_cortos.csv` | `build_hs_dictionary.R` |
 | **K. Unsorted: no producer script** | | | | | |
@@ -126,8 +126,8 @@ Open items: (1) `top_hs4_Pendiente.R`: check whether the .qmd files use its resu
 | **L. Written by scripts, NOT on disk today** | | | | | |
 | `etef_raw.rds` | – | not on disk | ETEF Excel sheets stacked in long format before classification, with the raw value (`val_raw`), the `suprimido` flag and total/unspecified flags; `etef_tidy` is derived from it | INEGI ETEF Excel | Query11 |
 | `etef_supresion_check.rds` | – | not on disk | Per state × SCIAN subsector: `n_obs`, `n_suprimidos`, `pct_C` (% of quarterly cells suppressed) | derived from `etef_raw` | Query11 |
-| `mediacloud_nearshoring_mx.rds` | – | not on disk | Monthly Media Cloud story counts mentioning "nearshoring" in the Mexico National collection (id 34412427): `fecha, n_articulos, n_total, año, mes, pct`; 2018-01 to 2026-05 | Media Cloud API | Query09_Media |
-| `meta_mediacloud_nearshoring_mx.rds` | – | not on disk | Provenance for the file above (collection, 647 sources, definition of `n_articulos` and `pct`) | | Query09_Media |
+| `mediacloud_nearshoring_mx.rds` | 1.8 KB | **now on disk** (was missing at the 2026-10-19 snapshot) | Monthly Media Cloud story counts mentioning "nearshoring" in the Mexico National collection (id 34412427): `fecha, n_articulos, n_total, año, mes, pct`; 2018-01 to 2026-05 | Media Cloud API | Query09_Media |
+| `meta_mediacloud_nearshoring_mx.rds` | 0.4 KB | **now on disk** (was missing at the 2026-10-19 snapshot) | Provenance for the file above (collection, 647 sources, definition of `n_articulos` and `pct`) | | Query09_Media |
 | `meta_aranceles_hts8703.rds` | – | not on disk | Provenance for the tariff file: USITC DataWeb endpoint, HTS 8703, Mexico (2010) and South Korea (5800), variable mapping, definitions of effective and implicit rates | | Query07 |
 
 ---
@@ -179,17 +179,23 @@ Open items: (1) `top_hs4_Pendiente.R`: check whether the .qmd files use its resu
 - **`immex_empleo_zlfn.rds`**: the `ZLF` rows of `immex_empleo` (194 months; `emp_total` matches exactly), without the state columns. ZLFN follows the 2018 DOF decree, with Ensenada excluded.
 - Input: the 20 yearly CSV files `Excel/IMMEX/immex_manu_ent_2007.csv … 2026.csv`, downloaded by hand from INEGI. Query12 reads 2010 onward.
 
-### H. FDI (Query13)
-- Source: Secretaría de Economía, Inversión Extranjera Directa (information to 31 Dec 2025). Input Excel files in `Excel/`: `IED_flujos.xlsx`, `IED_PIB_6.xlsx`, `IED_FBKF_7.xlsx`. Downloaded 2026-05-20. "C" cells (confidential) become NA.
-- Units: the column is `ied_mdd` (millones de dólares). **`meta_ied.rds` labels the unit "Miles de millones de dólares", which looks wrong**: the largest value is 48,356 for a year in which Mexico's FDI was about US$48 bn. Values are therefore millions of USD, and the meta field should be corrected.
-- SE data are cumulative within the year, so the Q4 value equals the annual total (not the Q4 flow).
-- **`ied_por_origen.rds`**: `origen, año, trim, fecha, ied_mdd`. **`ied_por_actividad.rds`**: `codigo_scian, nivel, descripcion, año, trim, fecha, ied_mdd`, for 2006–2025. **`ied_flujos_tipo.rds`**: `tipo, año, trim, fecha, ied_mdd`, 2006Q1–2025Q3.
-- **`ied_pib.rds`** / **`ied_fbkf.rds`**: `frecuencia (anual/trimestral), año, trim, fecha, ied_mdd, pib_mdd | fbkf_mdd, ied_pib_pct | ied_fbkf_pct`. 1999–2025.
+### H. FDI (Query09_IED; was Query13)
+- Source: Secretaría de Economía, Inversión Extranjera Directa (flows by origin/activity/type to 2026Q1; FDI/GDP and FDI/GFCF to 2026Q2). Input Excel files in `Excel/`: `IED_flujos.xlsx`, `IED_PIB_6.xlsx`, `IED_FBKF_7.xlsx`. Re-downloaded 2026-10-22 (previous vintage 2026-05-20). "C" cells (confidential) become NA.
+- Units: millions of USD (mdd). The 2026-10-19 snapshot flagged that `meta_ied.rds` said "Miles de millones"; fixed 2026-10-22 (FDI 2025 = 41,917 mdd confirms millions).
+- **Cumulative columns.** In `ied_por_origen`, `ied_por_actividad` and `ied_flujos_tipo` each quarter is the flow accumulated from January to that quarter (T1 = Jan–Mar, T2 = Jan–Jun, T3 = Jan–Sep, T4 = full year), so the column is named `ied_acum_mdd` (renamed from `ied_mdd` on 2026-10-22 so that any consumer still using the old name fails loudly). **Annual value = `trim == 4`; never sum quarters** (summing inflated the C2 activity figures ~3.5x: about 135,000 vs the real ~38,000 mdd for 2024). The current year has only a partial cumulative (2026: Q1 only).
+- A cumulative can fall: 2025 is 24,061 / 38,020 / 45,906 / 41,917, because Q4 2025 had a negative flow (about −5.0 bn at first publication, −4.0 bn in the revised file; dividends and financial operations). Annual totals: 2022 = 36,421; 2023 = 36,507; 2024 = 37,969; 2025 = 41,917 (first published: 40,871).
+- `ied_pib` / `ied_fbkf`: the quarterly `ied_mdd` is the quarter's flow (2024: 27,219 + 6,491 + 3,075 + 1,185 = 37,969, equal to the annual row) and `ied_pib_pct` quarterly = quarterly flow / quarterly GDP, not annualized (5.78% in 2024Q1 vs 2.06% annual); do not mix them in one figure.
+- Parsing quirks handled in Query09: sheet names change case between vintages (matched by pattern, case-insensitive); "Total general" / "Total General" normalized; every sheet carries a footnote row "C: Cifra confidencial…" (filtered); the activity sheet labels the 2025Q4 column "2025-4" in the year header (year extracted with `str_extract`).
+- File naming: the SE names files by the quarter of publication, not of the data: `2025_4T_…` ended at 2025Q3 and `2026_2T_Flujos_TI_AC_3.xlsx` (now `IED_flujos.xlsx`) ends at 2026Q1. The file with 2026Q2 would be named `2026_3T_…` (inference, not found yet).
+- **`ied_por_origen.rds`**: `origen, año, trim, fecha, ied_acum_mdd`. **`ied_por_actividad.rds`**: `codigo_scian, nivel, descripcion, año, trim, fecha, ied_acum_mdd`. **`ied_flujos_tipo.rds`**: `tipo, año, trim, fecha, ied_acum_mdd`. All three: 2006Q1–2026Q1.
+- **`ied_pib.rds`** / **`ied_fbkf.rds`**: `frecuencia (anual/trimestral), año, trim, fecha, ied_mdd, pib_mdd | fbkf_mdd, ied_pib_pct | ied_fbkf_pct`. Annual 1999–2025, quarterly 1999Q1–2026Q2.
 - **`ied_pib_wdi_comp.rds`**: `país, year, ied_pib_pct`, from World Bank WDI via the `WDI` package, saved from a chunk in the Quarto/Rmd chapter files. Use `iso2c` for joins, since WDI returns "Viet Nam".
 
 ### I. Media (Query09_Media, Query14_NS_MentionsMX)
 - **`gdelt_nearshoring_mx.rds`**: `fecha, año, mes, n_articulos`. GDELT GKG v2 (`gdelt-bq.gdeltv2.gkg`) through BigQuery. Counts articles whose LOCATIONS field contains Mexico and whose text mentions nearshoring. Downloaded 2026-06-09.
-- **`media_cloud_raw.rds`**: `date, count, total_count, ratio`. Daily counts from a Media Cloud CSV export (`Excel/mc-onlinenews-mediacloud-20260611141803-counts.csv`), search "nearshoring Mexico", downloaded 2026-06-11. **`media_cloud_mensual.rds`**: `anio_mes, menciones, total_dias, ratio_mensual`.
+- **`media_cloud_diario.rds`** (long format, `pais` = "México" / "EUA"): `pais, date, count, total_count, ratio`. Daily counts from Media Cloud share-search CSVs, search `nearshoring OR reshoring`, platform onlinenews-mediacloud, from 2018-01-01; México = collection 34412427 (`Excel/mc-onlinenews-mediacloud-october2026.csv`, downloaded 2026-10-22, to 2026-10-21), EUA = collection 34412234 (`Excel/mc-onlinenews-mediacloud_USA.csv`, downloaded 2026-10-24, to 2026-10-23). The CSV does not store the query: it is documented in the Query10 header. The previous Mexico download (`...-20260611141803-counts.csv`, "nearshoring Mexico") is kept only for the revision check in Query10 (Mexico only). **`media_cloud_mensual.rds`**: `pais, anio_mes, menciones, total_dias, ratio_mensual, mm3`, through the last complete month (2026-09). **`meta_media_cloud.rds`**: one row per country.
+- Deleted 2026-10-24 after the Query10 rewrite (a search of all `.R`, `.qmd`, `.Rmd`, `.md` and `.csv` files found no loader outside Query10 and `_backup_2026-10-19/`): `media_cloud_raw.rds`, `media_cloud_raw_usa.rds`, `media_cloud_mensual_usa.rds`, `meta_media_cloud_usa.rds`. The old Mexico-only `media_cloud_mensual.rds` and `meta_media_cloud.rds` were overwritten by the new long-format versions with the same names.
+- Plots written by Query10 (PDF + PNG in `Plots/`): `fig_media_cloud_menciones_mex_2024`, `fig_media_cloud_menciones_mex`, `fig_media_cloud_menciones_usa_2024`, `fig_media_cloud_menciones_usa` (`_2024` = Chapter 2 window, ends at `FECHA_FIN`; without it = through 2026-09, Chapter 3). The Mexico files were renamed on 2026-10-24 (previously `fig_media_cloud_menciones[_2024]`); `C2_Revised_October_2026_v2.qmd` now loads `fig_media_cloud_menciones_mex_2024.png`.
 
 ### J. Reference
 - **`hs_dictionary.rds`** (rebuilt 2026-10-19): `nivel (Sección/Capítulo/Partida), codigo, codigo_padre, nombre_corto, nombre_tabla, nombre_oficial, fuente`. Secciones (21) from WCO Trade Tools HS 2022 (hand-transcribed); Capítulos (96) and Partidas (all 1,228) from `Excel/naladisa_2022.xlsx`; Caps. 98/99 added by hand. `nombre_corto` / `nombre_tabla` come ONLY from `Excel/hs_nombres_cortos.csv` (editable; empty `nombre_tabla` falls back to `nombre_corto`). Short names exist for all Secciones and Capítulos and for the 42 partidas used so far; the build script reports the rest. Built by `Scripts/build_hs_dictionary.R`.
@@ -203,7 +209,7 @@ Open items: (1) `top_hs4_Pendiente.R`: check whether the .qmd files use its resu
 2. **No producer script found** for these files: `decomp_jerarquica_2025`, `immex_empleo_ef`, `immex_empleo_zlfn`, `usitc_prueba_cruda`, `datos_847150_hs6`. I searched `Scripts/`, `Scripts/old/`, `Quarto/`, `Quarto/OldQmd/` and `RMD/`. They were presumably created interactively. Their provenance above is inferred from content (for the two IMMEX files I verified it against `immex_empleo`).
 3. **Saved from Quarto/Rmd, not from a Query script:** `ied_pib_wdi_comp.rds` (chunk in `C2_Revised_October_2026_v2.qmd`); `impPais_Perc.rds` (old chunk in `C2_texto_abril2026_oldchunks.qmd`, and recomputed in the current qmd). `impMex_sec_pct` was saved without the `.rds` extension by an old chunk, and the current qmd recomputes it in memory.
 4. **Written by scripts but absent from `RDS/`:** now catalogued in section L. If a later step expects them, re-run the script. Query05 also has a commented-out save for `top50_partidas_crecimiento.rds`; it is not produced and not catalogued.
-5. **`meta_ied.rds` unit label** (see §2H).
+5. ~~`meta_ied.rds` unit label~~ fixed 2026-10-22 (see §2H).
 6. `meta_query3` / `meta_query11` each contain an `archivos` list. I did not print its contents.
 
 ## 4. Regeneration order (dependencies)
@@ -222,12 +228,14 @@ These files are the only copy of the source for the `.rds` files that come from 
 | Input | Content | Feeds | Read by |
 |---|---|---|---|
 | `Excel/ETEF_Entidad_Subsector.xlsx` | INEGI ETEF: one sheet per state (32), exports by SCIAN subsector, quarterly | `etef_tidy`, `meta_etef`, `supresion_ns_wide`, and (not on disk) `etef_raw`, `etef_supresion_check` | Query11 |
-| `Excel/IED_flujos.xlsx` | SE FDI flows. Sheets: Por tipo de inversión, Por origen, Por actividad económica, Por entidad federativa | `ied_por_origen`, `ied_por_actividad`, `ied_flujos_tipo` | Query13 |
-| `Excel/IED_PIB_6.xlsx` | SE FDI/GDP. Sheets: IED_PIB_Trimestral, IED_PIB_Anual, Metodología | `ied_pib` | Query13 |
-| `Excel/IED_FBKF_7.xlsx` | SE FDI/GFCF. Sheets: IED_FBKF_Trimestral, IED_FBKF_Anual, Metodología | `ied_fbkf` | Query13 |
-| `Excel/2025_4T_Flujos_PTI_ACT_3_.xlsx` | Identical to `IED_flujos.xlsx` (same MD5); looks like the original SE file name before renaming | nothing (read by no script) | none |
+| `Excel/IED_flujos.xlsx` | SE FDI flows, cumulative within the year, to 2026Q1 (downloaded 2026-10-22 as `2026_2T_Flujos_TI_AC_3.xlsx`, renamed). Sheets (title case in this vintage): Por Tipo de Inversión, Por Entidad Federativa, Por Origen, Por Actividad Económica; each ends with a footnote row "C: Cifra confidencial…" | `ied_por_origen`, `ied_por_actividad`, `ied_flujos_tipo` | Query09_IED |
+| `Excel/IED_PIB_6.xlsx` | SE FDI/GDP, quarterly to 2026Q2 and annual to 2025 (downloaded 2026-10-22; saved by the SE as `IED_PIB.xlsx`, renamed). Quarterly and annual sheets, located by pattern | `ied_pib` | Query09_IED |
+| `Excel/IED_FBKF_7.xlsx` | SE FDI/GFCF, quarterly to 2026Q2 and annual to 2025 (downloaded 2026-10-22; saved as `IED_FBKF.xlsx`, renamed). Quarterly and annual sheets, located by pattern | `ied_fbkf` | Query09_IED |
+| `Excel/2025_4T_Flujos_PTI_ACT_3_.xlsx` | Previous vintage of the flows file (to 2025Q3; same MD5 as the former `IED_flujos.xlsx` that fed the 2026-05 build). Kept on purpose for a revision check, old vs new, planned for 2026-10-23 (the SE revised 2025 from 40,871 to 41,917 mdd between releases). Delete afterwards | nothing (read by no script) | none |
 | `Excel/IMMEX/immex_manu_ent_2007.csv … 2026.csv` | INEGI IMMEX manufacturing segment, one CSV per year (20 files; Query12 uses 2010 onward) | `immex_empleo` (and the two files derived from it) | Query12 |
-| `Excel/mc-onlinenews-mediacloud-20260611141803-counts.csv` | Media Cloud daily counts export, downloaded 2026-06-11 | `media_cloud_raw`, `media_cloud_mensual` | Query14_NS_MentionsMX |
+| `Excel/mc-onlinenews-mediacloud-20260611141803-counts.csv` | Media Cloud daily counts export ("nearshoring Mexico"), downloaded 2026-06-11. Previous vintage, kept only for the revision check in Query10 | nothing saved (used for the revision check) | Query10_NS_MentionsMX |
+| `Excel/mc-onlinenews-mediacloud-october2026.csv` | Media Cloud daily counts, "nearshoring OR reshoring", Mexico National collection 34412427, 2018-01-01 to 2026-10-21, downloaded 2026-10-22 | `media_cloud_diario`, `media_cloud_mensual`, `meta_media_cloud` ("México" rows) | Query10_NS_MentionsMX |
+| `Excel/mc-onlinenews-mediacloud_USA.csv` | Media Cloud daily counts, "nearshoring OR reshoring", USA collection 34412234, 2018-01-01 to 2026-10-23, downloaded 2026-10-24 | `media_cloud_diario`, `media_cloud_mensual`, `meta_media_cloud` ("EUA" rows) | Query10_NS_MentionsMX |
 | `Excel/naladisa_2022.xlsx` | NALADISA 2022 nomenclature (sheet NALADISA 2022) | `hs_dictionary` | build_hs_dictionary.R |
 
 The sheet "Por entidad federativa" in `IED_flujos.xlsx` is not read by any script (SE assigns investment to legal domicile, which makes it unsuitable for geographic analysis).
@@ -246,14 +254,14 @@ The sheet "Por entidad federativa" in `IED_flujos.xlsx` is not read by any scrip
 
 | Script | Replaces (qmd chunk) | Writes |
 |---|---|---|
-| `Scripts/Prep_imp_pais_mex.R` | `origAnualPerc`, `prep-sec-pct`, `prep-caps` | `impPais_Perc.rds`, `impMex_sec_pct.rds` (now with extension; the extensionless file is obsolete), `impMex_caps_2025.rds` |
-| `Scripts/Prep_tcac_estados.R` | the state-TCAC calculation duplicated in `save-fig-tcac-estados` and `tbl-tcac-estados`; state abbreviations (also duplicated in the IMMEX map) | `tcac_estados.rds`, `estados_lookup.rds` |
-| `Scripts/Prep_partidas_quiebres.R` | `prep-top-partidas-quiebres` (X-13 + Bai-Perron) | `partidas_tendencia.rds`, `quiebres_partida.rds` |
-| `Scripts/Prep_immex.R` | `prep-mapa-immex-4periodos` | `immex_pct.rds` |
+| `Scripts/Prep04_imp_pais_mex.R` | `origAnualPerc`, `prep-sec-pct`, `prep-caps` | `impPais_Perc.rds`, `impMex_sec_pct.rds` (now with extension; the extensionless file is obsolete), `impMex_caps_2025.rds` |
+| `Scripts/Prep06_tcac_estados.R` | the state-TCAC calculation duplicated in `save-fig-tcac-estados` and `tbl-tcac-estados`; state abbreviations (also duplicated in the IMMEX map) | `tcac_estados.rds`, `estados_lookup.rds` |
+| `Scripts/Prep05_partidas_quiebres.R` | `prep-top-partidas-quiebres` (X-13 + Bai-Perron) | `partidas_tendencia.rds`, `quiebres_partida.rds` |
+| `Scripts/Prep07_immex.R` | `prep-mapa-immex-4periodos` | `immex_pct.rds` |
 | `Scripts/Query10_WDI_IED_PIB.R` (a data pull) | WDI download inside `save-fig-ied-pib-comparadores` | `ied_pib_wdi_comp.rds` |
 
 Palette and bins for the state-TCAC map/table now live in `Scripts/funciones.R` (`breaks_tcac`, `labels_tcac`, `paleta_tcac`).
 
 **Query03, Query04 and Query02 now have `repull <- FALSE` at the top:** with it off they do not call the API and rebuild everything from the saved raw data (`imp_mex_sec_cap.rds`, `raw_df.rds`, `raw_df_mex_vnm_twn.rds`). `USallImpMex.rds` is now the cleaned version of `raw_df.rds` (adds `fecha`, `cod`, `nivel`, `Capítulo`).
 
-**Suggested run order (RStudio), updated 2026-10-21:** `build_hs_dictionary.R` → Query01 → Query02 → Query03 → … → Query10 (APIs first, then the hand-downloaded Excel/CSV ones) → Prep01 → Prep02 → … → Prep08. Names before 2026-10-21 are translated in section 0.
+**Suggested run order (RStudio), updated 2026-10-21:** `build_hs_dictionary.R` → Query01 → Query02 → Query03 → … → Query10 (APIs first, then the hand-downloaded Excel/CSV ones) → Prep01 → Prep02 → Prep03 → … → Prep07 (Prep04 needs Prep01; Prep05 needs Prep02; renumbered in run order 2026-10-24: old Prep04–08 are now Prep03–07). Names before 2026-10-21 are translated in section 0.

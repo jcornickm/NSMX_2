@@ -1,0 +1,628 @@
+---
+title: "Catálogos del proyecto NSMX"
+subtitle: "Datos, Queries y Preps"
+author: 
+  - name: Jorge Cornick
+    affiliations: 
+     - name: CEPCAN, Instituto Tecnológico de Monterrey
+    email: jcornick@tec.mx
+    corresponding: true
+date: "2026-10-24"
+format:
+  docx:
+    reference-doc: reference-doc.docx
+    number-sections: false
+lang: es
+toc: true
+toc-depth: 3
+toc-title: "Índice"
+editor: source
+editor_options:
+  chunk_output_type: console
+---
+
+<!-- quarto::quarto_render("Quarto/CATALOGOS_NSMX.qmd") -->
+<!-- Las tablas son tablas "pipe" de Markdown: el ancho relativo de cada columna lo fija el número de guiones de la línea separadora. -->
+
+# Cómo usar este documento
+
+Este documento describe todo lo que hay en el repositorio NSMX **que alimenta los capítulos del libro**: los datos guardados (Parte I) y los scripts que los producen (Parte II), con un mapa de qué depende de qué (Parte III). Está escrito para alguien que abre el repositorio sin recordar nada, incluido su autor dentro de un año.
+
+**Estado del inventario.** Los nombres de archivo, los tamaños y los productores y consumidores de cada objeto reflejan el repositorio al **24 de octubre de 2026**, después de haber corrido los siete Preps. Las dimensiones (filas × columnas) y los rangos de fechas de los archivos que se regeneraron en el último repull *no* se volvieron a abrir para este documento; donde aparecen, vienen de los scripts o del catálogo anterior (`MD/Catalogo_RDS.md`, instantánea del 19 de octubre). El Apéndice explica cómo regenerar ese inventario con un chunk de R.
+
+**Qué NO cubre.** El contenido de los capítulos, la bibliografía y las notas de política arancelaria de `Productos intermedios/` (ver la sección de limitaciones en la Parte III).
+
+## Vocabulario de estados
+
+| Estado | Significado |
+|:-----------|:---------------------------------------------------------------|
+| Vigente | Lo produce un script actual y lo usa (o puede usar) un documento. |
+| Intermedio | Lo produce y lo consume el pipeline; ningún qmd lo carga directamente. |
+| Heredado | Ya no lo escribe ningún script actual; sigue en disco. Candidato a archivar. |
+| Sin productor | Está en disco pero no se encontró ningún script que lo cree. |
+| Obsoleto | Reemplazado por otro archivo; no debe usarse. |
+| Por eliminar | Ningún script ni qmd lo lee. Se apartó el 24-oct-2026 en una subcarpeta `Por_eliminar/`; se borra si al terminar los Capítulos 2 y 3 no hizo falta. |
+
+## Estructura del repositorio
+
+| Carpeta | Contenido |
+|:-----------------|:---------------------------------------------------------------|
+| `Scripts/` | `QueryNN_*` (traen datos de fuera), `PrepNN_*` (derivan datos locales), `Explora_*` (exploratorios, fuera del pipeline), `funciones*.R` (ayudantes) y `build_hs_dictionary.R`. |
+| `RDS/` | Todos los datos intermedios y finales. Es un caché: se puede regenerar con los scripts. `RDS/raw/` guarda cada descarga de API por año. `RDS/Por_eliminar/` y `Excel/Por_eliminar/` contienen archivos sin lectores, apartados "por si las dudas". |
+| `Excel/` | Insumos descargados **a mano** (Excel y CSV) y tablas de referencia editables (`hs_nombres_cortos.csv`, `naladisa_2022.xlsx`). No se generan por código. |
+| `Quarto/` | Los capítulos (`.qmd`), `reference-doc.docx`, `references.bib` y este documento. |
+| `Plots/` | Figuras (`.png` y `.pdf`) guardadas por los chunks de figura de los qmd y por algunos scripts. |
+| `Tablas/` | Tablas con formato (flextable `.rds`, más copia `.docx` para revisión). Equivalente de `Plots/` para tablas. |
+| `geodata/` | Mapas GADM de México en caché (no se versionan). |
+| `MD/`, `Docs/`, `Productos intermedios/` | Notas, catálogo anterior, documentos de trabajo sobre aranceles. |
+| `_backup_2026-10-19/` | Copia previa a la reorganización (no versionada). |
+
+## Cadena de ejecución en una línea
+
+Primero los **Query** (traen datos de fuera; casi todos son independientes entre sí) y después los **Prep** (solo usan datos ya guardados), en orden numérico. Antes de todo, si cambian nombres cortos del SA, `build_hs_dictionary.R`. Detalle en la Parte II, sección *Orden de ejecución*.
+
+# Parte I. Catálogo de datos
+
+## Convenciones comunes
+
+- **Fechas.** `fecha` es el primer día del mes (series mensuales) o del trimestre (series trimestrales). `año` es entero; `trim` o `trimestre` va de 1 a 4.
+- **Moneda y unidades.** Census y USITC en dólares corrientes. `Val_mes` = valor del mes (`GEN_VAL_MO`); `Val_acum` = acumulado del año hasta ese mes (`GEN_VAL_YR`). ETEF en miles de dólares. IED en millones de dólares (mdd). IMMEX en personas.
+- **Códigos de país de Census.** México = 2010, Vietnam = 5520, Taiwán = 5830, China = 5700, Canadá = 1220. Solo los códigos 1000 o más son países; el resto son agregados regionales.
+- **Archivos `meta_*.rds`.** Listas con la procedencia de otro archivo (fuente, endpoint, fecha de descarga, notas). Algunos conservan nombres históricos: `meta_query3.rds` es la procedencia de **Prep02**; `meta_query11.rds` la de **Query02**; `meta_query12.rds` la de **Prep03**.
+- **Etiquetas del Sistema Armonizado.** Los nombres cortos de Secciones, Capítulos y Partidas salen de un único diccionario (`RDS/hs_dictionary.rds`), que se edita solo en `Excel/hs_nombres_cortos.csv` y se reconstruye con `Scripts/build_hs_dictionary.R`. Nunca se escriben tribbles de nombres dentro de un Query o un qmd.
+- **Ventana del Capítulo 2.** Todo lo del Capítulo 2 termina en diciembre de 2024 (`ANIO_FIN`, `FECHA_FIN` en `funciones.R`). Los RDS conservan la serie completa; el corte se hace al graficar. El Capítulo 3 usa el último dato disponible.
+
+## Trampas conocidas
+
+Son los errores que más fácilmente se repetirían al volver al proyecto.
+
+1. **`Pais` y `País`.** Los RDS que vienen de Query02 y Prep03 usan `Pais` (sin tilde); `imp_por_pais*` (Query01) y `impPais_Perc` usan `País`.
+2. **Los flujos de IED por origen, actividad y tipo son acumulados del año.** Columna `ied_acum_mdd`; el dato anual es `trim == 4`. Nunca sumar trimestres: inflaba las cifras de actividad unas 3.5 veces. En cambio, `ied_pib` e `ied_fbkf` traen el flujo *del trimestre* (`ied_mdd`) y su porcentaje trimestral no está anualizado.
+3. **El año en curso está incompleto.** No comparar un año parcial contra años completos; las tablas del Capítulo 3 comparan enero hasta el último mes disponible (columnas `val_ytd_*`).
+4. **Census devuelve agregados mezclados con países.** Filtrar `CTY_CODE >= 1000` y calcular totales de una consulta aparte; nunca sumando países.
+5. **Census revisa los años recientes.** Por eso los Query descargan desde un año de solape (2023) y reportan qué cambió (`revision_q1.rds`, `revision_q11.rds`).
+6. **`Val_mes_sa` cambia en toda la historia** cada vez que se agregan datos, porque X-13 se reestima sobre la serie completa.
+7. **ETEF: las celdas "C" (confidenciales) pasan a NA.** Los totales estatales armados con el Excel por subsector subestiman. Los denominadores correctos son los de `xmex_total_ef.rds` (BIE).
+8. **IMMEX: totales por suma.** `CVE_ENT = "TOT"` es la suma de los 17 estados; `"ZLF"` es la Zona Libre de la Frontera Norte (construida); Baja California se arma sumando municipios. No sumar `TOT` con `ZLF`.
+9. **`raw_hs_*_2026.rds` y `raw_hs_*_2026_ene_jul.rds` coexisten** en `RDS/raw/`: el segundo es la descarga anterior (2026 parcial a julio); el primero, la actual.
+10. **WDI** devuelve "Viet Nam" en dos palabras; unir por `iso2c`, no por nombre.
+
+## Fuentes y accesos
+
+| Fuente | Cómo se obtiene | Script | Credencial |
+|:----------------|:---------------------------|:--------------|:-------------|
+| US Census Bureau, International Trade API (`timeseries/intltrade/imports/hs`) | API, año por año; omitir `COMM_LVL` porque combinado con `CTY_CODE` da error del servidor | Query01, Query02 | `CENSUS_API_KEY` |
+| USITC DataWeb (`datawebws.usitc.gov/dataweb`, `v2/report2/runReport`) | API; una sola llamada con toda la historia | Query03 | `DATAWEB_TOKEN` |
+| INEGI, Banco de Información Económica (BIE) | API; una llamada por entidad (clave del indicador 6207095692) | Query04 | `BIE_TOKEN` |
+| GDELT (BigQuery, `gdelt-bq.gdeltv2.gkg`) | Consulta SQL; autenticación interactiva con `bq_auth()` | Query05 | `GCP_PROJECT_ID` |
+| Media Cloud, API (colección 34412427) | API vía Python (`reticulate::py_require("mediacloud")`) | Query05 | `MEDIACLOUD_API_KEY` |
+| World Bank, WDI | Paquete `WDI`, indicador `BX.KLT.DINV.WD.GD.ZS` | Query06 | ninguna |
+| INEGI, ETEF por entidad y subsector | **Excel a mano** desde `inegi.org.mx/temas/exportacionesef/#tabulados` | Query07 | ninguna |
+| INEGI, IMMEX (segmento manufacturero, por municipio) | **CSV a mano**, uno por año, desde `inegi.org.mx/programas/immex/#datos_abiertos` | Query08 | ninguna |
+| Secretaría de Economía, IED | **Excel a mano** (tres archivos) | Query09 | ninguna |
+| Media Cloud, búsqueda web | **CSV a mano** ("share search" en `search.mediacloud.org`) | Query10 | ninguna |
+| NALADISA 2022 | Excel de referencia | `build_hs_dictionary.R` | ninguna |
+
+Todas las credenciales viven en `.Renviron` (nunca se versiona).
+
+## Insumos descargados a mano (`Excel/`)
+
+Son la **única copia** de la fuente para los RDS que de ellos se derivan; hay que conservarlos con el repositorio.
+
+| Insumo | Contenido | Lo lee |
+|:--------------------------|:------------------------------------------------|:------------|
+| `ETEF_Entidad_Subsector.xlsx` | ETEF: una hoja por entidad (32), exportaciones por subsector SCIAN, trimestral. Reemplazar con el mismo formato y volver a correr Query07. | Query07 |
+| `IED_flujos.xlsx` | SE, flujos de IED acumulados en el año, hojas por tipo, entidad, origen y actividad. El nombre de origen puede traer el trimestre de *publicación* (p. ej. `2026_2T_...` termina en 2026T1). La hoja por entidad no se lee: la SE asigna la inversión al domicilio legal. | Query09 |
+| `IED_PIB_6.xlsx` | SE, IED/PIB, trimestral y anual. | Query09 |
+| `IED_FBKF_7.xlsx` | SE, IED/FBKF, trimestral y anual. | Query09 |
+| `IMMEX/immex_manu_ent_2007.csv … 2026.csv` | INEGI IMMEX manufacturero, un CSV por año (Query08 usa de 2010 en adelante). | Query08 |
+| `mc-onlinenews-mediacloud-october2026.csv` | Media Cloud, México (colección 34412427), búsqueda `nearshoring OR reshoring`, diario desde 2018-01-01. Descargado 22-oct-2026. | Query10 |
+| `mc-onlinenews-mediacloud_USA.csv` | Igual, EUA (colección 34412234). Descargado 24-oct-2026. | Query10 |
+| `mc-onlinenews-mediacloud-20260611141803-counts.csv` | Descarga previa ("nearshoring Mexico", junio 2026); se conserva solo para el control de revisiones de Query10. | Query10 |
+| `naladisa_2022.xlsx` | Nomenclatura NALADISA 2022. | `build_hs_dictionary.R` |
+| `hs_nombres_cortos.csv` | Nombres cortos y de tabla del SA. **Editable a mano**, única fuente de nombres cortos. | `build_hs_dictionary.R` |
+| `FBCF_INEGI_OUT_13.xlsx` | INEGI, Oferta y Utilización Trimestral (hoja *Tabulado*), recibido de un colega. | (conversión manual a `fbcf_inegi.rds`, sin script) |
+| `2025_4T_Flujos_PTI_ACT_3_.xlsx` | Versión previa de los flujos de IED (a 2025T3). Se conserva para comparar contra la nueva (la SE revisó 2025 de 40,871 a 41,917 mdd). Ningún script la lee. | ninguno |
+| `Por_eliminar/IMMEX_nuevo/` | Paquete completo descargado de INEGI (catálogos, diccionario, metadatos, zip). Ningún script lo lee; movido a `Por_eliminar/` el 24-oct-2026. | ninguno |
+| `_to_delete/` | Versiones viejas de `IED_PIB_6` e `IED_FBKF_7`, apartadas. | ninguno |
+
+## Datos en `RDS/`, por tema
+
+En las tablas, "Lo leen" lista los consumidores encontrados en `Scripts/` y en los qmd de `Quarto/` (C2 = `C2_Revised_October_2026_v2.qmd`; C3 = `C3_Tiempos_turbulentos_v2.qmd`). Los tamaños son los del disco el 24-oct-2026. Los archivos marcados "Por eliminar" ya no están en la carpeta principal: se movieron a `RDS/Por_eliminar/`.
+
+### Importaciones de EUA por país de origen (Query01)
+
+| Archivo | Contenido | Productor | Lo leen | Estado |
+|:-------------------------|:------------------------------------------------------|:--------|:------------|:-------|
+| `imp_por_pais.rds` (29 KB) | Mensual: Total, Top 20 países y "Resto". Columnas `fecha, CTY_CODE, País, rank, Imp_mes, Imp_total, grupo`. El Top 20 es una lista fija (definida en Query01 por valor desde 2024); el script avisa si con datos nuevos cambiaría. | Query01 | Prep04; C2 (`load-imp-pais`) | Vigente |
+| `imp_por_pais_all.rds` (230 KB) | Mensual, todos los códigos de país (unos 235); `País` y `rank` solo para el Top 20. | Query01 | Query01 (su versión previa); Prep01 (verificación del total) | Intermedio |
+| `meta_imp_por_pais.rds` | Procedencia de los dos anteriores. | Query01 | — | Vigente |
+| `revision_q1.rds` | Qué cambió, por año, entre la descarga anterior y la nueva (totales y por país). | Query01 | — | Intermedio |
+| `raw/q1_total_AAAA.rds`, `raw/q1_pais_AAAA.rds` | Caché por año (2023 en adelante) de las dos descargas. | Query01 | Query01 | Intermedio |
+| `impPais_Perc.rds` (6 KB) | Importación anual ajustada estacionalmente y participación por país, año completo. Columnas `año, País, rank, Imp_anual, share`. | Prep04 | C2 (`origAnualPerc`) | Vigente |
+
+### Fuente maestra de Census: México, Vietnam y Taiwán (Query02)
+
+| Archivo | Contenido | Productor | Lo leen | Estado |
+|:-------------------------|:------------------------------------------------------|:--------|:------------|:-------|
+| `raw_df_mex_vnm_twn.rds` (38 MB) | Descarga cruda mensual desde 2010, los tres países, **todos los niveles del SA mezclados** (total, HS2, HS4, HS6, HS10). Columnas `time, I_COMMODITY, I_COMMODITY_LDESC, GEN_VAL_MO, GEN_VAL_YR, CTY_CODE_dl, Pais, fecha`. De aquí se derivan todos los datos de comercio por partida. | Query02 | Prep01, Prep02; Explora_Top_Partidas_Periodos | Vigente |
+| `imp_competidores_hs4.rds` (19.6 MB) | Solo partidas (HS4), los tres países, todos los capítulos, con etiquetas de Sección y Capítulo. | Query02 | Prep03; Explora_Top_Partidas_Competidores | Intermedio |
+| `meta_query11.rds` | Procedencia de la fuente maestra. | Query02 | — | Vigente |
+| `revision_q11.rds` | Cambios por año entre descargas. | Query02 | — | Intermedio |
+| `raw/raw_hs_<CTY>_<año>.rds` | Caché por país (2010, 5520, 5830) y año, 2010 a 2026. Ver trampa 9. | Query02 | Query02 | Intermedio |
+| `raw_df.rds` (45 MB), `USallImpMex.rds` (66 MB) | Descargas viejas de México (todos los niveles). **Ningún script actual las escribe y no se encontró código que las lea.** Movidos a `RDS/Por_eliminar/`. | script anterior | — | Por eliminar |
+| `raw/raw_hs6_2010.rds … 2025.rds` | Caché por año de esa descarga vieja de México. Movidos a `RDS/Por_eliminar/raw/`. | script anterior | — | Por eliminar |
+
+### Importaciones de EUA desde México, por Sección, Capítulo y Partida (Prep01, Prep02, Prep04, Prep05)
+
+| Archivo | Contenido | Productor | Lo leen | Estado |
+|:-------------------------|:------------------------------------------------------|:--------|:------------|:-------|
+| `imp_mex_sec_cap.rds` (357 KB) | Mensual por Sección × Capítulo (1 a 99), con `Val_mes_sa` (ajuste estacional X-13). Sin filas de totales. | Prep01 | Prep02, Prep04; C2 (`prep-caps`); top_hs4_Pendiente | Vigente |
+| `meta_imp_mex_sec_cap.rds` | Procedencia y capítulos donde X-13 falló (si los hubo). | Prep01 | — | Vigente |
+| `imp_mex_hs4.rds` (7.75 MB) | Mensual por Partida (HS4), todos los capítulos, con etiquetas. | Prep02 | Prep05 | Intermedio |
+| `imp_mex_hs6.rds` (19.3 MB) | Mensual por Subpartida (HS6), todos los capítulos. | Prep02 | — | Intermedio |
+| `imp_mex_hs4_84858790.rds` (396 KB), `imp_mex_hs6_84858790.rds` (4.3 MB) | Subconjuntos de los dos anteriores: Capítulos 84, 85, 87 y 90. | Prep02 | — | Intermedio |
+| `imp_mex_top_hs4.rds` (82 KB) | Serie mensual de las **partidas principales** de los cuatro capítulos (unión de las que acumulan 80% del capítulo en 2024, 2025 y enero-último mes del año en curso, más 8703), con `Part_corto` y `Part_tabla`. | Prep02 | top_hs4_Pendiente | Intermedio |
+| `TCAC_y_shares_84858790.rds` (7 KB) | Una fila por partida principal más una fila "Resto" por capítulo: valores anuales (2010, 2018, 2024, 2025), valores enero-último mes (`val_ytd_*`), TCAC, crecimiento y participaciones. | Prep02 | C2 (tablas `tbl-cap84`, `85`, `87`, `90`); Prep05 | Vigente |
+| `meta_TCAC_y_shares.rds` | Definiciones de las columnas anteriores. | Prep02 | — | Vigente |
+| `meta_query3.rds` | Procedencia de las salidas de Prep02 (nombre histórico). | Prep02 | — | Vigente |
+| `partidas_tendencia.rds` (227 KB) | Serie mensual desestacionalizada de cada partida principal (índice enero 2018 = 100) y su tendencia por tramos. | Prep05 | C2 (paneles de partidas, anexo) | Vigente |
+| `quiebres_partida.rds` (1 KB) | Fechas de los quiebres estructurales (Bai-Perron) por partida. | Prep05 | C2 (paneles de partidas) | Vigente |
+| `impMex_sec_pct.rds` (5 KB) | Importación anual y participación por Sección, 2010 hasta el último año completo. | Prep04 | C2 (`prep-sec-pct`) | Vigente |
+| `impMex_sec_pct` (sin extensión, 6 KB) | Versión anterior del mismo objeto, guardada sin `.rds`. Movido a `RDS/Por_eliminar/`. | chunk viejo | — | Por eliminar |
+| `impMex_caps_2025.rds` (1 KB) | 2025: participación por Capítulo dentro de las Secciones XVI, XVII y XVIII. C2 recalcula 2024 por su cuenta y no lo carga. | Prep04 | — | Intermedio |
+| `decomp_jerarquica_2025.rds` (1 KB) | Descomposición jerárquica 2025 (Total, Sección, Capítulo, Partida). Movido a `RDS/Por_eliminar/`. | *(no se encontró)* | — | Por eliminar |
+| `partidas_valor_depurado.rds` (3 KB) | Top 30 de partidas por valor 2024-2025. Lo producía un Prep retirado el 22-oct-2026; Prep02 hace ahora esa selección. Movido a `RDS/Por_eliminar/`. | script retirado | — | Por eliminar |
+| `datos_847150_hs6.rds` (5 KB) | Serie mensual de la subpartida 847150 (servidores) para México, Vietnam y Taiwán, 2018-01 a 2026-07. | *(no se encontró)* | C3 (figura "EXPLORATORIO") | Sin productor |
+
+### Competencia México, Vietnam y Taiwán (Prep03 y exploratorios)
+
+| Archivo | Contenido | Productor | Lo leen | Estado |
+|:-------------------------|:------------------------------------------------------|:--------|:------------|:-------|
+| `listas_finales_NS_mex_vnm_twn.rds` (6 KB) | Lista final de partidas relevantes para nearshoring por país (unión de periodos), con valores enero-último mes. | Prep03 | — | Intermedio |
+| `tabla_competencia_mex_vnm_twn.rds` (6 KB) | Unión de las tres listas, valor por país (NA si no está en la lista del país). | Prep03 | — | Intermedio |
+| `tabla_overlap_mex_vnm_twn.rds` (3 KB) | Partidas en que México coincide con Vietnam y/o Taiwán, con nombres cortos. | Prep03 | — | Intermedio |
+| `meta_query12.rds` | Método, umbral y capítulos excluidos (nombre histórico). | Prep03 | — | Vigente |
+| `tabla_partidas_competencia.rds` (10 KB) | **Objeto flextable** ya formateado (no es un data frame). Copia en Word: `Tablas/tabla_partidas_competencia.docx`. | Prep03 | C3 (`tbl-partidas-competencia`) | Vigente |
+| `top_partidas_periodos.rds` (5 KB) | Lista con la tabla comparativa de las partidas principales de los Capítulos 84/85/87/90 según el periodo que las identifica. Copia formateada: `Tablas/top_partidas_periodos.rds` y `.docx`. | Explora_Top_Partidas_Periodos | — | Intermedio |
+| `top_partidas_competidores_periodos.rds` (7 KB) | Igual, para las partidas en competencia México/Vietnam/Taiwán. Copias en `Tablas/`. | Explora_Top_Partidas_Competidores | — | Intermedio |
+
+### Aranceles (Query03)
+
+| Archivo | Contenido | Productor | Lo leen | Estado |
+|:-------------------------|:------------------------------------------------------|:--------|:------------|:-------|
+| `aranceles_autos_autopartes_mensual.rds` (49 KB) | Mensual desde 2010: partidas HTS 8703 (autos) y 8708 (autopartes); México, Corea del Sur, Japón y Alemania (como representante de la UE). Columnas `pais, cod_hts, fecha, val_imp, val_gravable, derechos, tasa_efectiva, tasa_implicita`. | Query03 | ningún qmd de `Quarto/` (ver limitaciones) | Vigente |
+| `meta_aranceles_autos_autopartes.rds` (1 KB) | Procedencia, definición de las tasas. | Query03 | — | Vigente |
+| `aranceles_hts8703_mex_kor_mensual.rds` (12 KB) | Versión anterior (solo 8703, México y Corea). Query03 la usa como referencia para el reporte de revisiones en la primera corrida. | script anterior | Query03 | Heredado |
+| `usitc_prueba_cruda.rds` (0.5 KB) | Respuesta cruda de una llamada de prueba a DataWeb. Movido a `RDS/Por_eliminar/`. | *(no se encontró)* | — | Por eliminar |
+
+### Exportaciones por estado (Query04, Query07, Prep06)
+
+| Archivo | Contenido | Productor | Lo leen | Estado |
+|:-------------------------|:------------------------------------------------------|:--------|:------------|:-------|
+| `xmex_total_ef.rds` (13 KB) | Exportaciones totales trimestrales por entidad (32), desde 2007T1, miles de USD. Fuente BIE. **Denominadores correctos** para participaciones estatales. | Query04 | Prep06 | Vigente |
+| `meta_xmex_total_ef.rds` | Procedencia y metodología ETEF. | Query04 | — | Vigente |
+| `etef_raw.rds` (335 KB) | Hojas del Excel ETEF apiladas en formato largo, con el valor sin procesar (`val_raw`) y banderas de suprimido, no aplica, total y no especificado. | Query07 | — | Intermedio |
+| `etef_tidy.rds` (196 KB) | Trimestral por entidad × código SCIAN (sector o subsector), miles de USD; NA donde la celda es "C" o "-". | Query07 | C2 (`load-etef`) | Vigente |
+| `etef_tidy_old.rds` (188 KB) | Versión previa de `etef_tidy`. Movido a `RDS/Por_eliminar/`. | script anterior | — | Por eliminar |
+| `meta_etef.rds` | Procedencia y definición de banderas. (El archivo actual aun cita `etef_valor_accounting.rds`, que nunca existió; la referencia ya se quitó del script y desaparece al volver a correr Query07.) | Query07 | — | Vigente |
+| `etef_supresion_check.rds` (5 KB) | Por entidad × subsector: observaciones, suprimidas y porcentaje "C". | Query07 | — | Intermedio |
+| `supresion_ns_wide.rds` (1 KB) | Porcentaje de suprimidos para los sectores 333, 334, 335 y 336, una columna por sector, por estado. | Query07 | C2 (anexo de disponibilidad) | Vigente |
+| `tcac_estados.rds` (1.5 KB) | TCAC (en %) de las exportaciones estatales en tres subperíodos: 2010-2018, 2018-2024, 2024-2025. Formato largo. | Prep06 | C2 (mapa y `tbl-tcac-estados`) | Vigente |
+| `estados_lookup.rds` (0.6 KB) | Lista con abreviaturas de estados y la correspondencia de nombres GADM → nombres del proyecto. | Prep06 | C2 (mapas) | Vigente |
+
+### Empleo IMMEX (Query08, Prep07)
+
+| Archivo | Contenido | Productor | Lo leen | Estado |
+|:-------------------------|:------------------------------------------------------|:--------|:------------|:-------|
+| `immex_empleo.rds` (82 KB) | Mensual desde 2010: establecimientos y empleo (producción y administración; propio y subcontratado) para 17 estados, `ZLF` y `TOT`. | Query08 | Prep07; C2 (`load-immex`) | Vigente |
+| `meta_immex_empleo.rds` | Procedencia, definición de variables y de los agregados especiales. | Query08 | — | Vigente |
+| `immex_pct.rds` (3.5 KB) | Participación de cada estado en el empleo IMMEX (diciembre de cada año, sin `ZLF` ni `TOT`). | Prep07 | C2 (mapa IMMEX) | Vigente |
+| `immex_empleo_ef.rds` (62 KB), `immex_empleo_zlfn.rds` (5 KB) | Derivados de `immex_empleo` (16 estados, y solo ZLFN). Movidos a `RDS/Por_eliminar/`. | *(no se encontró)* | — | Por eliminar |
+
+### Inversión extranjera directa (Query09, Query06)
+
+| Archivo | Contenido | Productor | Lo leen | Estado |
+|:-------------------------|:------------------------------------------------------|:--------|:------------|:-------|
+| `ied_por_origen.rds` (42 KB) | Flujo **acumulado en el año** (`ied_acum_mdd`) por país de origen, trimestral, desde 2006T1. Incluye fila "Total general". | Query09 | C2 | Vigente |
+| `ied_por_actividad.rds` (198 KB) | Igual, por actividad SCIAN (total, sector, subsector, rama). | Query09 | C2 | Vigente |
+| `ied_flujos_tipo.rds` (3 KB) | Igual, por tipo (nuevas inversiones, reinversión de utilidades, cuentas entre compañías, total). | Query09 | — | Vigente |
+| `ied_pib.rds` (4 KB), `ied_fbkf.rds` (4 KB) | IED, PIB o FBKF y porcentaje; frecuencia anual y trimestral en el mismo objeto (`frecuencia`). El flujo trimestral es del trimestre, no acumulado. | Query09 | C2 | Vigente |
+| `meta_ied.rds` | Procedencia, unidades (mdd) y advertencia sobre acumulados. | Query09 | — | Vigente |
+| `ied_pib_wdi_comp.rds` (1 KB) | IED como % del PIB, México, Costa Rica, Vietnam y R. Dominicana, desde 2010 (World Bank). | Query06 | C2 | Vigente |
+| `fbcf_inegi.rds` (3.7 MB), `meta_fbcf_inegi.rds` | Series tidy de formación bruta de capital fijo (INEGI, Tabulado de Oferta y Utilización). Se armó a partir de un Excel que pasó un colega (`Excel/FBCF_INEGI_OUT_13.xlsx`), no de una descarga del proyecto. | conversión manual, sin script | `ied_plots_fbcf.R` | Vigente |
+
+### Atención en medios (Query10, Query05)
+
+| Archivo | Contenido | Productor | Lo leen | Estado |
+|:-------------------------|:------------------------------------------------------|:--------|:------------|:-------|
+| `media_cloud_diario.rds` (58 KB) | Menciones diarias de "nearshoring OR reshoring", formato largo, `pais` = "México" o "EUA". Columnas `pais, date, count, total_count, ratio`. | Query10 | — (las figuras se construyen en memoria dentro de Query10) | Vigente |
+| `media_cloud_mensual.rds` (3.6 KB) | Agregado mensual por país hasta el último mes completo (`menciones, total_dias, ratio_mensual, mm3`). Es la base de las figuras de Query10. | Query10 | — | Vigente |
+| `meta_media_cloud.rds` (0.5 KB) | Una fila por país: colección, archivo, fechas, descarga. | Query10 | — | Vigente |
+| `mediacloud_nearshoring_mx.rds` (1.8 KB) + `meta_mediacloud_nearshoring_mx.rds` | Conteo mensual de "nearshoring" (sin "reshoring") en la colección México vía API. **No comparable** con `media_cloud_*`. Movidos a `RDS/Por_eliminar/` (correr Query05 los vuelve a crear). | Query05 | — | Por eliminar |
+| `gdelt_nearshoring_mx.rds` (0.7 KB) + `meta_gdelt_nearshoring_mx.rds` | Menciones mensuales en GDELT con geocódigo México. Las figuras de GDELT quedaron obsoletas; la serie ya no se usa. Movidos a `RDS/Por_eliminar/` (correr Query05 los vuelve a crear). | Query05 | — | Por eliminar |
+
+### Referencia
+
+| Archivo | Contenido | Productor | Lo leen | Estado |
+|:-------------------------|:------------------------------------------------------|:--------|:------------|:-------|
+| `hs_dictionary.rds` (56 KB) | Diccionario del SA: 21 Secciones, 98 Capítulos (96 del SA más 98 y 99 de EUA) y 1,228 Partidas. Columnas `nivel, codigo, codigo_padre, nombre_corto, nombre_tabla, nombre_oficial, fuente`. Los nombres cortos existen para todas las Secciones y Capítulos y solo para las Partidas usadas. | `build_hs_dictionary.R` | todos los scripts que cargan `funciones.R` (ver Parte II) y C2 | Vigente |
+
+## Figuras (`Plots/`)
+
+Las figuras de C2 las genera cada chunk `save-*` (marcado `eval: false`, se corre a mano) y el chunk visible las incluye con `knitr::include_graphics()`. Sufijo `_2024` = ventana del Capítulo 2.
+
+| Figura(s) | Datos de origen | Generada por | Se usa en |
+|:-----------------------------|:----------------------------|:-----------------------|:----------|
+| `fig-ImpEUA-CHN-MEX`, `fig-imp-cambio-pais`, `imp_pais_perc`, `dist_imp_pais` | `imp_por_pais`, `impPais_Perc` | chunks de C2 | C2 (las tres primeras) |
+| `impMex_sec_perc`, `fig-imp-cambio-sec-mex`, `fig-treemap-caps-seccion` | `impMex_sec_pct`, `imp_mex_sec_cap` | chunks de C2 | C2 |
+| `panel_partidas_cap84`, `…85`, `…87`, `…90` | `partidas_tendencia`, `quiebres_partida` | chunk `save-top-partidas-paneles` de C2 | C2 (anexo) |
+| `mapa_xmex_3periodos_tcac` | `tcac_estados`, `estados_lookup`, `geodata/` | chunk de C2 | C2 |
+| `fig-etef-sectores-sa` | `etef_tidy` | chunk de C2 | C2 |
+| `fig-immex-empleo`, `mapa_immex_4periodos` | `immex_empleo`, `immex_pct` | chunks de C2 | C2 |
+| `ied_total_origen`, `ied_ratios`, `ied_pib_comparativo_wdi`, `ied_actividad_combinado`, `ied_manuf_subsector` | `ied_*`, `ied_pib_wdi_comp` | chunks de C2 | C2 |
+| `fig_media_cloud_menciones_mex[_2024]`, `…_usa[_2024]` | `media_cloud_mensual` | Query10 | C2 (la `mex_2024`) |
+| `infografia_mexico`, `…_canada`, `…_china`, `…_corea`, `…_japon`, `…_ue`, `…_vietnam`, `…_taiwan` | **datos escritos a mano** dentro de `infografias_aranceles.qmd` | `infografias_aranceles.qmd` | C3 |
+| `comparativo_autos`, `comparativo_autopartes` | **datos escritos a mano** en `infografias_aranceles.qmd` | idem | C3 |
+| `ied_fbcf_privada_publica[_2024]`, `ied_fbcf_privada_por_tipo_bien[_2024]` | `fbcf_inegi` | `ied_plots_fbcf.R` | *(no hay salida en `Plots/`: el script no se ha corrido)* |
+| `zafra-*.png` (CAPEX, absorción industrial, intenciones de inversión, FBCF) | **externas**: material recibido de coautores, no se generan aquí | — | C2 |
+| `mapa_xmex_4periodos`, `ied_actividad_lineas`, `fig-partidas-elec-med`, `fig-partidas-maq-auto`, `fig-treemap-top-hs4` | versiones antiguas | ningún chunk actual las genera (no verificado en `OldQmd/`) | ningún qmd actual |
+
+Las imágenes fijas (`Images/nearshoring.png`, `Images/Directorio.png`) vienen de fuera del pipeline.
+
+## Tablas con formato (`Tablas/`)
+
+| Archivo | Contenido | Generado por | Se usa en |
+|:--------------------------------|:-------------------------------------|:------------------|:------|
+| `tabla_partidas_competencia.docx` | Copia en Word, hoja horizontal, de la tabla de competencia (la versión que carga C3 es `RDS/tabla_partidas_competencia.rds`). | Prep03 | revisión |
+| `top_partidas_periodos.rds` y `.docx` | Tabla comparativa de partidas principales por periodo de identificación. | Explora_Top_Partidas_Periodos | revisión |
+| `top_partidas_competidores_periodos.rds` y `.docx` | Igual, para las partidas en competencia. | Explora_Top_Partidas_Competidores | revisión |
+
+# Parte II. Catálogo de Queries y Preps
+
+## Reglas de nombres
+
+- **`Query`**: trae datos de una fuente externa (API, o un Excel o CSV descargado a mano y puesto en `Excel/`). Casi todos son independientes entre sí.
+- **`Prep`**: solo usa datos ya guardados en `RDS/`. Se numeran en el orden en que deben correr.
+- **`Explora_*`**: exploratorios, fuera del pipeline; no deben ser prerrequisito de nada.
+- Los qmd **nunca llaman scripts**; solo cargan datos y figuras ya hechos.
+- Las consultas son solo consultas: el código de gráficos y tablas dentro de un Query se irá trasladando a los qmd (no es prioridad).
+
+## Orden de ejecución
+
+1. `build_hs_dictionary.R` (solo si cambió `hs_nombres_cortos.csv` o `naladisa_2022.xlsx`).
+2. Query01 a Query10. Primero los que usan API (01 a 06) y después los que leen archivos puestos a mano (07 a 10). Query01 y Query02 antes de cualquier Prep.
+3. Prep01 a Prep07, en ese orden, cada uno en una sesión de R limpia.
+
+| Prep | Necesita antes |
+|:---------|:-----------------------------------------|
+| Prep01 | Query01, Query02 |
+| Prep02 | Query02, Prep01 |
+| Prep03 | Query02 (no depende de Prep01 ni Prep02) |
+| Prep04 | Query01, Prep01 |
+| Prep05 | Prep02 |
+| Prep06 | Query04 |
+| Prep07 | Query08 |
+
+## Mecanismos comunes
+
+- **`repull` o `DESCARGAR`.** Query02 tiene `DESCARGAR` (si es `FALSE` no llama al API y solo regenera derivados). La regla general del proyecto: con el interruptor en `FALSE`, reconstruir desde el caché.
+- **Actualización incremental.** Query01 y Query02 no vuelven a bajar toda la historia: descargan desde `ANIO_SOLAPE` (2023) hasta el último mes disponible y sustituyen ese tramo en el RDS existente; lo anterior no se toca. `actualizar_rds()` detiene el proceso si hay duplicados, meses faltantes, columnas distintas o un hueco entre lo viejo y lo nuevo, y deja un reporte de revisiones.
+- **Un archivo por año.** Cada año descargado se guarda de inmediato en `RDS/raw/`. Si una descarga se cae, lo ya bajado no se pierde; `census_descargar()` reutiliza archivos de menos de 12 horas (`VIGENCIA_HORAS`) y reintenta tres veces.
+- **Verificaciones dentro del script.** Los Query y Preps imprimen sus comprobaciones (sumas contra totales, rangos, duplicados) y varios usan `stopifnot()`. Revisar la consola después de correr.
+
+## Ayudantes (no son parte del pipeline, los cargan los demás)
+
+**`Scripts/funciones.R`.** Se carga desde casi todos los scripts y desde C2.
+
+- Constantes `ANIO_FIN` (2024) y `FECHA_FIN` (2024-12-31): fin de la ventana del Capítulo 2.
+- `sa_adj(x, fechas, freq)`: ajuste estacional X-13 (paquete `seasonal`); detecta la frecuencia mensual o trimestral; si el modelo automático falla, reintenta con un modelo airline fijo.
+- `hs_cargar()`, `hs_tablas()`, `hs_agregar_etiquetas()`, `hs_etiquetas_partida()`, `hs_relabel()`: etiquetas del SA desde `hs_dictionary.rds`. `hs_etiquetas_partida()` se detiene si falta un nombre corto; `hs_relabel()` reaplica los nombres vigentes a un RDS viejo (los qmd lo usan al cargar).
+- `breaks_tcac`, `labels_tcac`, `paleta_tcac`: categorías y colores compartidos por el mapa y la tabla de TCAC estatal.
+
+**`Scripts/funciones_datos.R`.** Solo lo cargan los Query de Census y USITC.
+
+- `census_ultimo_mes()`: último mes con datos en el API.
+- `census_descargar()`, `census_descargar_anios()`: descarga con caché en disco y reintentos.
+- `actualizar_rds()`: une datos viejos y nuevos y reporta revisiones.
+- `buscar_en_repo(patron)`: equivalente de `grep` sobre `.R`, `.qmd`, `.Rmd` y `.md`; sirve para saber qué lee un RDS (ver la Parte III).
+
+**`Scripts/build_hs_dictionary.R`.** Construye `RDS/hs_dictionary.rds` a partir de `Excel/naladisa_2022.xlsx` (capítulos y partidas), de las secciones oficiales (transcritas a mano en el script) y de `Excel/hs_nombres_cortos.csv` (nombres cortos). Valida: 21 Secciones, 98 Capítulos, sin duplicados, sin códigos huérfanos en el CSV; avisa si un nombre corto pasa de 26 caracteres. Para agregar un nombre corto: editar el CSV y volver a correr el script.
+
+## Fichas de los Query
+
+### Query01_USA_imports_by_country.R
+
+- **Qué hace.** Importaciones totales de EUA y por país de origen, mensual, con Top 20 fijo y "Resto".
+- **Fuente.** Census (`CENSUS_API_KEY`). Dos descargas por año: total sin desagregar, y por país.
+- **Entradas.** `RDS/imp_por_pais_all.rds` (versión actual) y el API.
+- **Salidas.** `imp_por_pais_all`, `imp_por_pais`, `meta_imp_por_pais`, `revision_q1`; caché `raw/q1_*`.
+- **Parámetros.** `ANIO_SOLAPE = 2023`, `VIGENCIA_HORAS = 12`, `ANIO_RANK = 2024` (el Top 20 se identifica por valor desde enero de 2024).
+- **Verificaciones.** Suma de países contra el total (diferencia promedio y máxima); Top 20 más Resto debe sumar el total; aviso si el Top 20 cambiaría con los datos nuevos (la lista no se modifica sola).
+- **Cuidado.** Solo códigos de país 1000 o más. El gráfico o las tablas no se guardan aquí.
+
+### Query02_Imp_MEX_VNM_TWN_HS4.R
+
+- **Qué hace.** **Fuente maestra** de comercio de EUA por partida: importaciones desde México, Vietnam y Taiwán, todos los niveles del SA mezclados, mensual desde 2010. De aquí se derivan todos los datos de México por Capítulo y Partida.
+- **Fuente.** Census (`CENSUS_API_KEY`). Descarga año por año y país por país.
+- **Entradas.** `RDS/raw_df_mex_vnm_twn.rds` (versión actual) y el API.
+- **Salidas.** `raw_df_mex_vnm_twn`, `imp_competidores_hs4`, `meta_query11`, `revision_q11`; caché `raw/raw_hs_<CTY>_<año>.rds`.
+- **Parámetros.** `DESCARGAR`, `ANIO_SOLAPE = 2023`, `VIGENCIA_HORAS = 12`.
+- **Verificaciones.** Los tres países deben terminar en el mismo mes (`stopifnot`); conteos por nivel y por país.
+- **Cuidado.** Se omite `COMM_LVL` a propósito; los niveles se separan por `nchar(I_COMMODITY)` (total `-`, 2, 4, 6 y 10 dígitos).
+
+### Query03_Tariffs_USITC_Autos_Autopartes.R
+
+- **Qué hace.** Aranceles mensuales de EUA a autos (HTS 8703) y autopartes (HTS 8708) para México, Corea del Sur, Japón y Alemania (representa a la UE).
+- **Fuente.** USITC DataWeb (`DATAWEB_TOKEN`). Una sola llamada con toda la historia desde 2010.
+- **Salidas.** `aranceles_autos_autopartes_mensual`, `meta_aranceles_autos_autopartes`.
+- **Variables.** `val_imp`, `val_gravable` y `derechos` vienen de tres medidas de la fuente; `tasa_efectiva = derechos / val_imp` y `tasa_implicita = val_gravable / val_imp`.
+- **Cuidado.** Se recorta al último mes con `val_imp > 0` (para el año en curso DataWeb devuelve meses futuros con cero). El archivo se sobrescribe completo; antes reporta cuánto se revisaron los datos desde 2023-01 comparando contra el archivo previo. Para otras partidas o países: copiar el script y cambiar `HTS_CODES`, `paises` y los nombres de salida. Incluye un gráfico de diagnóstico que no se guarda.
+
+### Query04_XMex_estado.R
+
+- **Qué hace.** Exportaciones totales trimestrales por entidad federativa (ETEF), 2007T1 al último trimestre, en miles de USD.
+- **Fuente.** INEGI BIE (`BIE_TOKEN`), clave de indicador 6207095692, una llamada por entidad (claves 01 a 32).
+- **Salidas.** `xmex_total_ef`, `meta_xmex_total_ef`.
+- **Cuidado.** Cada corrida baja la serie completa (no es incremental): los datos recientes son preliminares y se revisan. El parámetro geográfico `99` (todas las entidades) no funciona con este indicador. La ETEF excluye comercio y servicios y operaciones no vinculables al RENEM (9 a 10% de la balanza). Los scripts `Explora_BIE_ETEF_*` exploraron cómo pedir subsectores por entidad al BIE; el BIE no expone todas las combinaciones subsector × estado, y por eso Query07 usa el Excel.
+
+### Query05_Media.R
+
+- **Qué hace.** Dos descargas de atención mediática al nearshoring, ambas **heredadas**.
+- **Bloque GDELT.** BigQuery (`GCP_PROJECT_ID`; `bq_auth()` interactivo). Cuenta artículos desde 2018 cuya ubicación incluye México y cuya URL contiene "nearshoring"; subestima porque no todos los artículos traen el término en la URL. Salidas: `gdelt_nearshoring_mx`, `meta_gdelt_nearshoring_mx`.
+- **Bloque Media Cloud API.** Conteo mensual de "nearshoring" (solo esa palabra) en la colección México Nacional (34412427), por mes desde 2018-01 hasta el último mes completo, con pausa de 0.5 s entre llamadas (`MEDIACLOUD_API_KEY`; requiere `reticulate::py_require("mediacloud")`). Salidas: `mediacloud_nearshoring_mx`, `meta_mediacloud_nearshoring_mx`.
+- **Estado.** Las figuras de GDELT quedaron obsoletas; las de menciones que usa el libro vienen de **Query10**, que busca "nearshoring OR reshoring" y por eso no es comparable con este bloque. Los cuatro RDS que produce Query05 se movieron a `RDS/Por_eliminar/`; correrlo los volvería a crear.
+
+### Query06_WDI_IED_PIB.R
+
+- **Qué hace.** IED como porcentaje del PIB (flujos netos de entrada) para México, Costa Rica, Vietnam y República Dominicana, desde 2010.
+- **Fuente.** World Bank WDI, indicador `BX.KLT.DINV.WD.GD.ZS`; requiere internet.
+- **Salidas.** `ied_pib_wdi_comp`.
+- **Cuidado.** El WDI puede no cubrir el último año para todos los países; el script imprime el último año con dato por país.
+
+### Query07_X_estado_sector.R
+
+- **Qué hace.** Convierte el Excel ETEF por entidad y subsector SCIAN en un tibble tidy.
+- **Entradas.** `Excel/ETEF_Entidad_Subsector.xlsx` (32 hojas). Estructura: años en la fila 5 (con sufijos "R/" y "P/") y trimestres en la fila 6, cinco columnas por año (cuatro trimestres y una separadora); las notas al pie se excluyen.
+- **Valores especiales.** "C" (confidencial) y "-" (no aplica) pasan a NA con bandera; "0" se conserva como cero.
+- **Salidas.** `etef_raw`, `etef_tidy`, `meta_etef`, `etef_supresion_check`, `supresion_ns_wide`.
+- **Verificaciones.** Último trimestre con dato por entidad, filas por año, subsectores presentes, porcentaje de supresión por entidad × subsector.
+- **Cuidado.** El código calcula un desglose de valores especiales (`etef_valor_accounting`) que no se guarda ni se usa; se eliminó la referencia a ese archivo en `meta_etef`.
+
+### Query08_IMMEX.R
+
+- **Qué hace.** Empleo y establecimientos IMMEX (segmento manufacturero) por entidad, más la Zona Libre de la Frontera Norte (ZLFN) y el total nacional.
+- **Entradas.** `Excel/IMMEX/immex_manu_ent_<año>.csv`, descarga "Por municipio"; usa 2010 en adelante.
+- **Salidas.** `immex_empleo`, `meta_immex_empleo`.
+- **Lógica.** INEGI no publica fila de total estatal en los estados con desglose municipal: el total se **construye siempre sumando** todas las filas de la entidad (municipios con datos, más "otros municipios" `CVE_MUN = 999`, o la fila única en 01, 09, 10 y 30). ZLFN = nueve municipios fronterizos (Mexicali, Tecate, Tijuana, Acuña, Juárez, Nogales, Matamoros, Nuevo Laredo y Reynosa); Ensenada queda fuera. `TOT` = suma de los 17 estados, sin `ZLF` ni `CVE_ENT = 99`.
+- **Verificaciones.** `stopifnot` de que un estado-mes no mezcla fila estatal y filas municipales, y de que todas las claves tienen nombre. Una versión anterior tomaba "otros municipios" como si fuera el total estatal y subestimaba 12 estados (corregido el 22-oct-2026).
+
+### Query09_IED.R
+
+- **Qué hace.** Convierte los tres Excel de la SE en cinco RDS tidy.
+- **Entradas.** `Excel/IED_flujos.xlsx`, `IED_PIB_6.xlsx`, `IED_FBKF_7.xlsx`.
+- **Salidas.** `ied_por_origen`, `ied_por_actividad`, `ied_flujos_tipo`, `ied_pib`, `ied_fbkf`, `meta_ied`.
+- **Cuidado.** Los flujos son **acumulados del año** (columna `ied_acum_mdd`; dato anual = `trim == 4`). Las hojas se localizan por patrón sin distinguir mayúsculas (la SE cambia "Por origen" por "Por Origen" entre descargas); "Total general" se normaliza; se filtran las notas al pie ("C: Cifra confidencial…"); el año de la hoja de actividad puede venir como "2025-4" y se extrae con `str_extract`. Unidades corregidas a millones de USD.
+
+### Query10_NS_MentionsMX.R
+
+- **Qué hace.** Menciones diarias de "nearshoring OR reshoring" en medios en línea de México y de EUA, agregadas por mes, con media móvil de tres meses, y las figuras correspondientes.
+- **Entradas.** Los CSV `mc-onlinenews-mediacloud-october2026.csv` (México, colección 34412427) y `mc-onlinenews-mediacloud_USA.csv` (EUA, colección 34412234). El CSV no guarda la consulta; queda documentada en el encabezado del script. Futuras descargas deben repetir exactamente la búsqueda.
+- **Salidas.** `media_cloud_diario`, `media_cloud_mensual`, `meta_media_cloud`; en `Plots/`, `fig_media_cloud_menciones_{mex,usa}[_2024]` en PDF y PNG.
+- **Parámetros.** `ULTIMO_MES` (último mes completo, fijado a mano) y `FECHA_FIN` (de `funciones.R`).
+- **Verificaciones.** Días duplicados, faltantes y NA por país; control de revisiones contra la descarga previa de México.
+
+## Fichas de los Prep
+
+### Prep01_Imp_Mex_SecCap.R
+
+- **Qué hace.** Importaciones de EUA desde México por Capítulo (HS2), con ajuste estacional X-13 por capítulo.
+- **Entradas.** `raw_df_mex_vnm_twn.rds` (solo México); `imp_por_pais_all.rds` (para verificar); `imp_mex_sec_cap.rds` previo (para reportar cambios).
+- **Salidas.** `imp_mex_sec_cap`, `meta_imp_mex_sec_cap`.
+- **Cuidado.** Los meses sin registro se completan con cero antes del ajuste y se descartan después, para no desplazar la serie. Si X-13 falla en un capítulo, se devuelve el valor sin ajustar y se reporta. La suma de capítulos debe coincidir con el total de la fuente y con Query01 (tolerancia 0.5 USD).
+
+### Prep02_USA_imp_Mex_all_HS.R
+
+- **Qué hace.** Importaciones desde México por Partida y Subpartida; selección de las **partidas principales** de los Capítulos 84, 85, 87 y 90; tabla de TCAC y participaciones.
+- **Entradas.** `raw_df_mex_vnm_twn.rds` (México), `imp_mex_sec_cap.rds`.
+- **Salidas.** `imp_mex_hs4`, `imp_mex_hs6`, sus versiones `_84858790`, `imp_mex_top_hs4`, `TCAC_y_shares_84858790`, `meta_TCAC_y_shares`, `meta_query3`.
+- **Regla de selección.** En cada capítulo y para cada periodo (2024, 2025 y enero hasta el último mes del año en curso), las partidas ordenadas por valor hasta cruzar el 80% acumulado. El conjunto final es la **unión** de los periodos más `PARTIDAS_FORZADAS` (8703, por importancia histórica). Decisión del 22-oct-2026: las diferencias entre periodos son mínimas y se conserva todo lo que aparece al menos una vez.
+- **Parámetros.** `ANIOS_TOP = 2024:2025`, `ANIOS_REF = 2010, 2018, 2024, 2025`, `caps_seleccionados = 84, 85, 87, 90`.
+- **Verificaciones.** Suma de partidas por capítulo contra `imp_mex_sec_cap` (tolerancia 1 USD); HS6 contra HS4 (informativo); los porcentajes de cada capítulo suman 1.
+
+### Prep03_TopPartidas_Competidores.R
+
+- **Qué hace.** Identifica las partidas más importantes de México, Vietnam y Taiwán y las partidas en que México **compite** con uno o ambos; produce la tabla de competencia del Capítulo 3.
+- **Entradas.** `imp_competidores_hs4.rds`.
+- **Salidas.** `listas_finales_NS_mex_vnm_twn`, `tabla_competencia_mex_vnm_twn`, `tabla_overlap_mex_vnm_twn`, `meta_query12`, `tabla_partidas_competencia.rds` (flextable), `Tablas/tabla_partidas_competencia.docx`.
+- **Método.** Por país y periodo (2024, 2025 y enero hasta el último mes de 2026), las 50 partidas de mayor valor entre todos los capítulos, luego se descartan los capítulos sin interés para nearshoring (por **número**: 1 a 27, 39, 40, 42, 50 a 67, 70, 71, 72, 94, 95, 98 y 99). "En competencia" en un periodo = aparece en la lista de México y de al menos otro país en ese mismo periodo; las partidas en que solo compiten Vietnam y Taiwán se descartan. Se conserva la unión de periodos. La tabla compara enero hasta el mismo mes de 2025 y 2026.
+
+### Prep04_imp_pais_mex.R
+
+- **Qué hace.** Tablas anuales para el Capítulo 2: participación por país en las importaciones de EUA, por Sección desde México y por Capítulo de las Secciones XVI a XVIII en 2025.
+- **Entradas.** `imp_por_pais.rds`, `imp_mex_sec_cap.rds`.
+- **Salidas.** `impPais_Perc`, `impMex_sec_pct`, `impMex_caps_2025`.
+- **Cuidado.** El valor anual por país se suma sobre la serie **ajustada estacionalmente** (X-13 por país); solo se agregan años completos.
+
+### Prep05_partidas_quiebres.R
+
+- **Qué hace.** Detecta quiebres estructurales de tendencia (Bai-Perron, paquete `strucchange`) en cada partida principal de los cuatro capítulos y arma el índice (enero 2018 = 100) y la tendencia por tramos que usan los paneles del anexo del Capítulo 2.
+- **Entradas.** `imp_mex_hs4.rds`, `TCAC_y_shares_84858790.rds`.
+- **Salidas.** `partidas_tendencia`, `quiebres_partida`.
+- **Parámetros.** `H_MIN_SEGMENTO = 24` meses entre quiebres.
+- **Cuidado.** El universo son las partidas presentadas individualmente en las tablas (sin "Resto"). Si cambia el número de partidas, hay que revisar la prosa del capítulo que menciona conteos.
+
+### Prep06_tcac_estados.R
+
+- **Qué hace.** TCAC de las exportaciones estatales para 2010-2018, 2018-2024 y 2024-2025, más abreviaturas de estados y la correspondencia con los nombres del mapa GADM.
+- **Entradas.** `xmex_total_ef.rds`.
+- **Salidas.** `tcac_estados` (en %), `estados_lookup`.
+- **Verificaciones.** Deben salir 32 entidades por periodo y todas deben tener abreviatura.
+
+### Prep07_immex.R
+
+- **Qué hace.** Participación de cada estado en el empleo IMMEX, diciembre de cada año, sin `ZLF` ni `TOT`.
+- **Entradas.** `immex_empleo.rds`.
+- **Salidas.** `immex_pct`.
+
+## Otros scripts de `Scripts/`
+
+| Script | Qué es | Estado |
+|:-----------------------|:-------------------------------------------------|:----------|
+| `Explora_Top_Partidas_Periodos.R` | Compara las partidas principales (80% acumulado) de los Capítulos 84/85/87/90 según el periodo que las identifica. Lee `raw_df_mex_vnm_twn.rds`; escribe `RDS/top_partidas_periodos.rds` y `Tablas/top_partidas_periodos.{rds,docx}`. | Exploratorio |
+| `Explora_Top_Partidas_Competidores.R` | Igual para las partidas en competencia México/Vietnam/Taiwán (replica Prep03 bajo tres periodos). Lee `imp_competidores_hs4.rds`. Su lista de capítulos excluidos **no** incluye el 72, a diferencia de Prep03. | Exploratorio |
+| `Explora_BIE_ETEF_Claves.R`, `Explora_BIE_ETEF_Probe.R` | Pruebas contra el BIE para encontrar las claves de los subsectores ETEF por entidad. No guardan nada. | Exploratorio |
+| `ied_plots_fbcf.R` | Figuras de FBKF privada y pública y por tipo de bien (precios de 2018). Lee `fbcf_inegi.rds`; escribiría `Plots/ied_fbcf_*`, que **no existen** todavía. Código recibido de un colega. | Pendiente de correr |
+| `top_hs4_Pendiente.R` | Borrador de tablas por capítulo con `gt()`; lee `imp_mex_top_hs4` e `imp_mex_sec_cap`. Parece redundante con el chunk `prep-tablas-cap` de C2. Pendiente de revisar si se archiva. | Pendiente de revisión |
+| `Rec_Diverging_Bars.R` | Borrador de barras divergentes por país; lo reemplaza el chunk de C2. | Heredado |
+| `Sectores en ETEF.R` | Tabla de referencia (tribble) de los subsectores SCIAN que aparecen en el BIE. No es un script ejecutable del pipeline. | Referencia |
+| `retryloop.R` | Bucle de reintentos de Census; lo reemplaza `census_descargar()`. | Heredado |
+| `percents.R`, `plot_save_load.R` | Fragmentos sueltos (`percents.R` termina con un carácter estray). `plot_save_load.R` es un ejemplo del patrón de figura. | Heredado |
+| `old/` | Queries con la numeración anterior (`Query2…Query6`, `CensusDownloads.R`, `Test_Query4.R`). | Heredado |
+
+## Documentos de Quarto que no son capítulos
+
+| Documento | Qué es |
+|:------------------------------|:-----------------------------------------------------|
+| `infografias_aranceles.qmd` | Genera con `ggplot2` y `patchwork` las ocho infografías de aranceles por país y los dos comparativos de autos y autopartes. **No lee ningún RDS**: las cifras y fechas están escritas a mano en listas (`spec_*`). Guarda PDF y PNG en `Plots/`. |
+| `Fuentes_API_tips_2026_05_10.qmd` | Notas sobre APIs (guía de uso); no se revisó para este catálogo. |
+| `test.qmd`, `OldQmd/` | Pruebas y versiones anteriores. |
+
+# Parte III. Mapa de dependencias
+
+## Quién escribe y quién lee cada archivo
+
+Las flechas van de la entrada a la salida. Los nombres de archivo sin extensión son RDS en `RDS/`.
+
+```
+Census:
+  Query01 -> imp_por_pais(_all)
+               -> Prep04 -> impPais_Perc, impMex_sec_pct,
+                            impMex_caps_2025
+               -> Prep01 (solo verificacion)
+  Query02 -> raw_df_mex_vnm_twn
+               -> Prep01 -> imp_mex_sec_cap
+                    -> Prep02 -> imp_mex_hs4, imp_mex_hs6,
+                                 imp_mex_top_hs4,
+                                 TCAC_y_shares_84858790
+                         -> Prep05 -> partidas_tendencia,
+                                      quiebres_partida
+                    -> Prep04
+             -> imp_competidores_hs4
+                    -> Prep03 -> tabla_partidas_competencia
+
+Otras fuentes:
+  Query03 (USITC)  -> aranceles_autos_autopartes_mensual
+  Query04 (BIE)    -> xmex_total_ef -> Prep06 -> tcac_estados,
+                                                 estados_lookup
+  Query07 (Excel)  -> etef_tidy, supresion_ns_wide, ...
+  Query08 (CSV)    -> immex_empleo -> Prep07 -> immex_pct
+  Query09 (Excel)  -> ied_por_origen, ied_por_actividad,
+                      ied_flujos_tipo, ied_pib, ied_fbkf
+  Query06 (WDI)    -> ied_pib_wdi_comp
+  Query10 (CSV)    -> media_cloud_diario, media_cloud_mensual
+  build_hs_dictionary -> hs_dictionary (etiquetas del SA)
+```
+
+## Tabla script, entradas y salidas
+
+| Script | Lee | Escribe |
+|:--------------|:---------------------------------|:-------------------------------------------|
+| `build_hs_dictionary` | `Excel/naladisa_2022.xlsx`, `Excel/hs_nombres_cortos.csv` | `hs_dictionary` |
+| Query01 | API Census; `imp_por_pais_all` previo | `imp_por_pais_all`, `imp_por_pais`, `meta_imp_por_pais`, `revision_q1`, `raw/q1_*` |
+| Query02 | API Census; `raw_df_mex_vnm_twn` previo; `hs_dictionary` | `raw_df_mex_vnm_twn`, `imp_competidores_hs4`, `meta_query11`, `revision_q11`, `raw/raw_hs_*` |
+| Query03 | API USITC; `aranceles_hts8703_mex_kor_mensual` (comparación) | `aranceles_autos_autopartes_mensual`, `meta_aranceles_autos_autopartes` |
+| Query04 | API BIE | `xmex_total_ef`, `meta_xmex_total_ef` |
+| Query05 | BigQuery (GDELT), API Media Cloud | `gdelt_nearshoring_mx`, `meta_gdelt_nearshoring_mx`, `mediacloud_nearshoring_mx`, `meta_mediacloud_nearshoring_mx` |
+| Query06 | API WDI | `ied_pib_wdi_comp` |
+| Query07 | `Excel/ETEF_Entidad_Subsector.xlsx` | `etef_raw`, `etef_tidy`, `meta_etef`, `etef_supresion_check`, `supresion_ns_wide` |
+| Query08 | `Excel/IMMEX/*.csv` | `immex_empleo`, `meta_immex_empleo` |
+| Query09 | `Excel/IED_flujos.xlsx`, `IED_PIB_6.xlsx`, `IED_FBKF_7.xlsx` | `ied_por_origen`, `ied_por_actividad`, `ied_flujos_tipo`, `ied_pib`, `ied_fbkf`, `meta_ied` |
+| Query10 | `Excel/mc-onlinenews-mediacloud-*.csv` | `media_cloud_diario`, `media_cloud_mensual`, `meta_media_cloud`; `Plots/fig_media_cloud_*` |
+| Prep01 | `raw_df_mex_vnm_twn`, `imp_por_pais_all`, `imp_mex_sec_cap` previo | `imp_mex_sec_cap`, `meta_imp_mex_sec_cap` |
+| Prep02 | `raw_df_mex_vnm_twn`, `imp_mex_sec_cap` | `imp_mex_hs4`, `imp_mex_hs6`, `imp_mex_*_84858790`, `imp_mex_top_hs4`, `TCAC_y_shares_84858790`, `meta_TCAC_y_shares`, `meta_query3` |
+| Prep03 | `imp_competidores_hs4` | `listas_finales_NS_mex_vnm_twn`, `tabla_competencia_mex_vnm_twn`, `tabla_overlap_mex_vnm_twn`, `meta_query12`, `tabla_partidas_competencia`; `Tablas/tabla_partidas_competencia.docx` |
+| Prep04 | `imp_por_pais`, `imp_mex_sec_cap` | `impPais_Perc`, `impMex_sec_pct`, `impMex_caps_2025` |
+| Prep05 | `imp_mex_hs4`, `TCAC_y_shares_84858790` | `partidas_tendencia`, `quiebres_partida` |
+| Prep06 | `xmex_total_ef` | `tcac_estados`, `estados_lookup` |
+| Prep07 | `immex_empleo` | `immex_pct` |
+| `Explora_Top_Partidas_Periodos` | `raw_df_mex_vnm_twn` | `top_partidas_periodos`; `Tablas/top_partidas_periodos.{rds,docx}` |
+| `Explora_Top_Partidas_Competidores` | `imp_competidores_hs4` | `top_partidas_competidores_periodos`; `Tablas/top_partidas_competidores_periodos.{rds,docx}` |
+| `ied_plots_fbcf` | `fbcf_inegi`, `meta_fbcf_inegi` | `Plots/ied_fbcf_*` (aún no existen) |
+
+## Qué carga cada documento
+
+**Capítulo 2 (`C2_Revised_October_2026_v2.qmd`).** Carga `funciones.R` (constantes de ventana, `sa_adj()`, etiquetas del SA). Las tablas que se calculan en cada render (`eval: true`) usan `TCAC_y_shares_84858790`, `tcac_estados` y `supresion_ns_wide`. Todo lo demás se carga en chunks `eval: false` que se corren a mano para regenerar figuras:
+
+| Objeto cargado | Para qué |
+|:----------------------------------|:------------------------------------------------|
+| `imp_por_pais`, `impPais_Perc` | Figuras de participación por país (China, México; cambios 2010-2018 y 2018-2024; México, Taiwán, Vietnam) |
+| `impMex_sec_pct`, `imp_mex_sec_cap` | Treemap y barras por Sección; treemap de Capítulos de las Secciones XVI a XVIII (2024) |
+| `TCAC_y_shares_84858790` | Las cuatro tablas por capítulo (84, 85, 87, 90) |
+| `partidas_tendencia`, `quiebres_partida` | Paneles de partidas (anexo) |
+| `tcac_estados`, `estados_lookup`, `geodata/gadm/gadm41_MEX_1_pk.rds` | Mapa y tabla de TCAC estatal |
+| `etef_tidy`, `supresion_ns_wide` | Figura de sectores SCIAN por estado y anexo de disponibilidad |
+| `immex_empleo`, `immex_pct`, `estados_lookup` | Figura de empleo IMMEX y mapa de participación |
+| `ied_por_origen`, `ied_por_actividad`, `ied_pib`, `ied_fbkf`, `ied_pib_wdi_comp` | Figuras de IED |
+| `hs_dictionary` (vía `hs_relabel()`) | Etiquetas al cargar RDS viejos |
+
+Además incluye, sin generarlas, las figuras de `Plots/` (incluidas `fig_media_cloud_menciones_mex_2024.png` de Query10 y las `zafra-*.png` externas) y `Images/nearshoring.png`.
+
+**Capítulo 3 (`C3_Tiempos_turbulentos_v2.qmd`).** Carga `tabla_partidas_competencia.rds` (tabla ya formateada, Prep03) y `datos_847150_hs6.rds` (sin productor). Incluye las infografías de aranceles y los comparativos de autos y autopartes de `Plots/`, generados por `infografias_aranceles.qmd` con datos escritos a mano.
+
+**`infografias_aranceles.qmd`.** No lee RDS.
+
+## Archivos sin lectores conocidos
+
+El 24-oct-2026 se apartaron los archivos que ningún script ni qmd lee y que ningún script actual produce, en `RDS/Por_eliminar/` y `Excel/Por_eliminar/`. Si al terminar C2 y C3 no hicieron falta, se borran. Antes de borrar, comprobar con `buscar_en_repo()`. (`Excel/_to_delete/` es anterior y tiene el mismo propósito.)
+
+- **Movidos a `RDS/Por_eliminar/`:** `raw_df.rds`, `USallImpMex.rds`, `raw/raw_hs6_*.rds` (en `Por_eliminar/raw/`), `impMex_sec_pct` (sin extensión), `etef_tidy_old.rds`, `partidas_valor_depurado.rds`, `usitc_prueba_cruda.rds`, `decomp_jerarquica_2025.rds`, `immex_empleo_ef.rds`, `immex_empleo_zlfn.rds`, y los cuatro RDS de Query05 (`gdelt_*` y `mediacloud_*`, con sus `meta_*`).
+- **Heredado pero se queda:** `aranceles_hts8703_mex_kor_mensual.rds`, porque Query03 lo lee para el reporte de revisiones.
+- **Intermedios que ningún qmd carga hoy (no se movieron porque los regenera un Query o Prep):** `imp_mex_hs6.rds`, `imp_mex_hs4_84858790.rds`, `imp_mex_hs6_84858790.rds`, `imp_mex_top_hs4.rds`, `impMex_caps_2025.rds`, `listas_finales_NS_mex_vnm_twn.rds`, `tabla_competencia_mex_vnm_twn.rds`, `tabla_overlap_mex_vnm_twn.rds`, `ied_flujos_tipo.rds`, `aranceles_autos_autopartes_mensual.rds`, `top_partidas_periodos.rds`, `top_partidas_competidores_periodos.rds`.
+- **Carpeta movida a `Excel/Por_eliminar/`:** `IMMEX_nuevo/`.
+
+## Limitaciones de este mapa
+
+- **Productos intermedios.** Los `.qmd` de `Productos intermedios/` (mapa de fuentes, cronología, autos y autopartes, acero y aluminio, semiconductores, comparativo por país) **no se revisaron**. Puede que alguno cargue RDS, en particular `aranceles_autos_autopartes_mensual.rds`.
+- **Inferencias.** "Lo leen" se basa en leer los scripts de `Scripts/` y los qmd de `Quarto/` (no `OldQmd/`); un archivo cargado con una ruta construida (por ejemplo con `list.files()`) no aparecería.
+- **"No se encontró productor"** significa que ningún script de `Scripts/` ni qmd de `Quarto/` lo escribe. Para algunos de esos archivos, el catálogo anterior (19-oct) también buscó sin éxito en `Scripts/old/`, `Quarto/OldQmd/` y `RMD/`.
+- **Verificación.** Para comprobar quién lee un archivo: `source(here::here("Scripts", "funciones_datos.R"))` y luego `buscar_en_repo("nombre_del_rds")`. Para incluir CSV, `ext = "\\.(R|qmd|Rmd|md|csv)$"`.
+
+# Mantenimiento de este documento
+
+- Cada vez que se agregue, renombre o retire un Query, un Prep o un RDS, actualizar este documento en el mismo commit.
+- Si se renombra un RDS, buscar su nombre en el repo antes (`buscar_en_repo()`): los `meta_*` históricos muestran que los nombres viejos sobreviven.
+- Ante la duda sobre si un archivo es vigente, la prueba es: ¿lo escribe un script actual y lo lee un script o un qmd? Si no, es heredado.
+
+# Apéndice. Regenerar el inventario de dimensiones y fechas
+
+El chunk siguiente no se ejecuta durante el render (`eval: false`). Correrlo a mano después de un repull para actualizar las dimensiones y rangos de fechas de los RDS (puede tardar unos minutos por los archivos grandes).
+
+```{r}
+#| label: inventario-rds
+#| eval: false
+
+pacman::p_load(tidyverse, here)
+
+inventario <- list.files(here("RDS"), pattern = "\\.rds$", full.names = TRUE) |>
+  map_dfr(\(f) {
+    x <- tryCatch(readRDS(f), error = \(e) NULL)
+    tibble(
+      archivo = basename(f),
+      mb      = round(file.size(f) / 1e6, 2),
+      clase   = if (is.null(x)) "error" else class(x)[1],
+      filas   = if (is.data.frame(x)) nrow(x) else NA_integer_,
+      cols    = if (is.data.frame(x)) ncol(x) else NA_integer_,
+      desde   = if (is.data.frame(x)) {
+        d <- intersect(c("fecha", "date", "anio_mes"), names(x))
+        if (length(d)) as.character(min(x[[d[1]]], na.rm = TRUE)) else NA_character_
+      } else NA_character_,
+      hasta   = if (is.data.frame(x)) {
+        d <- intersect(c("fecha", "date", "anio_mes"), names(x))
+        if (length(d)) as.character(max(x[[d[1]]], na.rm = TRUE)) else NA_character_
+      } else NA_character_
+    )
+  })
+
+print(inventario, n = Inf)
+```

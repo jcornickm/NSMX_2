@@ -91,7 +91,7 @@ Era razonable, por lo tanto, preguntarse si la intensidad de la discusión sobre
 #| cap-location: top
 #| echo: false
 
-knitr::include_graphics(here::here("Plots", "fig_media_cloud_menciones_2024.png"))
+knitr::include_graphics(here::here("Plots", "fig_media_cloud_menciones_mex_2024.png"))
 ```
 
 Fuente: elaboración propia con base en MediaCloud
@@ -343,7 +343,7 @@ Los ganadores y perdedores de cada unos de estos tres períodos se muestran en l
 #| echo: false
 #| eval: false
 
-# Calculado en Scripts/Prep_imp_pais_mex.R
+# Calculado en Scripts/Prep04_imp_pais_mex.R
 impPais_Perc <- readRDS(here::here("RDS", "impPais_Perc.rds"))
 ```
 
@@ -509,7 +509,7 @@ rm(impPais, impPais_Perc)
 #| eval: false
 #| code-summary: "Preparación datos Sección: porcentajes anuales"
 
-# Calculado en Scripts/Prep_imp_pais_mex.R
+# Calculado en Scripts/Prep04_imp_pais_mex.R
 impMex_sec_pct <- readRDS(here::here("RDS", "impMex_sec_pct.rds"))
 ```
 
@@ -665,7 +665,7 @@ knitr::include_graphics(here::here("Plots", "impMex_sec_perc.png"))
 #| label: prep-caps
 #| include: false
 #| eval: false
-# impMex_caps_2025.rds (Prep_imp_pais_mex.R) solo trae 2025; para 2024 se agregan
+# impMex_caps_2025.rds (Prep04_imp_pais_mex.R) solo trae 2025; para 2024 se agregan
 # aquí los Capítulos de las Secciones XVI-XVIII desde imp_mex_sec_cap.rds (misma lógica del Prep).
 df_caps_2024 <- readRDS(here::here("RDS", "imp_mex_sec_cap.rds")) |>
   hs_relabel() |>
@@ -717,8 +717,8 @@ rm(p)
 tcac_shares <- readRDS(here::here("RDS", "TCAC_y_shares_84858790.rds")) |> hs_relabel()
 
 # El Capítulo 2 termina en 2024: las participaciones se toman de las columnas
-# *_2024 (Scripts/Query04_USA_imp_Mex_all_HS.R, sección 7). Si faltan, re-ejecutar
-# esa sección.
+# *_2024 (Scripts/Prep02_USA_imp_Mex_all_HS.R, sección 6). Si faltan, re-ejecutar
+# ese Prep.
 stopifnot("Faltan pct_cap_2024 / pct_total_2024 en TCAC_y_shares_84858790.rds" =
             all(c("pct_cap_2024", "pct_total_2024") %in% names(tcac_shares)))
 tcac_shares <- tcac_shares |>
@@ -815,7 +815,7 @@ rm(tcac_shares, tabla_cap)
 #| eval: false
 
 # Quiebres estructurales (Bai-Perron) y tendencia por partida, calculados en
-# Scripts/Prep_partidas_quiebres.R (correrlo cuando cambien los datos).
+# Scripts/Prep05_partidas_quiebres.R (correrlo cuando cambien los datos).
 partidas_tendencia <- readRDS(here::here("RDS", "partidas_tendencia.rds"))
 quiebres_partida   <- readRDS(here::here("RDS", "quiebres_partida.rds"))
 ```
@@ -1106,7 +1106,7 @@ pacman::p_load(sf, cowplot, ggrepel)
 # abreviadas por estado, leyenda a la derecha en una sola columna.
 # Guarda mapa_xmex_3periodos_tcac.pdf / .png
 
-# Datos preparados por Scripts/Prep_tcac_estados.R (TCAC por estado y período,
+# Datos preparados por Scripts/Prep06_tcac_estados.R (TCAC por estado y período,
 # abreviaturas y nombres GADM). Categorías y paleta: breaks_tcac, labels_tcac y
 # paleta_tcac, definidas en Scripts/funciones.R.
 tcac_estados   <- readRDS(here::here("RDS", "tcac_estados.rds"))
@@ -1230,7 +1230,7 @@ knitr::include_graphics(here::here("Plots", "mapa_xmex_3periodos_tcac.png"))
 # subperíodos del mapa anterior (2010-2018, 2018-2024). Mismo
 # cálculo de TCAC y misma paleta/bins que el mapa, para consistencia visual.
 
-# TCAC por estado y período: Scripts/Prep_tcac_estados.R
+# TCAC por estado y período: Scripts/Prep06_tcac_estados.R
 # (categorías y paleta: breaks_tcac / paleta_tcac en Scripts/funciones.R)
 tcac_estados <- readRDS(here::here("RDS", "tcac_estados.rds"))
 
@@ -1606,14 +1606,14 @@ p <- local({
     )
   )
 
-  breaks_x <- as.Date(paste0(2010:ANIO_FIN, "-12-31"))
+  breaks_x <- as.Date(paste0(2010:ANIO_FIN, "-12-01"))   # fecha = día 1 del mes
   labels_x <- as.character(2010:ANIO_FIN)
 
   emp_plot |>
     ggplot(aes(x = fecha, y = emp_miles, color = serie)) +
     geom_line(linewidth = 1) +
     geom_vline(
-      xintercept = as.Date("2018-12-31"),
+      xintercept = as.Date("2018-12-01"),
       linetype = "dotted", color = "red", linewidth = 0.7
     ) +
     geom_label(
@@ -1670,7 +1670,7 @@ knitr::include_graphics(here::here("Plots", "fig-immex-empleo.png"))
 #| include: false
 #| eval: false
 
-# Participación estatal en el empleo IMMEX: Scripts/Prep_immex.R
+# Participación estatal en el empleo IMMEX: Scripts/Prep07_immex.R
 immex_pct <- readRDS(here::here("RDS", "immex_pct.rds"))
 
 breaks_pp_immex       <- c(-Inf, -2, -0.5, 0.5, 2, Inf)
@@ -1691,7 +1691,7 @@ paleta_discreta_immex <- c(
 
 pacman::p_load(sf, cowplot, ggrepel, patchwork)
 
-# Abreviaturas y nombres GADM de los estados: Scripts/Prep_tcac_estados.R
+# Abreviaturas y nombres GADM de los estados: Scripts/Prep06_tcac_estados.R
 estados_lookup <- readRDS(here::here("RDS", "estados_lookup.rds"))
 
 p <- local({
@@ -1848,15 +1848,16 @@ local({
   ied_por_origen <- readRDS(here::here("RDS", "ied_por_origen.rds"))
 
   ied_anual <- ied_por_origen |>
-    filter(año >= 2010, año <= ANIO_FIN, trim == 4) |>
+    filter(año >= 2010, año <= ANIO_FIN, trim == 4,
+           origen == "Total general") |>   # la hoja ya trae el total: no sumar orígenes
     group_by(año) |>
-    summarise(ied_mdd = sum(ied_mdd, na.rm = TRUE), .groups = "drop")
+    summarise(ied_mdd = sum(ied_acum_mdd, na.rm = TRUE), .groups = "drop")
 
   # Top 10 orígenes en 2024 (Q4 = año completo)
   top10_nombres <- ied_por_origen |>
     filter(año == ANIO_FIN, trim == 4) |>
     group_by(origen) |>
-    summarise(total = sum(ied_mdd, na.rm = TRUE), .groups = "drop") |>
+    summarise(total = sum(ied_acum_mdd, na.rm = TRUE), .groups = "drop") |>
     filter(!origen %in% c("Total general", "Otro origen")) |>
     slice_max(total, n = 10) |>
     pull(origen)
@@ -1905,9 +1906,9 @@ local({
     ied_por_origen |>
       filter(año == anio, trim == trimestre,
              !origen %in% c("Total general", "Otro origen"),
-             ied_mdd > 0) |>
+             ied_acum_mdd > 0) |>
       group_by(origen) |>
-      summarise(ied_mdd = sum(ied_mdd), .groups = "drop") |>
+      summarise(ied_mdd = sum(ied_acum_mdd), .groups = "drop") |>
       mutate(
         grupo = if_else(origen %in% top10_nombres,
                         recode(origen, !!!nombres_cortos),
@@ -2063,7 +2064,7 @@ Este pobre desempeño en atracción de IED no refleja una tendencia general en l
 #| eval: false
 #| code-summary: "Gráfico comparativo IED/PIB (WDI)"
 
-# Datos: Scripts/Query10_WDI_IED_PIB.R (descarga del World Bank, WDI;
+# Datos: Scripts/Query06_WDI_IED_PIB.R (descarga del World Bank, WDI;
 # indicador BX.KLT.DINV.WD.GD.ZS).
 ied_pib_comp <- readRDS(here::here("RDS", "ied_pib_wdi_comp.rds")) |>
   filter(year <= ANIO_FIN)
@@ -2159,8 +2160,9 @@ datos_fig <- ied_por_actividad |>
     (nivel == "total") |
     (nivel == "sector" & codigo_scian == "31")
     ) |>
+  filter(trim == 4) |>   # acumulado del año: T4 = año completo
   group_by(año, nivel) |>
-  summarise(ied_mdd = sum(ied_mdd, na.rm = TRUE), .groups = "drop") |>
+  summarise(ied_mdd = sum(ied_acum_mdd, na.rm = TRUE), .groups = "drop") |>
   filter(año >= 2010, año <= ANIO_FIN) |>
   pivot_wider(names_from = nivel, values_from = ied_mdd) |>
   rename(total = total, manuf = sector) |>
@@ -2276,8 +2278,9 @@ datos_fig_sub <- ied_por_actividad |>
     (nivel == "sector"    & codigo_scian == "31") |
     (nivel == "subsector" & codigo_scian %in% c("333", "334", "335", "336"))
   ) |>
+  filter(trim == 4) |>   # acumulado del año: T4 = año completo
   group_by(codigo_scian, año) |>
-  summarise(ied_mdd = sum(ied_mdd, na.rm = TRUE), .groups = "drop") |>
+  summarise(ied_mdd = sum(ied_acum_mdd, na.rm = TRUE), .groups = "drop") |>
   filter(año >= 2010, año <= ANIO_FIN)
 
 total_3133 <- datos_fig_sub |>

@@ -8,7 +8,8 @@
 # Capítulo; Prep02: por Partida/Subpartida) ahora se DERIVAN de aquí, para que
 # todo salga de una sola descarga y una sola versión de los datos de Census.
 # Orden de corrida: primero los Query (ingesta externa) y después los Prep (datos
-# locales). Cadena de esta fuente: Query01 → Query02 → Prep01 → Prep02 → Prep03/04.
+# locales). Cadena de esta fuente: Query01 → Query02 → Prep01 → Prep02 (Prep03 solo
+# necesita Query02).
 #
 # ACTUALIZACIÓN INCREMENTAL: no se vuelve a bajar toda la historia. Se descarga
 # desde ANIO_SOLAPE hasta el último mes disponible (Census revisa los años
@@ -215,7 +216,7 @@ meta_query11 <- list(
     "se volvió a descargar (Census revisa años recientes; ver revision_q11.rds).",
     "El último año es parcial — no comparar contra años completos sin comparar los",
     "mismos meses.",
-    "Query03 y Query04 derivan de raw_df_mex_vnm_twn.rds (México)."
+    "Prep01 y Prep02 derivan de raw_df_mex_vnm_twn.rds (México); Prep03, de imp_competidores_hs4.rds."
   )
 )
 

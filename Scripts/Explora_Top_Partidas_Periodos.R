@@ -2,11 +2,12 @@
 # Comparación de las partidas principales (HS4) de los Caps. 84, 85, 87 y 90
 # según el periodo usado para identificarlas: 2024, 2025 y enero–último mes de 2026.
 #
-# Regla (la misma de Query04): dentro de cada capítulo, partidas ordenadas por
+# Regla (la misma de Prep02): dentro de cada capítulo, partidas ordenadas por
 # valor en el periodo; se incluyen hasta cruzar el 80% acumulado.
 #
-# Script exploratorio: NO guarda RDS. Lee la fuente maestra (Query02), así que
-# no depende de que Query04 se haya corrido.
+# Script exploratorio. Guarda RDS/top_partidas_periodos.rds y, en Tablas/, la tabla
+# con formato (.rds y .docx). Lee la fuente maestra (Query02), así que no depende
+# de que Prep02 se haya corrido.
 #
 # Parámetros ---------------------------------------------------------------
 # · UMBRAL:            acumulado del capítulo que define "partida principal".

@@ -1,0 +1,277 @@
+---
+title: "Protocolo de verificación de datos descargados"
+subtitle: "Qué revisar antes de confiar en una descarga (guía general para proyectos en R)"
+author:
+  - name: Jorge Cornick
+    affiliation: "CEPCAN, Instituto Tecnológico de Monterrey"
+    email: jcornick@tec.mx
+date: "2026-10-24"
+format:
+  docx:
+    reference-doc: reference-doc.docx
+    number-sections: false
+lang: es
+toc: true
+toc-depth: 3
+toc-title: "Índice"
+editor: source
+editor_options:
+  chunk_output_type: console
+---
+
+```{r}
+#| label: setup
+#| include: false
+knitr::opts_chunk$set(eval = FALSE, echo = TRUE, message = FALSE, warning = FALSE)
+```
+
+# Cómo usar este documento {-}
+
+Este documento es **genérico**: no menciona ningún proyecto en el cuerpo. Se copia al inicio de cada proyecto nuevo y sirve de contexto tanto para Jorge como para Claude. Los casos reales que lo motivaron están al final (Apéndice A), como ejemplos.
+
+**Regla central.** Una descarga no es dato hasta que pasó por verificación. Los errores más costosos no son los que hacen fallar el código, sino los que producen una cifra plausible pero equivocada, que luego llega a un gráfico o a un texto. Casi todos se detectan con revisiones baratas, hechas **inmediatamente después de la descarga y antes de derivar nada**.
+
+**Estructura.**
+
+1. Lista de verificación de una página (Sección 1). Es lo que se usa en el día a día.
+2. Razonamiento por tipo de falla (Sección 2): qué es, cómo se manifiesta y cómo se detecta.
+3. Funciones auxiliares en R (Sección 3), pequeñas y componibles.
+4. Política de qué detiene el proceso y qué solo avisa (Sección 4).
+5. Cómo organizar las verificaciones dentro de un script (Sección 5).
+6. Apéndices: casos reales (A) y qué hacer cuando una verificación falla (B).
+
+# 1. Lista de verificación
+
+Se aplica a cada tabla descargada, en este orden. "Detiene" significa `stop()`; "avisa" significa `warning()` o `message()` (Sección 4).
+
+| Paso | Pregunta | Función | Si falla |
+|:---|:---------------------------|:-------------|:--------|
+| 1 | ¿Tiene las columnas y el número mínimo de filas esperados? | `chk_dimensiones()` | Detiene |
+| 2 | ¿La clave de observación es única (sin duplicados)? | `chk_claves_unicas()` | Detiene |
+| 3 | ¿Los NA están donde se esperan y en la proporción esperada? | `chk_na()` | Detiene / avisa |
+| 4 | ¿No hay huecos en las fechas de cada serie? | `chk_huecos_fecha()` | Detiene |
+| 5 | ¿Todas las series terminan en la misma fecha? | `chk_misma_fecha_final()` | Avisa |
+| 6 | ¿Las partes suman el total publicado? ¿Hay agregados mezclados con detalle? | `chk_suma_vs_total()` | Detiene |
+| 7 | ¿Unidades, escala y tipo (flujo, acumulado, saldo, índice) confirmados? | Manual + `chk_rango()` | Detiene / avisa |
+| 8 | ¿Un valor conocido y publicado coincide (ancla externa)? | `chk_ancla()` | Detiene |
+| 9 | ¿Qué cambió respecto de la descarga anterior? | `chk_revision()` | Avisa |
+| 10 | ¿Las fuentes que se van a comparar cubren el mismo período? | Manual | Avisa |
+
+**Antes de correr nada**, tres preguntas manuales sobre la fuente: ¿en qué unidad está? ¿es flujo o acumulado? ¿el archivo trae totales, subtotales o filas "otros" mezclados con el detalle? Los pasos 6 a 8 solo funcionan si se respondieron.
+
+**Después de verificar**, guardar (`saveRDS()`) y anotar en los metadatos de la descarga: fecha, rango de fechas, número de filas, unidad y las verificaciones que pasó.
+
+# 2. Razonamiento por tipo de falla
+
+## 2.1 Dimensiones, columnas y tipos
+
+*Qué es.* La tabla no tiene la forma que el código supone: faltan columnas, cambió un nombre, hay menos filas de lo normal, una columna numérica llegó como texto.
+
+*Cómo se manifiesta.* Errores tardíos y confusos en un paso posterior; o, peor, un `left_join()` que no empareja y deja NA sin avisar.
+
+*Cómo se detecta.* Verificar columnas esperadas y un mínimo de filas inmediatamente después de leer. Verificar también el tipo (`is.numeric()`) de las columnas de valor. Un nombre ligeramente distinto (por ejemplo, con y sin tilde) es una falla frecuente: conviene normalizar nombres al leer (`janitor::clean_names()` o equivalente) y verificar sobre los normalizados.
+
+## 2.2 Duplicados y NA
+
+*Qué es.* Filas repetidas para la misma observación, o valores faltantes que significan cosas distintas: dato no existente, dato suprimido por confidencialidad, dato no disponible aún, o error de lectura.
+
+*Cómo se manifiesta.* Los duplicados inflan sumas y promedios; no cambian la forma de la tabla, solo su total. Los NA pueden desaparecer silenciosamente con `na.rm = TRUE`.
+
+*Cómo se detecta.* Definir **explícitamente la clave** de la observación (fecha + país + producto, por ejemplo) y verificar que sea única. Para NA, distinguir los que la fuente documenta (supresiones, "no disponible") de los inesperados, y medir su proporción por columna. Si la fuente marca la supresión con un símbolo, convertirlo a NA de forma deliberada y registrar cuántos casos fueron.
+
+## 2.3 Huecos en las fechas
+
+*Qué es.* Faltan meses, trimestres o días dentro de una serie que debería ser continua.
+
+*Cómo se manifiesta.* Gráficos con saltos que parecen caídas; tasas de crecimiento y desestacionalización incorrectas; sumas anuales de once meses.
+
+*Cómo se detecta.* Para cada serie (grupo), generar la secuencia esperada entre su mínimo y su máximo y comparar. Verificar también que la **fecha final** sea la misma entre series que deberían coincidir: si un país termina un mes antes que otro, las comparaciones del último período son engañosas.
+
+## 2.4 Partes versus totales
+
+*Qué es.* Casi toda fuente estadística tiene jerarquías: países dentro de regiones, capítulos dentro de un total, municipios dentro de estados. Dos fallas opuestas: (a) **sumar todo** cuando la tabla mezcla agregados con detalle, con lo que se cuenta doble; (b) **tomar como total** una fila que en realidad es solo una parte, como un renglón "otros" o "resto".
+
+*Cómo se manifiesta.* Cifras sistemáticamente demasiado grandes (a) o demasiado pequeñas (b), con el mismo aspecto de datos normales.
+
+*Cómo se detecta.* Si la fuente publica un total, comparar con la suma de las partes con tolerancia explícita. Si no lo publica, construirlo por suma y compararlo con otra fuente (Sección 2.7). Verificar que ninguna unidad aparezca a la vez como agregado y como detalle. Reconciliar en cada nivel de la jerarquía, no solo en el más alto.
+
+## 2.5 Unidades, escalas y acumulados
+
+*Qué es.* El valor está en una unidad distinta de la que se cree (miles, millones, miles de millones; moneda corriente o constante; índice con otra base), o es un **acumulado** (dentro del año, de la serie) tratado como flujo del período.
+
+*Cómo se manifiesta.* Magnitudes que son factores de 10, 1,000 o aproximadamente 2 a 4 veces las reales (un acumulado trimestral sumado como si fueran flujos infla el total anual en un múltiplo cercano a 2.5 a 4, según el trimestre).
+
+*Cómo se detecta.* Leer la nota metodológica de la fuente y **registrar la unidad y el tipo de serie en los metadatos**, no en la memoria. Comprobar el comportamiento: un flujo acumulado crece dentro del año y se reinicia en enero; un saldo no se reinicia. Y aplicar siempre el ancla externa (Sección 2.8), que es la defensa más eficaz contra errores de escala.
+
+## 2.6 Comparación con la descarga anterior (vintages)
+
+*Qué es.* Las fuentes revisan sus cifras: lo publicado hoy para un período pasado puede diferir de lo publicado antes. También cambian las cifras desestacionalizadas, porque al agregar datos el modelo se reestima y **cambia toda la historia**.
+
+*Cómo se manifiesta.* Gráficos y textos que ya no coinciden con versiones previas; discrepancias entre capítulos hechos en fechas distintas.
+
+*Cómo se detecta.* Al actualizar, descargar con un **traslape** (por ejemplo, un año ya conocido) y comparar los valores comunes antes de reemplazar. Reportar cuántos cambiaron y en cuánto. Una revisión pequeña y dispersa es normal; una revisión grande y concentrada indica un cambio de definición o un error. Guardar la versión anterior hasta aprobar la nueva.
+
+## 2.7 Fechas de corte entre fuentes
+
+*Qué es.* Al comparar o combinar fuentes (por ejemplo, exportaciones de un país contra importaciones del otro), cada una llega hasta una fecha distinta y tiene su propio calendario de revisiones.
+
+*Cómo se manifiesta.* Brechas "espurias" en el último período, razones que cambian porque un lado está incompleto.
+
+*Cómo se detecta.* Definir una **ventana común** de análisis y recortar todas las fuentes a ella antes de comparar. Registrar la fecha final de cada fuente en sus metadatos. Anotar en el texto cuál es el corte.
+
+## 2.8 Ancla externa
+
+*Qué es.* Comparar un resultado con una **cifra que uno ya conoce** y que fue publicada por otra vía: el total anual que aparece en el comunicado de prensa, el dato citado en el informe oficial, el orden de magnitud de una fuente secundaria.
+
+*Por qué es la verificación más valiosa.* No depende de la lógica del propio código, así que detecta errores que ese código no puede ver (unidad, acumulado, total mal elegido). Los demás controles verifican consistencia interna; este verifica contacto con la realidad.
+
+*Cómo se usa.* Elegir una o dos cifras fáciles de obtener y de alta visibilidad (un total anual, el valor del último período). Anotar la referencia **con su fuente y fecha** en el script. Tolerancia típica de 2 a 5 %; si se espera revisión, ampliar y justificar. Si no existe ancla, se debe a que la cifra es nueva; en ese caso al menos comparar el orden de magnitud con un dato relacionado.
+
+# 3. Funciones auxiliares en R
+
+Las funciones viven en un archivo separado (`Scripts/funciones_verificacion.R`) y se cargan con `source(here::here("Scripts", "funciones_verificacion.R"))`. Son pequeñas y se combinan a gusto; no hay una función única `verificar_todo()` porque cada tabla necesita un subconjunto distinto y una función monolítica se convierte en una caja negra que nadie revisa.
+
+| Función | Qué verifica | Acción por defecto |
+|:--------------------|:---------------------------|:----------|
+| `chk_dimensiones(df, columnas, n_min)` | Columnas esperadas presentes; filas mínimas | stop |
+| `chk_claves_unicas(df, claves)` | Sin duplicados en la clave de observación | stop |
+| `chk_na(df, columnas, max_prop)` | Proporción de NA por columna | stop |
+| `chk_rango(df, col, min, max)` | Valores dentro de un rango plausible | warn |
+| `chk_huecos_fecha(df, fecha, por, paso)` | Secuencia de fechas completa por grupo | stop |
+| `chk_misma_fecha_final(df, fecha, por)` | Series que terminan en la misma fecha | warn |
+| `chk_suma_vs_total(partes, total, tol, tol_rel)` | Suma de partes igual al total | stop |
+| `chk_ancla(valor, referencia, tol_rel)` | Cifra calculada vs cifra publicada | stop |
+| `chk_revision(nuevo, anterior, claves, valor)` | Cambios en el traslape con la descarga anterior | warn |
+
+Todas devuelven su entrada de forma invisible, por lo que se pueden encadenar con `|>`, y aceptan `accion = "stop"` o `"warn"` y `etiqueta` (para identificar la fuente en el mensaje).
+
+Para la comparación con la versión previa en actualizaciones incrementales, el proyecto puede tener además una función que lea el archivo anterior, concatene lo nuevo, verifique duplicados y huecos y reporte revisiones (en el proyecto de origen, `actualizar_rds()`). `chk_revision()` cubre solo la parte de comparación y sirve cuando no se cuenta con esa función.
+
+Ejemplo de uso sobre una tabla descargada de comercio por país y mes:
+
+```{r}
+#| label: ejemplo-uso
+source(here::here("Scripts", "funciones_verificacion.R"))
+
+datos |>
+  chk_dimensiones(c("fecha", "pais", "valor"), n_min = 1000, etiqueta = "comercio") |>
+  chk_claves_unicas(c("fecha", "pais"), etiqueta = "comercio") |>
+  chk_na("valor", max_prop = 0, etiqueta = "comercio") |>
+  chk_huecos_fecha("fecha", por = "pais", paso = "month", etiqueta = "comercio") |>
+  chk_misma_fecha_final("fecha", por = "pais", etiqueta = "comercio") |>
+  chk_rango("valor", min = 0, etiqueta = "comercio")
+
+# Partes vs total: países sumados contra el total publicado, por mes
+suma_paises <- datos |> dplyr::summarise(v = sum(valor), .by = fecha)
+chk_suma_vs_total(suma_paises$v, total_publicado$valor, tol_rel = 1e-4,
+                  etiqueta = "comercio")
+
+# Ancla: total anual de 2024 contra la cifra del comunicado oficial
+chk_ancla(sum(datos$valor[format(datos$fecha, "%Y") == "2024"]),
+          referencia = 500e9,   # fuente: comunicado de ..., fecha ...
+          tol_rel = 0.03, descripcion = "total 2024", etiqueta = "comercio")
+```
+
+# 4. Detener o avisar
+
+Dos acciones, y la regla para elegir es una pregunta: **¿puede el resultado ser usado sin que alguien lo mire si la verificación falla?**
+
+**Detener (`stop`)** cuando la falla significa que la tabla está *mal*, no solo *distinta*:
+
+- estructura: columnas ausentes, duplicados en la clave, huecos de fecha;
+- partes que no suman el total;
+- ancla externa fuera de tolerancia.
+
+Si el script continúa, escribe un archivo equivocado que luego se leerá como correcto. Es mejor un script que se detiene que un RDS contaminado.
+
+**Avisar (`warning` o `message`)** cuando la falla es información que merece mirada humana pero no invalida la tabla:
+
+- revisiones respecto de la descarga anterior (son normales; lo que se mira es su tamaño);
+- valores fuera de un rango plausible (puede ser un dato real extremo);
+- series que terminan en fechas distintas (puede ser que así publica la fuente).
+
+**Criterio de excepción.** Si un aviso aparece siempre y nadie lo lee, o lo convierte en `stop` o lo elimina. Los avisos ignorados son peor que no tenerlos.
+
+**Cuando un `stop` falla,** no se relaja la tolerancia para que pase. Se investiga (Apéndice B), se decide si el error está en el código o en el supuesto, y solo entonces se ajusta con una justificación escrita en el script.
+
+# 5. Dónde van las verificaciones
+
+1. **Inmediatamente después de la descarga y antes de guardar.** La estructura y las sumas se verifican en el mismo script que descarga. Un RDS que se guardó sin verificar es una deuda.
+2. **Antes de derivar.** Los scripts que transforman (agregan, calculan tasas, desestacionalizan) deben empezar verificando que la entrada sea la esperada (columnas, unicidad). Un script derivado que actúa sobre la tabla cruda en vez de la depurada es un error frecuente; verificar la columna de depuración resuelve el caso.
+3. **Metadatos junto al dato.** Cada RDS de descarga lleva un objeto de metadatos con: fuente, URL o archivo, fecha de descarga, rango de fechas, unidad, tipo de serie, número de filas y notas de verificación (por ejemplo, la cifra del ancla y su referencia).
+4. **Resultado visible.** Las verificaciones que pasan emiten un `message("OK ...")`; así el registro de la corrida muestra qué se revisó, no solo qué falló.
+5. **Un inventario ocasional.** Cada cierto tiempo, listar los RDS con dimensiones y rango de fechas, y comparar con los metadatos; detecta archivos que dejaron de actualizarse.
+
+# Apéndice A. Casos reales (ejemplos)
+
+Todos provienen del proyecto de origen de este protocolo. Se incluyen para mostrar cómo luce cada tipo de falla en la práctica y qué verificación la habría detectado.
+
+## A.1 Acumulado sumado como flujo (inversión extranjera directa)
+
+*Fuente.* Estadística trimestral de inversión extranjera directa, con la cifra de cada trimestre **acumulada dentro del año**: el cuarto trimestre ya contiene el año completo.
+
+*Falla.* Al sumar los cuatro trimestres para obtener el total anual, el resultado fue aproximadamente 135,000 millones de dólares para 2024, cuando la cifra real era cercana a 38,000.
+
+*Cómo se detectó.* Por el **ancla externa**: la cifra oficial de 2024 era conocida y el resultado era unas 3.5 veces mayor.
+
+*Arreglo y lección.* El total anual es el valor del cuarto trimestre (nunca la suma de trimestres). Registrar en los metadatos que la serie es acumulada intra-anual. Verificaciones asociadas: sección 2.5 (acumulados) y 2.8 (ancla).
+
+## A.2 Unidad mal rotulada (misma fuente)
+
+*Falla.* Los metadatos decían "Miles de millones", pero las cifras estaban en **millones** de dólares.
+
+*Cómo se detectó.* Al confirmar la unidad con las cifras publicadas (el valor de 2025, 41,917, solo es plausible si está en millones de dólares).
+
+*Lección.* La unidad **se registra desde la nota metodológica de la fuente**, no desde la descripción de la columna que uno mismo escribió. Sección 2.5.
+
+## A.3 Fila "otros" tomada como total (programa de manufactura de exportación)
+
+*Fuente.* Tabla estatal con, para cada estado, una fila de total estatal y filas de municipios; en algunos estados el desglose incluye una fila "otros municipios".
+
+*Falla.* El código tomó la fila "otros municipios" como si fuera el total estatal, por lo que subestimó doce estados y el total nacional.
+
+*Cómo se detectó.* Con revisiones de sensatez del total (que salía demasiado bajo). La defensa que quedó incorporada es un `stopifnot` que verifica que ningún estado tenga a la vez fila de total estatal y filas municipales.
+
+*Lección.* Los totales se construyen **por suma de partes definidas explícitamente** y se reconcilian contra una fuente independiente; y una verificación de exclusión mutua (agregado o detalle, no ambos). Sección 2.4.
+
+## A.4 Agregados mezclados con países (comercio, API del Census)
+
+*Falla potencial.* La respuesta de la API mezcla filas de agregados (regiones, bloques, totales) con filas de países. Sumar todo cuenta doble.
+
+*Defensa.* Filtrar por código de país (en esta API, los países tienen código mayor o igual a 1000) y verificar que **la suma de países coincida con el total publicado**; además que `Top N + Resto = Total`. Sección 2.4.
+
+## A.5 Revisiones entre publicaciones
+
+*Caso.* La autoridad revisó la cifra de 2025 de 40,871 a 41,917 millones entre dos publicaciones. Sin descarga anterior para comparar, la diferencia habría pasado inadvertida y habría producido textos inconsistentes entre capítulos.
+
+*Defensa.* Descargar con traslape y reportar revisiones (`chk_revision()`); guardar la versión anterior. Sección 2.6.
+
+*Caso relacionado.* La serie desestacionalizada (X-13) cambia **toda la historia** cada vez que se agregan datos; no se compara contra una versión previa celda a celda sino por su forma y orden de magnitud.
+
+## A.6 Supresión por confidencialidad (estadística estatal de exportaciones)
+
+*Caso.* La fuente marca con "C" las celdas suprimidas por confidencialidad. Convertidas a NA, es necesario medir cuánto valor queda sin cubrir y en qué estados y sectores, porque sumas parciales no son el total.
+
+*Defensa.* Calcular y guardar estadísticas de supresión, y no presentar como total una suma con celdas suprimidas sin advertirlo. Sección 2.2.
+
+## A.7 Verificación que no verifica
+
+*Caso.* Una verificación de consistencia hacía referencia a una columna que no existía, de modo que no verificaba lo que se creía.
+
+*Lección.* Una verificación que nunca ha fallado no ha demostrado nada. Al escribir una nueva, **probarla con un caso malo** (duplicar una fila, quitar un mes, multiplicar por mil) y confirmar que se detiene.
+
+# Apéndice B. Cuando una verificación falla
+
+1. **No ajustar la tolerancia para que pase.** Primero entender.
+2. Aislar el caso: ¿qué fila, qué grupo, qué fecha? Las funciones reportan un ejemplo; ampliar desde ahí.
+3. Preguntar por el supuesto: ¿unidad?, ¿acumulado?, ¿total vs parte?, ¿otro nivel de la jerarquía?, ¿cambió la fuente?
+4. Comparar con la descarga anterior y con una fuente independiente.
+5. Decidir si el problema está en el código, en el supuesto o en la fuente. Si es la fuente (error o cambio de definición), documentarlo en los metadatos y, de ser posible, avisar a quien la publica.
+6. Dejar escrito en el script qué se encontró, con fecha. La próxima persona (o uno mismo en un año) lo agradecerá.
+7. Si la causa fue un error nuevo, **agregar su verificación** a este protocolo y su caso al Apéndice A.
+
+# Mantenimiento de este documento
+
+- Es una guía viva: cada vez que una falla real pase sin ser detectada, se agrega su tipo (o su variante) a la Sección 2 y la verificación que la habría atrapado.
+- Las funciones de `Scripts/funciones_verificacion.R` y las del bloque de la Sección 3 deben mantenerse en sincronía; la fuente de verdad es el archivo `.R`.
+- Al copiar este documento a un proyecto nuevo, conservar el cuerpo y reemplazar el Apéndice A por los casos propios de ese proyecto (o dejarlo como referencia).

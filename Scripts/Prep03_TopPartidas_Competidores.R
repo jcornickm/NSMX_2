@@ -1,4 +1,4 @@
-# Prep04_TopPartidas_Competidores.R   ####
+# Prep03_TopPartidas_Competidores.R   ####
 # Identificación de las Partidas (HS4) más importantes para México, Vietnam
 # y Taiwán en sus exportaciones a EUA, y de las Partidas en que México
 # compite con uno o ambos de los otros dos países.

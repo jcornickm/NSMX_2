@@ -1,4 +1,4 @@
-# Prep05_imp_pais_mex.R   ####
+# Prep04_imp_pais_mex.R   ####
 # Tablas derivadas para los capítulos de importaciones de EUA (Capítulo 2).
 # Antes se calculaban dentro de los chunks origAnualPerc, prep-sec-pct y
 # prep-caps de C2_Revised_*.qmd.
@@ -20,6 +20,12 @@ source(here("Scripts", "funciones.R"))   # sa_adj(), hs_relabel()
 # 1. Participación de cada país en las importaciones de EUA ---------------------
 impPais <- readRDS(here("RDS", "imp_por_pais.rds"))
 
+# Último año con los 12 meses (el año en curso, parcial, no se agrega: sus
+# sumas anuales no son comparables). El ajuste estacional sí usa toda la serie.
+fecha_max          <- max(impPais$fecha)
+ultimo_anio_compl  <- lubridate::year(fecha_max) - (lubridate::month(fecha_max) < 12)
+message("Último año completo: ", ultimo_anio_compl)
+
 impPais_Perc <- impPais |>
   filter(grupo %in% c("Top20", "Resto")) |>
   arrange(País, fecha) |>
@@ -27,6 +33,7 @@ impPais_Perc <- impPais |>
   mutate(Imp_mes_sa = sa_adj(Imp_mes, fecha, freq = 12)) |>
   group_by(País, rank, año = lubridate::year(fecha)) |>
   summarise(Imp_anual = sum(Imp_mes_sa, na.rm = TRUE), .groups = "drop") |>
+  filter(año <= ultimo_anio_compl) |>
   group_by(año) |>
   mutate(share = Imp_anual / sum(Imp_anual)) |>
   ungroup() |>
@@ -38,7 +45,7 @@ saveRDS(impPais_Perc, here("RDS", "impPais_Perc.rds"))
 impMex <- readRDS(here("RDS", "imp_mex_sec_cap.rds")) |> hs_relabel()
 
 # Participaciones anuales por Sección del SA enero–diciembre
-impMex_sec_pct <- map_dfr(2010:2025, function(año) {
+impMex_sec_pct <- map_dfr(2010:ultimo_anio_compl, function(año) {
   impMex |>
     filter(year(fecha) == año) |>
     group_by(año = year(fecha), Sección, Sección_corto) |>

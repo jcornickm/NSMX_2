@@ -992,7 +992,7 @@ comparativo(spec_autopartes)
 #| warning: false
 #| message: false
 library(here)
-dir.create(here::here("PLOTS"), showWarnings = FALSE, recursive = TRUE)
+dir.create(here::here("Plots"), showWarnings = FALSE, recursive = TRUE)
 
 graficos <- list(
   infografia_mexico       = infografia(spec_mexico),
@@ -1010,9 +1010,9 @@ graficos <- list(
 for (nm in names(graficos)) {
   g <- graficos[[nm]]
   h <- attr(g, "alto_total")                      # alto calculado de cada figura (pulgadas)
-  ggplot2::ggsave(here::here("PLOTS", paste0(nm, ".pdf")), g, width = 6.5, height = h,
+  ggplot2::ggsave(here::here("Plots", paste0(nm, ".pdf")), g, width = 6.5, height = h,
                   device = grDevices::cairo_pdf)
-  ggplot2::ggsave(here::here("PLOTS", paste0(nm, ".png")), g, width = 6.5, height = h,
+  ggplot2::ggsave(here::here("Plots", paste0(nm, ".png")), g, width = 6.5, height = h,
                   dpi = 300, device = ragg::agg_png)
 }
 ```

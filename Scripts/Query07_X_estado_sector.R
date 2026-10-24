@@ -21,7 +21,8 @@
 #   "C"  → NA (suprimido por confidencialidad)
 #   "0"  → 0  (cero real: no hubo exportaciones)
 #
-# Salida: RDS/etef_tidy.rds
+# Salidas: RDS/etef_raw.rds, RDS/etef_tidy.rds, RDS/meta_etef.rds,
+#          RDS/etef_supresion_check.rds, RDS/supresion_ns_wide.rds
 # ============================================================================
 
 pacman::p_load(tidyverse, readxl, here, janitor, gt)
@@ -386,8 +387,7 @@ meta_etef <- list(
     Asignación geográfica: entidad de ORIGEN de la producción (no aduana de salida).
     Subsectores NS relevantes: 333 (maquinaria), 334 (electrónica),
       335 (eléctrico), 336 (transporte).
-    Ver RDS/etef_valor_accounting.rds para el desglose de valores especiales (C, -, NA implícito).",
-    valor_accounting_ref = "RDS/etef_valor_accounting.rds"
+    "
   )
 
 # ── 6. Metadatos y guardado --------------------------------------------------

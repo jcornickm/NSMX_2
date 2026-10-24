@@ -1,4 +1,4 @@
-# Prep06_partidas_quiebres.R   ####
+# Prep05_partidas_quiebres.R   ####
 # (antes: chunk prep-top-partidas-quiebres de C2_Revised_*.qmd)
 #
 # Detección de quiebres estructurales (Bai-Perron, paquete strucchange) para
@@ -32,8 +32,7 @@ partidas_individuales <- tcac_shares |>
 partidas_panel <- imp_mex_hs4 |>
   filter(
     Cod_partida %in% partidas_individuales$Cod_partida,
-    fecha >= as.Date("2010-01-01"),
-    fecha <= as.Date("2025-12-31")
+    fecha >= as.Date("2010-01-01")   # sin tope superior: estimación con toda la serie; el recorte (ANIO_FIN) se hace al graficar
   ) |>
   left_join(partidas_individuales, by = "Cod_partida") |>
   arrange(Cap_corto, Cod_partida, fecha)
@@ -44,7 +43,10 @@ partidas_sa <- partidas_panel |>
   mutate(
     Val_mes_sa = tryCatch(
       sa_adj(Val_mes, fecha),
-      error = function(e) Val_mes
+      error = function(e) {
+        message("⚠ sa_adj falló en ", dplyr::first(Cod_partida), " (se usa la serie sin ajustar): ", conditionMessage(e))
+        Val_mes
+      }
     )
   ) |>
   ungroup()

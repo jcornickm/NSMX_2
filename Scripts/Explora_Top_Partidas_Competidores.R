@@ -2,7 +2,7 @@
 # ¿Cambian las "partidas en competencia" (México vs. Vietnam y Taiwán) según el
 # periodo con que se identifican las partidas principales de cada país?
 #
-# Replica el método de Prep04 (Top 50 HS4 por valor, en TODOS los capítulos, y
+# Replica el método de Prep03 (Top 50 HS4 por valor, en TODOS los capítulos, y
 # luego se descartan los capítulos sin interés para NS; partida "en competencia"
 # = aparece en la lista de 2 o más países) bajo tres periodos:
 #   p24 = 2024
@@ -13,8 +13,8 @@
 # RDS/imp_competidores_hs4.rds (Query02).
 #
 # Parámetros ---------------------------------------------------------------
-# · TOP_N:             tamaño de la lista por país ANTES de depurar (50, como Prep04).
-# · capitulos_excluir: igual que en Prep04.
+# · TOP_N:             tamaño de la lista por país ANTES de depurar (50, como Prep03).
+# · capitulos_excluir: igual que en Prep03.
 
 pacman::p_load(tidyverse, here, scales, flextable)
 
@@ -27,7 +27,7 @@ paises_analisis <- c("México", "Vietnam", "Taiwán")
 meses_es        <- c("ene", "feb", "mar", "abr", "may", "jun",
                      "jul", "ago", "sep", "oct", "nov", "dic")
 
-# Se excluye por NÚMERO de capítulo (idéntico a Prep04)
+# Se excluye por NÚMERO de capítulo (idéntico a Prep03)
 capitulos_excluir <- c(
   1:27,         # Secciones I–V: animales, vegetales, alimentos, minerales y combustibles
   39, 40,       # Plásticos y caucho
@@ -67,7 +67,7 @@ desc_partida <- datos |>
   ungroup() |>
   select(Cod_partida, Capítulo, Cap_corto, Desc_api_partida)
 
-#  Sección 2. Lista de cada país en cada periodo (método de Prep04)         ####
+#  Sección 2. Lista de cada país en cada periodo (método de Prep03)         ####
 # Top TOP_N por valor entre TODAS las partidas del país, y después se descartan
 # los capítulos excluidos (la lista depurada puede tener menos de TOP_N).
 

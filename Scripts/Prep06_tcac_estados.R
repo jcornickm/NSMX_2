@@ -1,4 +1,4 @@
-# Prep07_tcac_estados.R   ####
+# Prep06_tcac_estados.R   ####
 # TCAC de las exportaciones estatales por subperíodo + tablas de apoyo para el
 # mapa y la tabla del Capítulo 2 (chunks save-fig-tcac-estados y tbl-tcac-estados).
 # Antes este cálculo estaba DUPLICADO en los dos chunks del qmd; ahora se hace
