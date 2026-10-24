@@ -236,8 +236,8 @@ En las tablas, "Lo leen" lista los consumidores encontrados en `Scripts/` y en l
 
 | Archivo | Contenido | Productor | Lo leen | Estado |
 |:-------------------------|:------------------------------------------------------|:--------|:------------|:-------|
-| `media_cloud_diario.rds` (58 KB) | Menciones diarias de "nearshoring OR reshoring", formato largo, `pais` = "México" o "EUA". Columnas `pais, date, count, total_count, ratio`. | Query10 | — (las figuras se construyen en memoria dentro de Query10) | Vigente |
-| `media_cloud_mensual.rds` (3.6 KB) | Agregado mensual por país hasta el último mes completo (`menciones, total_dias, ratio_mensual, mm3`). Es la base de las figuras de Query10. | Query10 | — | Vigente |
+| `media_cloud_diario.rds` (58 KB) | Menciones diarias de "nearshoring OR reshoring", formato largo, `pais` = "México" o "EUA". Columnas `pais, date, count, total_count, ratio`. | Query10 | — | Vigente |
+| `media_cloud_mensual.rds` (3.6 KB) | Agregado mensual por país hasta el último mes completo (`menciones, total_dias, ratio_mensual, mm3`). Es la base de las figuras de Media Cloud. | Query10 | C2 (chunk `save-fig-media-cloud`) | Vigente |
 | `meta_media_cloud.rds` (0.5 KB) | Una fila por país: colección, archivo, fechas, descarga. | Query10 | — | Vigente |
 | `mediacloud_nearshoring_mx.rds` (1.8 KB) + `meta_mediacloud_nearshoring_mx.rds` | Conteo mensual de "nearshoring" (sin "reshoring") en la colección México vía API. **No comparable** con `media_cloud_*`. Movidos a `RDS/Por_eliminar/` (correr Query05 los vuelve a crear). | Query05 | — | Por eliminar |
 | `gdelt_nearshoring_mx.rds` (0.7 KB) + `meta_gdelt_nearshoring_mx.rds` | Menciones mensuales en GDELT con geocódigo México. Las figuras de GDELT quedaron obsoletas; la serie ya no se usa. Movidos a `RDS/Por_eliminar/` (correr Query05 los vuelve a crear). | Query05 | — | Por eliminar |
@@ -250,22 +250,23 @@ En las tablas, "Lo leen" lista los consumidores encontrados en `Scripts/` y en l
 
 ## Figuras (`Plots/`)
 
-Las figuras de C2 las genera cada chunk `save-*` (marcado `eval: false`, se corre a mano) y el chunk visible las incluye con `knitr::include_graphics()`. Sufijo `_2024` = ventana del Capítulo 2.
+Las figuras de C2 las genera cada chunk `save-*` (marcado `eval: false`, se corre a mano) y el chunk visible las incluye con `knitr::include_graphics()`. Sufijo `_2024` = ventana del Capítulo 2 (datos hasta diciembre de 2024). Desde el 24-oct-2026 **todas** las figuras de C2 cortadas en `ANIO_FIN`/`FECHA_FIN` llevan ese sufijo en el archivo, porque C3 usará versiones de las mismas figuras con todos los datos disponibles; el label del chunk (`fig-…`) no lleva sufijo. El código de las figuras de C2 vive en los chunks `save-*` del qmd, no en los Query. Las TCAC de `fig-ImpEUA-CHN-MEX_2024` se calculan sobre totales anuales de la serie original (sin ajuste estacional); la línea dibujada sí es desestacionalizada. En C3 las TCAC deben comparar los mismos meses en cada año ancla (p. ej. enero-agosto).
 
 | Figura(s) | Datos de origen | Generada por | Se usa en |
 |:-----------------------------|:----------------------------|:-----------------------|:----------|
-| `fig-ImpEUA-CHN-MEX`, `fig-imp-cambio-pais`, `imp_pais_perc`, `dist_imp_pais` | `imp_por_pais`, `impPais_Perc` | chunks de C2 | C2 (las tres primeras) |
-| `impMex_sec_perc`, `fig-imp-cambio-sec-mex`, `fig-treemap-caps-seccion` | `impMex_sec_pct`, `imp_mex_sec_cap` | chunks de C2 | C2 |
-| `panel_partidas_cap84`, `…85`, `…87`, `…90` | `partidas_tendencia`, `quiebres_partida` | chunk `save-top-partidas-paneles` de C2 | C2 (anexo) |
-| `mapa_xmex_3periodos_tcac` | `tcac_estados`, `estados_lookup`, `geodata/` | chunk de C2 | C2 |
-| `fig-etef-sectores-sa` | `etef_tidy` | chunk de C2 | C2 |
-| `fig-immex-empleo`, `mapa_immex_4periodos` | `immex_empleo`, `immex_pct` | chunks de C2 | C2 |
-| `ied_total_origen`, `ied_ratios`, `ied_pib_comparativo_wdi`, `ied_actividad_combinado`, `ied_manuf_subsector` | `ied_*`, `ied_pib_wdi_comp` | chunks de C2 | C2 |
-| `fig_media_cloud_menciones_mex[_2024]`, `…_usa[_2024]` | `media_cloud_mensual` | Query10 | C2 (la `mex_2024`) |
+| `fig-ImpEUA-CHN-MEX_2024`, `fig-imp-cambio-pais_2024`, `imp_pais_perc_2024`, `dist_imp_pais` (sin sufijo; ningún chunk actual la genera) | `imp_por_pais`, `impPais_Perc` | chunks de C2 | C2 (las tres primeras) |
+| `impMex_sec_perc_2024`, `fig-imp-cambio-sec-mex_2024`, `fig-treemap-caps-seccion_2024` | `impMex_sec_pct`, `imp_mex_sec_cap` | chunks de C2 | C2 |
+| `panel_partidas_cap84_2024`, `…85_2024`, `…87_2024`, `…90_2024` | `partidas_tendencia`, `quiebres_partida` | chunk `save-top-partidas-paneles` de C2 | C2 (anexo) |
+| `mapa_xmex_2periodos_tcac_2024` (antes `mapa_xmex_3periodos_tcac`; solo dibuja 2010-2018 y 2018-2024) | `tcac_estados`, `estados_lookup`, `geodata/` | chunk `save-fig-tcac-estados` de C2 | C2 |
+| `fig-etef-sector-333_2024`, `…334_2024`, `…335_2024`, `…336_2024` (una figura por sector SCIAN; antes un solo arreglo `fig-etef-sectores-sa`) | `etef_tidy` | chunk `save-fig-scian-frontera` de C2 | C2 (`fig-scian-333` a `fig-scian-336`) |
+| `fig-immex-empleo_2024`, `mapa_immex_4periodos_2024` | `immex_empleo`, `immex_pct` | chunks de C2 | C2 |
+| `ied_total_origen_2024`, `ied_ratios_2024`, `ied_pib_comparativo_wdi_2024`, `ied_actividad_combinado_2024`, `ied_manuf_subsector_2024` | `ied_*`, `ied_pib_wdi_comp` | chunks de C2 | C2 |
+| `fig_media_cloud_menciones_mex[_2024]`, `…_usa[_2024]` | `media_cloud_mensual` | chunk `save-fig-media-cloud` (inicio de la Introducción de C2); ya no lo genera Query10 | C2: las dos `_2024` se cargan y se apilan con patchwork (EUA arriba, México abajo) en `fig-nearshoringMX`; las de ventana completa quedan para C3 |
 | `infografia_mexico`, `…_canada`, `…_china`, `…_corea`, `…_japon`, `…_ue`, `…_vietnam`, `…_taiwan` | **datos escritos a mano** dentro de `infografias_aranceles.qmd` | `infografias_aranceles.qmd` | C3 |
 | `comparativo_autos`, `comparativo_autopartes` | **datos escritos a mano** en `infografias_aranceles.qmd` | idem | C3 |
-| `ied_fbcf_privada_publica[_2024]`, `ied_fbcf_privada_por_tipo_bien[_2024]` | `fbcf_inegi` | `ied_plots_fbcf.R` | *(no hay salida en `Plots/`: el script no se ha corrido)* |
+| `ied_fbcf_privada_publica[_2024]`, `ied_fbcf_privada_por_tipo_bien[_2024]` | `fbcf_inegi` | las `_2024`: chunk `save-fig-ied-fbcf` de C2; las dos ventanas: `ied_plots_fbcf.R` (corrido el 24-oct-2026) | C2 (`fig-fbcf-publica-privada`, `fig-fbcf-tipo-bien`, las `_2024`) |
 | `zafra-*.png` (CAPEX, absorción industrial, intenciones de inversión, FBCF) | **externas**: material recibido de coautores, no se generan aquí | — | C2 |
+| `fig-ImpEUA-CHN-MEX`, `fig-imp-cambio-pais`, `imp_pais_perc`, `impMex_sec_perc`, `fig-imp-cambio-sec-mex`, `fig-treemap-caps-seccion`, `panel_partidas_cap{84,85,87,90}`, `mapa_xmex_3periodos_tcac`, `fig-etef-sectores-sa`, `fig-immex-empleo`, `mapa_immex_4periodos`, `ied_total_origen`, `ied_ratios`, `ied_pib_comparativo_wdi`, `ied_actividad_combinado`, `ied_manuf_subsector` (todas **sin** `_2024`) | nombres anteriores al renombrado del 24-oct-2026 | huérfanas: ningún chunk las escribe ni las carga; mover a `Por_eliminar/` | ningún qmd actual |
 | `mapa_xmex_4periodos`, `ied_actividad_lineas`, `fig-partidas-elec-med`, `fig-partidas-maq-auto`, `fig-treemap-top-hs4` | versiones antiguas | ningún chunk actual las genera (no verificado en `OldQmd/`) | ningún qmd actual |
 
 Las imágenes fijas (`Images/nearshoring.png`, `Images/Directorio.png`) vienen de fuera del pipeline.
@@ -406,10 +407,10 @@ Las imágenes fijas (`Images/nearshoring.png`, `Images/Directorio.png`) vienen d
 
 ### Query10_NS_MentionsMX.R
 
-- **Qué hace.** Menciones diarias de "nearshoring OR reshoring" en medios en línea de México y de EUA, agregadas por mes, con media móvil de tres meses, y las figuras correspondientes.
+- **Qué hace.** Menciones diarias de "nearshoring OR reshoring" en medios en línea de México y de EUA, agregadas por mes, con media móvil de tres meses. Las figuras ya no se generan aquí: el código está en el chunk `save-fig-media-cloud` de C2.
 - **Entradas.** Los CSV `mc-onlinenews-mediacloud-october2026.csv` (México, colección 34412427) y `mc-onlinenews-mediacloud_USA.csv` (EUA, colección 34412234). El CSV no guarda la consulta; queda documentada en el encabezado del script. Futuras descargas deben repetir exactamente la búsqueda.
-- **Salidas.** `media_cloud_diario`, `media_cloud_mensual`, `meta_media_cloud`; en `Plots/`, `fig_media_cloud_menciones_{mex,usa}[_2024]` en PDF y PNG.
-- **Parámetros.** `ULTIMO_MES` (último mes completo, fijado a mano) y `FECHA_FIN` (de `funciones.R`).
+- **Salidas.** `media_cloud_diario`, `media_cloud_mensual`, `meta_media_cloud`.
+- **Parámetros.** `ULTIMO_MES` (último mes completo, fijado a mano).
 - **Verificaciones.** Días duplicados, faltantes y NA por país; control de revisiones contra la descarga previa de México.
 
 ## Fichas de los Prep
@@ -472,7 +473,7 @@ Las imágenes fijas (`Images/nearshoring.png`, `Images/Directorio.png`) vienen d
 | `Explora_Top_Partidas_Periodos.R` | Compara las partidas principales (80% acumulado) de los Capítulos 84/85/87/90 según el periodo que las identifica. Lee `raw_df_mex_vnm_twn.rds`; escribe `RDS/top_partidas_periodos.rds` y `Tablas/top_partidas_periodos.{rds,docx}`. | Exploratorio |
 | `Explora_Top_Partidas_Competidores.R` | Igual para las partidas en competencia México/Vietnam/Taiwán (replica Prep03 bajo tres periodos). Lee `imp_competidores_hs4.rds`. Su lista de capítulos excluidos **no** incluye el 72, a diferencia de Prep03. | Exploratorio |
 | `Explora_BIE_ETEF_Claves.R`, `Explora_BIE_ETEF_Probe.R` | Pruebas contra el BIE para encontrar las claves de los subsectores ETEF por entidad. No guardan nada. | Exploratorio |
-| `ied_plots_fbcf.R` | Figuras de FBKF privada y pública y por tipo de bien (precios de 2018). Lee `fbcf_inegi.rds`; escribiría `Plots/ied_fbcf_*`, que **no existen** todavía. Código recibido de un colega. | Pendiente de correr |
+| `ied_plots_fbcf.R` | Figuras de FBKF privada y pública y por tipo de bien (precios de 2018). Lee `fbcf_inegi.rds`; escribe `Plots/ied_fbcf_*` en las ventanas `_2024` (C2) y completa (C3). Corrido el 24-oct-2026. C2 tiene además su propio chunk `save-fig-ied-fbcf` para la ventana `_2024`. Código recibido de un colega. | Vigente (alimenta C3) |
 | `top_hs4_Pendiente.R` | Borrador de tablas por capítulo con `gt()`; lee `imp_mex_top_hs4` e `imp_mex_sec_cap`. Parece redundante con el chunk `prep-tablas-cap` de C2. Pendiente de revisar si se archiva. | Pendiente de revisión |
 | `Rec_Diverging_Bars.R` | Borrador de barras divergentes por país; lo reemplaza el chunk de C2. | Heredado |
 | `Sectores en ETEF.R` | Tabla de referencia (tribble) de los subsectores SCIAN que aparecen en el BIE. No es un script ejecutable del pipeline. | Referencia |
@@ -538,7 +539,7 @@ Otras fuentes:
 | Query07 | `Excel/ETEF_Entidad_Subsector.xlsx` | `etef_raw`, `etef_tidy`, `meta_etef`, `etef_supresion_check`, `supresion_ns_wide` |
 | Query08 | `Excel/IMMEX/*.csv` | `immex_empleo`, `meta_immex_empleo` |
 | Query09 | `Excel/IED_flujos.xlsx`, `IED_PIB_6.xlsx`, `IED_FBKF_7.xlsx` | `ied_por_origen`, `ied_por_actividad`, `ied_flujos_tipo`, `ied_pib`, `ied_fbkf`, `meta_ied` |
-| Query10 | `Excel/mc-onlinenews-mediacloud-*.csv` | `media_cloud_diario`, `media_cloud_mensual`, `meta_media_cloud`; `Plots/fig_media_cloud_*` |
+| Query10 | `Excel/mc-onlinenews-mediacloud-*.csv` | `media_cloud_diario`, `media_cloud_mensual`, `meta_media_cloud` |
 | Prep01 | `raw_df_mex_vnm_twn`, `imp_por_pais_all`, `imp_mex_sec_cap` previo | `imp_mex_sec_cap`, `meta_imp_mex_sec_cap` |
 | Prep02 | `raw_df_mex_vnm_twn`, `imp_mex_sec_cap` | `imp_mex_hs4`, `imp_mex_hs6`, `imp_mex_*_84858790`, `imp_mex_top_hs4`, `TCAC_y_shares_84858790`, `meta_TCAC_y_shares`, `meta_query3` |
 | Prep03 | `imp_competidores_hs4` | `listas_finales_NS_mex_vnm_twn`, `tabla_competencia_mex_vnm_twn`, `tabla_overlap_mex_vnm_twn`, `meta_query12`, `tabla_partidas_competencia`; `Tablas/tabla_partidas_competencia.docx` |
@@ -548,7 +549,7 @@ Otras fuentes:
 | Prep07 | `immex_empleo` | `immex_pct` |
 | `Explora_Top_Partidas_Periodos` | `raw_df_mex_vnm_twn` | `top_partidas_periodos`; `Tablas/top_partidas_periodos.{rds,docx}` |
 | `Explora_Top_Partidas_Competidores` | `imp_competidores_hs4` | `top_partidas_competidores_periodos`; `Tablas/top_partidas_competidores_periodos.{rds,docx}` |
-| `ied_plots_fbcf` | `fbcf_inegi`, `meta_fbcf_inegi` | `Plots/ied_fbcf_*` (aún no existen) |
+| `ied_plots_fbcf` | `fbcf_inegi`, `meta_fbcf_inegi` | `Plots/ied_fbcf_*` (`_2024` y ventana completa) |
 
 ## Qué carga cada documento
 
@@ -564,9 +565,11 @@ Otras fuentes:
 | `etef_tidy`, `supresion_ns_wide` | Figura de sectores SCIAN por estado y anexo de disponibilidad |
 | `immex_empleo`, `immex_pct`, `estados_lookup` | Figura de empleo IMMEX y mapa de participación |
 | `ied_por_origen`, `ied_por_actividad`, `ied_pib`, `ied_fbkf`, `ied_pib_wdi_comp` | Figuras de IED |
+| `fbcf_inegi` | Figuras de FBCF (chunk `save-fig-ied-fbcf`) |
+| `media_cloud_mensual` | Figuras de menciones en medios (chunk `save-fig-media-cloud`) |
 | `hs_dictionary` (vía `hs_relabel()`) | Etiquetas al cargar RDS viejos |
 
-Además incluye, sin generarlas, las figuras de `Plots/` (incluidas `fig_media_cloud_menciones_mex_2024.png` de Query10 y las `zafra-*.png` externas) y `Images/nearshoring.png`.
+Además incluye, sin generarlas, las figuras de `Plots/` (incluidas las `fig_media_cloud_menciones_{mex,usa}_2024.png`, que el chunk `fig-nearshoringMX` apila, y las `zafra-*.png` externas) y `Images/nearshoring.png`.
 
 **Capítulo 3 (`C3_Tiempos_turbulentos_v2.qmd`).** Carga `tabla_partidas_competencia.rds` (tabla ya formateada, Prep03) y `datos_847150_hs6.rds` (sin productor). Incluye las infografías de aranceles y los comparativos de autos y autopartes de `Plots/`, generados por `infografias_aranceles.qmd` con datos escritos a mano.
 

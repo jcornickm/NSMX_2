@@ -60,6 +60,106 @@ source(here::here("Scripts", "funciones.R"))
 
 ## Introducción
 
+```{r}
+#| label: save-fig-media-cloud
+#| include: false
+#| eval: false
+#| code-summary: "Menciones de nearshoring en medios (Media Cloud): figuras por país y ventana"
+
+# Datos: RDS/media_cloud_mensual.rds (Scripts/Query10_NS_MentionsMX.R; búsqueda
+# "nearshoring OR reshoring", colecciones nacionales de México y EUA).
+# Conteo mensual de menciones (barras) + media móvil de 3 meses (línea), una
+# figura por país y ventana, cada una con su propia escala en y:
+#   *_2024  : termina en FECHA_FIN (Capítulo 2)
+#   sin año : hasta el último mes completo (Capítulo 3)
+# El título general lo pone el fig-cap del qmd; el título del panel solo
+# identifica el país. Guarda en Plots/ (PDF + PNG).
+
+local({
+
+  media_cloud_mensual <- readRDS(here::here("RDS", "media_cloud_mensual.rds"))
+  ULTIMO_MES <- max(media_cloud_mensual$anio_mes)   # último mes completo
+
+  paises <- tribble(
+    ~pais,    ~sufijo,
+    "México", "mex",
+    "EUA",    "usa"
+  )
+
+  # Hitos editoriales relevantes (cada versión muestra solo los que caen en su ventana)
+  hitos <- tibble(
+    fecha = as.Date(c("2018-07-06",   # Aranceles China Ronda 1 (Lista 1)
+                      "2020-07-01",   # Entrada en vigor T-MEC
+                      "2022-02-01",   # Inicio publicación masiva nearshoring MX
+                      "2025-01-20")), # Segundo gobierno Trump
+    etiqueta = c("Aranceles\nEE.UU.-China", "T-MEC", "Auge\nnearshoring",
+                 "Aranceles\nTrump 2025")
+  )
+
+  # datos = tabla mensual larga (pais, anio_mes, menciones, mm3); pais_sel = "México" / "EUA"
+  fig_menciones <- function(datos, pais_sel, fecha_fin) {
+    hitos_v <- hitos |> filter(fecha <= fecha_fin)
+
+    datos |>
+      filter(pais == pais_sel,
+             anio_mes >= as.Date("2018-01-01"), anio_mes <= fecha_fin) |>
+      ggplot(aes(x = anio_mes)) +
+      geom_col(aes(y = menciones), fill = "#457b9d", alpha = 0.7, width = 25) +
+      geom_line(aes(y = mm3), color = "#e63946", linewidth = 0.8, na.rm = TRUE) +
+      geom_vline(data = hitos_v, aes(xintercept = fecha),
+                 linetype = "dashed", color = "grey40", linewidth = 0.5) +
+      geom_text(data = hitos_v, aes(x = fecha, y = Inf, label = etiqueta),
+                vjust = 1.3, hjust = -0.07, size = 2.8, color = "grey30",
+                lineheight = 0.9) +
+      scale_x_date(
+        breaks = seq(as.Date("2018-01-01"), floor_date(fecha_fin, "year"), by = "1 year"),
+        date_labels = "%Y",
+        expand = expansion(mult = c(0.01, 0.04))
+      ) +
+      scale_y_continuous(labels = comma_format(big.mark = ",")) +
+      labs(title = pais_sel, x = NULL, y = "Menciones mensuales") +
+      theme_bw() +
+      theme(
+        plot.title       = element_text(size = 11, face = "bold"),
+        panel.grid.minor = element_blank(),
+        axis.text.x      = element_text(angle = 0)
+      )
+  }
+
+  ventanas <- tibble(
+    ventana   = c("_2024", ""),
+    fecha_fin = c(FECHA_FIN, ceiling_date(ULTIMO_MES, "month") - days(1))
+  )
+
+  figs <- expand_grid(paises, ventanas) |>
+    mutate(nombre = paste0("fig_media_cloud_menciones_", sufijo, ventana))
+
+  figs_lista <- pmap(list(figs$pais, figs$fecha_fin),
+                     \(p, f) fig_menciones(media_cloud_mensual, p, f)) |>
+    set_names(figs$nombre)
+
+  # PDF para diseño/Word, PNG 150 dpi para Quarto. Si el archivo existe se borra
+  # antes de escribir: si Windows lo tiene bloqueado (abierto en un visor, en el
+  # panel de RStudio, etc.), el aviso nombra el archivo en vez del críptico
+  # "agg could not write to the given file".
+  guardar_fig <- function(p, ruta, ...) {
+    if (file.exists(ruta) && !file.remove(ruta)) {
+      warning("No se pudo reemplazar (¿abierto en otro programa?): ", ruta, call. = FALSE)
+      return(invisible(FALSE))
+    }
+    ggsave(ruta, plot = p, width = 10, height = 5, ...)
+    message("✓ ", basename(ruta))
+    invisible(TRUE)
+  }
+
+  iwalk(figs_lista, \(p, nm) {
+    guardar_fig(p, here::here("Plots", paste0(nm, ".pdf")), device = cairo_pdf)
+    guardar_fig(p, here::here("Plots", paste0(nm, ".png")), dpi = 150)
+  })
+
+})
+```
+
 ### ¿Nearshoring? ¿En México?
 
 La reconfiguración de las cadenas globales de valor fue un fue un tema que se empezó a discutir tras el inicio de la guerra comercial entre Estados Unidos y China: para ciertos productos, el cálculo económico que había llevado a establecer operaciones de manufactura en China y exportar desde allí hacia los EUA se modificó con los nuevos aranceles. La pandemia del COVID-19 en 2020 añadió urgencia a la discusión, ya que la fragilidad de las cadenas de suministro que se extendían por todo el planeta y concentraban las operaciones de manufactura en China quedó en evidencia, como un factor de riesgo adicional e independiente de los conflictos meramente comerciales. A todo esto se sumaron pronto consideraciones de seguridad nacional como argumento en favor de "acercar" las cadenas de valor ("nearshoring", en adelante NS) o incluso de traer ciertas actividades de manufactura de vuelta a los EUA ("reshoring"). No es de sorprender, entonces, que las menciones sobre estos dos temas se hicieran cada vez más frecuentes en las comunicaciones entre los gerentes generales (CEOs) de las empresas globalesa partir de 2021, como lo muestra la @fig-nearshoring.
@@ -87,11 +187,26 @@ Era razonable, por lo tanto, preguntarse si la intensidad de la discusión sobre
 
 ```{r}
 #| label: fig-nearshoringMX
-#| fig-cap: "Menciones de nearshoring en la prensa mexicana, por año" 
+#| fig-cap: "Menciones de nearshoring y reshoring en medios en línea, EUA (arriba) y México (abajo), 2018-2024"
 #| cap-location: top
 #| echo: false
+#| fig-width: 10
+#| fig-height: 10
+#| fig-dpi: 150
+#| out-width: "100%"
 
-knitr::include_graphics(here::here("Plots", "fig_media_cloud_menciones_mex_2024.png"))
+# Las dos figuras (hasta 2024) se generan en `save-fig-media-cloud` (inicio de
+# la Introducción); aquí solo se cargan y se apilan: EUA arriba, México abajo.
+pacman::p_load(patchwork, png)
+
+png_a_panel <- \(archivo)
+  patchwork::wrap_elements(
+    full = grid::rasterGrob(png::readPNG(here::here("Plots", archivo)),
+                            interpolate = TRUE))
+
+(png_a_panel("fig_media_cloud_menciones_usa_2024.png") /
+   png_a_panel("fig_media_cloud_menciones_mex_2024.png")) &
+  theme(plot.margin = margin(0, 0, 0, 0))
 ```
 
 Fuente: elaboración propia con base en MediaCloud
@@ -204,10 +319,13 @@ p <- local({
     mutate(Imp_bn_sa = sa_adj(Imp_bn, fecha, freq = 12)) |>
     ungroup()
 
-  # — 3. Totales anuales (sobre serie desestacionalizada) --------------------
+  # — 3. Totales anuales (sobre la serie ORIGINAL, sin ajuste estacional) -----
+  # Años calendario completos (2010, 2018, 2024): sin estacionalidad que
+  # remover, y no dependen de las revisiones de X-13. La serie ajustada solo
+  # se usa para la línea del gráfico.
   anuales <- imp_chn_mex |>
     group_by(País, Año = year(fecha)) |>
-    summarise(Imp_anual = sum(Imp_bn_sa, na.rm = TRUE), .groups = "drop")
+    summarise(Imp_anual = sum(Imp_bn, na.rm = TRUE), .groups = "drop")
 
   # — 4. Función auxiliar: extraer total anual --------------------------------
   val_anual <- function(df, pais_nombre, año) {
@@ -279,7 +397,7 @@ p <- local({
       caption = paste(
         "Elaboración propia con base en US Census Bureau.",
         "Serie mensual ajustada por estacionalidad (X-13ARIMA-SEATS).",
-        "Las tasas de crecimiento se calculan sobre totales anuales.",
+        "Las tasas de crecimiento (TCAC) se calculan sobre totales anuales de la serie sin ajustar.",
         sep = "\n"
       )
     ) +
@@ -291,10 +409,10 @@ p <- local({
     )
 })
 
-
-ggsave(here::here("Plots", "fig-ImpEUA-CHN-MEX.pdf"),
+p
+ggsave(here::here("Plots", "fig-ImpEUA-CHN-MEX_2024.pdf"),
        plot = p, width = 11, height = 6, device = cairo_pdf)
-ggsave(here::here("Plots", "fig-ImpEUA-CHN-MEX.png"),
+ggsave(here::here("Plots", "fig-ImpEUA-CHN-MEX_2024.png"),
        plot = p, width = 11, height = 6, dpi = 150)
 rm(p)
 
@@ -311,7 +429,7 @@ rm(p)
 #|   Miles de millones de dólares
 #| fig-cap-location: top
 
-knitr::include_graphics(here::here("Plots", "fig-ImpEUA-CHN-MEX.png"))
+knitr::include_graphics(here::here("Plots", "fig-ImpEUA-CHN-MEX_2024.png"))
 ```
 
 Es necesario hacer tres acotaciones para no dar un peso injustificadamente elevado a estos primeros datos:
@@ -422,9 +540,10 @@ p <- local({
     theme(plot.caption = element_text(hjust = 1))
 })
 
-print(p)
-ggsave(here::here("Plots", "fig-imp-cambio-pais.pdf"), plot = p, width = 8, height = 7.5, device = cairo_pdf)
-ggsave(here::here("Plots", "fig-imp-cambio-pais.png"), plot = p, width = 8, height = 7.5, dpi = 150)
+
+
+ggsave(here::here("Plots", "fig-imp-cambio-pais_2024.pdf"), plot = p, width = 8, height = 7.5, device = cairo_pdf)
+ggsave(here::here("Plots", "fig-imp-cambio-pais_2024.png"), plot = p, width = 8, height = 7.5, dpi = 150)
 ```
 
 ```{r}
@@ -434,7 +553,7 @@ ggsave(here::here("Plots", "fig-imp-cambio-pais.png"), plot = p, width = 8, heig
 #| fig-cap-location: top
 #| out-width: 100%
 
-knitr::include_graphics(here::here("Plots", "fig-imp-cambio-pais.png"))
+knitr::include_graphics(here::here("Plots", "fig-imp-cambio-pais_2024.png"))
 ```
 
 Una última mirada al cambio en las importaciones de EUA por país de origen se presenta en la @fig-ImpEUA-shares, en la que se incluye información únicamente para México, Taiwán y Vietnam. La participación tanto de Taiwán como de Vietnam es de aproximadamente 2% del mercado en 2018, mientras que la de México es de aproximadamente 12.5%. La participación de México alcanza el 15% en 2023 y se ha incrementado muy levemente desde entonces. En cambio, tanto Vietnam como Taiwán triplicaron su participación, que alcanza el 6% en 2025.
@@ -474,9 +593,9 @@ p <- local({
     )
 })
 p
-ggsave(here::here("Plots", "imp_pais_perc.pdf"), plot = p, width = 11, height = 6, device = cairo_pdf)
-ggsave(here::here("Plots", "imp_pais_perc.png"), plot = p, width = 11, height = 6, dpi = 150)
-
+ggsave(here::here("Plots", "imp_pais_perc_2024.pdf"), plot = p, width = 11, height = 6, device = cairo_pdf)
+ggsave(here::here("Plots", "imp_pais_perc_2024.png"), plot = p, width = 11, height = 6, dpi = 150)
+p
 rm(p)
 ```
 
@@ -488,7 +607,7 @@ rm(p)
 #|   México, China, Taiwán y Vietnam, 2010-2024
 #| fig-cap-location: top
 
-knitr::include_graphics(here::here("Plots", "imp_pais_perc.png"))
+knitr::include_graphics(here::here("Plots", "imp_pais_perc_2024.png"))
 ```
 
 ```{r}
@@ -545,9 +664,9 @@ p <- local({
       strip.text       = element_text(size = 16, face = "plain")
     )
 })
-
-ggsave(here::here("Plots", "impMex_sec_perc.pdf"), plot = p, width = 11, height = 6, device = cairo_pdf)
-ggsave(here::here("Plots", "impMex_sec_perc.png"), plot = p, width = 11, height = 6, dpi = 150)
+p
+ggsave(here::here("Plots", "impMex_sec_perc_2024.pdf"), plot = p, width = 11, height = 6, device = cairo_pdf)
+ggsave(here::here("Plots", "impMex_sec_perc_2024.png"), plot = p, width = 11, height = 6, dpi = 150)
 
 rm(p)
 ```
@@ -614,8 +733,8 @@ p <- local({
     theme(plot.caption = element_text(hjust = 1))
 })
 
-ggsave(here::here("Plots", "fig-imp-cambio-sec-mex.pdf"), plot = p, width = 8, height = 7.5, device = cairo_pdf)
-ggsave(here::here("Plots", "fig-imp-cambio-sec-mex.png"), plot = p, width = 8, height = 7.5, dpi = 150)
+ggsave(here::here("Plots", "fig-imp-cambio-sec-mex_2024.pdf"), plot = p, width = 8, height = 7.5, device = cairo_pdf)
+ggsave(here::here("Plots", "fig-imp-cambio-sec-mex_2024.png"), plot = p, width = 8, height = 7.5, dpi = 150)
 
 rm(p, impMex_sec_pct)
 ```
@@ -643,7 +762,7 @@ Quizá el dato más sorprendente de este período sea la evolución de las expor
 #| fig-cap-location: top
 #| out-width: 100%
 
-knitr::include_graphics(here::here("Plots", "fig-imp-cambio-sec-mex.png"))
+knitr::include_graphics(here::here("Plots", "fig-imp-cambio-sec-mex_2024.png"))
 ```
 
 El resultado de este proceso es un portafolio exportador concentrado en las secciones XVI y XVII del Sistema Armonizado, que representan el 69% del total de exportaciones mexicanas en 2025, sequidas por la sección VIII, que representa un 5% adicional, para un total de 74%. Las demás secciones tienen una participación pequeña y en general su evolución no está relacionada con el NS. La @fig-tree-sec permite visualizar esta distribución.
@@ -654,10 +773,10 @@ El resultado de este proceso es un portafolio exportador concentrado en las secc
 #| fig-cap: "Distribución porcentual de las exportaciones de México a EUA, 2024"
 #| fig-cap-location: top
 
-knitr::include_graphics(here::here("Plots", "impMex_sec_perc.png"))
+knitr::include_graphics(here::here("Plots", "impMex_sec_perc_2024.png"))
 ```
 
-### Por Capítulo y Partida del SA
+### Por Capítulo y Partida del SA   REVISADO HASTA AQUI
 
 <!-- Al igual que al inicio de la sección, se coloca al inicio de esta sub sección el código utilizado para generar los gráficos que posteriormente se insertan en el texto -->
 
@@ -703,8 +822,8 @@ p <- local({
       strip.text       = element_text(size = 13, face = "plain")
     )
 })
-ggsave(here::here("Plots", "fig-treemap-caps-seccion.pdf"), plot = p, width = 11, height = 6, device = cairo_pdf)
-ggsave(here::here("Plots", "fig-treemap-caps-seccion.png"), plot = p, width = 11, height = 6, dpi = 150)
+ggsave(here::here("Plots", "fig-treemap-caps-seccion_2024.pdf"), plot = p, width = 11, height = 6, device = cairo_pdf)
+ggsave(here::here("Plots", "fig-treemap-caps-seccion_2024.png"), plot = p, width = 11, height = 6, dpi = 150)
 rm(p)
 ```
 
@@ -891,7 +1010,7 @@ n_filas_panel <- function(num_cap_obj, ncol_facet = NCOL_FACET) {
 guardar_panel <- function(num_cap_obj) {
   panel <- construir_panel(num_cap_obj, incluir_caption = TRUE)
   alto  <- ALTO_BASE + ALTO_POR_FILA * n_filas_panel(num_cap_obj)
-  archivo_base <- paste0("panel_partidas_cap", num_cap_obj)
+  archivo_base <- paste0("panel_partidas_cap", num_cap_obj, "_2024")
 
   ggsave(here::here("Plots", paste0(archivo_base, ".pdf")), plot = panel,
          width = ANCHO_PANEL, height = alto, units = "in",
@@ -918,7 +1037,7 @@ El siguiente nivel de desagregación en el SA, tras las Secciones, son los Capí
 #| fig-width: 12
 #| fig-height: 6
 
-knitr::include_graphics(here::here("Plots", "fig-treemap-caps-seccion.png"))
+knitr::include_graphics(here::here("Plots", "fig-treemap-caps-seccion_2024.png"))
 ```
 
 Con ese propósito, se procedió de la siguiente manera: se identificaron las 50 partidas de exportación de México más importantes de México en 2024-2025. Se eliminaron las que correspondían a Secciones que no son de interés desde el punto de vista de NS, con el resultado de una lista de 30 partidas, distribuidas en cuatro capítulos del SA: Maquinaria, Eléctrico, Automóviles y Óptica.
@@ -1099,12 +1218,12 @@ Es razonable suponer que estas disparidades regionales están asociadas con la c
 
 pacman::p_load(sf, cowplot, ggrepel)
 
-# ---- mapa_xmex_3periodos_tcac ----
-# 3 mapas de México (2010-2018, 2018-2024, 2024-2025) con la TCAC de las
-# exportaciones de cada estado en cada subperíodo, en layout 3x1 (vertical).
+# ---- mapa_xmex_2periodos_tcac_2024 ----
+# 2 mapas de México (2010-2018, 2018-2024) con la TCAC de las
+# exportaciones de cada estado en cada subperíodo, en layout 2x1 (vertical).
 # 7 categorías de TCAC, paleta manual (naranja -> amarillo -> azul), etiquetas
 # abreviadas por estado, leyenda a la derecha en una sola columna.
-# Guarda mapa_xmex_3periodos_tcac.pdf / .png
+# Guarda mapa_xmex_2periodos_tcac_2024.pdf / .png
 
 # Datos preparados por Scripts/Prep06_tcac_estados.R (TCAC por estado y período,
 # abreviaturas y nombres GADM). Categorías y paleta: breaks_tcac, labels_tcac y
@@ -1184,13 +1303,23 @@ p <- local({
   periodos <- list(c(2010, 2018), c(2018, 2024))
   plots    <- map(periodos, \(pr) make_map(pr[1], pr[2]))
 
-  # Leyenda extraída del último panel ya construido -- comparte exactamente
-  # la misma escala (colores y niveles) que los paneles realmente dibujados.
-  leyenda <- cowplot::get_legend(
-    plots[[length(plots)]] +
-      theme(legend.position = "right", legend.text = element_text(size = 8),
-            legend.key.size = unit(0.5, "cm"))
-  )
+  # Leyenda extraída de un gráfico auxiliar que contiene los 7 niveles de
+  # categoría (una fila por nivel), con la misma escala (paleta_tcac, labels_tcac)
+  # que los mapas. NO se extrae del último mapa: en 2018-2024 ningún estado cae
+  # en "-5 a -2.5%" ni en "-2.5 a 0%", y geom_sf dibuja la casilla de color solo
+  # para los niveles presentes en los datos del panel (las otras salen vacías).
+  p_leyenda <- tibble(cat_tcac = factor(labels_tcac, levels = labels_tcac)) |>
+    ggplot(aes(x = 1, y = 1, fill = cat_tcac)) +
+    geom_tile() +
+    scale_fill_manual(values = paleta_tcac, limits = labels_tcac,
+                      name = NULL, drop = FALSE) +
+    guides(fill = guide_legend(ncol = 1, keywidth = unit(0.5, "cm"),
+                               keyheight = unit(0.5, "cm"))) +
+    theme_void() +
+    theme(legend.position = "right", legend.text = element_text(size = 8),
+          legend.key.size = unit(0.5, "cm"))
+
+  leyenda <- cowplot::get_legend(p_leyenda)
 
   mapas_col <- cowplot::plot_grid(plotlist = plots, ncol = 1)
 
@@ -1204,9 +1333,9 @@ p <- local({
 })
 
 print(p)
-ggsave(here::here("Plots", "mapa_xmex_3periodos_tcac.pdf"), plot = p,
+ggsave(here::here("Plots", "mapa_xmex_2periodos_tcac_2024.pdf"), plot = p,
        width = 11, height = 9, device = cairo_pdf)
-ggsave(here::here("Plots", "mapa_xmex_3periodos_tcac.png"), plot = p,
+ggsave(here::here("Plots", "mapa_xmex_2periodos_tcac_2024.png"), plot = p,
        width = 11, height = 9, dpi = 150)
 ```
 
@@ -1216,7 +1345,7 @@ ggsave(here::here("Plots", "mapa_xmex_3periodos_tcac.png"), plot = p,
 #| fig-cap: "Tasas de crecimiento de las exportaciones por estado, 2010-2018 y 2018-2024"
 #| fig-cap-location: top
 
-knitr::include_graphics(here::here("Plots", "mapa_xmex_3periodos_tcac.png"))
+knitr::include_graphics(here::here("Plots", "mapa_xmex_2periodos_tcac_2024.png"))
 ```
 
 ```{r}
@@ -1225,7 +1354,7 @@ knitr::include_graphics(here::here("Plots", "mapa_xmex_3periodos_tcac.png"))
 #| code-fold: true
 #| code-summary: "Tabla: TCAC de las exportaciones por estado"
 
-# ---- tabla_xmex_3periodos_tcac ----
+# ---- tabla_xmex_2periodos_tcac ----
 # Tabla gt con la TCAC de las exportaciones por estado en los mismos 3
 # subperíodos del mapa anterior (2010-2018, 2018-2024). Mismo
 # cálculo de TCAC y misma paleta/bins que el mapa, para consistencia visual.
@@ -1333,7 +1462,7 @@ El análisis del impacto territorial del NS en México, desde el punto de vista 
 
 - En segundo lugar, en muchos casos la información está suprimida por razones de confidencialidad. En el Anexo 7.2 se detalla la disponibilidad de información por estados y sectores.
 
-De lo anterior se deriva que no podemos discutir la distribución de las exportaciones por sector para todo el territorio de México, pero aun así, podemos observar el impacto del NS sobre estados y sectores específicos en los cuales no hay datos suprimidos. Esta información se muestra en la @fig-scian-frontera.
+De lo anterior se deriva que no podemos discutir la distribución de las exportaciones por sector para todo el territorio de México, pero aun así, podemos observar el impacto del NS sobre estados y sectores específicos en los cuales no hay datos suprimidos. Esta información se muestra en las @fig-scian-333, @fig-scian-334, @fig-scian-335 y @fig-scian-336.
 
 Destacan, en primer lugar, el predominio de Nuevo León en Maquinaria y equipo (Sector 333) y en Accesorios y equipo eléctrico (Sector 335), así como la notable aceleración de las exportaciones de estos dos sectores poco después de 2020. En ambos sectores existe una "segunda división" de estados exportadores, que en ambos casos incluye a Chihuahua, Coahuila, Tamaulipas, Baja California, Querétaro y San Luis Potosí. Las relaciones productivas entre estos estados, en estos dos sectores, son un tema pendiente de investigar.
 
@@ -1345,10 +1474,17 @@ Finalmente, los problemas de Equipo de Transporte (Sección 336) quedan en evide
 #| label: save-fig-scian-frontera
 #| include: false
 #| eval: false
+#| code-summary: "Exportaciones por estado, sectores SCIAN 333-336: una figura por sector"
 
-pacman::p_load(ggrepel, patchwork)
+# Una figura por sector (Plots/fig-etef-sector-<sector>_2024.{pdf,png}).
+# Valores en miles de USD en la fuente; se grafican en miles de millones de USD
+# (ESCALA). Los nombres de los estados van fuera del panel, a la derecha, en el
+# mismo orden vertical de los valores de la última observación.
 
-p <- local({
+plots <- local({
+
+  ESCALA <- 1e6   # miles de USD -> miles de millones de USD
+
   estados_limpios <- list(
     "333" = c(
       "Baja California", "Chihuahua", "Ciudad de México",
@@ -1376,6 +1512,7 @@ p <- local({
     )
   )
 
+  # Umbral (miles de USD, serie original) del último trimestre para incluir un estado
   umbrales <- c(
     "333" =   250000,
     "334" = 2500000,
@@ -1390,6 +1527,20 @@ p <- local({
     "336" = "Equipo de transporte"
   )
 
+  # Separa verticalmente las etiquetas para que no se superpongan, conservando
+  # el orden de los valores y el centro del bloque.
+  separar_etiquetas <- function(y, sep) {
+    o   <- order(y, decreasing = TRUE)
+    adj <- y[o]
+    for (i in seq_along(adj)[-1]) {
+      if (adj[i - 1] - adj[i] < sep) adj[i] <- adj[i - 1] - sep
+    }
+    adj <- adj + (mean(y) - mean(adj))
+    out <- numeric(length(y))
+    out[o] <- adj
+    out
+  }
+
   grafica_sector <- function(sector_codigo) {
     umbral  <- umbrales[[sector_codigo]]
     estados <- estados_limpios[[sector_codigo]]
@@ -1403,19 +1554,16 @@ p <- local({
         fecha  >= "2010-01-01"
       )
 
-    # Último trimestre dentro de la ventana (para umbral y orden de etiquetas)
+    # Último trimestre dentro de la ventana (para el umbral)
     ultimo_trimestre <- datos_sector |>
       filter(!is.na(val_miles_usd), fecha <= FECHA_FIN) |>
       slice_max(fecha, n = 1, with_ties = FALSE) |>
       pull(fecha)
 
-    ultimo_vals <- datos_sector |>
-      filter(fecha == ultimo_trimestre, !is.na(val_miles_usd)) |>
-      filter(val_miles_usd >= umbral) |>
-      select(entidad, val_final = val_miles_usd)
-
-    estados_sobre_umbral <- ultimo_vals$entidad
-    desc <- etiquetas_cortas[[sector_codigo]]
+    estados_sobre_umbral <- datos_sector |>
+      filter(fecha == ultimo_trimestre, !is.na(val_miles_usd),
+             val_miles_usd >= umbral) |>
+      pull(entidad)
 
     datos_plot <- datos_sector |>
       filter(entidad %in% estados_sobre_umbral) |>
@@ -1429,18 +1577,27 @@ p <- local({
         }
       ) |>
       ungroup() |>
-      filter(fecha <= FECHA_FIN)   # corte solo al graficar (X-13 sobre serie completa)
+      filter(fecha <= FECHA_FIN) |>   # corte solo al graficar (X-13 sobre serie completa)
+      mutate(val_plot = val_sa / ESCALA)
 
+    x_ini <- min(datos_plot$fecha)
+    x_ult <- max(datos_plot$fecha)
+    span  <- as.numeric(x_ult - x_ini)
+    x_der <- x_ult + 0.02 * span          # borde derecho del panel
+    x_lab <- x_der + 0.012 * span         # inicio del texto, fuera del panel
+
+    # Una etiqueta por estado, en la última observación, ordenada por valor
     etiquetas <- datos_plot |>
-      filter(!is.na(val_sa)) |>
+      filter(!is.na(val_plot)) |>
       group_by(entidad) |>
       slice_max(fecha, n = 1, with_ties = FALSE) |>
       ungroup() |>
-      left_join(ultimo_vals, by = "entidad") |>
-      arrange(desc(val_final))
+      arrange(desc(val_plot)) |>
+      mutate(y_lab = separar_etiquetas(
+        val_plot, sep = 0.05 * diff(range(datos_plot$val_plot, na.rm = TRUE))))
 
     datos_plot |>
-      ggplot(aes(x = fecha, y = val_sa, color = entidad)) +
+      ggplot(aes(x = fecha, y = val_plot, color = entidad)) +
       geom_vline(
         xintercept = seq(as.Date("2010-01-01"), as.Date("2024-01-01"), by = "year"),
         color      = "grey85",
@@ -1448,60 +1605,90 @@ p <- local({
       ) +
       geom_line(linewidth = 0.7) +
       geom_point(size = 1.2, alpha = 0.6) +
-      ggrepel::geom_text_repel(
-        data        = etiquetas,
-        aes(x = fecha, y = val_sa, label = entidad, color = entidad),
-        hjust       = 0,
-        size        = 2.8,
-        show.legend = FALSE,
-        direction   = "y",
-        nudge_x     = 100,
-        segment.size  = 0.3,
-        segment.color = "grey60",
-        box.padding   = 0.2,
-        max.overlaps  = Inf
+      geom_segment(
+        data = etiquetas,
+        aes(x = fecha, xend = x_der + 0.006 * span, y = val_plot, yend = y_lab),
+        linewidth = 0.3, show.legend = FALSE
       ) +
-      scale_y_continuous(labels = scales::comma) +
-      scale_x_date(expand = expansion(mult = c(0.02, 0.18))) +
+      geom_text(
+        data = etiquetas,
+        aes(x = x_lab, y = y_lab, label = entidad),
+        hjust = 0, size = 3.3, show.legend = FALSE
+      ) +
+      scale_x_date(breaks = seq(as.Date("2010-01-01"), as.Date("2024-01-01"), by = "year"),
+                   date_labels = "%Y") +
+      scale_y_continuous(labels = scales::label_number(big.mark = ",")) +
+      coord_cartesian(xlim = c(x_ini - 0.02 * span, x_der), expand = FALSE, clip = "off") +
       labs(
-        title    = paste0("Sector ", sector_codigo, " — ", desc),
-        subtitle = paste0("≥ ", scales::comma(umbral), " miles USD, último trimestre"),
+        subtitle = paste0("Miles de millones de USD, trimestral, desestacionalizado. ",
+                          "Estados con al menos ", scales::number(umbral / ESCALA, accuracy = 0.01),
+                          " en el último trimestre"),
         x        = NULL,
         y        = NULL,
-        caption  = NULL
+        caption  = "Elaboración propia con base en INEGI/ETEF. Ajuste estacional: X-13ARIMA-SEATS."
       ) +
       theme_bw() +
       theme(
         legend.position  = "none",
         panel.grid.minor = element_blank(),
-        plot.title       = element_text(size = 10, face = "bold"),
-        plot.subtitle    = element_text(size = 8),
-        axis.text        = element_text(size = 7)
+        plot.subtitle    = element_text(size = 9),
+        axis.text        = element_text(size = 8),
+        plot.margin      = margin(t = 5, r = 115, b = 5, l = 5)   # espacio para los nombres
       )
   }
 
-  plots <- map(c("333", "334", "335", "336"), grafica_sector)
-
-  (plots[[1]] + plots[[2]]) / (plots[[3]] + plots[[4]]) +
-    plot_annotation(
-      caption = "Elaboración propia con base en INEGI/ ETEF. Ajuste estacional: X-13ARIMA-SEATS."
-    )
+  sectores <- c("333", "334", "335", "336")
+  set_names(map(sectores, grafica_sector), sectores)
 })
 
-ggsave(here::here("Plots", "fig-etef-sectores-sa.pdf"), plot = p, width = 11, height = 8.5, device = cairo_pdf)
-ggsave(here::here("Plots", "fig-etef-sectores-sa.png"), plot = p, width = 11, height = 8.5, dpi = 150)
-rm(p)
+walk(plots, print)
+
+iwalk(plots, \(p, sector) {
+  nm <- paste0("fig-etef-sector-", sector, "_2024")
+  ggsave(here::here("Plots", paste0(nm, ".pdf")), plot = p, width = 10, height = 5.5, device = cairo_pdf)
+  ggsave(here::here("Plots", paste0(nm, ".png")), plot = p, width = 10, height = 5.5, dpi = 150)
+})
+rm(plots)
 ```
 
 ```{r}
-#| label: fig-scian-frontera
+#| label: fig-scian-333
 #| echo: false
-#| fig-cap: |
-#|   Exportaciones trimestrales desestacionalizadas por entidad federativa, sectores SCIAN
-#|   333, 334, 335 y 336. Miles de USD, solo estados sin datos suprimidos por confidencialidad
+#| fig-cap: "Exportaciones por entidad federativa, sector SCIAN 333, Maquinaria y equipo, 2010-2024. Solo estados sin datos suprimidos por confidencialidad"
 #| fig-cap-location: top
+#| out-width: "100%"
 
-knitr::include_graphics(here::here("Plots", "fig-etef-sectores-sa.png"))
+knitr::include_graphics(here::here("Plots", "fig-etef-sector-333_2024.png"))
+```
+
+```{r}
+#| label: fig-scian-334
+#| echo: false
+#| fig-cap: "Exportaciones por entidad federativa, sector SCIAN 334, Equipo de computación y comunicación, 2010-2024. Solo estados sin datos suprimidos por confidencialidad"
+#| fig-cap-location: top
+#| out-width: "100%"
+
+knitr::include_graphics(here::here("Plots", "fig-etef-sector-334_2024.png"))
+```
+
+```{r}
+#| label: fig-scian-335
+#| echo: false
+#| fig-cap: "Exportaciones por entidad federativa, sector SCIAN 335, Accesorios y equipo eléctrico, 2010-2024. Solo estados sin datos suprimidos por confidencialidad"
+#| fig-cap-location: top
+#| out-width: "100%"
+
+knitr::include_graphics(here::here("Plots", "fig-etef-sector-335_2024.png"))
+```
+
+```{r}
+#| label: fig-scian-336
+#| echo: false
+#| fig-cap: "Exportaciones por entidad federativa, sector SCIAN 336, Equipo de transporte, 2010-2024. Solo estados sin datos suprimidos por confidencialidad"
+#| fig-cap-location: top
+#| out-width: "100%"
+
+knitr::include_graphics(here::here("Plots", "fig-etef-sector-336_2024.png"))
 ```
 
 ```{r}
@@ -1651,8 +1838,8 @@ p <- local({
     )
 })
 
-ggsave(here::here("Plots", "fig-immex-empleo.pdf"), plot = p, width = 10, height = 6, device = cairo_pdf)
-ggsave(here::here("Plots", "fig-immex-empleo.png"), plot = p, width = 10, height = 6, dpi = 150)
+ggsave(here::here("Plots", "fig-immex-empleo_2024.pdf"), plot = p, width = 10, height = 6, device = cairo_pdf)
+ggsave(here::here("Plots", "fig-immex-empleo_2024.png"), plot = p, width = 10, height = 6, dpi = 150)
 rm(p)
 ```
 
@@ -1662,7 +1849,7 @@ rm(p)
 #| fig-cap: "Empleo IMMEX en manufactura: Total, ZLFN y Resto, 2010-2024 (miles de personas, diciembre)"
 #| fig-cap-location: top
 
-knitr::include_graphics(here::here("Plots", "fig-immex-empleo.png"))
+knitr::include_graphics(here::here("Plots", "fig-immex-empleo_2024.png"))
 ```
 
 ```{r}
@@ -1784,9 +1971,9 @@ p <- local({
   )
 })
 
-ggsave(here::here("Plots", "mapa_immex_4periodos.pdf"),
+ggsave(here::here("Plots", "mapa_immex_4periodos_2024.pdf"),
        plot = p, width = 11, height = 4, device = cairo_pdf)
-ggsave(here::here("Plots", "mapa_immex_4periodos.png"),
+ggsave(here::here("Plots", "mapa_immex_4periodos_2024.png"),
        plot = p, width = 11, height = 4, dpi = 150)
 rm(p)
 ```
@@ -1799,7 +1986,7 @@ rm(p)
 #| fig-width: 7.5
 #| fig-height: 7.3
 
-knitr::include_graphics(here::here("Plots", "mapa_immex_4periodos.png"))
+knitr::include_graphics(here::here("Plots", "mapa_immex_4periodos_2024.png"))
 ```
 
 ```{r}
@@ -1815,17 +2002,6 @@ rm(immex, immex_pct)
 Como ya se explicó anteriormente, es un error identificar el NS con los anuncios de construcción de nuevas plantas por parte de EMNs. Más aún, se señaló que la IED es tan solo un componente del proceso de NS, y que las inversiones domésticas (o el redireccionamiento de la producción) por parte de empresas domésticas también juega un papel importante.
 
 Aun así, la IED es **uno** de los componentes del proceso, cuyo comportamiento examinamos en esta sección.
-
-```{r}
-#| label: ied.rds
-#| echo: false
-#| eval: false
-
-ied_fbkf <- readRDS(here::here("RDS", "ied_fbkf.rds"))
-ied_pib <- readRDS(here::here("RDS", "ied_pib.rds"))
-ied_por_origen <- readRDS(here::here("RDS", "ied_por_origen.rds"))
-ied_por_actividad <- readRDS(here::here("RDS", "ied_por_actividad.rds"))
-```
 
 ### IED total y por origen
 
@@ -1973,8 +2149,8 @@ local({
   p <- p_serie / fila_treemaps / cowplot::plot_grid(leyenda) +
     plot_layout(heights = c(1.2, 1.2, 0.15))
 
-  ggsave(here::here("Plots", "ied_total_origen.pdf"), plot = p, width = 10, height = 9, device = cairo_pdf)
-  ggsave(here::here("Plots", "ied_total_origen.png"), plot = p, width = 10, height = 9, dpi = 150)
+  ggsave(here::here("Plots", "ied_total_origen_2024.pdf"), plot = p, width = 10, height = 9, device = cairo_pdf)
+  ggsave(here::here("Plots", "ied_total_origen_2024.png"), plot = p, width = 10, height = 9, dpi = 150)
 })
 ```
 
@@ -1986,7 +2162,7 @@ local({
 #| fig-width: 10
 #| fig-height: 9
 
-knitr::include_graphics(here::here("Plots", "ied_total_origen.png"))
+knitr::include_graphics(here::here("Plots", "ied_total_origen_2024.png"))
 ```
 
 ### IED como porcentaje del PIB y la formación bruta de capital fijo
@@ -2036,8 +2212,8 @@ p <- local({
     plot_layout(heights = c(1, 1))
 })
 
-ggsave(here::here("Plots", "ied_ratios.pdf"), plot = p, width = 10, height = 8, device = cairo_pdf)
-ggsave(here::here("Plots", "ied_ratios.png"), plot = p, width = 10, height = 8, dpi = 150)
+ggsave(here::here("Plots", "ied_ratios_2024.pdf"), plot = p, width = 10, height = 8, device = cairo_pdf)
+ggsave(here::here("Plots", "ied_ratios_2024.png"), plot = p, width = 10, height = 8, dpi = 150)
 rm(p)
 ```
 
@@ -2053,7 +2229,7 @@ rm(p)
 #| fig-height: 8
 #| out-width: "100%"
 
-knitr::include_graphics(here::here("Plots", "ied_ratios.png"))
+knitr::include_graphics(here::here("Plots", "ied_ratios_2024.png"))
 ```
 
 Este pobre desempeño en atracción de IED no refleja una tendencia general en los países con los que México compite en el mercado de EUA. En la @fig-ied-pib-comparadores se muestra la IED como porcentaje del PIB para Costa Rica, México, R. Dominicana y Vietnam (los puntos en el gráfico) así como su tendencia lineal. De los cuatro países, México es sistemáticamente el que recibe menos inversión como porcentaje del PIB. Esta información revela una debilidad específica de México, que es preciso investigar.
@@ -2097,8 +2273,8 @@ p <- local({
     )
 })
 
-ggsave(here::here("Plots", "ied_pib_comparativo_wdi.pdf"), plot = p, width = 9, height = 5.5, device = cairo_pdf)
-ggsave(here::here("Plots", "ied_pib_comparativo_wdi.png"), plot = p, width = 9, height = 5.5, dpi = 150)
+ggsave(here::here("Plots", "ied_pib_comparativo_wdi_2024.pdf"), plot = p, width = 9, height = 5.5, device = cairo_pdf)
+ggsave(here::here("Plots", "ied_pib_comparativo_wdi_2024.png"), plot = p, width = 9, height = 5.5, dpi = 150)
 rm(p, ied_pib_comp)
 ```
 
@@ -2108,20 +2284,115 @@ rm(p, ied_pib_comp)
 #| fig-cap: "IED como porcentaje del PIB. Costa Rica, México, R. Dominicana y Vietnam, 2010-2024"
 #| fig-cap-location: top
 
-knitr::include_graphics(here::here("Plots", "ied_pib_comparativo_wdi.png"))
+knitr::include_graphics(here::here("Plots", "ied_pib_comparativo_wdi_2024.png"))
 ```
 
 Dado que la IED solo representa alrededor del 12% de la inversión total del país, resulta apropiado analizar el comportamiento de la FBCF. La FBCF privada creció de manera considerable en años recientes tras la recuperación de la pandemia, lo que contrasta además con la caída de la inversión pública. A precios de 2018, la FBCF privada anual promedio pasó de 4,389 mil MDP en 2010-2017 a 5,239 mil MDP en 2022-2024, un crecimiento de 19.4%. En contraste, la FBCF pública cayó de 922 a 647 mil MDP (-29.8%). A pesar de la caída de la inversión pública, la inversión anual promedio total creció 10.8% entre ambos periodos, dado que el sector privado origina alrededor del 84% de la FBCF nacional.
 
 
 ```{r}
+#| label: save-fig-ied-fbcf
+#| include: false
+#| eval: false
+#| code-summary: "FBCF privada y pública; FBCF privada por tipo de bien (INEGI, precios de 2018)"
+
+# Datos: RDS/fbcf_inegi.rds (de Excel/FBCF_INEGI_OUT_13.xlsx, hoja Tabulado,
+# INEGI, Oferta y Utilización Trimestral, año base 2018). Ventana del Cap. 2:
+# hasta ANIO_FIN. (La ventana completa para el Cap. 3 la genera
+# Scripts/ied_plots_fbcf.R.)
+
+# `figs` es una lista con las dos figuras: local() devuelve la lista, así que
+# puede imprimirse (walk(figs, print)) antes de guardar.
+figs <- local({
+
+  fbcf <- readRDS(here::here("RDS", "fbcf_inegi.rds"))
+
+  # Series anuales a precios constantes de 2018 (miles de millones de pesos)
+  series_def <- tribble(
+    ~serie,                 ~concepto_cod, ~comprador,
+    "privada",              "P.51b",       "Privada",
+    "publica",              "P.51b",       "Pública",
+    "privada_construccion", "CT",          "Privada",
+    "privada_maquinaria",   "AN.113",      "Privada"
+  )
+
+  datos <- fbcf |>
+    filter(bloque_cod == "VCts18",
+           medida == "Millones de pesos a precios de 2018",
+           periodo == "Anual",
+           !is.na(valor)) |>
+    inner_join(series_def, by = c("concepto_cod", "comprador")) |>
+    transmute(serie, anio = año, mil_mdp = valor / 1000) |>
+    filter(anio >= 2010, anio <= ANIO_FIN)
+
+  # Promedios y variaciones citados en el texto (2010-2017 vs. 2022-2024)
+  prom <- function(s, a, b)
+    mean(datos$mil_mdp[datos$serie == s & datos$anio >= a & datos$anio <= b])
+
+  tibble(serie = series_def$serie) |>
+    mutate(prom_2010_17 = map_dbl(serie, prom, a = 2010, b = 2017),
+           prom_2022_24 = map_dbl(serie, prom, a = 2022, b = 2024),
+           crec_pct     = 100 * (prom_2022_24 / prom_2010_17 - 1)) |>
+    mutate(across(where(is.numeric), ~ round(.x, 1))) |>
+    print()
+
+  # Paleta del resto del capítulo (#264653 total/privada, #2a9d8f, #457b9d)
+  col <- c(privada = "#264653", publica = "#457b9d",
+           privada_construccion = "#2a9d8f", privada_maquinaria = "#264653")
+  etq <- c(privada = "FBCF privada", publica = "FBCF pública",
+           privada_construccion = "FBCF privada en construcción",
+           privada_maquinaria = "FBCF privada en maquinaria y equipo")
+
+  fig_fbcf <- function(series) {
+    datos |>
+      filter(serie %in% series) |>
+      ggplot(aes(anio, mil_mdp, colour = serie)) +
+      geom_line(linewidth = 1) +
+      geom_point(size = 1.4) +
+      scale_colour_manual(values = col, labels = etq) +
+      scale_x_continuous(breaks = 2010:ANIO_FIN,
+                         expand = expansion(mult = c(0.02, 0.02))) +
+      scale_y_continuous(breaks = scales::breaks_width(200),
+                         labels = scales::label_comma(),
+                         limits = c(0, NA),
+                         expand = expansion(mult = c(0, 0.06))) +
+      labs(x        = NULL,
+           y        = NULL,
+           colour   = NULL,
+           subtitle = "Miles de millones de pesos, a precios de 2018",
+           caption  = "Elaboración propia con base en INEGI, Oferta y Utilización Trimestral (año base 2018).") +
+      theme_bw() +
+      theme(legend.position  = "bottom",
+            panel.grid.minor = element_blank(),
+            plot.subtitle    = element_text(size = 9),
+            axis.text.x      = element_text(angle = 90, vjust = 0.5))
+  }
+
+  list(
+    ied_fbcf_privada_publica_2024       = fig_fbcf(c("privada", "publica")),
+    ied_fbcf_privada_por_tipo_bien_2024 = fig_fbcf(c("privada_construccion", "privada_maquinaria"))
+  )
+})
+
+walk(figs, print)
+
+iwalk(figs, \(p, nm) {
+  ggsave(here::here("Plots", paste0(nm, ".pdf")), plot = p,
+         width = 10, height = 5.5, device = cairo_pdf)
+  ggsave(here::here("Plots", paste0(nm, ".png")), plot = p,
+         width = 10, height = 5.5, dpi = 150)
+})
+rm(figs)
+```
+
+```{r}
 #| label: fig-fbcf-publica-privada
 #| echo: false
-#| eval: false
-#| fig-cap: "México. Formación bruta de capital fijo, pública y privada, 1993-2025"
+#| fig-cap: "México. Formación bruta de capital fijo, pública y privada, 2010-2024"
 #| fig-cap-location: top
+#| out-width: "100%"
 
-knitr::include_graphics(here::here("Plots", "zafra-fmkf-pubpriv.png"))
+knitr::include_graphics(here::here("Plots", "ied_fbcf_privada_publica_2024.png"))
 ```
 
 El crecimiento de la FBCF por tipo de bien sugiere que el sector privado está expandiendo capacidad productiva e importando bienes de capital para nuevos procesos. Por tipo de bien, la FBCF anual promedio privada en construcción (que representa el 55% de la inversión privada) creció 15.1% entre 2010-2017 y 2022-2024, mientras que en Maquinaria y equipo (que representa el otro 45%) creció 23.5%.
@@ -2129,11 +2400,11 @@ El crecimiento de la FBCF por tipo de bien sugiere que el sector privado está e
 ```{r}
 #| label: fig-fbcf-tipo-bien
 #| echo: false
-#| eval: false
-#| fig-cap: "México. Flujos anuales promedio de FBCF privada por tipo de bien, mil MDP (precios 2018)"
+#| fig-cap: "México. FBCF privada por tipo de bien: construcción y maquinaria y equipo, 2010-2024"
 #| fig-cap-location: top
+#| out-width: "100%"
 
-knitr::include_graphics(here::here("Plots", "zafra-fbkf-tipobien.png"))
+knitr::include_graphics(here::here("Plots", "ied_fbcf_privada_por_tipo_bien_2024.png"))
 ```
 
 ### La distribución sectorial de la IED
@@ -2150,6 +2421,8 @@ La caída en 2025, año caracterizado por la incertidumbre y por una política t
 #| include: false
 
 p <- local({
+  ied_por_actividad <- readRDS(here::here("RDS", "ied_por_actividad.rds"))
+
   col_total <- "#264653"
   col_manuf <- "#2a9d8f"
   col_resto <- "#e9c46a"
@@ -2237,9 +2510,9 @@ p2 <- ggplot(datos_barras, aes(x = año, y = pct, fill = serie)) +
   p1 / p2
 })
 
-ggsave(here::here("Plots", "ied_actividad_combinado.pdf"),
+ggsave(here::here("Plots", "ied_actividad_combinado_2024.pdf"),
        plot = p, width = 10, height = 10, device = cairo_pdf)
-ggsave(here::here("Plots", "ied_actividad_combinado.png"),
+ggsave(here::here("Plots", "ied_actividad_combinado_2024.png"),
        plot = p, width = 10, height = 10, dpi = 150)
 rm(p)
 ```
@@ -2255,7 +2528,7 @@ rm(p)
 #| fig-width: 10
 #| fig-height: 10
 
-knitr::include_graphics(here::here("Plots", "ied_actividad_combinado.png"))
+knitr::include_graphics(here::here("Plots", "ied_actividad_combinado_2024.png"))
 ```
 
 En la @fig-ied-manuf-subsector se muestra la evolución de la composición sectorial de la IED en manufactura. El panel superior muestra los montos de inversión, y el panel inferior la participación porcentual de los diversos sectores.
@@ -2272,6 +2545,8 @@ Estos datos parecen congruentes con la hipótesis de que uno de los factores que
 # IED en manufactura (31), por subsector 333/334/335/336 + Resto.
 # Panel superior: líneas (Resto/Manufactura total destacada). Panel inferior:
 # barras apiladas al 100% (valores negativos se tratan como cero).
+
+ied_por_actividad <- readRDS(here::here("RDS", "ied_por_actividad.rds"))
 
 datos_fig_sub <- ied_por_actividad |>
   filter(
@@ -2394,9 +2669,9 @@ p <- local({
   p1 / p2
 })
 
-ggsave(here::here("Plots", "ied_manuf_subsector.pdf"), plot = p, width = 10, height = 10, device = cairo_pdf)
-ggsave(here::here("Plots", "ied_manuf_subsector.png"), plot = p, width = 10, height = 10, dpi = 150)
-rm(p, datos_fig_sub, total_3133, sub_sum, resto_df, datos_combinados,
+ggsave(here::here("Plots", "ied_manuf_subsector_2024.pdf"), plot = p, width = 10, height = 10, device = cairo_pdf)
+ggsave(here::here("Plots", "ied_manuf_subsector_2024.png"), plot = p, width = 10, height = 10, dpi = 150)
+rm(p, ied_por_actividad, datos_fig_sub, total_3133, sub_sum, resto_df, datos_combinados,
    col_total, col_333, col_334, col_335, col_336, col_resto, escala_col)
 ```
 
@@ -2408,15 +2683,7 @@ rm(p, datos_fig_sub, total_3133, sub_sum, resto_df, datos_combinados,
 #| fig-width: 10
 #| fig-height: 10
 
-knitr::include_graphics(here::here("Plots", "ied_manuf_subsector.png"))
-```
-
-```{r}
-#| label: cleanup-ied
-#| include: false
-#| eval: false
-
-rm(ied_fbkf, ied_pib, ied_por_origen, ied_por_actividad)
+knitr::include_graphics(here::here("Plots", "ied_manuf_subsector_2024.png"))
 ```
 
 ### Los anuncios de inversión
@@ -2593,7 +2860,7 @@ Capítulo 84
 #| fig-cap-location: top
 #| out-width: 100%
 
-knitr::include_graphics(here::here("Plots", "panel_partidas_cap84.png"))
+knitr::include_graphics(here::here("Plots", "panel_partidas_cap84_2024.png"))
 ```
 
 La figura pone en evidencia que prácticamente en todos los casos hubo un punto de quiebre de tendencia en o poco después de 2018 y que únicamente en dos casos, las partidas 8415 y 8421 hay suficiente información para identificar un cambio de tendencia negativo a partir de 2024.
@@ -2610,7 +2877,7 @@ Capítulo 85
 #| fig-cap: "México. Exportaciones Capítulo 85, Partidas seleccionadas, 2010-2024"
 #| fig-cap-location: top
 
-knitr::include_graphics(here::here("Plots", "panel_partidas_cap85.png"))
+knitr::include_graphics(here::here("Plots", "panel_partidas_cap85_2024.png"))
 ```
 
 La @fig-cap85-partidas presenta gráficamente la evolución de las exportaciones por partida. Al igual que en el caso anterior, se usan índices en vez de valores absolutos, y se identifican puntos de quiebre de tendencia.
@@ -2625,7 +2892,7 @@ La @fig-cap85-partidas presenta gráficamente la evolución de las exportaciones
 #| fig-cap: "México. Exportaciones Capítulo 87, Partidas seleccionadas, 2010-2024"
 #| fig-cap-location: top
 
-knitr::include_graphics(here::here("Plots", "panel_partidas_cap87.png"))
+knitr::include_graphics(here::here("Plots", "panel_partidas_cap87_2024.png"))
 ```
 
 Aunque en la @fig-cap87-partidas no se logró identificar estadísticamente cambios de tendencia en ninguna de las partidas analizadas, en el próximo capítulo, en el que se analizan las tarifas que enfrentan tanto México como sus principales competidores en este capítulo, se presenta evidencia que sugiere que el rápido crecimiento del período 2010-2018 no se repetirá y que no se puede descartar que la contracción de 2024-2025 se repita en 2026.
@@ -2636,7 +2903,7 @@ Aunque en la @fig-cap87-partidas no se logró identificar estadísticamente camb
 #| fig-cap: "México. Exportaciones Capítulo 90, Partidas seleccionadas, 2010-2024"
 #| fig-cap-location: top
 
-knitr::include_graphics(here::here("Plots", "panel_partidas_cap90.png"))
+knitr::include_graphics(here::here("Plots", "panel_partidas_cap90_2024.png"))
 ```
 
 En este caso, la visualización de la información no arroja sorpresas: dos partidas, la 9018 y la 9019 muestran un crecimiento aceleardo, mientras que en las demás el crecimiento es modesto o muestra una quiebre negativo de tendencia en el último período.

@@ -20,15 +20,11 @@
 #   RDS/media_cloud_mensual.rds : pais, anio_mes, menciones, total_dias,
 #                                 ratio_mensual, mm3 (media móvil 3 meses)
 #   RDS/meta_media_cloud.rds    : una fila por país
-# Figuras (Plots/, PDF + PNG), una por país y ventana:
-#   fig_media_cloud_menciones_mex_2024 / _usa_2024 : terminan en FECHA_FIN (Cap. 2)
-#   fig_media_cloud_menciones_mex      / _usa      : hasta ULTIMO_MES (Cap. 3)
-#   Cada panel con su propia escala en y. El título general de la figura
-#   lo pone el fig-cap del qmd; el título del panel solo identifica el país.
+# Figuras: ya no se generan aquí; ver el chunk `save-fig-media-cloud` al inicio
+#   de la Introducción de Quarto/C2_Revised_October_2026_v2.qmd (PNG/PDF en Plots/).
 # =============================================================================
 
 pacman::p_load(tidyverse, here, lubridate, zoo, scales)
-source(here::here("Scripts", "funciones.R"))   # FECHA_FIN (ventana del Capítulo 2)
 
 # Último mes COMPLETO que se usa en series mensuales y figuras.
 # (oct-2026 es parcial; sept-2026 es el último mes completo a las descargas de oct-2026.)
@@ -147,80 +143,10 @@ tryCatch({
 }, error = function(e) message("✗ Error al guardar: ", e$message))
 
 # -----------------------------------------------------------------------------
-# 3. Figuras: conteo mensual de menciones (barras) + media móvil 3 meses (línea)
-#    Una figura por país y por ventana (cada una con su propia escala en y):
-#      - *_2024 : termina en FECHA_FIN (Capítulo 2)
-#      - sin sufijo de año : hasta ULTIMO_MES (Capítulo 3)
-#    Esta función solo necesita media_cloud_mensual.rds: el chunk de gráfica
-#    puede pasar tal cual a los qmds.
+# Las figuras (conteo mensual + media móvil de 3 meses, ventanas _2024 y completa)
+# ya no se generan aquí: el código está en el chunk `save-fig-media-cloud`, al
+# inicio de la Introducción de Quarto/C2_Revised_October_2026_v2.qmd, y lee
+# RDS/media_cloud_mensual.rds.
 # -----------------------------------------------------------------------------
 
-# Hitos editoriales relevantes (cada versión muestra solo los que caen en su ventana)
-hitos <- tibble(
-  fecha = as.Date(c("2018-07-06",   # Aranceles China Ronda 1 (Lista 1)
-                    "2020-07-01",   # Entrada en vigor T-MEC
-                    "2022-02-01",   # Inicio publicación masiva nearshoring MX
-                    "2025-01-20")), # Segundo gobierno Trump
-  etiqueta = c("Aranceles\nEE.UU.-China", "T-MEC", "Auge\nnearshoring",
-               "Aranceles\nTrump 2025")
-)
-
-# datos = tabla mensual larga (pais, anio_mes, menciones, mm3); pais_sel = "México" / "EUA"
-fig_menciones <- function(datos, pais_sel, fecha_fin) {
-  hitos_v <- hitos |> filter(fecha <= fecha_fin)
-
-  datos |>
-    filter(pais == pais_sel,
-           anio_mes >= as.Date("2018-01-01"), anio_mes <= fecha_fin) |>
-    ggplot(aes(x = anio_mes)) +
-    # Barras de conteo mensual
-    geom_col(aes(y = menciones), fill = "#457b9d", alpha = 0.7, width = 25) +
-    # Media móvil
-    geom_line(aes(y = mm3), color = "#e63946", linewidth = 0.8, na.rm = TRUE) +
-    # Líneas verticales de hitos
-    geom_vline(data = hitos_v, aes(xintercept = fecha),
-               linetype = "dashed", color = "grey40", linewidth = 0.5) +
-    # Etiquetas de hitos
-    geom_text(data = hitos_v, aes(x = fecha, y = Inf, label = etiqueta),
-              vjust = 1.3, hjust = -0.07, size = 2.8, color = "grey30",
-              lineheight = 0.9) +
-    scale_x_date(
-      breaks = seq(as.Date("2018-01-01"), floor_date(fecha_fin, "year"), by = "1 year"),
-      date_labels = "%Y",
-      expand = expansion(mult = c(0.01, 0.04))
-    ) +
-    scale_y_continuous(labels = comma_format(big.mark = ",")) +
-    labs(
-      title = pais_sel,   # solo identifica el país; el título general va en el fig-cap del qmd
-      x     = NULL,
-      y     = "Menciones mensuales"
-    ) +
-    theme_bw() +
-    theme(
-      plot.title       = element_text(size = 11, face = "bold"),
-      panel.grid.minor = element_blank(),
-      axis.text.x      = element_text(angle = 0)
-    )
-}
-
-ventanas <- tibble(
-  ventana   = c("_2024", ""),
-  fecha_fin = c(FECHA_FIN, ceiling_date(ULTIMO_MES, "month") - days(1))
-)
-
-figs <- expand_grid(select(fuentes, pais, sufijo), ventanas) |>
-  mutate(nombre = paste0("fig_media_cloud_menciones_", sufijo, ventana))
-
-figs_lista <- pmap(list(figs$pais, figs$fecha_fin),
-                   \(p, f) fig_menciones(media_cloud_mensual, p, f)) |>
-  set_names(figs$nombre)
-
-# Guardar figuras (PDF para diseño/Word, PNG 150 dpi para Quarto)
-iwalk(figs_lista, \(p, nm) {
-  ggsave(here::here("Plots", paste0(nm, ".pdf")),
-         plot = p, width = 10, height = 5, device = cairo_pdf)
-  ggsave(here::here("Plots", paste0(nm, ".png")),
-         plot = p, width = 10, height = 5, dpi = 150)
-})
-
-message("✓ Figuras guardadas en Plots/: ", paste(names(figs_lista), collapse = ", "))
+message("✓ Query10 completado: RDS de Media Cloud guardados en RDS/.")
