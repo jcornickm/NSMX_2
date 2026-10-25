@@ -183,3 +183,33 @@ paleta_tcac <- c(
   "5 a 7.5%"    = "#5B8FB9",
   "> 7.5%"      = "#1F4E79"
 )
+
+# ── Paleta de color por país (Capítulo 2 y 3) ────────────────────────────────
+# Cada país tiene un color fijo en todas las figuras (México siempre #2a9d8f).
+# Probada con simulación de deuteranopia en Quarto/Experiment.qmd.
+paleta_pais <- c(
+  "México"        = "#2a9d8f",   # verde azulado
+  "China"         = "#c8553d",   # ladrillo
+  "Vietnam"       = "#e9b44c",   # mostaza
+  "Taiwán"        = "#457b9d",   # azul acero
+  "Canadá"        = "#7b6d8d",   # violeta apagado
+  "Japón"         = "#b56576",   # rosa viejo
+  "Corea del Sur" = "#8a9a5b",   # oliva
+  "Alemania"      = "#3d405b",   # pizarra
+  "EUA"           = "#264653",   # azul petróleo oscuro
+  "Costa Rica"    = "#8c6a4f",   # café
+  "R. Dominicana" = "#81b29a",   # salvia
+  "Otros"         = "#b8bdc2"    # gris neutro
+)
+
+# ── Colores para series que no son países ─────────────────────────────────────
+# (series de México solas: el total/serie principal usa el verde de México)
+COL_TOTAL     <- "#4a4f55"   # gris oscuro: totales
+COL_RESTO     <- "#7d868e"   # gris medio: "Resto"
+COL_SERIE     <- "#2f4858"   # serie genérica (p. ej. índice por partida)
+COL_TENDENCIA <- "#d17a22"   # línea de tendencia / media móvil sobre una serie
+COL_HITO      <- "grey45"    # líneas verticales de referencia (p. ej. 2018)
+
+# Secciones del Sistema Armonizado destacadas para el nearshoring
+paleta_seccion <- c("XVI" = "#2f4858", "XVII" = "#55738a",
+                    "XVIII" = "#8fa8bb", "Otras" = "#e3e6e9")

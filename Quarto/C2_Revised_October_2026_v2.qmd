@@ -207,6 +207,8 @@ png_a_panel <- \(archivo)
 (png_a_panel("fig_media_cloud_menciones_usa_2024.png") /
    png_a_panel("fig_media_cloud_menciones_mex_2024.png")) &
   theme(plot.margin = margin(0, 0, 0, 0))
+
+rm(png_a_panel)
 ```
 
 Fuente: elaboración propia con base en MediaCloud
@@ -544,6 +546,7 @@ p <- local({
 
 ggsave(here::here("Plots", "fig-imp-cambio-pais_2024.pdf"), plot = p, width = 8, height = 7.5, device = cairo_pdf)
 ggsave(here::here("Plots", "fig-imp-cambio-pais_2024.png"), plot = p, width = 8, height = 7.5, dpi = 150)
+rm(p)
 ```
 
 ```{r}
@@ -824,7 +827,7 @@ p <- local({
 })
 ggsave(here::here("Plots", "fig-treemap-caps-seccion_2024.pdf"), plot = p, width = 11, height = 6, device = cairo_pdf)
 ggsave(here::here("Plots", "fig-treemap-caps-seccion_2024.png"), plot = p, width = 11, height = 6, dpi = 150)
-rm(p)
+rm(p, df_caps_2024)
 ```
 
 ```{r}
@@ -1337,6 +1340,7 @@ ggsave(here::here("Plots", "mapa_xmex_2periodos_tcac_2024.pdf"), plot = p,
        width = 11, height = 9, device = cairo_pdf)
 ggsave(here::here("Plots", "mapa_xmex_2periodos_tcac_2024.png"), plot = p,
        width = 11, height = 9, dpi = 150)
+rm(p, tcac_estados, estados_lookup)
 ```
 
 ```{r}
@@ -1975,7 +1979,7 @@ ggsave(here::here("Plots", "mapa_immex_4periodos_2024.pdf"),
        plot = p, width = 11, height = 4, device = cairo_pdf)
 ggsave(here::here("Plots", "mapa_immex_4periodos_2024.png"),
        plot = p, width = 11, height = 4, dpi = 150)
-rm(p)
+rm(p, estados_lookup, breaks_pp_immex, labels_pp_immex, paleta_discreta_immex)
 ```
 
 ```{r}

@@ -1,0 +1,2978 @@
+---
+title: "Capítulo 2: Nearshoring en los datos"
+subtitle: "El comercio se ajusta más rápidamente que la inversión"
+author: 
+  - name: Jorge Cornick
+    affiliations: 
+     - name: CEPCAN, Instituto Tecnológico de Monterrey
+    email: jcornick@tec.mx
+    corresponding: true
+  - name: Ernesto Stein
+  - name: Carlos Zafra
+date: "2026-10-10"
+format:
+  docx:
+    reference-doc: reference-doc.docx
+    number-sections: true
+    number-depth: 3
+lang: es
+toc: true
+toc-depth: 1
+toc-title: "Índice"
+editor: source
+editor_options:
+  chunk_output_type: console
+bibliography: references.bib
+link-citations: true
+---
+
+<!-- quarto::quarto_render("Quarto/C2_Revised_October_2026.qmd") -->
+
+```{r}
+#| label: loadlibs
+#| echo: false
+#| code-summary: "Carga de bibliotecas"
+
+# Solo los paquetes que se usan durante `quarto render` (chunks eval: true)
+# se cargan aquí. Los paquetes usados únicamente para generar y guardar las
+# figuras (chunks eval: false, que no corren en un render normal) se cargan
+# de forma perezosa dentro de esos mismos chunks -- patchwork, sf, cowplot,
+# ggrepel, treemapify, glue, WDI -- para no pagar su costo de carga (y, en
+# el caso de sf, las librerías GDAL/PROJ que trae consigo) en cada render.
+# geodata se eliminó por completo: nunca se invoca como paquete, solo
+# aparece como nombre de carpeta en rutas de archivo (here::here("geodata", ...)).
+pacman::p_load(tidyverse, here, scales, knitr, flextable, ggplot2, lubridate)
+
+# flextable produce tablas Word (docx) con <w:tblGrid> y anchos de columna
+# explícitos; gt() NO lo hace en esta versión y sus tablas se ven con texto
+# partido letra por letra al abrir el documento en Word. Por eso las tablas
+# con color (tbl-tcac-estados, prep-tablas-cap, tbl-disponibilidad-estado-sector)
+# usan flextable, y las tablas simples sin color usan kable().
+set_flextable_defaults(fonts_ignore = TRUE)
+```
+
+```{r}
+#| label: setup
+#| include: false
+
+source(here::here("Scripts", "funciones.R"))
+```
+
+## Introducción
+
+```{r}
+#| label: save-fig-media-cloud
+#| include: false
+#| eval: false
+#| code-summary: "Menciones de nearshoring en medios (Media Cloud): figuras por país y ventana"
+
+# Datos: RDS/media_cloud_mensual.rds (Scripts/Query10_NS_MentionsMX.R; búsqueda
+# "nearshoring OR reshoring", colecciones nacionales de México y EUA).
+# Conteo mensual de menciones (barras) + media móvil de 3 meses (línea), una
+# figura por país y ventana, cada una con su propia escala en y:
+#   *_2024  : termina en FECHA_FIN (Capítulo 2)
+#   sin año : hasta el último mes completo (Capítulo 3)
+# El título general lo pone el fig-cap del qmd; el título del panel solo
+# identifica el país. Guarda en Plots/ (PDF + PNG).
+
+local({
+
+  media_cloud_mensual <- readRDS(here::here("RDS", "media_cloud_mensual.rds"))
+  ULTIMO_MES <- max(media_cloud_mensual$anio_mes)   # último mes completo
+
+  paises <- tribble(
+    ~pais,    ~sufijo,
+    "México", "mex",
+    "EUA",    "usa"
+  )
+
+  # Hitos editoriales relevantes (cada versión muestra solo los que caen en su ventana)
+  hitos <- tibble(
+    fecha = as.Date(c("2018-07-06",   # Aranceles China Ronda 1 (Lista 1)
+                      "2020-07-01",   # Entrada en vigor T-MEC
+                      "2022-02-01",   # Inicio publicación masiva nearshoring MX
+                      "2025-01-20")), # Segundo gobierno Trump
+    etiqueta = c("Aranceles\nEE.UU.-China", "T-MEC", "Auge\nnearshoring",
+                 "Aranceles\nTrump 2025")
+  )
+
+  # datos = tabla mensual larga (pais, anio_mes, menciones, mm3); pais_sel = "México" / "EUA"
+  fig_menciones <- function(datos, pais_sel, fecha_fin) {
+    hitos_v <- hitos |> filter(fecha <= fecha_fin)
+
+    datos |>
+      filter(pais == pais_sel,
+             anio_mes >= as.Date("2018-01-01"), anio_mes <= fecha_fin) |>
+      ggplot(aes(x = anio_mes)) +
+      geom_col(aes(y = menciones), fill = paleta_pais[[pais_sel]], alpha = 0.7, width = 25) +
+      geom_line(aes(y = mm3), color = COL_TENDENCIA, linewidth = 0.8, na.rm = TRUE) +
+      geom_vline(data = hitos_v, aes(xintercept = fecha),
+                 linetype = "dashed", color = "grey40", linewidth = 0.5) +
+      geom_text(data = hitos_v, aes(x = fecha, y = Inf, label = etiqueta),
+                vjust = 1.3, hjust = -0.07, size = 2.8, color = "grey30",
+                lineheight = 0.9) +
+      scale_x_date(
+        breaks = seq(as.Date("2018-01-01"), floor_date(fecha_fin, "year"), by = "1 year"),
+        date_labels = "%Y",
+        expand = expansion(mult = c(0.01, 0.04))
+      ) +
+      scale_y_continuous(labels = comma_format(big.mark = ",")) +
+      labs(title = pais_sel, x = NULL, y = "Menciones mensuales") +
+      theme_bw() +
+      theme(
+        plot.title       = element_text(size = 11, face = "bold"),
+        panel.grid.minor = element_blank(),
+        axis.text.x      = element_text(angle = 0)
+      )
+  }
+
+  ventanas <- tibble(
+    ventana   = c("_2024", ""),
+    fecha_fin = c(FECHA_FIN, ceiling_date(ULTIMO_MES, "month") - days(1))
+  )
+
+  figs <- expand_grid(paises, ventanas) |>
+    mutate(nombre = paste0("fig_media_cloud_menciones_", sufijo, ventana))
+
+  figs_lista <- pmap(list(figs$pais, figs$fecha_fin),
+                     \(p, f) fig_menciones(media_cloud_mensual, p, f)) |>
+    set_names(figs$nombre)
+
+  # PDF para diseño/Word, PNG 150 dpi para Quarto. Si el archivo existe se borra
+  # antes de escribir: si Windows lo tiene bloqueado (abierto en un visor, en el
+  # panel de RStudio, etc.), el aviso nombra el archivo en vez del críptico
+  # "agg could not write to the given file".
+  guardar_fig <- function(p, ruta, ...) {
+    if (file.exists(ruta) && !file.remove(ruta)) {
+      warning("No se pudo reemplazar (¿abierto en otro programa?): ", ruta, call. = FALSE)
+      return(invisible(FALSE))
+    }
+    ggsave(ruta, plot = p, width = 10, height = 5, ...)
+    message("✓ ", basename(ruta))
+    invisible(TRUE)
+  }
+
+  iwalk(figs_lista, \(p, nm) {
+    guardar_fig(p, here::here("Plots", paste0(nm, ".pdf")), device = cairo_pdf)
+    guardar_fig(p, here::here("Plots", paste0(nm, ".png")), dpi = 150)
+  })
+
+})
+```
+
+### ¿Nearshoring? ¿En México?
+
+La reconfiguración de las cadenas globales de valor fue un fue un tema que se empezó a discutir tras el inicio de la guerra comercial entre Estados Unidos y China: para ciertos productos, el cálculo económico que había llevado a establecer operaciones de manufactura en China y exportar desde allí hacia los EUA se modificó con los nuevos aranceles. La pandemia del COVID-19 en 2020 añadió urgencia a la discusión, ya que la fragilidad de las cadenas de suministro que se extendían por todo el planeta y concentraban las operaciones de manufactura en China quedó en evidencia, como un factor de riesgo adicional e independiente de los conflictos meramente comerciales. A todo esto se sumaron pronto consideraciones de seguridad nacional como argumento en favor de "acercar" las cadenas de valor ("nearshoring", en adelante NS) o incluso de traer ciertas actividades de manufactura de vuelta a los EUA ("reshoring"). No es de sorprender, entonces, que las menciones sobre estos dos temas se hicieran cada vez más frecuentes en las comunicaciones entre los gerentes generales (CEOs) de las empresas globalesa partir de 2021, como lo muestra la @fig-nearshoring.
+
+```{r}
+#| label: fig-nearshoring
+#| fig-cap: "Menciones de Nearshoring por parte de CEOs" 
+#| cap-location: top
+#| echo: false
+
+knitr::include_graphics(here::here("Images", "nearshoring.png"))
+```
+
+Fuente: <https://iot-analytics.com/what-ceos-talked-about-in-q4-2024-tariffs-reshoring-agentic-ai/>
+
+Mientras tanto, en la prensa mexicana, particularmente la prensa financiera, el tema adquiere prominencia a partir de 2022, año en el que alcanzas 2,104 menciones. Ese es, por supuesto, el año en el que se inicia la guerra en Ucrania, el segundo gran evento, tras la pandemia de 2020, que puso en evidencia la fragilidad de las CGV [^1].
+
+[^1]: La búsqueda se hizo utilizando únicamente el términos "nearshoring", que es el relevante desde el punto de vista de México
+
+El interés alcanza su punto más alto en los años 2023-2024, con 13 mil menciones por año, y luego se reduce rápidamente, con 3,781 menciones en 2025 y 1,636 en la primera mitad del 2026, lo que equivale a un ritmo anual parecido al de 2025. Los datos se muestran en la @fig-nearshoringMX. Al parecer, al iniciarse el segundo gobierno del presidente Trump el interés - o las expectativas - con relación al "nearshoring" decrecieron.con la llegada del presidente Trump.
+
+Sin embargo, ni cambio en los temas que los CEOs discuten ni un cambio en los temas prominentes en la prensa son equivalentes a un cambio en lo que las empresas efectivamente hacen. La reducción en el interés mediático sobre el tema tampoco es un signo inequívoco de cambio en las decisiones empresariales.
+
+Era razonable, por lo tanto, preguntarse si la intensidad de la discusión sobre NS, en conversaciones empresariales pero también en instituciones de desarrollo y en círculos académicos estaba acompañada de cambios en la organización geográfica de las cadenas globales de valor (CGV) o si todo aquello era "mucho ruido y pocas nueces" y hoy es necesario preguntarse si la reducción de las menciones del tema en la prensa y las comunicaciones empresariales se corresponde o no con cambios en las tendencias de reconfiguración de las CGV.
+
+```{r}
+#| label: fig-nearshoringMX
+#| fig-cap: "Menciones de nearshoring y reshoring en medios en línea, EUA (arriba) y México (abajo), 2018-2024"
+#| cap-location: top
+#| echo: false
+#| fig-width: 10
+#| fig-height: 10
+#| fig-dpi: 150
+#| out-width: "100%"
+
+# Las dos figuras (hasta 2024) se generan en `save-fig-media-cloud` (inicio de
+# la Introducción); aquí solo se cargan y se apilan: EUA arriba, México abajo.
+pacman::p_load(patchwork, png)
+
+png_a_panel <- \(archivo)
+  patchwork::wrap_elements(
+    full = grid::rasterGrob(png::readPNG(here::here("Plots", archivo)),
+                            interpolate = TRUE))
+
+(png_a_panel("fig_media_cloud_menciones_usa_2024.png") /
+   png_a_panel("fig_media_cloud_menciones_mex_2024.png")) &
+  theme(plot.margin = margin(0, 0, 0, 0))
+
+rm(png_a_panel)
+```
+
+Fuente: elaboración propia con base en MediaCloud
+
+Había algunas razones para ser escépticos sobre la magnitud del cambio en las CGV cuando el tema se empezó a discutir. En el caso de las importaciones provenientes de China sujetas a aranceles a partir de 2018, había un incentivo económico para abastecerse desde países que no estuvieran sujetos a aranceles semejantes, pero para todos los demás productos, el NS era una inversión para protegerse de (eventuales) disrupciones futuras en las CGV. Siendo así, el NS creaba una "desventaja para el primero en moverse" [^2], ya que sus costos se incrementaban de manera inmediata, mientras que los beneficios se realizarían únicamente cuando tuviera lugar una nueva disrupción de gran escala, momento en el cual las empresas que hubiesen invertido en NS tendrían una ventaja competitiva con respecto a las que no lo hubieran hecho.
+
+[^2]: En contraposición a la bien conocida "first-mover advantage" popularizada en la literatura sobre estrategia empresarial por Lieberman y Montgomery
+
+En tal situación ¿quién será el primero en moverse? Estudios tempranos, asumiendo que el NS, si estaba teniendo lugar, debería reflejarse en cambios en los flujos de inversión extranjera directa, llegaron a la conclusión de que en los datos casi no mostraban evidencia de NS[@brenton2022a] e incluso argumentaron que la prioridad de política debería de ser el fortalecimiento de las CGV y su resiliencia, no su relocalización, que resultaría en pérdidas de eficiencia y reducción del bienestar global.
+
+Sin embargo, los **anuncios** de nueva inversión sugerían un cambio en la dirección futura de la IED. Cabía pues la posibilidad de que si bien a la altura de 2022 no hubiera evidencia de cambios en los flujos de inversión que habían tenido lugar hasta ese momento, el terreno estaba siendo preparado para cambios futuros. Después de todo, no se puede esperar que los flujos de inversión respondan de manera inmediata a cambios en las condiciones comerciales, ni siquiera en el caso de que exista confianza en que esos cambios serán duraderos [@gaurav2024]. El tema de los anuncios de inversión, para el caso concreto de México, de hecho se aborda más adelante en este capítulo.
+
+Otros autores advirtieron, sin embargo, que la reconfiguración de las CGV podía estar teniendo lugar por otros canales [@martínezgarciía2024]: la expansión de capacidades mediante reinversión de utilidades de empresas ya existentes, uso de "shelter companies" y tercerización de operaciones de manufactura y servicios de logística a firmas mexicanas, mientras que Durán y Stein [@durán-fernández2025] propusieron una nueva taxonomía del NS, que se describió con detalle en el capítulo anterior.
+
+Desde esta nueva taxonomía se argumenta, como se explicó en detalle en el capítulo anterior, que la reorganización de las CGV no es sinónimo de la construcción de nuevas plantas ("greenfield" puro) y que la ampliación de capacidad productiva en plantas ya existentes ("brownfield expansion") puede servir exactamente para el mismo propósito: desde el punto de vista del NS, la construcción de nuevas plantas y la ampliación de plantas existentes tiene exactamente el mismo efecto, y la distinción irrelevante, como lo es el mecanismo de financiamiento: da exactamente igual si la expansión se financia mediante ingreso de capital "fresco" o mediante la reinversión de utilidades. El caso de Flex, que se presenta más adelante, ilustra con claridad como la reasignación de líneas de producción entre plantas en distintas ubicaciones y la ampliación de capacidad productiva en México han sido usados como mecanismo directo para el NS.
+
+Además, el NS no está asociado únicamente con la IED: la inversión de empresas domésticas también es un mecanismo para el NS cuando está orientada ya sea a la exportación directa o bien para incrementar el volumen y la complejidad de productos y servicios brindados a empresas exportadoras y existe amplia evidencia de que este mecanismo está siendo utilizado en México. En el Capítulo 4 se presentan varios estudios de caso que ilustran su operación.
+
+Por todo lo anterior cabe esperar que el NS se manifieste primero en cambios en los flujos comerciales, apoyados en la reasignación de líneas de producción entre plantas y la ampliación de plantas existentes, y solo con rezago en cambios en las construcción de nuevas plantas y los anuncios de grandes inversiones, que son los que suele capturar los titulares de la prensa.
+
+En este capítulo mostramos que el examen de los flujos comerciales entre México y Estados Unidos arroja evidencia contundente de un proceso de reorganización de CGV, favorable a México en muchos casos, aunque no en todos. Este cambio no es, quizás, de la magnitud que se hubiera podido esperar, y tal vez las expectativas desmedidas iniciales son una de las razones por las que se ha reducido la prominencia del tema.
+
+Aun así, la evidencia que resulta tanto del examen descriptivo como del análisis econométrico coincide en señalar un cambio claro en la organización geográfica de las CGV.
+
+Si a pesar de ello existe en círculos empresariales la impresión de que NS en México ha sido "mucho ruido y pocas nueces", ello quizá se deba a una mezcla de expectativas iniciales sobredimensionadas, y a que existen restricciones internas que impiden a México aprovechar plenamente las oportunidades que los cambios en la política comercial de EUA, y los conflictos geopolíticos, le ofrecen. Algunas de estas restricciones se discuten en los capítulos siguientes de este informe.
+
+### Alcance del capítulo
+
+En este capítulo, tal y como se indica en su título, se hace una presentación minuciosa de los **datos** que informan el debate sobre el NS, y específicamente el NS en México. El enfoque es fundamentalmente descriptivo: se aspira a identificar y caracterizar los hechos y con ello sentar la base fáctica para las discusiones que se abordan en los demás capítulo del libro, pero también se hace una síntesis, no técnica, de los principales econométricos que explorarn los cambios en las relaciones comerciales entre EUA y México durante la primara fase del NS, que se inicia con el primer gobierno del presidente Trump **REFERENCIAS**
+
+Los dos períodos de interés central para el capítulo son, justamente, eso que acabamos de llamar la primera fase del NS, que va desde el primero gobierno de Trump hasta el final del gobierno de Biden, y una nueva fase que se inicia con el segundo gobierno de Trump, que obviamente se encuentra en rápida evolución y cuyos contornos finales aún no se conocen. Como telón de fondo, el análisis de los datos frecuentemente incluye también información para el período 2010-2018, es decir, los últimos años del período en que la globalización, cada vez con menos restricciones, constituyó la tendencia fundamental de las relaciones económicas internacionales.
+
+El capítulo se organiza en cuatro secciones, además de esta introducción.
+
+En la Sección 2, se discuten los cambios en la distribución por origen de las importaciones de los Estados Unidos. Como se verá, países ganadores y perdedores (es decir, países que aumentan o ver disminuir su participación en ese mercado) son diferentes en cada uno de los períodos que se analizarán. Este período culmina con el ascenso de México, que desde 2024 se convierte en el mayor exportador al mercado de EUA.
+
+En la Sección 3 el foco se traslada a los cambios en la composición de las exportaciones mexicanas a EUA. Empezando con un análisis al mayor nivel de agregación, las Secciones del SA armonizado, esta sección, tras una rápida mirada a la composición de esas exportaciones por Capítulo, identifica las Partidas más importantes y dinámicas del portafolio exportador de México.
+
+La Sección 4 aborda el impacto regional del NS. A pesar de que por razones de confidencialidad la información de accesso pública es limitada, los datos disponibles permiten establecer patrones claramente diferenciados en la participación de diversos estados y regiones mexicanas; la división entre "dos Méxicos", ampliamente discutida en los estudios sobre el desarrollo económico del país, no se está reduciendo [@aroca2005][@chiquiar2005][@gómez2009].
+
+En la Sección 5 se abordan dos temas complementarios: los flujos y distribución sectorial de la IED en México, y la evolución de la demanda de suelos de uso industrial, que se ve afectacada, claro está, no solo por la llegada de nuevos inversionistas, sino también por la expansión o contracción de las actividades de empresas que ya operan en México.
+
+En la Sección 6, se hace un primer intento de identificar desafíos clave que México debe superar para obtener mayores beneficios del proceso de reorganización de las cadenas globales de valor en curso.
+
+, de los que se derivan tanto oportunidades como desafíos se presenta, con bastante detalle, la evidencia disponible sobre el NS en México. Temáticamente, el capítulo se organiza en cuatro secciones:
+
+- El cambio en la composición de las importaciones de EUA por país de origen, que lleva a México a convertirse en el principal proveedor de ese mercado a partir de 2024.
+- El cambio en la composición de las exportaciones mexicanas a EUA en tres distintos niveles de granularidad: Sección primero, y luego los Capítulos y Partidas de mayor importancia.
+- Las dimensiones regionales del NS en México.
+- El análisis de los flujos de IED y de la demanda de suelo de uso industrial.
+
+El examen de la evidencia estadística se concentra en dos períodos:
+
+- 2018 - 2024, que corresponde al inicio de la primera guerra comercial entre Estados Unidos y China durante el primero gobierno del presidente Trump, así como el gobierno del presidente Biden, que mantuvo los aranceles a las importaciones provenientes de China y lanzó además la Inflation Reduction Act y la Chips and Science Act, ambas con el propósito expreso de acercar (nearshoring) o retornar a EUA (reshoring) actividades industriales críticas
+
+- 2024-2025, el período de "turbulencia" que da su título a este libro, durante el cual se lanza una nueva política comercial en EUA, todavía volátil e impredecible, y cuya configuración final dista aún de estar claramente definida.
+
+Un período anterior, 2010 - 2018, que corresponde a los últimos años de la globalización ascendente, se incluye como punto de referencia: nos permite identificar los cambios que tuvieron lugar a partir de 2018.
+
+El impacto del segundo gobierno del presidente Trump debe analizarse con cautela. Cuantitativamente, como se verá en la sección 3 de este capítulo, los efectos son notorios: en muchos rubros, las exportaciones (o al menos su tasa de crecimiento) se reducen con respecto a lo observado entre 2010 y 2018.
+
+Sin embargo, la razón de señal a ruido puede ser alta: aunque el giro proteccionista de la política arancelaria de EUAl está firmemente establecido, no sucede lo mismo con la estructura tarifaria, que ha estado sujeta a fuertes ajustes como resultado de negociaciones comerciales y resoluciones judiciales, y que aún a mediados de 2026 no tiene un perfil estable y predecible. Ni siquiera países que cuentan con acuerdos comerciales bilaterales o regionales con EUA, como México, Canadá y Centroamérica están protegidos contra cambios bruscos en los aranceles de base o para productos específicos, que pueden ser "gatillados" por muy diversas razones.
+
+Hecha esa acotación, es claro que el impacto de la política predominante en cada uno de estos períodos ha sido distinto tanto para México como para otros exportadores al mercado de EUA en términos del volumen y la composición de las exportaciones. A pesar de estas diferencias, hay una constante en términos del impacto regional en México: un pequeño conjunto de estados ha visto disminuir su participación en la economía exportadora en todos ellos, como se muestra en la Sección 4. La división entre "dos Méxicos", que ha sido objeto de amplia discusión en la literatura sobre el desarrollo mexicano .
+
+## El ascenso de México en el mercado de EUA.
+
+```{r}
+#| label: load-imp-pais
+#| echo: false
+#| eval: false
+
+impPais <- readRDS(here::here("RDS", "imp_por_pais.rds"))
+```
+
+### Cambio en las posiciones relativas de México y China
+
+La manifestación más obvia de que los CGV centradas en Estados Unidos se están reorganizando, surge del examen de la evolución de sus importaciones según su país de origen. Este examen pone de manifiesto, de manera contundente, el impacto del NS sobre México y cómo este ha logrado aprovechar las oportunidades que se derivan de este fenómeno, pero también muestra que otros países están cerrando la brecha que los separa de México, y que mantener el liderazgo en ese mercado demandará de una política comercial calibrada con precisión, de negociaciones delicadas con los EUA, y de políticas públicas que permiten superar "cuellos de botella" que ha impedido un crecimiento más acelerado de las exportaciones mexicanas.
+
+En la @fig-ImpEUA-CHN-MEX se muestra la evolución de la participación en el mercado de importaciones de EUA de los sus dos principales proveedores: México y China.
+
+- Antes del inicio de la guerra comercial entre EUA y China, las exportaciones de México y China hacia ese país venían creciendo a un ritmo muy parecido: 5.1 y 5%, respectivamente. Aunque la tasa de crecimiento de las exportaciones mexicanas es ligeramente superior, no es suficiente para cerrar la brecha con China que, por el contrario, se amplía en este período.
+
+- Las cosas cambian de manera drástica entre 2018 y 2024: la tasa compuesta anual de crecimiento (TCAC) de China se contrae y alcanza un valor negativo, -3.4%, mientras que la TCAC de las exportaciones mexicanas sube a un 6.6%. El conflicto comercial entre EUA y China, y la imposición por parte de EUA de aranceles diferenciados a las importaciones provenientes de China, permitió a México, cuyas exportaciones durante este período se rigen por las reglas del T-MEC, superar a China y convertirse en el primer exportador de bienes a EUA.
+
+- Entre 2024 y 2025 el crecimiento de las exportaciones mexicanas sigue siendo notable, de 6.3%, apenas inferior al del período anterior, mientras que las exportaciones chinas colapsan, y se contraen en casi un 30%.
+
+Una primera impresión, entonces, es que México se ha beneficiado tanto de la tendencia a la liberalización del comercio internacional que predominó hasta 2018 y de su participación en el NAFTA (hoy T-MEC) como del conflicto comercial entre EUA y China y de la nueva política arancelaria de EUA a partir de 2025, aunque con diferencias importantes en cada período.
+
+```{r}
+#| label: save-fig-ImpEUA-CHN-MEX
+#| echo: false
+#| eval: false
+#| code-summary: "Código del gráfico"
+
+p <- local({
+  col_chn <- paleta_pais[["China"]]
+  col_mex <- paleta_pais[["México"]]
+
+  # — 1. Datos mensuales base ------------------------------------------------
+  imp_chn_mex <- impPais |>
+    filter(País %in% c("China", "México")) |>
+    mutate(Imp_bn = Imp_mes / 1e9)
+
+
+  # — 2. Ajuste estacional por país ------------------------------------------
+  imp_chn_mex <- imp_chn_mex |>
+    arrange(País, fecha) |>
+    group_by(País) |>
+    mutate(Imp_bn_sa = sa_adj(Imp_bn, fecha, freq = 12)) |>
+    ungroup()
+
+  # — 3. Totales anuales (sobre la serie ORIGINAL, sin ajuste estacional) -----
+  # Años calendario completos (2010, 2018, 2024): sin estacionalidad que
+  # remover, y no dependen de las revisiones de X-13. La serie ajustada solo
+  # se usa para la línea del gráfico.
+  anuales <- imp_chn_mex |>
+    group_by(País, Año = year(fecha)) |>
+    summarise(Imp_anual = sum(Imp_bn, na.rm = TRUE), .groups = "drop")
+
+  # — 4. Función auxiliar: extraer total anual --------------------------------
+  val_anual <- function(df, pais_nombre, año) {
+    df |>
+      filter(País == pais_nombre, Año == año) |>
+      pull(Imp_anual)
+  }
+
+  cagr <- function(v_fin, v_ini, n) ((v_fin / v_ini)^(1 / n) - 1) * 100
+
+  # — 5. Valores ancla -------------------------------------------------------
+  mex_10 <- val_anual(anuales, "México", 2010)
+  mex_18 <- val_anual(anuales, "México", 2018)
+  mex_24 <- val_anual(anuales, "México", 2024)
+  chn_10 <- val_anual(anuales, "China",  2010)
+  chn_18 <- val_anual(anuales, "China",  2018)
+  chn_24 <- val_anual(anuales, "China",  2024)
+
+  # — 6. Etiquetas -----------------------------------------------------------
+  # y_pos se ancla a valores mensuales promedio (~total anual / 12)
+  etiquetas_mex <- tibble(
+    fecha = as.Date(c("2014-01-01", "2021-06-01")),
+    y_pos = c(mex_18 / 12 + 1.5, mex_24 / 12 - 9),
+    label = c(
+      paste0("TCAC MEX 10-18: ", round(cagr(mex_18, mex_10, 8), 1), "%"),
+      paste0("TCAC MEX 18-24: ", round(cagr(mex_24, mex_18, 6), 1), "%")
+    )
+  )
+
+  etiquetas_chn <- tibble(
+    fecha = as.Date(c("2014-01-01", "2021-06-01")),
+    y_pos = c(chn_18 / 12 + 1.5, chn_24 / 12 + 6),
+    label = c(
+      paste0("TCAC CHN 10-18: ", round(cagr(chn_18, chn_10, 8), 1), "%"),
+      paste0("TCAC CHN 18-24: ", round(cagr(chn_24, chn_18, 6), 1), "%")
+    )
+  )
+
+  # — 7. Gráfico -------------------------------------------------------------
+  imp_chn_mex |>
+    filter(year(fecha) >= 2010, fecha <= FECHA_FIN) |>   # corte solo al graficar (X-13 sobre serie completa)
+    ggplot(aes(x = fecha, y = Imp_bn_sa, color = País)) +
+    geom_line(linewidth = 1) +
+    geom_vline(
+      xintercept = as.Date("2018-01-01"),
+      linetype = "dotted", color = COL_HITO, linewidth = 0.7
+    ) +
+    geom_label(
+      data = etiquetas_mex,
+      aes(x = fecha, y = y_pos, label = label),
+      inherit.aes = FALSE,
+      color = col_mex, fill = "white", fontface = "bold", size = 3.5, linewidth = 0.4
+    ) +
+    geom_label(
+      data = etiquetas_chn,
+      aes(x = fecha, y = y_pos, label = label),
+      inherit.aes = FALSE,
+      color = col_chn, fill = "white", fontface = "bold", size = 3.5, linewidth = 0.4
+    ) +
+    scale_color_manual(values = c("China" = col_chn, "México" = col_mex)) +
+    scale_x_date(
+      breaks = seq(as.Date("2010-01-01"), as.Date("2024-01-01"), by = "1 year"),
+      date_labels = "%Y"
+    ) +
+    labs(
+      x       = NULL,
+      y       = NULL,
+      color   = "",
+      caption = paste(
+        "Elaboración propia con base en US Census Bureau.",
+        "Serie mensual ajustada por estacionalidad (X-13ARIMA-SEATS).",
+        "Las tasas de crecimiento (TCAC) se calculan sobre totales anuales de la serie sin ajustar.",
+        sep = "\n"
+      )
+    ) +
+    theme_bw() +
+    theme(
+      legend.position  = "bottom",
+      panel.grid.minor = element_blank(),
+      axis.text.x      = element_text(angle = 90, vjust = 0.5)
+    )
+})
+
+p
+ggsave(here::here("Plots", "fig-ImpEUA-CHN-MEX_2024.pdf"),
+       plot = p, width = 11, height = 6, device = cairo_pdf)
+ggsave(here::here("Plots", "fig-ImpEUA-CHN-MEX_2024.png"),
+       plot = p, width = 11, height = 6, dpi = 150)
+rm(p)
+
+```
+
+```{r}
+#| label: fig-ImpEUA-CHN-MEX
+#| message: false
+#| warning: false
+#| echo: false
+#| code-summary: "Importaciones EUA desde China y México"
+#| fig-cap: |
+#|   EUA: importaciones mensuales desde China y México, 2010-2024
+#|   Miles de millones de dólares
+#| fig-cap-location: top
+
+knitr::include_graphics(here::here("Plots", "fig-ImpEUA-CHN-MEX_2024.png"))
+```
+
+Es necesario hacer tres acotaciones para no dar un peso injustificadamente elevado a estos primeros datos:
+
+- En primer lugar, alguna evidencia sugiere que parte de la reducción en las importaciones de China corresponde a reducciones en el valor reportado, y no a reducciones en el monto físico de las importaciones, ya que existe una significativa entre el valor de las importaciones reportadas por China y el valor de las importaciones provenientes de China reportado por Estados Unidos [@clark2021][@swanson2026]. Dadas las diferencias entre las tarifas que deben enfrentar las importaciones de China y las del resto del mundo, el incentivo económico para sub reportar el valor de esas importaciones, es considerable.
+
+- En segundo lugar, se ha discutido la posibilidad de que parte de la disminución de las importaciones de China refleje en realidad una triangulación de exportaciones de dicho país, particularmente Vietnam [@iyoha2025][@meltzer]. Sin embargo, es importante distinguir entre cambios en el origen de las importaciones que resultan de cambios en la ubicación de las operaciones de manufactura, sea cual sea la nacionalidad del capital, de aquellos cambios en los que cambia no es la ubicación de la manufactura sino el país del que se despachan los productos. Es decir, hay una diferencia fundamental entre el caso en el que China, o cualquier otro país, construye una planta en Vietnam y exporta a Estados Unidos, y el caso en que la manufactura no cambia de localización, pero se reporta un origen distinto para el producto, a saber, el del país en que se realizan operaciones mínimas y se despacha el producto.
+
+- En tercer lugar, los datos del último período no reflejan tanto el impacto de una nueva política comercial de EUA, sino más bien la incertidumbre asociada con esa política, que cambia día a día como resultado de negociaciones comerciales y resoluciones judiciales, así como la profundización del conflicto comercial y geopolítico entre EUA y China. Conforme - y si es que - la nueva política comercial se estabilice, el impacto sobre la competitividad de diversos exportadores al mercado de EUA, en diferentes productos, podría variar sustancialmente.
+
+Ninguna de estas acotaciones debe llevar a la conclusión de que el cambio en el origen de las importaciones norteamericanas no es real, pero señalan - de la misma manera que los datos sobre inversión china en México, que se discuten en el Capítulo 8 - que existe una considerable cantidad de "ruido" en la información de que disponemos, y que si bien es posible identificar tendencias claras, será necesario mucho trabajo adicional para elevar el grado de precisión de nuestros diagnósticos.
+
+### Otros participantes y estrellas emergentes
+
+China y México son los dos exportadores más importantes a los EUA, pero no los únicos. Más importante: salvo que hubiese un cambio radical en el estado de las relaciones comerciales entre EUA y China, los principales retos competitivos para México en el mercado de EUA no vendrán de China, sino de otros países cuyas exportaciones están creciendo rápidamente, y en algunos casos justamente en los productos más importantes dentro de las exportaciones mexicanas.
+
+Es necesario, pues, ampliar la mirada. Con este propósito, se han identificado los 20 orígenes más importantes de las importaciones de Estados Unidos\[\^4\] y los cambios en la participación de cada uno de ellos en los años finales de la globalización.
+
+Los ganadores y perdedores de cada unos de estos tres períodos se muestran en la @fig-imp-cambio-pais:
+
+- En los años finales de la globalización, China,México y Vietnam son los principales ganadores. Las pérdidas de participación en el mercado de EUA tienen un pequeño impacto sobre Gran Bretaña y Japón, y un impacto considerable sobre Canadá, a pesar de su acceso preferencial a ese mercado.
+
+- Durante la primera fase del NS, Vietnam logra incrementar su participación a un ritmo mayor que México, y Taiwán pisa sus talones. El gran perdedor es, por supuesto, China.
+
+- Durante la segunda fase de la globalización, Taiwán y Vietnam siguen aumentando su participación y, bastante detrás de ellos, Tailandia. Las exportaciones suizas e irlandesas también se incrementan, pero principalmente en productos que no compiten directamente con las exportaciones mexicanas, por lo que resultan de menos interés para nuestro estudio. En términos relativos, la participación mexicana no sufre alteraciones.
+
+```{r}
+#| label: origAnualPerc
+#| echo: false
+#| eval: false
+
+# Calculado en Scripts/Prep04_imp_pais_mex.R
+impPais_Perc <- readRDS(here::here("RDS", "impPais_Perc.rds"))
+```
+
+```{r}
+#| label: save-fig-imp-cambio-pais
+#| include: false
+#| eval: false
+
+pacman::p_load(patchwork, glue)
+
+p <- local({
+  codigos_iso <- c(
+    "México"    = "MEX", "Canadá"    = "CAN", "China"     = "CHN",
+    "Vietnam"   = "VNM", "Taiwán"    = "TWN", "Alemania"  = "DEU",
+    "Japón"     = "JPN", "Corea_S"   = "KOR", "Irlanda"   = "IRL",
+    "India"     = "IND", "Suiza"     = "CHE", "Tailandia" = "THA",
+    "Italia"    = "ITA", "R_Unido"   = "GBR", "Francia"   = "FRA",
+    "Malasia"   = "MYS", "Brasil"    = "BRA", "Singapur"  = "SGP",
+    "P_Bajos"   = "NLD", "Indonesia" = "IDN", "Resto"     = "RoW"
+  )
+
+  hacer_divbar_paises <- function(ini, fin, datos) {
+    col_ini <- paste0("y", ini)
+    col_fin <- paste0("y", fin)
+    cambios <- datos |>
+      filter(año %in% c(ini, fin)) |>
+      select(País, año, share) |>
+      pivot_wider(names_from = año, values_from = share, names_prefix = "y") |>
+      mutate(
+        cambio_pp   = (.data[[col_fin]] - .data[[col_ini]]) * 100,
+        País_cod    = codigos_iso[País],
+        País_cod    = fct_reorder(País_cod, cambio_pp, .desc = TRUE),
+        color_grupo = case_when(
+          País == "China"   ~ "china",
+          País == "México"  ~ "mexico",
+          País == "Vietnam" ~ "vietnam",
+          País == "Taiwán"  ~ "taiwan",
+          TRUE              ~ "otros"
+        )
+      )
+
+    ggplot(cambios, aes(x = País_cod, y = cambio_pp, fill = color_grupo)) +
+      geom_col() +
+      geom_text(
+        aes(
+          label = sprintf("%.1f", cambio_pp),
+          y     = if_else(cambio_pp > 0, cambio_pp + 0.05, cambio_pp - 0.05),
+          vjust = 0.35,
+          hjust = if_else(cambio_pp > 0, 0, 1)
+        ),
+        angle    = 90,
+        size     = 2.5,
+        fontface = "plain"
+      ) +
+      geom_hline(yintercept = 0, linewidth = 0.4, color = "grey30") +
+      scale_y_continuous(labels = \(x) as.character(x), expand = expansion(mult = c(0.22, 0.22))) +
+      scale_fill_manual(values = c(
+        "china"   = paleta_pais[["China"]],   "mexico" = paleta_pais[["México"]],
+        "vietnam" = paleta_pais[["Vietnam"]], "taiwan" = paleta_pais[["Taiwán"]],
+        "otros"   = paleta_pais[["Otros"]]
+      )) +
+      theme_bw() +
+      labs(x = NULL, y = NULL, title = glue("{ini} – {fin}")) +
+      theme(
+        plot.title         = element_text(face = "plain"),
+        legend.position    = "none",
+        panel.grid.major.x = element_blank(),
+        axis.text.x        = element_text(angle = 90, vjust = 0.5, hjust = 1),
+        axis.text.y        = element_text(size = 9)
+      )
+  }
+
+  periodos      <- list(c(2010, 2018), c(2018, 2024))
+  divbar_paises <- map(periodos, \(pr) hacer_divbar_paises(pr[1], pr[2], impPais_Perc))
+
+  reduce(divbar_paises, `/`) +
+    plot_annotation(caption = "Elaboración propia con base en US Census Bureau") &
+    theme(plot.caption = element_text(hjust = 1))
+})
+
+
+
+ggsave(here::here("Plots", "fig-imp-cambio-pais_2024.pdf"), plot = p, width = 8, height = 7.5, device = cairo_pdf)
+ggsave(here::here("Plots", "fig-imp-cambio-pais_2024.png"), plot = p, width = 8, height = 7.5, dpi = 150)
+rm(p)
+```
+
+```{r}
+#| label: fig-imp-cambio-pais
+#| echo: false
+#| fig-cap: "Cambios en la participación porcentual de los principales exportadores al mercado de EUA, 2010-2018 y 2018-2024"
+#| fig-cap-location: top
+#| out-width: 100%
+
+knitr::include_graphics(here::here("Plots", "fig-imp-cambio-pais_2024.png"))
+```
+
+Una última mirada al cambio en las importaciones de EUA por país de origen se presenta en la @fig-ImpEUA-shares, en la que se incluye información únicamente para México, Taiwán y Vietnam. La participación tanto de Taiwán como de Vietnam es de aproximadamente 2% del mercado en 2018, mientras que la de México es de aproximadamente 12.5%. La participación de México alcanza el 15% en 2023 y se ha incrementado muy levemente desde entonces. En cambio, tanto Vietnam como Taiwán triplicaron su participación, que alcanza el 6% en 2025.
+
+Estos datos bastan para sugerir que estos dos países serán los principales rivales de México en el mercado de los EUA, pero la intensidad de esa rivalidad dependerá de si están compitiendo en los mismos mercados (es decir, si están exportando los mismos productos) en los que compite México. Este tema se aborda en el Capítulo 3. Allí también se examina la cuestión de el impacto diferenciado de las nuevos aranceles de EUA, por país y producto, que en muchos casos han resultado favorables para México, pero en otros lo han puesto en una situación de desventaja competitiva.
+
+El relativo estancamiento de las exportaciones mexicanas a EUA también puede ser explicado, en parte, por restricciones internas que le impiden sacar pleno provecho de sus oportunidades comerciales. Dos de estas posibles restricciones, acceso a energía y acceso a agua se examinan en los capítulos 6 y 7, respectivamente.
+
+```{r}
+#| label: save-impPais_perc_plot
+#| eval: false
+#| include: false
+
+p <- local({
+  impPais_Perc |>
+    #filter(País %in% c("México", "China", "Taiwán", "Vietnam", "Suiza", "Irlanda")) |>
+    filter(País %in% c("México", "Taiwán", "Vietnam"), año <= ANIO_FIN) |>
+    ggplot(aes(x = año, y = share, color = País)) +
+    geom_line(linewidth = 1) +
+    geom_point(size = 2) +
+    geom_vline(xintercept = 2018, linetype = "dotted", color = COL_HITO, linewidth = 0.7) +
+    scale_x_continuous(breaks = 2010:ANIO_FIN) +
+    scale_y_continuous(
+      breaks = seq(0,1, by = 0.01),
+      labels = percent_format(accuracy = 1)
+      ) +
+    scale_color_manual(values = paleta_pais) +
+    labs(
+      x = NULL, y = NULL, color = "",
+      caption = "Elaboración propia con base en US Census Bureau."
+    ) +
+    theme_bw() +
+    theme(
+      legend.position  = "bottom",
+      panel.grid.minor = element_blank(),
+      axis.text.x      = element_text(angle = 90, vjust = 0.5)
+    )
+})
+p
+ggsave(here::here("Plots", "imp_pais_perc_2024.pdf"), plot = p, width = 11, height = 6, device = cairo_pdf)
+ggsave(here::here("Plots", "imp_pais_perc_2024.png"), plot = p, width = 11, height = 6, dpi = 150)
+p
+rm(p)
+```
+
+```{r}
+#| label: fig-ImpEUA-shares
+#| echo: false
+#| fig-cap: |
+#|   EUA: participación porcentual en las importaciones totales,
+#|   México, China, Taiwán y Vietnam, 2010-2024
+#| fig-cap-location: top
+
+knitr::include_graphics(here::here("Plots", "imp_pais_perc_2024.png"))
+```
+
+```{r}
+#| label: cleanup-imp-pais
+#| include: false
+#| eval: false
+
+rm(impPais, impPais_Perc)
+```
+
+## Cambios en la composición de Las exportaciones mexicanas a EUA
+
+<!-- Todo el código usado para preparar los gráficos de esta sección se coloca al inicio, y posteriormente se incluye nada más el código necesario para insertar los gráficos en el texto -->
+
+```{r}
+#| label: prep-sec-pct
+#| include: false
+#| eval: false
+#| code-summary: "Preparación datos Sección: porcentajes anuales"
+
+# Calculado en Scripts/Prep04_imp_pais_mex.R
+impMex_sec_pct <- readRDS(here::here("RDS", "impMex_sec_pct.rds"))
+```
+
+```{r}
+#| label: save-tree-sec
+#| include: false
+#| eval: false
+
+pacman::p_load(treemapify)
+
+p <- local({
+  impMex_sec_pct |>
+    filter(año == ANIO_FIN) |>
+    mutate(
+      etiqueta = paste0(Sección, ". ", Sección_corto, "\n", percent(pct, accuracy = 1)),
+      grupo    = if_else(Sección %in% c("XVI", "XVII", "XVIII"), as.character(Sección), "Otras"),
+      txt      = if_else(grupo %in% c("XVI", "XVII"), "claro", "oscuro")
+    ) |> 
+    ggplot(aes(area = pct, fill = grupo, label = etiqueta)) +
+    geom_treemap(layout = "squarified", color = "white", size = 1) +
+    geom_treemap_text(
+      aes(colour = txt),
+      place = "centre", size = 11,
+      reflow = TRUE, fontface = "bold", min.size = 5
+    ) +
+    scale_fill_manual(values = paleta_seccion) +
+    scale_colour_manual(values = c(claro = "white", oscuro = "grey15")) +
+    theme_bw() +
+    labs(
+      title   = "",
+      caption = "Elaboración propia con base en US Census Bureau"
+    ) +
+    theme(
+      legend.position  = "none",
+      strip.background = element_blank(),
+      strip.text       = element_text(size = 16, face = "plain")
+    )
+})
+p
+ggsave(here::here("Plots", "impMex_sec_perc_2024.pdf"), plot = p, width = 11, height = 6, device = cairo_pdf)
+ggsave(here::here("Plots", "impMex_sec_perc_2024.png"), plot = p, width = 11, height = 6, dpi = 150)
+
+rm(p)
+```
+
+```{r}
+#| label: save-fig-imp-cambio-sec-mex
+#| include: false
+#| eval: false
+
+pacman::p_load(patchwork, glue)
+
+p <- local({
+  hacer_divbar_sec <- function(ini, fin, datos) {
+    col_ini <- paste0("y", ini)
+    col_fin <- paste0("y", fin)
+
+    cambios <- datos |>
+      filter(año %in% c(ini, fin)) |>
+      select(Sección, Sección_corto, año, pct) |>
+      pivot_wider(names_from = año, values_from = pct, names_prefix = "y") |>
+      mutate(
+        cambio_pp   = (.data[[col_fin]] - .data[[col_ini]]) * 100,
+        Sección     = fct_reorder(Sección, cambio_pp),
+        color_grupo = case_when(
+          Sección == "XVII"  ~ "transporte",
+          Sección == "XVI"   ~ "maquinaria",
+          Sección == "XVIII" ~ "instrumentos",
+          cambio_pp > 0                   ~ "positivo",
+          TRUE                            ~ "negativo"
+        )
+      )
+
+    ggplot(cambios, aes(x = Sección, y = cambio_pp, fill = color_grupo)) +
+      geom_col() +
+      geom_text(
+        aes(label = sprintf("%.1f", cambio_pp), vjust = if_else(cambio_pp > 0, -0.4, 1.4)),
+        size = 2.8, fontface = "bold"
+      ) +
+      geom_hline(yintercept = 0, linewidth = 0.4, color = "grey30") +
+      scale_y_continuous(
+        labels = \(x) paste0(x, " pp"),
+        expand = expansion(mult = c(0.18, 0.18))
+      ) +
+      scale_fill_manual(values = c(
+        "transporte"   = paleta_seccion[["XVII"]],
+        "maquinaria"   = paleta_seccion[["XVI"]],
+        "instrumentos" = paleta_seccion[["XVIII"]],
+        "positivo"     = paleta_seccion[["Otras"]],
+        "negativo"     = paleta_seccion[["Otras"]]
+      )) +
+      theme_bw() +
+      labs(x = NULL, y = NULL, title = glue("{ini} – {fin}")) +
+      theme(
+        legend.position    = "none",
+        panel.grid.major.x = element_blank(),
+        axis.text.x        = element_text(angle = 90, vjust = 0.5, hjust = 1, size = 7),
+        axis.text.y        = element_text(size = 9)
+      )
+  }
+
+  periodos   <- list(c(2010, 2018), c(2018, 2024))
+  divbar_sec <- map(periodos, \(pr) hacer_divbar_sec(pr[1], pr[2], impMex_sec_pct))
+
+  reduce(divbar_sec, `/`) +
+    plot_annotation(caption = "Elaboración propia con base en US Census Bureau") &
+    theme(plot.caption = element_text(hjust = 1))
+})
+
+ggsave(here::here("Plots", "fig-imp-cambio-sec-mex_2024.pdf"), plot = p, width = 8, height = 7.5, device = cairo_pdf)
+ggsave(here::here("Plots", "fig-imp-cambio-sec-mex_2024.png"), plot = p, width = 8, height = 7.5, dpi = 150)
+
+rm(p, impMex_sec_pct)
+```
+
+### Por Sección del SA
+
+El crecimiento de las exportaciones mexicanas a EUA quedó documentado en la sección anterior. Este crecimiento ha sido acompañado por un cambio sustancial de la composición de esas exportaciones, con diferentes sectores "ganadores" o "perdedores" (en el sentido de sectores cuya participación porcentual dentro del total de exportaciones mexicanas período aumentó o disminuyó) en cada período.
+
+La @fig-imp-cambio-sec-mex permite visualizar claramente estos cambios.
+
+- Entre 2010 y 2018, Las exportaciones de la Sección XVI, Material de transporte, ganan casi 10 puntos porcentuales de participación, mientras que las de la Sección V, Productos Minerales, se contraer casi exactamente en la misma proporción.
+
+- La dinámica cambia en el período siguiente: el crecimiento en participación porcentual es liderado por la Sección XVII, Máquinas y aparatos eléctricos y por la IV, Alimentos.La Sección V, Productos minerales, continúa disminuyendo su participación.
+
+- En el último período, 2024-2025, se acelera notoriamente el crecimiento de la Sección XVI, Máquinas y aparatos eléctricos, mientras que la Seccion XVII, Material de transporte, acuso un duro golpe.
+
+Quizá el dato más sorprendente de este período sea la evolución de las exportaciones de la Sección XVII, ya que como lo expresó Paul Krugman: "no existe realmente una industria automovilística de los EUA; existe una industria norteamericana, que opera en los tres países" integrantes del NAFTA [@krugman2025][^3]. A priori, no hubiera parecido probable que el giro proteccionista en la politica arancelaria de EUA se convirtiera en un obstáculo para esa integración, pero eso es exactamente lo que sucedió.
+
+[^3]: Traducción de los autores.
+
+```{r}
+#| label: fig-imp-cambio-sec-mex
+#| echo: false
+#| fig-cap: "Cambios en la participación porcentual por Secciones de las exportaciones mexicanas a EUA, 2010-2018 y 2018-2024"
+#| fig-cap-location: top
+#| out-width: 100%
+
+knitr::include_graphics(here::here("Plots", "fig-imp-cambio-sec-mex_2024.png"))
+```
+
+El resultado de este proceso es un portafolio exportador concentrado en las secciones XVI y XVII del Sistema Armonizado, que representan el 69% del total de exportaciones mexicanas en 2025, sequidas por la sección VIII, que representa un 5% adicional, para un total de 74%. Las demás secciones tienen una participación pequeña y en general su evolución no está relacionada con el NS. La @fig-tree-sec permite visualizar esta distribución.
+
+```{r}
+#| label: fig-tree-sec
+#| echo: false
+#| fig-cap: "Distribución porcentual de las exportaciones de México a EUA, 2024"
+#| fig-cap-location: top
+
+knitr::include_graphics(here::here("Plots", "impMex_sec_perc_2024.png"))
+```
+
+### Por Capítulo y Partida del SA   REVISADO HASTA AQUI
+
+<!-- Al igual que al inicio de la sección, se coloca al inicio de esta sub sección el código utilizado para generar los gráficos que posteriormente se insertan en el texto -->
+
+```{r}
+#| label: prep-caps
+#| include: false
+#| eval: false
+# impMex_caps_2025.rds (Prep04_imp_pais_mex.R) solo trae 2025; para 2024 se agregan
+# aquí los Capítulos de las Secciones XVI-XVIII desde imp_mex_sec_cap.rds (misma lógica del Prep).
+df_caps_2024 <- readRDS(here::here("RDS", "imp_mex_sec_cap.rds")) |>
+  hs_relabel() |>
+  filter(Sección %in% c("XVI", "XVII", "XVIII"), year(fecha) == ANIO_FIN) |>
+  group_by(Sección, Sección_corto, Capítulo, Cap_corto) |>
+  summarise(Val_anual = sum(Val_mes, na.rm = TRUE), .groups = "drop") |>
+  group_by(Sección) |>
+  mutate(pct = Val_anual / sum(Val_anual)) |>
+  ungroup() |>
+  mutate(
+    etiqueta    = paste0("Cap. ", Capítulo, "\n", Cap_corto, "\n", percent(pct, accuracy = 1)),
+    strip_label = paste0("Sección ", Sección, "  —  ", Sección_corto)
+  )
+```
+
+```{r}
+#| label: save-fig-treemap-caps-seccion
+#| include: false
+#| eval: false
+
+p <- local({
+  # Tonos claros de azul grisáceo (el texto es oscuro); un tono por Capítulo
+  pal_caps <- colorRampPalette(c("#8fa8bb", "#e3e6e9"))(n_distinct(df_caps_2024$Cap_corto))
+  names(pal_caps) <- sort(unique(df_caps_2024$Cap_corto))
+
+  ggplot(df_caps_2024, aes(area = Val_anual, fill = Cap_corto, label = etiqueta)) +
+    geom_treemap(layout = "squarified", color = "white", size = 1.5) +
+    geom_treemap_text(
+      place = "centre", size = 13, colour = "black",
+      reflow = TRUE, fontface = "bold", min.size = 4
+    ) +
+    facet_wrap(~ strip_label, ncol = 3) +
+    scale_fill_manual(values = pal_caps) +
+    theme_bw() +
+    labs(caption = "Elaboración propia con base en US Census Bureau") +
+    theme(
+      legend.position  = "none",
+      strip.background = element_blank(),
+      strip.text       = element_text(size = 13, face = "plain")
+    )
+})
+ggsave(here::here("Plots", "fig-treemap-caps-seccion_2024.pdf"), plot = p, width = 11, height = 6, device = cairo_pdf)
+ggsave(here::here("Plots", "fig-treemap-caps-seccion_2024.png"), plot = p, width = 11, height = 6, dpi = 150)
+rm(p, df_caps_2024)
+```
+
+```{r}
+#| label: prep-tablas-cap
+#| echo: false
+#| code-fold: true
+#| code-summary: "Tablas por partida, Capítulos 84, 85, 87 y 90"
+
+tcac_shares <- readRDS(here::here("RDS", "TCAC_y_shares_84858790.rds")) |> hs_relabel()
+
+# El Capítulo 2 termina en 2024: las participaciones se toman de las columnas
+# *_2024 (Scripts/Prep02_USA_imp_Mex_all_HS.R, sección 6). Si faltan, re-ejecutar
+# ese Prep.
+stopifnot("Faltan pct_cap_2024 / pct_total_2024 en TCAC_y_shares_84858790.rds" =
+            all(c("pct_cap_2024", "pct_total_2024") %in% names(tcac_shares)))
+tcac_shares <- tcac_shares |>
+  mutate(pct_cap = pct_cap_2024, pct_total = pct_total_2024)
+
+# flextable en vez de gt() -- gt() no emite anchos de columna (<w:tblGrid>) al
+# exportar a Word en esta versión, lo que produce columnas angostas con texto
+# partido letra por letra al abrir el .docx. flextable sí renderiza como
+# tabla nativa de Word con anchos correctos y preserva el resaltado de celdas.
+tabla_cap <- function(cap_num, datos = tcac_shares) {
+
+  cap_label  <- datos |> filter(Capítulo == cap_num) |> pull(Cap_corto) |> first()
+  total_2024 <- datos |> filter(Capítulo == cap_num) |> pull(val_2024)  |> sum()
+
+  df <- datos |>
+    filter(Capítulo == cap_num) |>
+    { \(d) bind_rows(
+      d |> filter(Cod_partida != "Resto") |> arrange(desc(TCAC_1824)),
+      d |> filter(Cod_partida == "Resto")
+    )}() |>
+    mutate(
+      pct_cap_acum   = cumsum(pct_cap),
+      pct_total_acum = cumsum(pct_total)
+    ) |>
+    select(
+      Partida      = Cod_partida,
+      Descripción  = Part_corto,
+      TCAC_1018,
+      TCAC_1824,
+      pct_cap,
+      pct_cap_acum,
+      pct_total,
+      pct_total_acum
+    ) |>
+    # fmt_percent() de gt multiplicaba por 100 y agregaba "%" a la vez;
+    # colformat_double() de flextable solo agrega el sufijo, así que hay que
+    # escalar los valores a mano antes de formatear.
+    mutate(across(c(TCAC_1018, TCAC_1824,
+                     pct_cap, pct_cap_acum, pct_total, pct_total_acum),
+                  \(x) x * 100))
+
+  # Se resaltan las partidas cuyo crecimiento se aceleró en 2018-2024 respecto a 2010-2018
+  filas_resaltar <- which(df$TCAC_1824 > df$TCAC_1018)
+
+  df |>
+    flextable() |>
+    set_header_labels(
+      Partida        = "Partida",
+      Descripción    = "Descripción",
+      TCAC_1018      = "2010–2018",
+      TCAC_1824      = "2018–2024",
+      pct_cap        = "%",
+      pct_cap_acum   = "% acum.",
+      pct_total      = "%",
+      pct_total_acum = "% acum."
+    ) |>
+    add_header_row(
+      top       = TRUE,
+      values    = c("", "", "Tasa de crecimiento anual compuesta",
+                    "% Capítulo, 2024", "% Total, 2024"),
+      colwidths = c(1, 1, 2, 2, 2)
+    ) |>
+    colformat_double(
+      j = c("TCAC_1018", "TCAC_1824",
+            "pct_cap", "pct_cap_acum", "pct_total", "pct_total_acum"),
+      suffix = "%", digits = 1
+    ) |>
+    bg(i = filas_resaltar, bg = "#fff3cd") |>
+    bold(i = filas_resaltar) |>
+    flextable::align(j = 3:8, align = "center", part = "all") |>
+    flextable::align(i = 1, align = "center", part = "header") |>
+    theme_booktabs() |>
+    autofit() |>
+    # autofit() dimensiona columnas solo por contenido, lo que produce tablas
+    # más anchas que el área imprimible de reference-doc.docx (carta, 1.25"
+    # de márgenes = 6" de ancho útil). fit_to_width() reescala proporcionalmente
+    # para que la tabla no se desborde ni se corte al abrir en Word.
+    fit_to_width(max_width = 6, unit = "in") |>
+    add_footer_lines("Elaboración propia con base en US Census Bureau, API de Comercio Internacional.") |>
+    fontsize(size = 8, part = "footer")
+}
+
+tab84 <- tabla_cap(84)
+tab85 <- tabla_cap(85)
+tab87 <- tabla_cap(87)
+tab90 <- tabla_cap(90)
+
+rm(tcac_shares, tabla_cap)
+```
+
+```{r}
+#| label: prep-top-partidas-quiebres
+#| include: false
+#| eval: false
+
+# Quiebres estructurales (Bai-Perron) y tendencia por partida, calculados en
+# Scripts/Prep05_partidas_quiebres.R (correrlo cuando cambien los datos).
+partidas_tendencia <- readRDS(here::here("RDS", "partidas_tendencia.rds"))
+quiebres_partida   <- readRDS(here::here("RDS", "quiebres_partida.rds"))
+```
+
+```{r}
+#| label: save-top-partidas-paneles
+#| include: false
+#| eval: false
+#| code-summary: "Construcción y guardado de los paneles (Capítulos 84, 85, 87+90)"
+
+# Ya no se fija el tamaño físico de cada panel de faceta (antes vía
+# ggh4x::force_panelsizes()) ni se mide el gtable resultante para inferir el
+# lienzo necesario (medir_panel()). En su lugar, ggplot/facet_wrap reparten
+# libremente el lienzo que se les da: el ancho es fijo e igual en los cuatro
+# capítulos (ANCHO_PANEL, con NCOL_FACET columnas siempre), y el alto se
+# calcula a partir del número de filas de faceta de cada capítulo
+# (ALTO_BASE + ALTO_POR_FILA * n_filas), para que capítulos con más partidas
+# (más filas) reciban un lienzo más alto en vez de inflar cada panel
+# individual. ALTO_BASE es una estimación fija del espacio que ocupan
+# subtítulo, ejes y caption; si el caption se corta o sobra espacio en algún
+# capítulo, ajustar ALTO_BASE o ALTO_POR_FILA. Capítulos 87 y 90 se guardan
+# como figuras separadas (antes se combinaban con patchwork).
+
+NCOL_FACET    <- 3
+ANCHO_PANEL   <- 6        # ancho total del panel, igual en los 4 capítulos (pulgadas)
+ALTO_POR_FILA <- 2.2      # alto asignado por fila de faceta (pulgadas)
+ALTO_BASE     <- 1.1      # espacio fijo para subtítulo, ejes y caption (pulgadas)
+CAPTION_PANEL <- "Elaboración propia con base en US Census Bureau. Serie mensual ajustada por estacionalidad (X-13ARIMA-SEATS)"
+
+construir_panel <- function(num_cap_obj, ncol_facet = NCOL_FACET, incluir_caption = TRUE) {
+  # Tendencias y quiebres se estimaron con la serie completa; aquí solo se corta lo dibujado
+  datos_cap    <- partidas_tendencia |> filter(num_cap == num_cap_obj, fecha <= FECHA_FIN)
+  quiebres_cap <- quiebres_partida   |> filter(num_cap == num_cap_obj, psi_fecha <= FECHA_FIN)
+
+  # Sin título: el capítulo y rango de años ya están en el fig-cap de Quarto
+  # (ver @fig-capXX-partidas). Sin mención de "ajustado por estacionalidad"
+  # en el subtítulo: ya se indica en el caption inferior (CAPTION_PANEL).
+  datos_cap |>
+    ggplot(aes(x = fecha, y = Indice)) +
+    geom_line(color = COL_SERIE, na.rm = TRUE) +
+    geom_line(aes(y = Indice_tendencia), color = COL_TENDENCIA,
+              linewidth = 0.8, na.rm = TRUE) +
+    geom_vline(
+      data = quiebres_cap,
+      aes(xintercept = psi_fecha),
+      linetype = "dotted", color = "grey30", linewidth = 0.5
+    ) +
+    geom_hline(yintercept = 100, linetype = "dashed", color = "grey50") +
+    facet_wrap(~ label_partida, scales = "free_y", ncol = ncol_facet) +
+    scale_x_date(date_breaks = "2 years", date_labels = "%Y") +
+    labs(
+      subtitle = "Enero 2018 = 100. Línea naranja: tendencia (strucchange, Bai-Perron)",
+      x = NULL, y = "Índice (ene-2018 = 100)",
+      caption  = if (incluir_caption) CAPTION_PANEL else NULL
+    ) +
+    theme_bw() +
+    theme(
+      axis.text.x = element_text(angle = 90, vjust = 0.5),
+      strip.text  = element_text(size = 9)
+    )
+}
+
+# Número de filas de faceta que tendrá el panel de un capítulo, dado
+# ncol_facet columnas fijas.
+n_filas_panel <- function(num_cap_obj, ncol_facet = NCOL_FACET) {
+  n_partidas <- partidas_tendencia |>
+    filter(num_cap == num_cap_obj) |>
+    distinct(label_partida) |>
+    nrow()
+  ceiling(n_partidas / ncol_facet)
+}
+
+guardar_panel <- function(num_cap_obj) {
+  panel <- construir_panel(num_cap_obj, incluir_caption = TRUE)
+  alto  <- ALTO_BASE + ALTO_POR_FILA * n_filas_panel(num_cap_obj)
+  archivo_base <- paste0("panel_partidas_cap", num_cap_obj, "_2024")
+
+  ggsave(here::here("Plots", paste0(archivo_base, ".pdf")), plot = panel,
+         width = ANCHO_PANEL, height = alto, units = "in",
+         device = cairo_pdf)
+  ggsave(here::here("Plots", paste0(archivo_base, ".png")), plot = panel,
+         width = ANCHO_PANEL, height = alto, units = "in",
+         dpi = 150)
+}
+
+walk(c(84, 85, 87, 90), guardar_panel)
+
+rm(construir_panel, n_filas_panel, guardar_panel,
+   NCOL_FACET, ANCHO_PANEL, ALTO_POR_FILA, ALTO_BASE, CAPTION_PANEL,
+   partidas_tendencia, quiebres_partida)
+```
+
+El siguiente nivel de desagregación en el SA, tras las Secciones, son los Capítulos. Sin embargo, como lo muestra la @fig-treemap-caps-seccion, las exportaciones de las tres Secciones en las que se concentran las exportaciones mexicanas a EUA se distribuyen en tan solo cuatro Capítulos, de manera que más informativo que detenernos en el examen de la distribución de las exportaciones por Capítulo, dentro de cada Sección, procederemos directamente al análisis de la evolución de las exportaciones por Partida, dentro de cada uno de esos cuatro capítulos.
+
+```{r}
+#| label: fig-treemap-caps-seccion
+#| echo: false
+#| fig-cap: "México: distribución por capítulo de las exportaciones de Maquinaria, Transporte e Instrumentos, 2024"
+#| fig-cap-location: top
+#| fig-width: 12
+#| fig-height: 6
+
+knitr::include_graphics(here::here("Plots", "fig-treemap-caps-seccion_2024.png"))
+```
+
+Con ese propósito, se procedió de la siguiente manera: se identificaron las 50 partidas de exportación de México más importantes de México en 2024-2025. Se eliminaron las que correspondían a Secciones que no son de interés desde el punto de vista de NS, con el resultado de una lista de 30 partidas, distribuidas en cuatro capítulos del SA: Maquinaria, Eléctrico, Automóviles y Óptica.
+
+Se identificaron además las 50 partidas que mostraron el mayor crecimiento entre 2010 y 2025. En todos los casos, el punto de partida era muy baja, y el volumen aún en 2025 aún muy pequeño, por lo que ninguna de ellas se incluyó en el análisis.
+
+Los resultados de este proceso de selección se resumen en las tablas siguientes, una por capítulo. Las Partidas identificadas de manera individual representan el 83.9% de las exportaciones del capitulo 85, el 82.5% de las exportaciones del Capítulo 85, el 91.9% de las exportaciones del Capítulo 87, y el 83.3% de las exportaciones del Capítulo 90. Sumadas, equivalen al 64.5% de las exportaciones mexicanas a EUA en 2025. En el Anexo 7.1 se presenta esta misma información gráficamente, pero en términos de índices en vez de valores absolutos, y se identifican los puntos de quiebre de tendencia para cada Partida.
+
+En las tablas se destacan en amarillo las partidas que crecieron más rápidamente en 2024-2025 que en 2018-2024. Solo seis partidas tienen este atributo:
+
+- 8471, Computadoras
+- 8418, Equipo de refrigeración
+- 8407, Motores
+- 8517, Teléfonos
+- 8543, Maquinaria Eléctrica
+- 8544, Cables eléctricos
+
+Las tres primeras partidas equivalen al 18.8% de las exportaciones mexicanas a EUA en 2025, y las tres últimas al 6.8%. Las demás partidas, equivalentes al 38.9% de las exportaciones mexicanas en 2025, vieron su crecimiento **reducirse** en 2024-2025 con respecto a 2018-2024. casi el 90% de las exportaciones de Maquinaria, el 83% de las de Eléctrico, 99% de Automóviles y 53% de Óptica. En conjunto representan aproximadamente el 63% de las exportaciones mexicanas a EUA en 2024-2025.
+
+Una acotación importante es que en este capítulo nos limitamos a registrar los cambios en las exportaciones por Partida, y si bien se identifican los casos en que esos cambios están correlacionados con cambios en la política comercial de los EUA, no se identifican los cambios en las tarifas específicas enfrentadas por cada producto. Esa tarea se aborda en el Capítulo 3.
+
+Empezamos con el **Capítulo 84**, Maquinaria.
+
+- Tres partidas individuales, más la partida residual (Resto), que en conjunto representan el 83.1% de las exportaciones del Capítulo, crecen más rápidamente en 2024-2025 que en el período anterior. Este Capítulo es el gran ganador de la nueva politica arancelaria de EUA. La estructura arancelaria que facilita este crecimiento se examina con detalla en el Capítulo 3 de este libro.
+
+- Las exportaciones del capítulo están altamente concentradas: la partida 8471 representa prácticamente el 60% de las exportaciones del Capítulo, y tuvo un crecimiento extraordinario, del 86%, en el último período.
+
+- Las partidas 8481 y 8409, aunque de menor preso, tienen un crecimiento superior al 4%, y al igual que las tres primeras partidas y la categoría residual, crecen en los tres períodos incluidos en la tabla.
+
+```{r}
+#| label: tbl-cap84
+#| echo: false
+#| tbl-cap: "Capítulo 84: Maquinaria y equipo mecánico"
+#| tbl-cap-location: top
+
+tab84
+```
+
+Continuamos con el **Capítulo 85**, Maquinaria y equipo eléctrico.
+
+- Aunque el peso de las partidas individuales es relativamente bajo, el capítulo representó el 17% de las exportaciones mexicanas a EUA en 2025.
+
+- Es un Capitulo cuyas exportaciones por Partida están mucho menos concentradas que las del Capítulo 84. Solo hay tres Partidas con uns participación mayor al 10% del total del Capítulo y ninguna de ellas alcanza el 20% del total.
+
+- Tres partidas exhiben un crecimiento notable en 2024-2025: 8517, Teléfonos; 8543, Maquinaria eléctrica especial, un 17.5%, y Cables eléctricos, un 9.1%.
+
+- El 83% de las exportaciones del Capítulo muestran una tasa de crecimiento positiva en 2024-2025.
+
+```{r}
+#| label: tbl-cap85
+#| echo: false
+#| tbl-cap: "Capítulo 85: Maquinaria y equipo eléctrico"
+#| tbl-cap-location: top
+
+tab85
+```
+
+El panorama es muy distinto para el **Capitulo 87**. Como vimos antes, la Sección XVII, Material de Transporte, fue la de más rápido crecimiento en el período 2010-2018, y el Capítulo 87, que comprende autopartes, cambios y automóviles, representa casi la totalidad de las exportaciones de esta Sección. En contraste con lo sucedido en 2010-2018, todas las partidas del Capítulo 87 se contraen en 2024 - 2025.
+
+```{r}
+#| label: tbl-cap87
+#| echo: false
+#| tbl-cap: "Capítulo 87: Maquinaria y equipo mecánico"
+#| tbl-cap-location: top
+
+tab87
+```
+
+Finalmente, exploramos el comportamiento del **Capítulo 90**. Al igual que en el caso del Capítulo 84, las exportaciones están fuertemente concentradas en una única partida, 9018, Instrumentos médicos, que representa el 53.7% de sus exportaciones. Únicamente esta partida, y la 9019, Aparatos para terapia, muestran un crecimiento fuerte en el último período. En las demas, el crecimiento es o muy cercando a cero, o en la mayor parte de los casos, negativo, como se muestra en la @tbl-cap90.
+
+```{r}
+#| label: tbl-cap90
+#| echo: false
+#| tbl-cap: "Capítulo 90: Maquinaria y equipo mecánico"
+#| tbl-cap-location: top
+
+tab90
+```
+
+```{r}
+#| label: cleanup-tablas-cap
+#| include: false
+#| eval: false
+
+rm(tab84, tab85, tab87, tab90)
+```
+
+### La evidencia econométrica
+
+ERNESTO: ESTA SECCIÓN NO LA TOQUE PORQUE ME DIJISTE QUE VOS LA QUERÍAS REVISAR
+
+**Laura Alfaro y Davin Chor**
+
+Estos autores presentaron en 2023 un primer análisis sobre la posible "gran relocalización" de las CGV [@alfarochor2023] en un Working Paper para NBER, en documentan los cambios en la participación de Estados Unidos en las cadenas globales de valor (CGV) entre 2017 y 2022. La pregunta central es si estos choques han desencadenado una "gran reasignación" en los patrones de abastecimiento de EE.UU. y, en caso afirmativo, hacia dónde se desplaza la actividad.
+
+Los autores construyen su evidencia a partir de cuatro fuentes: estadísticas de comercio a nivel de producto HS4 (UN Comtrade), medidas de *upstreamness* basadas en tablas insumo-producto de EE.UU. (2012), anuncios de IED *greenfield* (fDi Markets) y transcripciones de conferencias de resultados empresariales (NL Analytics) y analizan esta evidencia con técnicas econométricas.
+
+La especificación central es una regresión en diferencias a cinco años:
+
+$$\Delta y_{p,22\text{-}17} = \beta_{1}\,\Delta\text{CHNsh}_{p,22\text{-}17} + \beta_{2}\,\Delta y_{p,17\text{-}12} + D_{p}^{0} + \varepsilon_{p}$$
+
+donde $\Delta\text{CHNsh}_{p,22\text{-}17}$ es el cambio en la participación de China en las importaciones del producto $p$, $\Delta y_{p,17\text{-}12}$ controla por tendencias previas y $D_{p}^{0}$ son efectos fijos a dos dígitos del SA. Las regresiones se ponderan por el valor inicial de importaciones de China en 2017 y los errores estándar se agrupan por capítulo SA (dos dígitos).
+
+El principal resultado de este ejercicio es que las reducciones en la participación de China en el mercado de los EUA están asociadas, de manera estadísticamente significativas, con incrementos en la participación de Vietnam, México, Canadá, dos grupos de naciones asiáticas y un grupo de naciones europeas. El coeficiente asociado con México es el más bajo entre los países en desarrollo: -0.079, versus -0.198 para Vietnam, -0.136 para India, Tailandia, Malasia e Indonesia, y -0.440 para Corea, Taiwán y Singapur.
+
+Las respuestas de México y Vietnam son heterogéneas en cuanto a las características de los productos: Vietnam ganó participación de forma más pronunciada en productos más *upstream*, con menor intensidad de trabajo y sujetos a aranceles más elevados sobre China. Esto es consistente con el posicionamiento creciente de Vietnam en componentes electrónicos y semiconductores, segmentos relativamente más capital-intensivos y alejados de la demanda final, mientras que México, en cambio, ganó más en productos menos *upstream*, con mayor intensidad de trabajo y también afectados por aranceles más altos sobre China. Esta pauta refleja la ventaja comparativa de México en ensamble final —especialmente autopartes y vehículos— dado su acceso preferencial al mercado estadounidense bajo el T-MEC.
+
+Los autores enfatizan que los coeficientes de las Tablas 3–5 son descriptivos, no causales en sentido estricto: la especificación en diferencias con controles de tendencia previa y efectos fijos reduce pero no elimina la posibilidad de sesgo por variables omitidas. Los propios autores presentan los resultados como una "evaluación temprana" sujeta a revisión conforme se disponga de tablas insumo-producto actualizadas.
+
+**Daniel Chiquiar y Martin Tobal**
+
+Chiquiar y Tobal examinan el nearshoring en México desde tres ángulos complementarios: los patrones históricos de las exportaciones manufactureras mexicanas y su inserción en cadenas globales de valor; los sectores con mayor potencial exportador ante la guerra arancelaria EUA–China y una estimación de órdenes de magnitud de su impacto sobre exportaciones y PIB; y las condiciones que México debe satisfacer para materializar esos beneficios. El sustento teórico es una extensión del modelo de Feenstra y Hanson (1996, 1997) en la que el encarecimiento arancelario de los productos chinos desplaza demanda hacia México, particularmente en segmentos de mayor intensidad en trabajo calificado que el mix exportador actual del país [@chiquiartobal2024].
+
+La estimación empírica muestra que la guerra arancelaria añadió en promedio 31 mil millones de dólares anuales a las exportaciones manufactureras no automotrices de México al mercado estadounidense durante 2019–2021, equivalentes a una ganancia de 1.11 puntos porcentuales de participación en las importaciones manufactureras de EUA. Traducido a PIB mediante la matriz insumo-producto de 2018, el efecto ya realizado representa alrededor del 1% del PIB mexicano en 2022. Los sectores que concentran la mayor parte de estas ganancias son equipos de cómputo y periféricos, semiconductores y componentes electrónicos, y equipos de comunicaciones.
+
+El escenario prospectivo conservador —en el que México captura el 40% de las pérdidas de China en los 28 sectores identificados— añadiría más de 18 mil millones de dólares en exportaciones adicionales, equivalentes a un incremento de aproximadamente 0.86% en el nivel del PIB. Sumando el efecto realizado y el prospectivo, el nearshoring podría elevar el nivel del PIB en torno al 1.9%, cifra comparable a las estimaciones del impacto del TLCAN. Alrededor de dos tercios de las ganancias adicionales provendrían del sector de cómputo y electrónica.
+
+Los autores subrayan que estos escenarios están condicionados a cuatro requisitos: oferta elástica de trabajo calificado (ingenieros y técnicos especializados), marco institucional que garantice el cumplimiento contractual en sectores con relaciones insumo–proveedor específicas, suministro eléctrico confiable y a costo competitivo, y conectividad logística que extienda los beneficios más allá de los estados fronterizos del norte, donde hoy se concentra cerca del 80% de las exportaciones de los sectores de mayor potencial. El trabajo es explícito en que sus cifras son órdenes de magnitud, no estimaciones precisas, y opera como marco de referencia macro que complementa los ejercicios de identificación causal de otros estudios en la literatura.
+
+**Utar, Zurita y Torres**
+
+En un artículo de 2025 [@utar2025], estos autores abordan en tema de la relocalización de las cadenas globales de valor específicamente desde la perspectiva de México.
+
+El artículo examina si la guerra arancelaria entre EE.UU. y China en 2018–2019 provocó ajustes en las cadenas globales de valor (CGV) y aceleró el *nearshoring* hacia México. Su contribución distintiva respecto a la literatura previa es el nivel de análisis: los autores usan datos confidenciales a nivel de firma —el universo de transacciones de comercio exterior de México entre 2015 y 2021— y son los primeros en identificar a las empresas IMMEX (la plataforma de exportación mexicana) dentro de los registros aduanales, vinculándolas además con el país de la matriz global a través de la base Dun & Bradstreet. Esto permite separar el rol de las empresas participantes en CGV del resto, y dentro de las CGV, distinguir entre filiales de EMN estadounidenses, EMN extranjeras no estadounidenses y empresas domésticas.
+
+La fuente central son registros aduanales confidenciales con información de producto (HS-6), destino/origen y valor en dólares para el universo de firmas exportadoras en 2017 (aproximadamente 36,500 empresas). De estas, unas 5,900 firmas IMMEX representan apenas 16% de los exportadores pero concentran 84% del valor de exportaciones nacional. El 93% de las firmas IMMEX importa, lo que refleja su inserción en CGV; en 2017, sus exportaciones se dirigían en un 80% al mercado estadounidense.
+
+La variable de tratamiento se construye a nivel de firma a partir del portafolio exportador pre-shock:
+
+$$T_{i}^{MUS - CN} = \frac{\sum_{j \in USITCN}^{}X_{ij}^{2017} \times \Delta\tau_{j}^{USITCN}}{\sum_{j}^{}X_{ij}^{2017}}$$
+
+donde $\Delta\tau_{j}^{USITCN}$ es el incremento arancelario sobre el bien $j$ proveniente de China y $X_{ij}^{2017}$ son las exportaciones de la firma $i$ en ese bien antes del shock. Esta medida captura qué tan expuesto estaba el portafolio previo de cada firma al encarecimiento de sus competidores chinos en el mercado estadounidense. El promedio para todas las firmas exportadoras es 17%; para las firmas IMMEX, 19.5%.
+
+La estimación central es una diferencia en diferencias (DD) con efectos fijos de firma, que rastrea la evolución anual del coeficiente desde 2015 hasta 2021 usando 2017 como año base. Para capturar el efecto diferencial sobre las firmas GVC, se emplea una triple diferencia (DDD) que interactúa la exposición arancelaria con el indicador IMMEX. Todas las especificaciones controlan por los efectos de los aranceles de la Sección 232 sobre México, los aranceles de represalia de México sobre EE.UU. y los aranceles de represalia de China sobre exportaciones estadounidenses. Los errores estándar se agrupan a nivel de firma.
+
+Los principales resultados son los siguientes:
+
+*Efecto agregado sobre las exportaciones mexicanas.* Los incrementos arancelarios de EE.UU. sobre China aumentaron significativamente las exportaciones de las firmas mexicanas al mercado estadounidense. El coeficiente DD es estadísticamente indistinguible de cero antes de 2018 —lo que valida la ausencia de tendencias previas— y crece de 0.21 en 2018 a 0.63 en 2021. Esto implica que, para una firma al percentil 75 de exposición comparada con una al percentil 25, las exportaciones al mercado estadounidense aumentaron aproximadamente 10% en términos relativos hacia 2021. El efecto sobre exportaciones a destinos no estadounidenses no es significativo, lo que confirma que la respuesta está dirigida específicamente al mercado de EE.UU.
+
+**Las firmas IMMEX como canal principal.** El efecto positivo sobre las exportaciones está impulsado de forma casi exclusiva por las firmas de la plataforma de exportación IMMEX. Las estimaciones DDD muestran que el efecto sobre las firmas IMMEX es marcadamente mayor que sobre el resto: para las firmas GVC, los aranceles sobre China se tradujeron en un incremento de **36%** en sus exportaciones totales al mercado estadounidense hacia 2021 respecto al nivel pre-shock. Dentro de la plataforma, las EMN extranjeras (no estadounidenses) mostraron un crecimiento de exportaciones 2.5 veces mayor que el de las empresas IMMEX de capital doméstico. Las empresas de manufactura registraron un incremento de **39%** en sus exportaciones al mercado de EE.UU. hacia 2021, junto con un aumento de **21%** en sus importaciones desde EE.UU.
+
+*Heterogeneidad sectorial y por tipo de producto.* El efecto es nulo en industrias manufactureras típicamente intensivas en trabajo (textiles, calzado, NAICS 31) y se concentra en industrias con mayor contenido tecnológico: maquinaria eléctrica, aeroespacial y automotriz (NAICS 32–33). Por tipo de producto, el beneficio es más pronunciado en bienes intermedios y exportaciones de tecnología media-alta. El crecimiento de exportaciones proviene sobre todo de la expansión de líneas de productos ya existentes en las firmas, no de la adopción masiva de nuevos productos.
+
+*Importaciones y cambios en abastecimiento.* El incremento en exportaciones se acompañó de un aumento en importaciones de insumos, pero de menor magnitud, lo que resultó en una mejora neta de las exportaciones. Las EMN no estadounidenses aumentaron sus importaciones desde EE.UU. y desde países asiáticos con fuerte integración en CGV (Japón, Corea, Vietnam), pero no desde China. En contraste, las subsidiarias estadounidenses en México incrementaron sus importaciones tanto desde EE.UU. como desde China, lo que sugiere que expandieron su producción en México para compensar costos domésticos. El uso de la *Regla Octava* —un permiso arancelario específico por firma que permite importar insumos no-NAFTA a tasas preferenciales— aumentó de 24% a casi 30% de las firmas IMMEX entre 2017 y 2021, impulsado precisamente por la guerra arancelaria.
+
+**Freund, Mattoo, Mulabdic y Ruta**
+
+En su paper de 2024 [@freund2024] estos autores examinan el reordenamiento de cadenas de suministro usando datos de importaciones estadounidenses a nivel de línea arancelaria (10 dígitos del HS) entre 2017 y 2022. La pregunta central es si la política comercial de EE.UU. — específicamente los aranceles impuestos a China en 2018-2019 — está detrás de los patrones observados, o si el "nearshoring", "reshoring" y la desglobalización que dominan el discurso público tienen correlato empírico real.
+
+El hallazgo central es que el desacoplamiento bilateral EE.UU.-China es real, pero las cadenas de valor siguen entrelazadas con China. La participación de China en las importaciones estadounidenses cayó de 21.6% a 16.3% entre 2017 y 2022, y los autores atribuyen esta caída causalmente a los aranceles mediante una estrategia de diferencias en diferencias. Sin embargo, las importaciones totales de EE.UU. no cayeron — crecieron cerca del 40% sobre niveles pre-COVID —, lo que descarta un reshoring significativo.
+
+¿Quién desplazó a China? Los principales beneficiarios fueron países en desarrollo de mayor tamaño con ventaja comparativa revelada en los productos afectados. Un resultado contraintuitivo: la distancia geográfica a EE.UU. tiene signo positivo — favorece a países lejanos tanto como a países fronterizos —, lo que es inconsistente con la narrativa del nearshoring como fenómeno generalizado. El nearshoring aparece exclusivamente en países con frontera terrestre con EE.UU. (México y Canadá), sin extensión a países cercanos pero no fronterizos.
+
+El resultado más provocador del paper es el rol de la integración con cadenas de suministro chinas: los países que más exportaron a EE.UU. son precisamente los que más profundizaron su integración con China. El índice de comercio intraindustrial con China (Grubel-Lloyd) es el predictor más robusto del crecimiento exportador hacia EE.UU. en industrias estratégicas. Dicho de otro modo, para desplazar a China en el mercado estadounidense, los países tuvieron que abrazar las cadenas de suministro chinas. En electrónica — el sector con mayor recomposición — la correlación entre crecimiento de importaciones desde China y crecimiento de exportaciones a EE.UU. es positiva y significativa, con evidencia adicional de posible triangulación (transshipment) en bienes estratégicos.
+
+El patrón de diversificación es consistente con una estrategia "China + 1": en más del 70% de los productos arancelados donde China perdió participación, un solo proveedor alternativo absorbió al menos el 75% de esa pérdida. La diversificación entre múltiples proveedores es la excepción, no la regla. China además sigue siendo proveedor top-3* en más del 60% de los productos donde perdió cuota de mercado.
+
+## Dimensiones regionales del nearshoring
+
+El impacto del NS no ha sido igual a lo largo de todo el territorio mexicano sino que por el contrario ha acentuado diferencias ya de por sí agudas entre distintas regiones [@chiquiar2005][@gómez2009]. Exploraremos este tema desde tres perspectivas: la evolución de las exportaciones totales por estado, la evolución de las exportaciones por sectores de interés (clasificación SCIAN) para aquellos estados para los que la información está disponible, y la evolución del empleo IMMEX, aunque este es un indicador cada vez más imperfecto de la evolución del empleo asociado con las exportaciones mexicanas.
+
+### Distribución territorial de las exportaciones
+
+Tanto el ritmo como la distribución del crecimiento de las exportaciones en el territorio mexicano han variado de manera considerable a lo largo del tiempo, y los patrones de crecimiento o contracción difieren claramente entre el período de normalidad globalizadora, Trump-Biden y Trump 2.
+
+Durante los últimos 8 años de la "normalidad globalizadora", la tasa de crecimiento de las exportaciones de Campeche, Chiapas, y Tabasco fue negativa, mientras que en el resto del país no solo fue positiva, sino que en numerosos estados superó los dos dígitos (ver el panel superior izquierdo de la @fig-tcac-estados).
+
+Durante Trump-Biden, el panorama cambia favorablemente desde el punto de vista de su distribución geográfica: las exportaciones de prácticamente todos los estados crecen, aunque generalmente a un ritmo inferior al de período anterior. Las dos excepciones, los dos únicos estados cuyas exportaciones se contraen, son Campeche y Quintana Roo.
+
+Trump 2 tiene un impacto negativo bastante generalizado, pero se caracteriza además por la intensificación de las disparidades entre regiones: las exportaciones de 16 estados se contraen y en seis casos la contracción es de dos dígitos, pero al mismo tiempo, las exportaciones de Chihuahua, Jalisco, Yucatán, Zacatecas, Chiapas, Colima y Potosí crecen a un ritmo de dos dígitos. Particularmente notables son los casos de Chihuahua, con un crecimiento de 45%, y Jalisco, con un crecimiento de 66%.
+
+Es razonable suponer que estas disparidades regionales están asociadas con la composición de las exportaciones de cada estado, pero lamentablemente la información cruzada sobre composición sectorial de las exportaciones y origen estatal es limitada, como se verá en la sección siguiente.
+
+```{r}
+#| label: save-fig-tcac-estados
+#| include: false
+#| eval: false
+
+pacman::p_load(sf, cowplot, ggrepel)
+
+# ---- mapa_xmex_2periodos_tcac_2024 ----
+# 2 mapas de México (2010-2018, 2018-2024) con la TCAC de las
+# exportaciones de cada estado en cada subperíodo, en layout 2x1 (vertical).
+# 7 categorías de TCAC, paleta manual (naranja -> amarillo -> azul), etiquetas
+# abreviadas por estado, leyenda a la derecha en una sola columna.
+# Guarda mapa_xmex_2periodos_tcac_2024.pdf / .png
+
+# Datos preparados por Scripts/Prep06_tcac_estados.R (TCAC por estado y período,
+# abreviaturas y nombres GADM). Categorías y paleta: breaks_tcac, labels_tcac y
+# paleta_tcac, definidas en Scripts/funciones.R.
+tcac_estados   <- readRDS(here::here("RDS", "tcac_estados.rds"))
+estados_lookup <- readRDS(here::here("RDS", "estados_lookup.rds"))
+
+p <- local({
+  # Lectura desde caché local (gadm41_MEX_1_pk.rds) -- sin llamada al servidor.
+  mexico_sf <- here::here("geodata", "gadm", "gadm41_MEX_1_pk.rds") |>
+    readRDS() |>
+    terra::unwrap() |>
+    sf::st_as_sf() |>
+    mutate(
+      nombre_join = coalesce(unname(estados_lookup$gadm_a_nombre[NAME_1]), NAME_1)
+    )
+
+  abreviaturas <- estados_lookup$abreviaturas
+
+  centroides_sf <- suppressWarnings(
+    mexico_sf |>
+      sf::st_point_on_surface() |>
+      mutate(abrev = abreviaturas[nombre_join])
+  )
+
+  tcac_periodo <- function(año_ini, año_fin) {
+    tcac_estados |>
+      filter(año_ini == !!año_ini, año_fin == !!año_fin) |>
+      select(nombre, tcac_pct)
+  }
+
+  make_map <- function(año_ini, año_fin) {
+    mapa_data <- mexico_sf |>
+      left_join(tcac_periodo(año_ini, año_fin), by = c("nombre_join" = "nombre")) |>
+      mutate(
+        cat_tcac = factor(
+          cut(tcac_pct, breaks = breaks_tcac, labels = labels_tcac,
+              include.lowest = TRUE),
+          levels = labels_tcac
+        )
+      )
+
+    ggplot(mapa_data) +
+      geom_sf(aes(fill = cat_tcac), color = "grey25", linewidth = 0.35) +
+      ggrepel::geom_label_repel(
+        data               = centroides_sf,
+        aes(label          = abrev, geometry = geometry),
+        stat               = "sf_coordinates",
+        size               = 2.0,
+        label.size         = 0.15,
+        label.padding      = unit(0.12, "lines"),
+        min.segment.length = 0,
+        segment.color      = "grey40",
+        segment.size       = 0.3,
+        fill               = alpha("white", 0.7),
+        color              = "grey10",
+        fontface           = "plain",
+        max.overlaps       = Inf
+      ) +
+      scale_fill_manual(values = paleta_tcac, limits = labels_tcac,
+                        name = NULL, na.value = "grey80", drop = FALSE) +
+      labs(title = paste0(año_ini, " – ", año_fin)) +
+      # ncol = 1 -- leyenda apilada verticalmente (se usará a la derecha,
+      # no abajo); legend.position se fija en "none" aquí porque el panel
+      # individual no la muestra -- se extrae aparte más abajo.
+      guides(fill = guide_legend(ncol = 1, keywidth = unit(0.5, "cm"),
+                                 keyheight = unit(0.5, "cm"))) +
+      theme_void() +
+      theme(
+        plot.title      = element_text(face = "bold", size = 11, hjust = 0.5,
+                                       margin = margin(b = 4)),
+        legend.position = "none",
+        plot.margin     = margin(6, 6, 6, 6)
+      )
+  }
+
+  periodos <- list(c(2010, 2018), c(2018, 2024))
+  plots    <- map(periodos, \(pr) make_map(pr[1], pr[2]))
+
+  # Leyenda extraída de un gráfico auxiliar que contiene los 7 niveles de
+  # categoría (una fila por nivel), con la misma escala (paleta_tcac, labels_tcac)
+  # que los mapas. NO se extrae del último mapa: en 2018-2024 ningún estado cae
+  # en "-5 a -2.5%" ni en "-2.5 a 0%", y geom_sf dibuja la casilla de color solo
+  # para los niveles presentes en los datos del panel (las otras salen vacías).
+  p_leyenda <- tibble(cat_tcac = factor(labels_tcac, levels = labels_tcac)) |>
+    ggplot(aes(x = 1, y = 1, fill = cat_tcac)) +
+    geom_tile() +
+    scale_fill_manual(values = paleta_tcac, limits = labels_tcac,
+                      name = NULL, drop = FALSE) +
+    guides(fill = guide_legend(ncol = 1, keywidth = unit(0.5, "cm"),
+                               keyheight = unit(0.5, "cm"))) +
+    theme_void() +
+    theme(legend.position = "right", legend.text = element_text(size = 8),
+          legend.key.size = unit(0.5, "cm"))
+
+  leyenda <- cowplot::get_legend(p_leyenda)
+
+  mapas_col <- cowplot::plot_grid(plotlist = plots, ncol = 1)
+
+  # Layout final: columna de mapas a la izquierda, leyenda vertical a la
+  # derecha -- en vez de mapas arriba + leyenda en una fila abajo.
+  cowplot::plot_grid(
+    mapas_col, leyenda,
+    ncol        = 2,
+    rel_widths  = c(1, 0.16)
+  )
+})
+
+print(p)
+ggsave(here::here("Plots", "mapa_xmex_2periodos_tcac_2024.pdf"), plot = p,
+       width = 11, height = 9, device = cairo_pdf)
+ggsave(here::here("Plots", "mapa_xmex_2periodos_tcac_2024.png"), plot = p,
+       width = 11, height = 9, dpi = 150)
+rm(p, tcac_estados, estados_lookup)
+```
+
+```{r}
+#| label: fig-tcac-estados
+#| echo: false
+#| fig-cap: "Tasas de crecimiento de las exportaciones por estado, 2010-2018 y 2018-2024"
+#| fig-cap-location: top
+
+knitr::include_graphics(here::here("Plots", "mapa_xmex_2periodos_tcac_2024.png"))
+```
+
+```{r}
+#| label: tbl-tcac-estados
+#| echo: false
+#| code-fold: true
+#| code-summary: "Tabla: TCAC de las exportaciones por estado"
+
+# ---- tabla_xmex_2periodos_tcac ----
+# Tabla gt con la TCAC de las exportaciones por estado en los mismos 3
+# subperíodos del mapa anterior (2010-2018, 2018-2024). Mismo
+# cálculo de TCAC y misma paleta/bins que el mapa, para consistencia visual.
+
+# TCAC por estado y período: Scripts/Prep06_tcac_estados.R
+# (categorías y paleta: breaks_tcac / paleta_tcac en Scripts/funciones.R)
+tcac_estados <- readRDS(here::here("RDS", "tcac_estados.rds"))
+
+### Construcción: tabla_tcac (una fila por estado, una columna por período) ----
+tabla_tcac <- tcac_estados |>
+  select(nombre, col, tcac_pct) |>
+  filter(col != "tcac_2024_2025") |>   # el Capítulo 2 termina en 2024
+  pivot_wider(names_from = col, values_from = tcac_pct) |>
+  arrange(nombre)
+
+### Reestructuración a 8 columnas / 16 filas ----
+# 32 estados en 4 columnas x 32 filas desborda una página. Partimos la lista
+# alfabética a la mitad (bloque izquierdo A-M, bloque derecho N-Z) y las
+# pegamos lado a lado, así la tabla queda ancha (8 columnas) y corta (16
+# filas), más fácil de ajustar a una sola página.
+n_estados <- nrow(tabla_tcac)
+mitad     <- ceiling(n_estados / 2)
+
+tabla_izq <- tabla_tcac |> slice(1:mitad)
+tabla_der <- tabla_tcac |> slice((mitad + 1):n_estados)
+
+# Si el número de estados es impar, rellenamos el bloque derecho con una
+# fila vacía para que ambos bloques tengan el mismo número de filas.
+if (nrow(tabla_der) < nrow(tabla_izq)) {
+  tabla_der <- tabla_der |>
+    bind_rows(tibble(
+      nombre         = NA_character_,
+      tcac_2010_2018 = NA_real_,
+      tcac_2018_2024 = NA_real_
+    ))
+}
+names(tabla_der) <- paste0(names(tabla_der), "_b")
+
+tabla_tcac_wide <- bind_cols(tabla_izq, tabla_der)
+
+cols_izq <- c("tcac_2010_2018", "tcac_2018_2024")
+cols_der <- paste0(cols_izq, "_b")
+
+### Tabla: tabla-xmex-tcac-estados ----
+# flextable en vez de gt() -- gt() no emite anchos de columna (<w:tblGrid>)
+# al exportar a Word en esta versión, lo que produce columnas angostas con
+# texto partido letra por letra al abrir el .docx. flextable sí renderiza
+# como tabla nativa de Word con anchos correctos y preserva el shading por
+# categoría de TCAC (mismos breaks/colores que el mapa).
+tabla_tcac_wide |>
+  flextable() |>
+  set_header_labels(
+    nombre           = "Entidad",
+    tcac_2010_2018   = "2010–2018",
+    tcac_2018_2024   = "2018–2024",
+    nombre_b         = "Entidad",
+    tcac_2010_2018_b = "2010–2018",
+    tcac_2018_2024_b = "2018–2024"
+  ) |>
+  colformat_double(
+    j = c(cols_izq, cols_der),
+    suffix = "%", digits = 1, na_str = ""
+  ) |>
+  bg(
+    j  = c(cols_izq, cols_der),
+    bg = scales::col_bin(
+      palette  = unname(paleta_tcac),
+      bins     = breaks_tcac,
+      na.color = "grey80"
+    )
+  ) |>
+  flextable::align(j = c(cols_izq, cols_der), align = "center", part = "all") |>
+  fontsize(size = 9, part = "body") |>
+  fontsize(size = 9, part = "header") |>
+  padding(padding.top = 1, padding.bottom = 1, part = "body") |>
+  add_header_lines("Tasa de crecimiento anual compuesto (%), por entidad federativa") |>
+  add_header_lines("TCAC de las exportaciones estatales por subperíodo") |>
+  #bold(i = 1, part = "header") |>
+  fontsize(i = 1, size = 13, part = "header") |>
+  theme_booktabs() |>
+  vline(j = 3, part = "all") |>
+  autofit() |>
+  # Ver nota en prep-tablas-cap: fit_to_width() evita que la tabla se
+  # desborde del área imprimible de reference-doc.docx (6" de ancho útil).
+  fit_to_width(max_width = 6, unit = "in") |>
+  add_footer_lines("Elaboración propia con base en datos de comercio exterior.") |>
+  fontsize(size = 8, part = "footer")
+
+rm(tcac_estados, tabla_tcac, tabla_izq, tabla_der, tabla_tcac_wide, n_estados, mitad, cols_izq, cols_der)
+```
+
+### Exportaciones de los estados de la frontera, partidas seleccionadas
+
+```{r}
+#| label: load-etef
+#| echo: false
+#| eval: false
+
+etef <- readRDS(here::here("RDS", "etef_tidy.rds"))
+```
+
+El análisis del impacto territorial del NS en México, desde el punto de vista de la composición sectorial de las exportaciones, se ve limitado por dos factores:
+
+- En primer lugar, la información por entidad federativa no está disponible utilizando el SA, sino únicamente el SCIAN a 3 dígitos, lo que nos da "sectores" más agregados que los que utilizamos en la sección 3.2 de este capítulo.
+
+- En segundo lugar, en muchos casos la información está suprimida por razones de confidencialidad. En el Anexo 7.2 se detalla la disponibilidad de información por estados y sectores.
+
+De lo anterior se deriva que no podemos discutir la distribución de las exportaciones por sector para todo el territorio de México, pero aun así, podemos observar el impacto del NS sobre estados y sectores específicos en los cuales no hay datos suprimidos. Esta información se muestra en las @fig-scian-333, @fig-scian-334, @fig-scian-335 y @fig-scian-336.
+
+Destacan, en primer lugar, el predominio de Nuevo León en Maquinaria y equipo (Sector 333) y en Accesorios y equipo eléctrico (Sector 335), así como la notable aceleración de las exportaciones de estos dos sectores poco después de 2020. En ambos sectores existe una "segunda división" de estados exportadores, que en ambos casos incluye a Chihuahua, Coahuila, Tamaulipas, Baja California, Querétaro y San Luis Potosí. Las relaciones productivas entre estos estados, en estos dos sectores, son un tema pendiente de investigar.
+
+En Equipo de computación y comunicación (Sector 334) son notables el predominio de Chihuahua y Jalisco, y la aceleración que tiene lugar a partir de 2024. La evolución de estas exportaciones se examina con detalle en el próximo capítulo.
+
+Finalmente, los problemas de Equipo de Transporte (Sección 336) quedan en evidencia, con efectos particularmente fuertes en Coahuila y Guanajuato, los principales estados exportadores de este sector.
+
+```{r}
+#| label: save-fig-scian-frontera
+#| include: false
+#| eval: false
+#| code-summary: "Exportaciones por estado, sectores SCIAN 333-336: una figura por sector"
+
+# Una figura por sector (Plots/fig-etef-sector-<sector>_2024.{pdf,png}).
+# Valores en miles de USD en la fuente; se grafican en miles de millones de USD
+# (ESCALA). Los nombres de los estados van fuera del panel, a la derecha, en el
+# mismo orden vertical de los valores de la última observación.
+
+plots <- local({
+
+  ESCALA <- 1e6   # miles de USD -> miles de millones de USD
+
+  estados_limpios <- list(
+    "333" = c(
+      "Baja California", "Chihuahua", "Ciudad de México",
+      "Coahuila de Zaragoza", "Guanajuato", "Jalisco", "México",
+      "Nuevo León", "Puebla", "Querétaro", "San Luis Potosí",
+      "Sonora", "Tamaulipas"
+    ),
+    "334" = c(
+      "Baja California", "Chihuahua", "Ciudad de México",
+      "Coahuila de Zaragoza", "Jalisco", "México",
+      "Nuevo León", "Querétaro", "Sonora", "Tamaulipas"
+    ),
+    "335" = c(
+      "Baja California", "Chihuahua", "Ciudad de México",
+      "Coahuila de Zaragoza", "Guanajuato", "Jalisco", "México",
+      "Nuevo León", "Querétaro", "San Luis Potosí",
+      "Sonora", "Tamaulipas"
+    ),
+    "336" = c(
+      "Aguascalientes", "Baja California", "Chihuahua", "Ciudad de México",
+      "Coahuila de Zaragoza", "Durango", "Guanajuato", "Hidalgo",
+      "Jalisco", "México", "Morelos", "Nuevo León", "Puebla",
+      "Querétaro", "San Luis Potosí", "Sonora", "Tamaulipas",
+      "Tlaxcala", "Zacatecas"
+    )
+  )
+
+  # Umbral (miles de USD, serie original) del último trimestre para incluir un estado
+  umbrales <- c(
+    "333" =   250000,
+    "334" = 2500000,
+    "335" =   500000,
+    "336" = 2500000
+  )
+
+  etiquetas_cortas <- c(
+    "333" = "Maquinaria y equipo",
+    "334" = "Equipo de computación y comunicación",
+    "335" = "Accesorios y equipo eléctrico",
+    "336" = "Equipo de transporte"
+  )
+
+  # Separa verticalmente las etiquetas para que no se superpongan, conservando
+  # el orden de los valores y el centro del bloque.
+  separar_etiquetas <- function(y, sep) {
+    o   <- order(y, decreasing = TRUE)
+    adj <- y[o]
+    for (i in seq_along(adj)[-1]) {
+      if (adj[i - 1] - adj[i] < sep) adj[i] <- adj[i - 1] - sep
+    }
+    adj <- adj + (mean(y) - mean(adj))
+    out <- numeric(length(y))
+    out[o] <- adj
+    out
+  }
+
+  grafica_sector <- function(sector_codigo) {
+    umbral  <- umbrales[[sector_codigo]]
+    estados <- estados_limpios[[sector_codigo]]
+
+    datos_sector <- etef |>
+      filter(
+        codigo_scian == sector_codigo,
+        entidad      %in% estados,
+        !es_total,
+        !es_no_especificado,
+        fecha  >= "2010-01-01"
+      )
+
+    # Último trimestre dentro de la ventana (para el umbral)
+    ultimo_trimestre <- datos_sector |>
+      filter(!is.na(val_miles_usd), fecha <= FECHA_FIN) |>
+      slice_max(fecha, n = 1, with_ties = FALSE) |>
+      pull(fecha)
+
+    estados_sobre_umbral <- datos_sector |>
+      filter(fecha == ultimo_trimestre, !is.na(val_miles_usd),
+             val_miles_usd >= umbral) |>
+      pull(entidad)
+
+    datos_plot <- datos_sector |>
+      filter(entidad %in% estados_sobre_umbral) |>
+      arrange(entidad, fecha) |>
+      group_by(entidad) |>
+      mutate(
+        val_sa = if (any(is.na(val_miles_usd))) {
+          val_miles_usd
+        } else {
+          sa_adj(val_miles_usd, fecha, freq = 4)
+        }
+      ) |>
+      ungroup() |>
+      filter(fecha <= FECHA_FIN) |>   # corte solo al graficar (X-13 sobre serie completa)
+      mutate(val_plot = val_sa / ESCALA)
+
+    x_ini <- min(datos_plot$fecha)
+    x_ult <- max(datos_plot$fecha)
+    span  <- as.numeric(x_ult - x_ini)
+    x_der <- x_ult + 0.02 * span          # borde derecho del panel
+    x_lab <- x_der + 0.012 * span         # inicio del texto, fuera del panel
+
+    # Una etiqueta por estado, en la última observación, ordenada por valor
+    etiquetas <- datos_plot |>
+      filter(!is.na(val_plot)) |>
+      group_by(entidad) |>
+      slice_max(fecha, n = 1, with_ties = FALSE) |>
+      ungroup() |>
+      arrange(desc(val_plot)) |>
+      mutate(y_lab = separar_etiquetas(
+        val_plot, sep = 0.05 * diff(range(datos_plot$val_plot, na.rm = TRUE))))
+
+    datos_plot |>
+      ggplot(aes(x = fecha, y = val_plot, color = entidad)) +
+      geom_vline(
+        xintercept = seq(as.Date("2010-01-01"), as.Date("2024-01-01"), by = "year"),
+        color      = "grey85",
+        linewidth  = 0.3
+      ) +
+      geom_line(linewidth = 0.7) +
+      geom_point(size = 1.2, alpha = 0.6) +
+      geom_segment(
+        data = etiquetas,
+        aes(x = fecha, xend = x_der + 0.006 * span, y = val_plot, yend = y_lab),
+        linewidth = 0.3, show.legend = FALSE
+      ) +
+      geom_text(
+        data = etiquetas,
+        aes(x = x_lab, y = y_lab, label = entidad),
+        hjust = 0, size = 3.3, show.legend = FALSE
+      ) +
+      scale_x_date(breaks = seq(as.Date("2010-01-01"), as.Date("2024-01-01"), by = "year"),
+                   date_labels = "%Y") +
+      scale_y_continuous(labels = scales::label_number(big.mark = ",")) +
+      coord_cartesian(xlim = c(x_ini - 0.02 * span, x_der), expand = FALSE, clip = "off") +
+      labs(
+        subtitle = paste0("Miles de millones de USD, trimestral, desestacionalizado. ",
+                          "Estados con al menos ", scales::number(umbral / ESCALA, accuracy = 0.01),
+                          " en el último trimestre"),
+        x        = NULL,
+        y        = NULL,
+        caption  = "Elaboración propia con base en INEGI/ETEF. Ajuste estacional: X-13ARIMA-SEATS."
+      ) +
+      theme_bw() +
+      theme(
+        legend.position  = "none",
+        panel.grid.minor = element_blank(),
+        plot.subtitle    = element_text(size = 9),
+        axis.text        = element_text(size = 8),
+        plot.margin      = margin(t = 5, r = 115, b = 5, l = 5)   # espacio para los nombres
+      )
+  }
+
+  sectores <- c("333", "334", "335", "336")
+  set_names(map(sectores, grafica_sector), sectores)
+})
+
+walk(plots, print)
+
+iwalk(plots, \(p, sector) {
+  nm <- paste0("fig-etef-sector-", sector, "_2024")
+  ggsave(here::here("Plots", paste0(nm, ".pdf")), plot = p, width = 10, height = 5.5, device = cairo_pdf)
+  ggsave(here::here("Plots", paste0(nm, ".png")), plot = p, width = 10, height = 5.5, dpi = 150)
+})
+rm(plots)
+```
+
+```{r}
+#| label: fig-scian-333
+#| echo: false
+#| fig-cap: "Exportaciones por entidad federativa, sector SCIAN 333, Maquinaria y equipo, 2010-2024. Solo estados sin datos suprimidos por confidencialidad"
+#| fig-cap-location: top
+#| out-width: "100%"
+
+knitr::include_graphics(here::here("Plots", "fig-etef-sector-333_2024.png"))
+```
+
+```{r}
+#| label: fig-scian-334
+#| echo: false
+#| fig-cap: "Exportaciones por entidad federativa, sector SCIAN 334, Equipo de computación y comunicación, 2010-2024. Solo estados sin datos suprimidos por confidencialidad"
+#| fig-cap-location: top
+#| out-width: "100%"
+
+knitr::include_graphics(here::here("Plots", "fig-etef-sector-334_2024.png"))
+```
+
+```{r}
+#| label: fig-scian-335
+#| echo: false
+#| fig-cap: "Exportaciones por entidad federativa, sector SCIAN 335, Accesorios y equipo eléctrico, 2010-2024. Solo estados sin datos suprimidos por confidencialidad"
+#| fig-cap-location: top
+#| out-width: "100%"
+
+knitr::include_graphics(here::here("Plots", "fig-etef-sector-335_2024.png"))
+```
+
+```{r}
+#| label: fig-scian-336
+#| echo: false
+#| fig-cap: "Exportaciones por entidad federativa, sector SCIAN 336, Equipo de transporte, 2010-2024. Solo estados sin datos suprimidos por confidencialidad"
+#| fig-cap-location: top
+#| out-width: "100%"
+
+knitr::include_graphics(here::here("Plots", "fig-etef-sector-336_2024.png"))
+```
+
+```{r}
+#| label: cleanup-etef
+#| include: false
+#| eval: false
+
+rm(etef)
+```
+
+### Evolución del empleo IMMEX en manufactura
+
+```{r}
+#| label: load-immex
+#| echo: false
+#| eval: false
+
+immex <- readRDS(here::here("RDS", "immex_empleo.rds"))
+```
+
+En la @fig-immex-empleo se muestra la evolución del empleo IMMEX, dividido en "total", "Zona Libre de la Frontera Norte (ZLFN)" y "resto", es decir, total menos ZLFN.
+
+A pesar del aumento de las exportaciones mexicanas, el empleo IMMEX modera su crecimiento durante Trump-Biden con respecto al que se observó durante la normalidad globalizadora y decrece durante Trump 2. Esta disminución está en parte asociada con una imperfecta asociación entre empleo exportador y empleo IMMEX: las reglas para la incorporación en el régimen, en opinión de muchos de los empresarios entrevistados se han hecho más estrictas, y otros mecanismos, tales como el "safe harbour", resultan más atractivos y menos onerosos para muchas empresas. Además, el costo de incorporación hace que este régimen sea atractivo únicamente para grandes empresas, y las PyMes que forman uno de los componentes importantes del proceso de NS con frecuencia no pueden adoptarlo, o simplemente encuentran que no resulta rentable hacerlo[^4].
+
+[^4]: Ver Capítulo 4.
+
+Sin embargo, debe tomarse nota de que la caída está claramente asociada a la disminución del empleo IMMEX en la ZLFN a partir de 2022. El resto del empleo IMMEX tiene una tasa de crecimiento del 5.4% durante la normalidad globalizadora, que solo se reduce en 0.4 pp durante Trump-Biden. Durante Trump 2, ese empleo se contrae en 1.4%, mientras que el empleo IMMEX en la ZLFN se contrae 3.5%, lo que pone en evidencia que existen factores específicos que afectan el empleo IMMEX en esta zona: la política diferenciada de salario mínimo para la ZLFN y el resto de México puede ser uno de ellos. Este tema se aborda en el capítulo dedicado al análisis de la IED china en México.
+
+```{r}
+#| label: save-fig-immex-empleo
+#| include: false
+#| eval: false
+
+p <- local({
+  col_total <- paleta_pais[["México"]]
+  col_zlfn  <- paleta_seccion[["XVII"]]
+  col_dif   <- COL_RESTO
+
+  emp_dic <- immex |>
+    filter(
+      CVE_ENT %in% c("TOT", "ZLF"),
+      ID_MES == 12,
+      año >= 2010, año <= ANIO_FIN
+    ) |>
+    mutate(
+      serie     = if_else(CVE_ENT == "TOT", "Total", "ZLFN"),
+      emp_miles = emp_total / 1e3
+    )
+
+  emp_dif <- emp_dic |>
+    select(año, fecha, serie, emp_miles) |>
+    pivot_wider(names_from = serie, values_from = emp_miles) |>
+    mutate(
+      serie     = "Resto",
+      emp_miles = Total - ZLFN
+    ) |>
+    select(año, fecha, serie, emp_miles)
+
+  emp_plot <- bind_rows(emp_dic, emp_dif)
+
+  val_en <- function(serie_nombre, anio) {
+    emp_plot |>
+      filter(serie == serie_nombre, año == anio) |>
+      pull(emp_miles)
+  }
+
+  cagr <- function(v_fin, v_ini, n) ((v_fin / v_ini)^(1 / n) - 1) * 100
+
+  tot_10 <- val_en("Total", 2010);  tot_18 <- val_en("Total", 2018)
+  tot_24 <- val_en("Total", 2024)
+
+  zlf_10 <- val_en("ZLFN",  2010);  zlf_18 <- val_en("ZLFN",  2018)
+  zlf_24 <- val_en("ZLFN",  2024)
+
+  dif_10 <- val_en("Resto", 2010);  dif_18 <- val_en("Resto", 2018)
+  dif_24 <- val_en("Resto", 2024)
+
+  etiquetas_total <- tibble(
+    fecha = as.Date(c("2014-06-01", "2021-06-01")),
+    y_pos = c(tot_18 + 15, tot_24 - 30),
+    label = c(
+      paste0("TCAC Total 10-18: ", round(cagr(tot_18, tot_10, 8), 1), "%"),
+      paste0("TCAC Total 18-24: ", round(cagr(tot_24, tot_18, 6), 1), "%")
+    )
+  )
+
+  etiquetas_zlfn <- tibble(
+    fecha = as.Date(c("2014-06-01", "2021-06-01")),
+    y_pos = c(zlf_18 - 40, zlf_24 + 130),
+    label = c(
+      paste0("TCAC ZLFN 10-18: ", round(cagr(zlf_18, zlf_10, 8), 1), "%"),
+      paste0("TCAC ZLFN 18-24: ", round(cagr(zlf_24, zlf_18, 6), 1), "%")
+    )
+  )
+
+  etiquetas_dif <- tibble(
+    fecha = as.Date(c("2014-06-01", "2021-06-01")),
+    y_pos = c(dif_18 - 20, dif_24 - 20),
+    label = c(
+      paste0("TCAC Resto 10-18: ", round(cagr(dif_18, dif_10, 8), 1), "%"),
+      paste0("TCAC Resto 18-24: ", round(cagr(dif_24, dif_18, 6), 1), "%")
+    )
+  )
+
+  breaks_x <- as.Date(paste0(2010:ANIO_FIN, "-12-01"))   # fecha = día 1 del mes
+  labels_x <- as.character(2010:ANIO_FIN)
+
+  emp_plot |>
+    ggplot(aes(x = fecha, y = emp_miles, color = serie)) +
+    geom_line(linewidth = 1) +
+    geom_vline(
+      xintercept = as.Date("2018-12-01"),
+      linetype = "dotted", color = COL_HITO, linewidth = 0.7
+    ) +
+    geom_label(
+      data = etiquetas_total,
+      aes(x = fecha, y = y_pos, label = label),
+      inherit.aes = FALSE,
+      color = col_total, fill = "white", fontface = "bold", size = 3.5, linewidth = 0.4
+    ) +
+    geom_label(
+      data = etiquetas_zlfn,
+      aes(x = fecha, y = y_pos, label = label),
+      inherit.aes = FALSE,
+      color = col_zlfn, fill = "white", fontface = "bold", size = 3.5, linewidth = 0.4
+    ) +
+    geom_label(
+      data = etiquetas_dif,
+      aes(x = fecha, y = y_pos, label = label),
+      inherit.aes = FALSE,
+      color = col_dif, fill = "white", fontface = "bold", size = 3.5, linewidth = 0.4
+    ) +
+    scale_color_manual(
+      values = c("Total" = col_total, "ZLFN" = col_zlfn, "Resto" = col_dif)
+    ) +
+    scale_x_date(breaks = breaks_x, labels = labels_x) +
+    scale_y_continuous(labels = scales::comma) +
+    labs(
+      x = NULL, y = NULL, color = "",
+      caption = "Elaboración propia con base en INEGI — Estadística IMMEX."
+    ) +
+    theme_bw() +
+    theme(
+      legend.position  = "bottom",
+      panel.grid.minor = element_blank(),
+      axis.text.x      = element_text(angle = 90, vjust = 0.5)
+    )
+})
+
+ggsave(here::here("Plots", "fig-immex-empleo_2024.pdf"), plot = p, width = 10, height = 6, device = cairo_pdf)
+ggsave(here::here("Plots", "fig-immex-empleo_2024.png"), plot = p, width = 10, height = 6, dpi = 150)
+rm(p)
+```
+
+```{r}
+#| label: fig-immex-empleo
+#| echo: false
+#| fig-cap: "Empleo IMMEX en manufactura: Total, ZLFN y Resto, 2010-2024 (miles de personas, diciembre)"
+#| fig-cap-location: top
+
+knitr::include_graphics(here::here("Plots", "fig-immex-empleo_2024.png"))
+```
+
+```{r}
+#| label: prep-mapa-immex-4periodos
+#| include: false
+#| eval: false
+
+# Participación estatal en el empleo IMMEX: Scripts/Prep07_immex.R
+immex_pct <- readRDS(here::here("RDS", "immex_pct.rds"))
+
+breaks_pp_immex       <- c(-Inf, -2, -0.5, 0.5, 2, Inf)
+labels_pp_immex       <- c("< −2 pp", "−2 a −0.5 pp", "±0.5 pp", "+0.5 a +2 pp", "> +2 pp")
+paleta_discreta_immex <- c(
+  "< −2 pp"      = "#FF9900",
+  "−2 a −0.5 pp" = "#FFCC33",
+  "±0.5 pp"      = "#FFF999",
+  "+0.5 a +2 pp" = "#7AAAC8",
+  "> +2 pp"      = "#35678F"
+)
+```
+
+```{r}
+#| label: save-mapa-immex-4periodos
+#| include: false
+#| eval: false
+
+pacman::p_load(sf, cowplot, ggrepel, patchwork)
+
+# Abreviaturas y nombres GADM de los estados: Scripts/Prep06_tcac_estados.R
+estados_lookup <- readRDS(here::here("RDS", "estados_lookup.rds"))
+
+p <- local({
+  mexico_sf <- readRDS(here::here("geodata", "gadm", "gadm41_MEX_1_pk.rds")) |>
+    terra::unwrap() |>
+    sf::st_as_sf() |>
+    mutate(
+      nombre_join = coalesce(unname(estados_lookup$gadm_a_nombre[NAME_1]), NAME_1)
+    )
+
+  abreviaturas <- estados_lookup$abreviaturas
+
+  centroides_sf <- suppressWarnings(
+    mexico_sf |>
+      sf::st_point_on_surface() |>
+      mutate(abrev = abreviaturas[nombre_join])
+  )
+
+  cambio_periodo <- function(año_ini, año_fin) {
+    immex_pct |>
+      filter(año %in% c(año_ini, año_fin)) |>
+      select(nombre, año, pct) |>
+      pivot_wider(names_from = año, values_from = pct, names_prefix = "y") |>
+      mutate(cambio_pp = (get(paste0("y", año_fin)) - get(paste0("y", año_ini))) * 100)
+  }
+
+  make_map <- function(año_ini, año_fin) {
+    mapa_data <- mexico_sf |>
+      left_join(cambio_periodo(año_ini, año_fin), by = c("nombre_join" = "nombre")) |>
+      mutate(
+        cat_cambio = cut(cambio_pp, breaks = breaks_pp_immex, labels = labels_pp_immex,
+                         include.lowest = TRUE, ordered_result = TRUE)
+      )
+
+    ggplot(mapa_data) +
+      geom_sf(aes(fill = cat_cambio), color = "grey25", linewidth = 0.35) +
+      ggrepel::geom_label_repel(
+        data               = centroides_sf,
+        aes(label          = abrev, geometry = geometry),
+        stat               = "sf_coordinates",
+        size               = 2.0,
+        label.size         = 0.15,
+        label.padding      = unit(0.12, "lines"),
+        min.segment.length = 0,
+        segment.color      = "grey40",
+        segment.size       = 0.3,
+        fill               = alpha("white", 0.7),
+        color              = "grey10",
+        fontface           = "plain",
+        max.overlaps       = Inf
+      ) +
+      scale_fill_manual(
+        values   = paleta_discreta_immex,
+        name     = NULL,
+        na.value = "grey85",
+        drop     = FALSE
+      ) +
+      labs(title = paste0(año_ini, " – ", año_fin)) +
+      guides(fill = guide_legend(nrow = 1, keywidth = unit(1.6, "cm"),
+                                 keyheight = unit(0.4, "cm"))) +
+      theme_void() +
+      theme(
+        plot.title      = element_text(face = "bold", size = 11, hjust = 0.5,
+                                       margin = margin(b = 4)),
+        legend.position = "none",
+        plot.margin     = margin(6, 6, 6, 6)
+      )
+  }
+
+  periodos <- list(c(2010, 2024), c(2010, 2018), c(2018, 2024))
+  plots    <- map(periodos, \(pr) make_map(pr[1], pr[2]))
+
+  # Leyenda extraída de un panel ya construido (todos los niveles presentes)
+  leyenda <- cowplot::get_legend(
+    plots[[1]] +
+      theme(
+        legend.position  = "bottom",
+        legend.text      = element_text(size = 8),
+        legend.key.size  = unit(0.4, "cm"),
+        legend.key.width = unit(0.5, "cm")
+      )
+  )
+
+
+  cowplot::plot_grid(
+    cowplot::plot_grid(plotlist = plots, nrow = 1),
+    leyenda,
+    ncol        = 1,
+    rel_heights = c(1, 0.1)
+  )
+})
+
+ggsave(here::here("Plots", "mapa_immex_4periodos_2024.pdf"),
+       plot = p, width = 11, height = 4, device = cairo_pdf)
+ggsave(here::here("Plots", "mapa_immex_4periodos_2024.png"),
+       plot = p, width = 11, height = 4, dpi = 150)
+rm(p, estados_lookup, breaks_pp_immex, labels_pp_immex, paleta_discreta_immex)
+```
+
+```{r}
+#| label: fig-mapa-immex-4periodos
+#| echo: false
+#| fig-cap: "Cambio en la participación porcentual del empleo IMMEX por entidad federativa, cuatro períodos seleccionados"
+#| fig-cap-location: top
+#| fig-width: 7.5
+#| fig-height: 7.3
+
+knitr::include_graphics(here::here("Plots", "mapa_immex_4periodos_2024.png"))
+```
+
+```{r}
+#| label: cleanup-immex
+#| include: false
+#| eval: false
+
+rm(immex, immex_pct)
+```
+
+## La inversión extranjera directa
+
+Como ya se explicó anteriormente, es un error identificar el NS con los anuncios de construcción de nuevas plantas por parte de EMNs. Más aún, se señaló que la IED es tan solo un componente del proceso de NS, y que las inversiones domésticas (o el redireccionamiento de la producción) por parte de empresas domésticas también juega un papel importante.
+
+Aun así, la IED es **uno** de los componentes del proceso, cuyo comportamiento examinamos en esta sección.
+
+### IED total y por origen
+
+En la @fig-ied-total-origen se muestra la evolución de la IED en México de 2010 al tercer trimestre de 2025. De 2010 a 2020 la IED oscila entre los 50 mil y los 75 mil millones de USD, con la única excepción de 2013, que refleja la adquisición del Grupo Modelo por parte de AB InBev[^5].
+
+[^5]: (<https://www.bevindustry.com/articles/86441-anheuser-busch-inbev-completes-acquisition-of-grupo-modelo>)
+
+Como sucede también con otras variables, el impacto de Trump-Biden se hace evidente después de la pandemia: mientras que entre 2014 y 2019 la IED se mantiene fundamentalmente estable, de 2020 en adelante la tendencia es positiva, y se acelera entre 2024 y 2025.
+
+```{r}
+#| label: prep-save-fig-ied-total
+#| eval: false
+#| include: false
+#| code-summary: "IED total 2010-2024 y composición por país de origen (treemaps 2010 vs. 2024)"
+
+pacman::p_load(cowplot, treemapify, patchwork)
+
+local({
+
+  ied_por_origen <- readRDS(here::here("RDS", "ied_por_origen.rds"))
+
+  ied_anual <- ied_por_origen |>
+    filter(año >= 2010, año <= ANIO_FIN, trim == 4,
+           origen == "Total general") |>   # la hoja ya trae el total: no sumar orígenes
+    group_by(año) |>
+    summarise(ied_mdd = sum(ied_acum_mdd, na.rm = TRUE), .groups = "drop")
+
+  # Top 10 orígenes en 2024 (Q4 = año completo)
+  top10_nombres <- ied_por_origen |>
+    filter(año == ANIO_FIN, trim == 4) |>
+    group_by(origen) |>
+    summarise(total = sum(ied_acum_mdd, na.rm = TRUE), .groups = "drop") |>
+    filter(!origen %in% c("Total general", "Otro origen")) |>
+    slice_max(total, n = 10) |>
+    pull(origen)
+
+  nombres_cortos <- c(
+    "Estados Unidos de América" = "EUA",
+    "Japón"                     = "Japón",
+    "Canadá"                    = "Canadá",
+    "Alemania"                  = "Alemania",
+    "España"                    = "España",
+    "Países Bajos"              = "P. Bajos",
+    "Australia"                 = "Australia",
+    "Corea, República de"       = "Corea del Sur",
+    "Suiza"                     = "Suiza",
+    "Argentina"                 = "Argentina",
+    "Bélgica"                                                 = "Bélgica",
+    "China, República Popular de"                             = "China",
+    "Reino Unido de la Gran Bretaña e Irlanda del Norte"       = "R. Unido"
+  )
+
+  # Con el top 10 solo de 2024 puede entrar un origen sin nombre corto/continente
+  faltan <- setdiff(top10_nombres, names(nombres_cortos))
+  if (length(faltan) > 0)
+    stop("Orígenes sin nombre corto/continente: ", paste(faltan, collapse = ", "))
+
+  continentes <- tribble(
+    ~grupo,          ~continente,
+    "EUA",           "América",
+    "Canadá",        "América",
+    "Argentina",     "América",
+    "Japón",         "Asia",
+    "Corea del Sur", "Asia",
+    "Australia",     "Oceanía",
+    "Alemania",      "Europa",
+    "España",        "Europa",
+    "P. Bajos",      "Europa",
+    "Suiza",         "Europa",
+    "Bélgica",       "Europa",
+    "China",         "Asia",
+    "R. Unido",      "Europa",
+    "Resto",         "Resto"
+  )
+
+  # Treemap: recodificar orígenes, excluir negativos, colapsar Resto
+  prep_treemap <- function(anio, trimestre) {
+    ied_por_origen |>
+      filter(año == anio, trim == trimestre,
+             !origen %in% c("Total general", "Otro origen"),
+             ied_acum_mdd > 0) |>
+      group_by(origen) |>
+      summarise(ied_mdd = sum(ied_acum_mdd), .groups = "drop") |>
+      mutate(
+        grupo = if_else(origen %in% top10_nombres,
+                        recode(origen, !!!nombres_cortos),
+                        "Resto")
+      ) |>
+      group_by(grupo) |>
+      summarise(ied_mdd = sum(ied_mdd), .groups = "drop") |>
+      mutate(pct = ied_mdd / sum(ied_mdd) * 100) |>
+      left_join(continentes, by = "grupo")
+  }
+
+  tm_2010 <- prep_treemap(2010, 4)
+  tm_2024 <- prep_treemap(ANIO_FIN, 4)
+
+  # Tonos apagados por continente (sin relación con la paleta por país)
+  pal_cont <- c("#9db4c7", "#d9c08a", "#9fbf9f", "#c79aa8", "#b7a8cc", "#c9c9c9")
+
+  make_treemap <- function(dat, titulo) {
+    dat |>
+      ggplot(aes(
+        area     = ied_mdd,
+        fill     = continente,
+        label    = if_else(pct >= 1.5, paste0(grupo, "\n", round(pct, 1), "%"), ""),
+        subgroup = continente
+      )) +
+      geom_treemap(color = "white", size = 0.6, layout = "squarified") +
+      geom_treemap_subgroup_border(layout = "squarified", color = "black", size = 2) +
+      geom_treemap_text(
+        color = "black", place = "centre", grow = FALSE, reflow = TRUE,
+        fontface = "plain", min.size = 2, layout = "squarified"
+      ) +
+      scale_fill_manual(values = pal_cont) +
+      theme_void() +
+      theme(legend.position = "none") +
+      labs(title = titulo)
+  }
+
+  p_tm10 <- make_treemap(tm_2010, "2010 (año completo)")
+  p_tm24 <- make_treemap(tm_2024, "2024 (año completo)")
+
+  p_leyenda <- ggplot(tm_2024, aes(fill = continente, x = 1, y = 1)) +
+    geom_col() +
+    scale_fill_manual(values = pal_cont, name = "Continente") +
+    theme_void() +
+    theme(legend.position = "bottom", legend.direction = "horizontal")
+  leyenda <- cowplot::get_legend(p_leyenda)
+
+  p_serie <- ied_anual |>
+    ggplot(aes(x = año, y = ied_mdd / 1e3)) +
+    geom_line(color = paleta_pais[["México"]], linewidth = 0.9) +
+    geom_point(color = paleta_pais[["México"]], size = 2.2) +
+    scale_x_continuous(breaks = 2010:ANIO_FIN) +
+    scale_y_continuous(
+      labels = scales::label_number(suffix = " mmd", accuracy = 1),
+      limits = c(0, NA)
+    ) +
+    theme_bw() +
+    theme(panel.grid.minor = element_blank(), axis.text.x = element_text(angle = 0, hjust = 0.5)) +
+    labs(
+      x = NULL, y = "Miles de millones USD",
+      caption = "Elaboración propia con base en Secretaría de Economía")
+
+  fila_treemaps <- p_tm10 + plot_spacer() + p_tm24 + plot_layout(widths = c(1, 0.04, 1))
+
+  p <- p_serie / fila_treemaps / cowplot::plot_grid(leyenda) +
+    plot_layout(heights = c(1.2, 1.2, 0.15))
+
+  ggsave(here::here("Plots", "ied_total_origen_2024.pdf"), plot = p, width = 10, height = 9, device = cairo_pdf)
+  ggsave(here::here("Plots", "ied_total_origen_2024.png"), plot = p, width = 10, height = 9, dpi = 150)
+})
+```
+
+```{r}
+#| label: fig-ied-total-origen
+#| echo: false
+#| fig-cap: "Inversión extranjera directa en México"
+#| fig-cap-location: top
+#| fig-width: 10
+#| fig-height: 9
+
+knitr::include_graphics(here::here("Plots", "ied_total_origen_2024.png"))
+```
+
+### IED como porcentaje del PIB y la formación bruta de capital fijo
+
+En la @fig-ied-ratios se muestra la IED en México como porcentaje del PIB en el panel superior, y como porcentaje de la formación bruta de capital fijo en el panel inferior. En contraste con la @fig-ied-total-origen, que muestra un repunte a partir de 2020, aquí vemos justamente lo contrario: una tendencia decreciente a partir de ese mismo año (el año 2013 es excepcional, por razones que recién se explicaron).
+
+Nótese que la importancia de la IED se reduce no solo en términos de la participación en el PIB, sino también como porcentaje de la formación bruta de capital fijo (panel inferior de la @fig-ied-ratios).
+
+Da la impresión de que existe una incongruencia entre las oportunidades puestas en evidencia por el crecimiento de las exportaciones mexicanas a partir de 2018 (@fig-ImpEUA-CHN-MEX) y la capacidad de atracción de IED, y esto puede contribuir a explicar el estancamiento de la participación mexicana dentro del mercado de EUA a partir de 2023. Algunos de los factores que pueden estar limitando la capacidad de atracción de IED, en particular las restricciones de acceso a electricidad se discuten en los capítulos siguientes. La desaparición de ProMéxico, la institución responsable a nivel federal de la atracción de IED también puede haber contribuido a este pobre desempeño.
+
+```{r}
+#| label: prep-save-fig-ied-ratios
+#| eval: false
+#| include: false
+
+pacman::p_load(patchwork)
+
+p <- local({
+  ied_pib_anual  <- readRDS(here::here("RDS", "ied_pib.rds"))  |>
+    filter(frecuencia == "anual", año >= 2010, año <= ANIO_FIN)
+
+  ied_fbkf_anual <- readRDS(here::here("RDS", "ied_fbkf.rds")) |>
+    filter(frecuencia == "anual", año >= 2010, año <= ANIO_FIN)
+
+  col_pib  <- paleta_pais[["México"]]
+  col_fbkf <- COL_SERIE
+
+  p_pib <- ied_pib_anual |>
+    ggplot(aes(x = año, y = ied_pib_pct)) +
+    geom_col(fill = col_pib, width = 0.7) +
+    scale_x_continuous(breaks = seq(2010, max(ied_pib_anual$año), by = 1)) +
+    scale_y_continuous(labels = scales::label_number(suffix = " %", accuracy = 0.1)) +
+    labs(x = NULL, y = "IED / PIB (%)") +
+    theme_bw() +
+    theme(panel.grid.minor = element_blank())
+
+  p_fbkf <- ied_fbkf_anual |>
+    ggplot(aes(x = año, y = ied_fbkf_pct)) +
+    geom_col(fill = col_fbkf, width = 0.7) +
+    scale_x_continuous(breaks = seq(2010, max(ied_fbkf_anual$año), by = 1)) +
+    scale_y_continuous(labels = scales::label_number(suffix = " %", accuracy = 0.1)) +
+    labs(x = NULL, y = "IED / FBKF (%)") +
+    theme_bw() +
+    theme(panel.grid.minor = element_blank())
+
+  p_pib / p_fbkf +
+    plot_layout(heights = c(1, 1))
+})
+
+ggsave(here::here("Plots", "ied_ratios_2024.pdf"), plot = p, width = 10, height = 8, device = cairo_pdf)
+ggsave(here::here("Plots", "ied_ratios_2024.png"), plot = p, width = 10, height = 8, dpi = 150)
+rm(p)
+```
+
+```{r}
+#| label: fig-ied-ratios
+#| echo: false
+#| fig-cap: |
+#|   Inversión extranjera directa como porcentaje del PIB (panel superior)
+#|   y de la formación bruta de capital fijo (panel inferior), 2010–2024.
+#|   Datos anuales. Fuente: Secretaría de Economía / SE.
+#| fig-cap-location: top
+#| fig-width: 10
+#| fig-height: 8
+#| out-width: "100%"
+
+knitr::include_graphics(here::here("Plots", "ied_ratios_2024.png"))
+```
+
+Este pobre desempeño en atracción de IED no refleja una tendencia general en los países con los que México compite en el mercado de EUA. En la @fig-ied-pib-comparadores se muestra la IED como porcentaje del PIB para Costa Rica, México, R. Dominicana y Vietnam (los puntos en el gráfico) así como su tendencia lineal. De los cuatro países, México es sistemáticamente el que recibe menos inversión como porcentaje del PIB. Esta información revela una debilidad específica de México, que es preciso investigar.
+
+```{r}
+#| label: save-fig-ied-pib-comparadores
+#| include: false
+#| eval: false
+#| code-summary: "Gráfico comparativo IED/PIB (WDI)"
+
+# Datos: Scripts/Query06_WDI_IED_PIB.R (descarga del World Bank, WDI;
+# indicador BX.KLT.DINV.WD.GD.ZS).
+ied_pib_comp <- readRDS(here::here("RDS", "ied_pib_wdi_comp.rds")) |>
+  filter(year <= ANIO_FIN)
+
+p <- local({
+  # Paleta fija por país (en la paleta se llama "R. Dominicana")
+  mi_paleta <- paleta_pais
+  names(mi_paleta)[names(mi_paleta) == "R. Dominicana"] <- "República Dominicana"
+
+  ggplot(ied_pib_comp, aes(x = year, y = ied_pib_pct, color = país)) +
+    geom_point(size = 3) +
+    geom_smooth(se = FALSE, method = lm) +
+    scale_color_manual(values = mi_paleta) +
+    scale_x_continuous(breaks = pretty_breaks(n = 8)) +
+    labs(
+      x       = NULL,
+      y       = "IED, flujos netos de entrada (% del PIB)",
+      color   = NULL,
+      caption = "Elaboración propia con base en World Bank, World Development Indicators (BX.KLT.DINV.WD.GD.ZS)."
+    ) +
+    theme_bw() +
+    theme(
+      legend.position  = "bottom",
+      panel.grid.minor = element_blank()
+    )
+})
+
+ggsave(here::here("Plots", "ied_pib_comparativo_wdi_2024.pdf"), plot = p, width = 9, height = 5.5, device = cairo_pdf)
+ggsave(here::here("Plots", "ied_pib_comparativo_wdi_2024.png"), plot = p, width = 9, height = 5.5, dpi = 150)
+rm(p, ied_pib_comp)
+```
+
+```{r}
+#| label: fig-ied-pib-comparadores
+#| echo: false
+#| fig-cap: "IED como porcentaje del PIB. Costa Rica, México, R. Dominicana y Vietnam, 2010-2024"
+#| fig-cap-location: top
+
+knitr::include_graphics(here::here("Plots", "ied_pib_comparativo_wdi_2024.png"))
+```
+
+Dado que la IED solo representa alrededor del 12% de la inversión total del país, resulta apropiado analizar el comportamiento de la FBCF. La FBCF privada creció de manera considerable en años recientes tras la recuperación de la pandemia, lo que contrasta además con la caída de la inversión pública. A precios de 2018, la FBCF privada anual promedio pasó de 4,389 mil MDP en 2010-2017 a 5,239 mil MDP en 2022-2024, un crecimiento de 19.4%. En contraste, la FBCF pública cayó de 922 a 647 mil MDP (-29.8%). A pesar de la caída de la inversión pública, la inversión anual promedio total creció 10.8% entre ambos periodos, dado que el sector privado origina alrededor del 84% de la FBCF nacional.
+
+
+```{r}
+#| label: save-fig-ied-fbcf
+#| include: false
+#| eval: false
+#| code-summary: "FBCF privada y pública; FBCF privada por tipo de bien (INEGI, precios de 2018)"
+
+# Datos: RDS/fbcf_inegi.rds (de Excel/FBCF_INEGI_OUT_13.xlsx, hoja Tabulado,
+# INEGI, Oferta y Utilización Trimestral, año base 2018). Ventana del Cap. 2:
+# hasta ANIO_FIN. (La ventana completa para el Cap. 3 la genera
+# Scripts/ied_plots_fbcf.R.)
+
+# `figs` es una lista con las dos figuras: local() devuelve la lista, así que
+# puede imprimirse (walk(figs, print)) antes de guardar.
+figs <- local({
+
+  fbcf <- readRDS(here::here("RDS", "fbcf_inegi.rds"))
+
+  # Series anuales a precios constantes de 2018 (miles de millones de pesos)
+  series_def <- tribble(
+    ~serie,                 ~concepto_cod, ~comprador,
+    "privada",              "P.51b",       "Privada",
+    "publica",              "P.51b",       "Pública",
+    "privada_construccion", "CT",          "Privada",
+    "privada_maquinaria",   "AN.113",      "Privada"
+  )
+
+  datos <- fbcf |>
+    filter(bloque_cod == "VCts18",
+           medida == "Millones de pesos a precios de 2018",
+           periodo == "Anual",
+           !is.na(valor)) |>
+    inner_join(series_def, by = c("concepto_cod", "comprador")) |>
+    transmute(serie, anio = año, mil_mdp = valor / 1000) |>
+    filter(anio >= 2010, anio <= ANIO_FIN)
+
+  # Promedios y variaciones citados en el texto (2010-2017 vs. 2022-2024)
+  prom <- function(s, a, b)
+    mean(datos$mil_mdp[datos$serie == s & datos$anio >= a & datos$anio <= b])
+
+  tibble(serie = series_def$serie) |>
+    mutate(prom_2010_17 = map_dbl(serie, prom, a = 2010, b = 2017),
+           prom_2022_24 = map_dbl(serie, prom, a = 2022, b = 2024),
+           crec_pct     = 100 * (prom_2022_24 / prom_2010_17 - 1)) |>
+    mutate(across(where(is.numeric), ~ round(.x, 1))) |>
+    print()
+
+  # Series de México: privada = verde de México, pública = gris oscuro
+  col <- c(privada = paleta_pais[["México"]], publica = COL_TOTAL,
+           privada_construccion = "#d9a441", privada_maquinaria = paleta_pais[["México"]])
+  etq <- c(privada = "FBCF privada", publica = "FBCF pública",
+           privada_construccion = "FBCF privada en construcción",
+           privada_maquinaria = "FBCF privada en maquinaria y equipo")
+
+  fig_fbcf <- function(series) {
+    datos |>
+      filter(serie %in% series) |>
+      ggplot(aes(anio, mil_mdp, colour = serie)) +
+      geom_line(linewidth = 1) +
+      geom_point(size = 1.4) +
+      scale_colour_manual(values = col, labels = etq) +
+      scale_x_continuous(breaks = 2010:ANIO_FIN,
+                         expand = expansion(mult = c(0.02, 0.02))) +
+      scale_y_continuous(breaks = scales::breaks_width(200),
+                         labels = scales::label_comma(),
+                         limits = c(0, NA),
+                         expand = expansion(mult = c(0, 0.06))) +
+      labs(x        = NULL,
+           y        = NULL,
+           colour   = NULL,
+           subtitle = "Miles de millones de pesos, a precios de 2018",
+           caption  = "Elaboración propia con base en INEGI, Oferta y Utilización Trimestral (año base 2018).") +
+      theme_bw() +
+      theme(legend.position  = "bottom",
+            panel.grid.minor = element_blank(),
+            plot.subtitle    = element_text(size = 9),
+            axis.text.x      = element_text(angle = 90, vjust = 0.5))
+  }
+
+  list(
+    ied_fbcf_privada_publica_2024       = fig_fbcf(c("privada", "publica")),
+    ied_fbcf_privada_por_tipo_bien_2024 = fig_fbcf(c("privada_construccion", "privada_maquinaria"))
+  )
+})
+
+walk(figs, print)
+
+iwalk(figs, \(p, nm) {
+  ggsave(here::here("Plots", paste0(nm, ".pdf")), plot = p,
+         width = 10, height = 5.5, device = cairo_pdf)
+  ggsave(here::here("Plots", paste0(nm, ".png")), plot = p,
+         width = 10, height = 5.5, dpi = 150)
+})
+rm(figs)
+```
+
+```{r}
+#| label: fig-fbcf-publica-privada
+#| echo: false
+#| fig-cap: "México. Formación bruta de capital fijo, pública y privada, 2010-2024"
+#| fig-cap-location: top
+#| out-width: "100%"
+
+knitr::include_graphics(here::here("Plots", "ied_fbcf_privada_publica_2024.png"))
+```
+
+El crecimiento de la FBCF por tipo de bien sugiere que el sector privado está expandiendo capacidad productiva e importando bienes de capital para nuevos procesos. Por tipo de bien, la FBCF anual promedio privada en construcción (que representa el 55% de la inversión privada) creció 15.1% entre 2010-2017 y 2022-2024, mientras que en Maquinaria y equipo (que representa el otro 45%) creció 23.5%.
+
+```{r}
+#| label: fig-fbcf-tipo-bien
+#| echo: false
+#| fig-cap: "México. FBCF privada por tipo de bien: construcción y maquinaria y equipo, 2010-2024"
+#| fig-cap-location: top
+#| out-width: "100%"
+
+knitr::include_graphics(here::here("Plots", "ied_fbcf_privada_por_tipo_bien_2024.png"))
+```
+
+### La distribución sectorial de la IED
+
+Dejando de lado 2013 que, como ya se ha explicado, es un año excepcional, la inversión en el sector de manufactura se mantiene relativamente estable entre 2014 y 2019, y tras la caída exógena durante la pandemia, tiende a crecer, en monto y como porcentaje de la inversión total entre 2020 y 2024, como se muestra en la @fig-ied-actividad-combinado.
+
+La caída en 2025, año caracterizado por la incertidumbre y por una política tarifaria altamente volátil, no causa sorpresa. Por el contrario, coincide perfectamente con las impresiones recogidas en numerosas entrevistas con el sector empresarial (algunas de las cuales se recogen en el capítulo siguiente) en las que se señala que todas las decisiones de inversión que no habían alcanzado el punto de "no retorno" estaban congeladas, y seguirían en ese estado hasta tanto no se estabilizara la política comercial de EUA.
+
+```{r}
+#| label: save-fig-ied-actividad-combinado
+#| code-fold: true
+#| code-summary: "Preparación y guardado: IED por actividad — líneas + barras 100%"
+#| eval: false
+#| include: false
+
+p <- local({
+  ied_por_actividad <- readRDS(here::here("RDS", "ied_por_actividad.rds"))
+
+  col_total <- COL_TOTAL
+  col_manuf <- paleta_pais[["México"]]
+  col_resto <- COL_RESTO
+
+# ── Datos compartidos ────────────────────────────────────────────────────────
+datos_fig <- ied_por_actividad |>
+  filter(
+    (nivel == "total") |
+    (nivel == "sector" & codigo_scian == "31")
+    ) |>
+  filter(trim == 4) |>   # acumulado del año: T4 = año completo
+  group_by(año, nivel) |>
+  summarise(ied_mdd = sum(ied_acum_mdd, na.rm = TRUE), .groups = "drop") |>
+  filter(año >= 2010, año <= ANIO_FIN) |>
+  pivot_wider(names_from = nivel, values_from = ied_mdd) |>
+  rename(total = total, manuf = sector) |>
+  mutate(resto = total - manuf) |>
+  pivot_longer(
+    cols      = c(total, manuf, resto),
+    names_to  = "serie",
+    values_to = "ied_mdd"
+  ) |>
+  mutate(
+    serie = factor(serie,
+                   levels = c("total", "manuf", "resto"),
+                   labels = c("Total", "Manufactura (31-33)", "Resto"))
+  )
+
+  # ── Gráfica 1: líneas ─────────────────────────────────────────
+p1 <- ggplot(datos_fig, aes(x = año, y = ied_mdd, colour = serie)) +
+        geom_line(linewidth = 0.9) +
+        geom_point(size = 1.8) +
+      scale_colour_manual(
+        values = c("Total" = col_total,
+                 "Manufactura (31-33)" = col_manuf,
+                 "Resto" = col_resto),
+      name = NULL
+      ) +
+      scale_x_continuous(breaks = 2010:ANIO_FIN) +
+      scale_y_continuous(labels = scales::comma_format(suffix = " mdd")) +
+      labs(x = NULL, y = "Millones de dólares") +
+      theme_bw() +
+      theme(
+        legend.position  = "bottom",
+        panel.grid.minor = element_blank(),
+        axis.text.x      = element_text(angle = 0)
+      )
+
+# ── Gráfica 2: barras apiladas al 100% ───────────────────────────────────────
+
+datos_barras <- datos_fig |>
+    filter(serie != "Total") |>
+    group_by(año) |>
+    mutate(
+      pct      = ied_mdd / sum(ied_mdd),
+      etiqueta = paste0(round(pct * 100, 1), "%")
+    ) |>
+    ungroup()
+  
+p2 <- ggplot(datos_barras, aes(x = año, y = pct, fill = serie)) +
+        geom_col(position = "stack", width = 0.7) +
+        geom_text(
+        aes(label = etiqueta),
+          position = position_stack(vjust = 0.5),
+          size     = 2.8,
+          colour   = "white",
+          fontface = "bold"
+        ) +
+        scale_fill_manual(
+          values = c("Manufactura (31-33)" = col_manuf,
+                 "Resto" = col_resto),
+          name = NULL
+        ) +
+        scale_x_continuous(breaks = 2010:ANIO_FIN) +
+        scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
+        labs(x = NULL, y = "Porcentaje del total") +
+        theme_bw() +
+        theme(
+          legend.position  = "bottom",
+          panel.grid.minor = element_blank(),
+          axis.text.x      = element_text(angle = 0)
+        )
+
+# ── Combinar 2×1 con patchwork ───────────────────────────────────────────────
+  p1 / p2
+})
+
+ggsave(here::here("Plots", "ied_actividad_combinado_2024.pdf"),
+       plot = p, width = 10, height = 10, device = cairo_pdf)
+ggsave(here::here("Plots", "ied_actividad_combinado_2024.png"),
+       plot = p, width = 10, height = 10, dpi = 150)
+rm(p)
+```
+
+```{r}
+#| label: fig-ied-actividad-combinado
+#| echo: false
+#| fig-cap: |
+#|   IED en México: total, manufactura (sectores 31–33) y resto, 2010–2024.
+#|   Arriba: montos absolutos en millones de dólares. Abajo: composición porcentual
+#|   entre manufactura y resto.
+#| fig-cap-location: top
+#| fig-width: 10
+#| fig-height: 10
+
+knitr::include_graphics(here::here("Plots", "ied_actividad_combinado_2024.png"))
+```
+
+En la @fig-ied-manuf-subsector se muestra la evolución de la composición sectorial de la IED en manufactura. El panel superior muestra los montos de inversión, y el panel inferior la participación porcentual de los diversos sectores.
+
+Después de la pandemia, los sectores que tienden a crecer son Equipo de Transporte (cuyas exportaciones, según vimos, han sido duramente golpeadas por la política tarifaria de Trump 2) y Resto, en donde hemos agrupado los sectores que no parecen de interés desde el punto de vista del NS. La inversión en los demás sectores es baja y no tiende a crecer.
+
+Estos datos parecen congruentes con la hipótesis de que uno de los factores que explican el relativo estancamiento de la participación mexicana de EUA, mientras que sus competidores incrementan rápidamente su participación, es justamente la insuficiencia de la inversión mexicana.
+
+```{r}
+#| label: save-fig-ied-manuf-subsector
+#| include: false
+#| eval: false
+
+# IED en manufactura (31), por subsector 333/334/335/336 + Resto.
+# Panel superior: líneas (Resto/Manufactura total destacada). Panel inferior:
+# barras apiladas al 100% (valores negativos se tratan como cero).
+
+ied_por_actividad <- readRDS(here::here("RDS", "ied_por_actividad.rds"))
+
+datos_fig_sub <- ied_por_actividad |>
+  filter(
+    (nivel == "sector"    & codigo_scian == "31") |
+    (nivel == "subsector" & codigo_scian %in% c("333", "334", "335", "336"))
+  ) |>
+  filter(trim == 4) |>   # acumulado del año: T4 = año completo
+  group_by(codigo_scian, año) |>
+  summarise(ied_mdd = sum(ied_acum_mdd, na.rm = TRUE), .groups = "drop") |>
+  filter(año >= 2010, año <= ANIO_FIN)
+
+total_3133 <- datos_fig_sub |>
+  filter(codigo_scian == "31") |>
+  select(año, total = ied_mdd)
+
+sub_sum <- datos_fig_sub |>
+  filter(codigo_scian %in% c("333", "334", "335", "336")) |>
+  group_by(año) |>
+  summarise(sub_total = sum(ied_mdd, na.rm = TRUE), .groups = "drop")
+
+resto_df <- total_3133 |>
+  left_join(sub_sum, by = "año") |>
+  mutate(ied_mdd = total - sub_total, codigo_scian = "Resto") |>
+  select(codigo_scian, año, ied_mdd)
+
+datos_combinados <- bind_rows(
+  datos_fig_sub |>
+    filter(codigo_scian == "31") |>
+    mutate(codigo_scian = "31-33"),
+  datos_fig_sub |> filter(codigo_scian != "31"),
+  resto_df
+) |>
+  mutate(
+    serie = factor(
+      codigo_scian,
+      levels = c("31-33", "333", "334", "335", "336", "Resto"),
+      labels = c(
+        "31-33 Total manufactura",
+        "333 Maquinaria y equipo",
+        "334 Cómputo y electrónico",
+        "335 Equipo eléctrico",
+        "336 Equipo de transporte",
+        "Resto 31-33"
+      )
+    )
+  )
+
+col_total <- COL_TOTAL
+col_333   <- "#5a6fa8"
+col_334   <- "#7fb069"
+col_335   <- "#d9a441"
+col_336   <- "#8e5572"
+col_resto <- COL_RESTO
+
+escala_col <- c(
+  "31-33 Total manufactura"   = col_total,
+  "333 Maquinaria y equipo"   = col_333,
+  "334 Cómputo y electrónico" = col_334,
+  "335 Equipo eléctrico"      = col_335,
+  "336 Equipo de transporte"  = col_336,
+  "Resto 31-33"               = col_resto
+)
+
+p <- local({
+
+  p1 <- ggplot(
+    datos_combinados,
+    aes(x = año, y = ied_mdd, colour = serie,
+        linewidth = (serie == "31-33 Total manufactura"),
+        alpha     = (serie == "31-33 Total manufactura"))
+  ) +
+    geom_line() +
+    geom_point(size = 1.8) +
+    scale_colour_manual(values = escala_col, name = NULL) +
+    scale_linewidth_manual(values = c(`TRUE` = 1.4, `FALSE` = 0.9), guide = "none") +
+    scale_alpha_manual(   values = c(`TRUE` = 1.0, `FALSE` = 0.85), guide = "none") +
+    scale_x_continuous(breaks = 2010:ANIO_FIN) +
+    scale_y_continuous(labels = scales::comma_format(suffix = " mdd")) +
+    labs(x = NULL, y = "Millones de dólares") +
+    theme_bw() +
+    theme(
+      legend.position  = "bottom",
+      legend.text      = element_text(size = 8),
+      panel.grid.minor = element_blank()
+    ) +
+    guides(colour = guide_legend(nrow = 2))
+
+  datos_barras <- datos_combinados |>
+    filter(serie != "31-33 Total manufactura") |>
+    mutate(ied_mdd_pos = pmax(ied_mdd, 0)) |>
+    group_by(año) |>
+    mutate(pct = ied_mdd_pos / sum(ied_mdd_pos, na.rm = TRUE)) |>
+    ungroup() |>
+    mutate(etiqueta = if_else(pct >= 0.04,
+                              scales::percent(pct, accuracy = 1),
+                              NA_character_))
+
+  p2 <- ggplot(datos_barras, aes(x = año, y = pct, fill = serie)) +
+    geom_col(position = "stack", width = 0.7) +
+    geom_text(
+      aes(label = etiqueta),
+      position = position_stack(vjust = 0.5),
+      size = 2.5, colour = "white", fontface = "bold", na.rm = TRUE
+    ) +
+    scale_fill_manual(
+      values = escala_col[names(escala_col) != "31-33 Total manufactura"],
+      name   = NULL
+    ) +
+    scale_x_continuous(breaks = 2010:ANIO_FIN) +
+    scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
+    labs(x = NULL, y = "Participación en manufactura") +
+    theme_bw() +
+    theme(
+      legend.position  = "bottom",
+      legend.text      = element_text(size = 8),
+      panel.grid.minor = element_blank()
+    ) +
+    guides(fill = guide_legend(nrow = 2))
+
+  p1 / p2
+})
+
+ggsave(here::here("Plots", "ied_manuf_subsector_2024.pdf"), plot = p, width = 10, height = 10, device = cairo_pdf)
+ggsave(here::here("Plots", "ied_manuf_subsector_2024.png"), plot = p, width = 10, height = 10, dpi = 150)
+rm(p, ied_por_actividad, datos_fig_sub, total_3133, sub_sum, resto_df, datos_combinados,
+   col_total, col_333, col_334, col_335, col_336, col_resto, escala_col)
+```
+
+```{r}
+#| label: fig-ied-manuf-subsector
+#| echo: false
+#| fig-cap: "IED en México: industrias manufactureras (31-33) por subsector, 2010–2024 <br> Nota: valores negativos de IED se representan como cero en el panel inferior"
+#| fig-cap-location: top
+#| fig-width: 10
+#| fig-height: 10
+
+knitr::include_graphics(here::here("Plots", "ied_manuf_subsector_2024.png"))
+```
+
+### Los anuncios de inversión
+
+Por otra parte, desde la perspectiva de anuncios de inversión, que ofrecen una visión anticipada de proyectos en puerta que pudieran estar relacionados con el nearshoring (que en promedio se materializan entre 3 y 5 años posteriores a su anuncio), se observa que el CAPEX anual de anuncios de inversión extranjera en proyectos de manufactura en México repuntó notablemente tras la recuperación de la pandemia y una vez quedando claro que las tarifas impuestas por Estados Unidos a China serían permanentes. Si bien el CAPEX agregado de estos proyectos se redujo de un promedio anual de 13.2 mil MDD en 2010-2017 a 10.0 mil MDD en 2018-2021 —principalmente por la desaceleración económica de 2019 (cuando el PIB cayó 0.4%) y el impacto de la pandemia en 2020-2021— éste repuntó a un promedio de 26.6 mil MDD en 2022-2024, el doble que previo al inicio de la guerra comercial Estados Unidos-China. Más aún, la participación de las manufacturas en el total de anuncios de inversión pasó de 53.8% en 2010-2017 a 66.1% en 2022-2024.
+
+
+```{r}
+#| label: fig-capex-tipo-inversion
+#| echo: false
+#| fig-cap: "CAPEX de proyectos de IED de manufactura anunciados en México, por tipo de inversión (MDD)"
+#| fig-cap-location: top
+
+knitr::include_graphics(here::here("Plots", "zafra-capex-tipo.png"))
+
+```
+
+Entre industrias no relacionadas con el petróleo y gas, el crecimiento del CAPEX en proyectos de inversión en manufactura se explica en gran medida por proyectos de fabricación de equipo de transporte —particularmente de armadoras automotrices— seguido por aquellos para la fabricación de equipos industriales, componentes electrónicos, productos metálicos, computadoras y equipo periférico, productos de caucho, papel, vidrio y cerámica, materiales de construcción, electrónica de consumo (electrodomésticos y equipo de audio y video) y semiconductores.
+
+```{r}
+#| label: fig-capex-sectores
+#| echo: false
+#| fig-cap: "CAPEX de proyectos de IED de manufactura anunciados en México: sectores con incrementos en 2022-2024 (MDD)"
+#| fig-cap-location: top
+
+knitr::include_graphics(here::here("Plots", "zafra-capex-sectores.png"))
+```
+
+En línea con los patrones de concentración regional de las estadísticas oficiales de IED, el CAPEX de proyectos de manufactura se concentra aún más en los estados del norte, donde su concentración aumentó de 38.3% en 2010-2017 a 45.7% en 2018-2021 y luego a 64.2% en 2022-2024. Este incremento fue liderado por la mayor atracción de inversiones de Nuevo León, cuya concentración de CAPEX se duplicó entre 2010-2017 (14.0%) y 2022-2024 (27.9%) —con un CAPEX anual promedio que pasó de 1,846 a 7,424 MDD (+302.3%)— seguido por Sonora, cuya concentración pasó de 3.0% a 21.6% entre los mismos periodos —con un CAPEX anual promedio que pasó de 393 a 5,747 MDD.
+
+```{r}
+#| label: tbl-capex-region
+#| echo: false
+#| tbl-cap: "CAPEX de anuncios de inversión de manufactura en México por región (MDD)"
+#| tbl-cap-location: top
+knitr::include_graphics(here::here("Plots", "zafra-capex-region.png"))
+```
+
+```{r}
+#| label: fig-capex-pais-origen
+#| echo: false
+#| fig-cap: "CAPEX de anuncios de inversión en México, principales países de origen"
+#| fig-cap-location: top
+knitr::include_graphics(here::here("Plots", "zafra-capex-plotregion.png"))
+```
+
+Un aspecto interesante es que la proporción de inversiones planeadas en México provenientes de China creció de manera importante, lo cual puede sugerir que dicho país estaba considerando a México como un conducto para evitar la guerra comercial con Estados Unidos. La participación de China en el CAPEX de anuncios de inversión en México pasó de un promedio de 2.8% en 2010-2017 a 5.9% en 2018-2021 y luego a 11.7% en 2022-2024, alcanzando un máximo histórico de 16.4% en 2023, el segundo más alto después de Estados Unidos (19.2%). La industria automotriz concentró el 40.3% de anuncios de inversión china en México en 2022-2024. Otras industrias con una concentración elevada proveniente de dicho país en este periodo son equipo de comunicaciones (12.1%), componentes electrónicos (10.3%), equipo industrial (10.2%), productos de caucho (8.1%) y de metal (7.6%), igualmente identificadas como aquellas con mayor potencial de atraer inversiones de nearshoring.
+
+```{r}
+#| label: fig-capex-pais-origen2
+#| echo: false
+#| fig-cap: "CAPEX de anuncios de inversión en México, principales países de origen"
+#| fig-cap-location: top
+knitr::include_graphics(here::here("Plots", "zafra-capex-origen.png"))
+```
+
+### Desarrollo inmobiliario industrial
+
+El impacto del nearshoring también se evidencia en la demanda de suelo industrial. Según CBRE[^6], la demanda anual de bienes raíces industriales atribuida al nearshoring[^7] en México creció de casi 5 millones de pies cuadrados en 2019 a 21.5 millones de pies cuadrados en 2024 (si bien en 2024 el nivel fue 5% inferior a 2023), y la contribución de este fenómeno a la absorción bruta total de bienes inmuebles industriales pasó de menos del 10% al 28%. Durante el periodo de análisis que cubre la firma, la proporción de uso de suelo industrial por el nearshoring proveniente de expansiones en vez de nuevas empresas fue incrementando gradualmente. Esto refleja una expansión de compañías después de su relocalización en México por el aumento en el volumen de producción y nuevas líneas de negocio, una vez que sus operaciones iniciales comenzaron con éxito.
+
+[^6]: Una de las firmas líderes a nivel mundial en consultoría y servicios inmobiliarios, con fuerte presencia en México en los segmentos de parques industriales, oficinas y logística.
+
+[^7]: Absorción bruta de inmuebles industriales ya sea de nuevas empresas que llegan al país o de nuevas líneas de producción de empresas establecidas, ambas con el objetivo de abastecer al mercado norteamericano.
+
+
+```{r}
+#| label: fig-absorcion-bruta-nearshoring
+#| echo: false
+#| fig-cap: "Absorción bruta de inmuebles industriales atribuidos al nearshoring (millones de pies cuadrados)"
+#| fig-cap-location: top
+
+knitr::include_graphics(here::here("Plots", "zafra-absorcion.png"))
+```
+
+Nota: información sobre empresas que se reubican en México para atender el mercado norteamericano, así como la llegada de nuevas líneas de producción de empresas previamente instaladas en el país. Dada la información pública limitada disponible, algunos proyectos se clasifican como nearshoring hasta que se completa su construcción o inician operaciones.
+
+Fuente: CBRE.
+
+En 2022, aproximadamente el 67% de esta demanda se concentró en el Norte —principalmente en Nuevo León (47%) y Coahuila (12%)— y el 26% en la región Centro-Bajío —principalmente en Jalisco (9%), San Luis Potosí (5%), Ciudad de México (5%) y Estado de México (4%). En 2023, la concentración de la demanda por nearshoring en el Norte aumentó a alrededor del 82% —liderado por Chihuahua (35%), Nuevo León (24%) y Coahuila (20%)— siendo el resto capturado por la región Centro-Bajío —liderado por Querétaro (6%) y Jalisco (5%). En 2024, cerca del 66% de la demanda industrial por nearshoring se concentró en el Norte —liderada por Nuevo León (28%), Chihuahua (17%) y Coahuila (15%)— y el resto en la región Centro-Bajío —liderado por Querétaro (10%), Guanajuato (9%) y San Luis Potosí (8%).
+
+
+
+```{r}
+#| label: fig-absorcion-estado
+#| echo: false
+#| fig-cap: "Absorción bruta de inmuebles industriales atribuidos al nearshoring, por estado (% del total): 2022, 2023, 2024"
+#| fig-cap-location: top
+knitr::include_graphics(here::here("Plots", "zafra-absorcion-region.png"))
+```
+
+El sector automotriz (particularmente la fabricación de autopartes) se mantuvo como el principal atractor de inversiones, con 39% del total de suelo industrial destinado para inversiones de nearshoring en 2024 (38% por parte de nuevas empresas y 43% en expansiones).
+
+```{r}
+#| label: fig-demanda-sector-origen
+#| echo: false
+#| fig-cap: "Absorción bruta de inmuebles industriales atribuidos al nearshoring por sector, (% del total)"
+#| fig-cap-location: top
+knitr::include_graphics(here::here("Plots", "zafra-absorcion-sector.png"))
+```
+
+Por país de origen, China concentró el 37% de la demanda de suelo industrial por nearshoring entre 2019 y 2024, seguido por Estados Unidos (19%), Corea, Taiwán y Alemania (9% cada uno).
+
+```{r}
+#| label: fig-demanda-pais-origen
+#| echo: false
+#| fig-cap: "Demanda de inmuebles industriales atribuidos al nearshoring entre 2019 y 2024, por país de origen (% del total)"
+#| fig-cap-location: top
+knitr::include_graphics(here::here("Plots", "zafra-absorcion-origen.png"))
+```
+
+Con información de la absorción neta (superficie ocupada menos desalojada) de suelo industrial en principales ciudades provistas por Logan Valuation[^8] entre 2019 y 2024, se observa también un crecimiento notable a partir de 2021 y más marcado en el Norte. Durante dicho periodo, en las principales ciudades del Norte la absorción neta creció a una tasa media anual compuesta de 46.8%, mientras que en las del Centro-Bajío a una tasa de 37.4%, si bien en las primeras se observó una desaceleración en 2024 atribuida a la incertidumbre de la demanda externa, mientras que en las segundas el ritmo se sostuvo porque los espacios industriales también se emplean para atender la demanda interna.
+
+[^8]: Firma especializada en valuación y consultoría inmobiliaria para clientes institucionales en México y América Latina.
+
+```{r}
+#| label: fig-absorcion-neta-ciudades
+#| echo: false
+#| fig-cap: "Absorción neta de suelo industrial de principales ciudades del país: por ciudad (m²) y por región (2019=100)"
+knitr::include_graphics(here::here("Plots", "zafra-absorcion-ciudades.png"))
+```
+
+Esta tendencia se confirma con el ritmo de expansión de parques industriales. A 2023, los desarrolladores-operadores de AMPIP tenían un stock de alrededor de 80 millones de metros cuadrados en 460 parques industriales, pero a octubre de 2024 estaban construyendo 94 nuevos parques más (con contratos de arrendamiento firmados para la mitad del espacio industrial disponible), en gran parte debido a la demanda de nearshoring, que según la asociación ha incrementado la ocupación promedio de los parques industriales de tasas promedio históricas de 90-95% a cerca del 98% (con algunos parques industriales completamente llenos) y propició inversiones de 2.8 mil MDD en bienes raíces industriales en 2023 y 3.2 mil MDD en 2024.
+
+El número de empresas que están relocalizando procesos productivos en parques industriales mexicanos también ha crecido. Según una encuesta aplicada por BBVA-AMPIP (2023 y 2024) que cubrió alrededor del 52% de los miembros de la AMPIP y 266 parques industriales, en promedio, 134 nuevas empresas se reubicaron cada año en parques industriales mexicanos entre 2018-2022 (totalizando 669), 196 nuevas empresas se reubicaron en 2023 (46% más que el promedio anual de 2018-2022) —con un 17% informando que nuevos inquilinos trasladaron operaciones desde China a México— y se estimaba que alrededor de 200 empresas se reubicarían anualmente en 2024-2025.
+
+### Otros indicadores
+
+Según encuestas aplicadas al sector privado en México, las empresas ya perciben los beneficios. Según una encuesta implementada por BANXICO entre julio de 2023 y junio de 2024, se estima que alrededor del 13% de las empresas que operan en México (+100 trabajadores) se beneficiaron de una mayor demanda (directa o indirecta), producción o inversión debido al nearshoring, con dicha proporción incrementando al 21% cuando se consideran solo a las empresas manufactureras integradas a las GVCs.
+
+Otras encuestas internacionales confirman el gran interés en el país para desplegar en los próximos años inversiones de nearshoring. IFC (mimeo) implementó en 2024 una encuesta a tomadores de decisiones en las sedes de 302 EMN de 10 países desarrollados, lo cual permitió tener una visión incluso más avanzada que los anuncios de inversión. El 77% de las empresas manufactureras y el 55% de las de servicios reconocieron haber considerado o explorado a México como un destino de inversiones de nearshoring. De 159 MNEs encuestadas que realizaron inversiones en los últimos tres años, México atrajo la mayor proporción entre los países de América Latina y el Caribe (12%) y fue el tercer mayor destino junto con China entre 61 destinos de inversión a lo largo del mundo (6.8% de incidencia), solo por debajo de Estados Unidos (11.7%) e India (8.2%), y por encima de países como Alemania (6.4%), Canadá (6.0%), Reino Unido (5.7%) y Brasil (3.9%), así como de otros países asiáticos como Japón (2.5%), Filipinas (2.1%), Tailandia (2.1%), Vietnam (1.4%), Singapur (1.1%) o Malasia (0.7%).
+
+En cuanto a planes de inversión para los próximos dos años, México ocupaba el tercer lugar como destino más considerado entre posibles destinos de inversión (9.1% de incidencia), solo por detrás de Estados Unidos (11.3%) y Canadá (9.6%), lo que también refleja la alta integración de Norteamérica como destino de inversión, al concentrar 30% de intenciones de inversión. El 75% de estos planes se concentraban en sectores manufactureros impulsados por el nearshoring: industria automotriz, componentes electrónicos, maquinaria industrial, equipos y herramientas, equipos de comunicación, metales, productos farmacéuticos y dispositivos médicos. Más aún, casi el 40% de estos planes involucraban textualmente la relocalización de procesos de producción a México y el 26% la expansión de un sitio existente (lo cual para sectores beneficiados por el nearshoring se relaciona con una estrategia para ganar participación de mercado en Estados Unidos perdido por China).
+
+```{r}
+#| label: tbl-intenciones-ied
+#| echo: false
+#| tbl-cap: |
+#|    Distribución de intenciones de inversion de EMN manufactureras 
+#|    en países de ALC ceranos a EUA (proporción país-sector del subgrupo)
+#| tbl-cap-location: top
+knitr::include_graphics(here::here("Plots", "zafra-intenciones.png"))
+```
+
+## Síntesis y conclusiones
+
+México ha tenido un desempeño exportador exitoso, tanto en términos del valor de sus exportaciones como en términos de su capacidad de integrarse en cadenas de valor sofisticada, y de ser, junto con Costa Rica, uno de los dos únicos países en ALC cuyas exportaciones no están concentradas en bienes primarios.  Su éxito tiene raíces ya lejanas, pero el desempeño durante la primara fase del NS, entre 2018 y 2024 fue notable, y le permitió convertirse en el primer exportador de bienes al mercado de EUA.
+
+Aunque las exportaciones mexicanas a EUA han seguido creciendo durante la segunda fase del NS, su participación relativa en ese mercado se ha estabilizado, y nuevos competidores, que aún tienen una participación pequeña, están aumentando rápidamente sus exportaciones.  Es posible que Taiwán y Vietnam se conviertan en rivales estratégicos de México en los próximos años.  El tema se explora con más detalle en el Capítulo 3 de este libro.
+
+De manera quizá sorpresiva, uno de los pilares de la integración de México en el mercado de América del Norte, el sector automotriz, ha sido colocado en una posición de desventaja competitiva, y sus exportaciones se han contraido.  Este tema también se aborda con más detalle en el Capítulo 3.
+
+A pesar de estos éxitos, las exportaciones de bienes de México están altamente concentradas, tanto en términos de destinos (EUA absorbe más del 80% del total) como en términos de productos, medidos hasta ahora hasta el nivel de Partida arancelaria, y el crecimiento reciente está aún más concentrado que la distribución total de las exportaciones, como se ha puesto en evidencia en este Capítulo.  
+
+A partir de este análisis es posible identificar cuatro retos importantes que México deberá enfrentar en la próxima década:
+
+- Profundizar el arraigo de los sectores exportadores más exitosos.  La profundización o en su caso la creación de redes de proveedores de alto valor agregado puede contribuir a este arraigo, y en el Capítulo 5 de este libro se presenta una propuesta de cómo hacerlo en el caso del sector exportador que más rápidamente está creciendo en México: el de servidores para centros de datos.  Superar los cuellos de botella en infraestructura pública puede ser igualmente importante, y el caso específico del suministro de energía se examina en el Capítulo 6.
+
+- Diversificar gradualmente el portafolio exportador.  Este tema supera el ámbito de este libro, pero otro proyecto del CEPCAN, "Diversificación Productiva de México" está dedicado exclusivamente a este tema.  Y en ese mismo proyecto se aborda un reto complementario:  el de incorporar a más estados y regiones de México al éxito de la economía exportadora.
+
+- Finalmente, un reto de más largo plazo, quizá menos urgente pero no menos importante:  diversificar los destinos de las exportaciones de México.  La turbulencia de la política arancelaria de EUA hace que esta sea una tarea indispensable pero difícil y delicada.  Quizá sea el momento oportuno para considerar la (re) creación de una agencia federal dedicada a la promoción de exportaciones mexicanas a nuevos mercados, cuya labor sería doblemente efectiva si se complementa con agencias estatales con una misión semejante.  Una red de organizaciones privadas de promoción de las exportaciones, que ya existen en varios estados, sería el complemento indispensable para un proyecto cuyo éxito dependerá, en buena medida, de procesos eficaces de colaboración y co-descubrimiento de oportunidades de exportación entre el sector público y el sector privado.
+
+
+
+## Anexos
+
+### Evolución y puntos de quiebre de tendencia de las principales exportaciones por partida
+
+Capítulo 84
+
+```{r}
+#| label: fig-cap84-partidas
+#| echo: false
+#| fig-cap: "México. Exportaciones Capítulo 84, Partidas Seleccionadas, 2010-2024"
+#| fig-cap-location: top
+#| out-width: 100%
+
+knitr::include_graphics(here::here("Plots", "panel_partidas_cap84_2024.png"))
+```
+
+La figura pone en evidencia que prácticamente en todos los casos hubo un punto de quiebre de tendencia en o poco después de 2018 y que únicamente en dos casos, las partidas 8415 y 8421 hay suficiente información para identificar un cambio de tendencia negativo a partir de 2024.
+
+- El valor de las exportaciones de las partidas 8415 (equipo de climatización), 8418 (equipo de refrigeración) y 8421 (centrífugas) se duplica, o más, entre 2018 y 2025. A pesar de su rápido crecimiento, son partidas relativamente pequeñas dentro de la Sección (5.9, 4.9 y 3.4%, respectivamente) y dentro del total de exportaciones mexicanas.
+
+- El valor de las exportaciones de la partida 8471 (equipo de procesamiento de datos) se quintuplica, y casi todo el crecimiento tienen lugar entre 2024 y 2025. Esta partida es además la de más peso dentro de la Sección 84: representa el 54.1% de las exportaciones de la Sección y el 13.3% de las exportaciones mexicanas a EUA en 2024-2025.
+
+Capítulo 85
+
+```{r}
+#| label: fig-cap85-partidas
+#| echo: false
+#| fig-cap: "México. Exportaciones Capítulo 85, Partidas seleccionadas, 2010-2024"
+#| fig-cap-location: top
+
+knitr::include_graphics(here::here("Plots", "panel_partidas_cap85_2024.png"))
+```
+
+La @fig-cap85-partidas presenta gráficamente la evolución de las exportaciones por partida. Al igual que en el caso anterior, se usan índices en vez de valores absolutos, y se identifican puntos de quiebre de tendencia.
+
+- Dos partidas, la 8512 y la 8528 muestran un cambio de tendencia negativo, pero se da en 2022, por lo que ese cambio no se pued atribuir a la nueva política arancelaria de EUA, mientras que una partida, la 8517, tiene un comportamiento inestable, con cambios de tendendia frecuentes, u un volumn de exportaciones al final del período prácticamente igual al de el inicio del período.
+
+- En todos los demás casos las tendencias son uniformemente positivas, y curiosamente, en todos los casos en los que el ritmo de crecimiento se atenúa hacia el final de la serie, el cambio de tendencia tiene lugar en 2022, de manera que esa desaceleración tampoco puede atribuirse al cambio en la política arancelaria de EUA a partir de 2025. La figura pone en evidencia que prácticamente en todos los casos hubo un punto de quiebre de tendencia en o poco después de 2018 y que únicamente en dos casos, las partidas 8415 y 8421 hay suficiente información para identificar un cambio de tendencia negativo a partir de 2024.
+
+```{r}
+#| label: fig-cap87-partidas
+#| echo: false
+#| fig-cap: "México. Exportaciones Capítulo 87, Partidas seleccionadas, 2010-2024"
+#| fig-cap-location: top
+
+knitr::include_graphics(here::here("Plots", "panel_partidas_cap87_2024.png"))
+```
+
+Aunque en la @fig-cap87-partidas no se logró identificar estadísticamente cambios de tendencia en ninguna de las partidas analizadas, en el próximo capítulo, en el que se analizan las tarifas que enfrentan tanto México como sus principales competidores en este capítulo, se presenta evidencia que sugiere que el rápido crecimiento del período 2010-2018 no se repetirá y que no se puede descartar que la contracción de 2024-2025 se repita en 2026.
+
+```{r}
+#| label: fig-cap90-partidas
+#| echo: false
+#| fig-cap: "México. Exportaciones Capítulo 90, Partidas seleccionadas, 2010-2024"
+#| fig-cap-location: top
+
+knitr::include_graphics(here::here("Plots", "panel_partidas_cap90_2024.png"))
+```
+
+En este caso, la visualización de la información no arroja sorpresas: dos partidas, la 9018 y la 9019 muestran un crecimiento aceleardo, mientras que en las demás el crecimiento es modesto o muestra una quiebre negativo de tendencia en el último período.
+
+### Disponibilidad de información de exportaciones por estado y sector
+
+```{r}
+#| label: tbl-disponibilidad-estado-sector
+#| echo: false
+#| code-fold: true
+#| code-summary: "Disponibilidad de información por sector SCIAN y estado"
+
+# Disponibilidad de información por sector SCIAN (333-336) y estado —
+# resalta en verde los estados sin ninguna supresión por confidencialidad.
+supresion_ns_wide <- readRDS(here::here("RDS", "supresion_ns_wide.rds"))
+
+cols_sec <- names(supresion_ns_wide)[names(supresion_ns_wide) != "Estado"]
+
+filas_completas <- which(
+  rowSums(
+    sapply(cols_sec, function(col) {
+      x <- supresion_ns_wide[[col]]
+      !is.na(x) & x == 0
+    })
+  ) == length(cols_sec)
+)
+
+# flextable en vez de gt() -- gt() no emite anchos de columna (<w:tblGrid>)
+# al exportar a Word en esta versión, lo que produce columnas angostas con
+# texto partido letra por letra al abrir el .docx. flextable sí renderiza
+# como tabla nativa de Word con anchos correctos y preserva el resaltado
+# verde de los estados sin supresión por confidencialidad.
+supresion_ns_wide |>
+  flextable() |>
+  colformat_double(j = cols_sec, digits = 1, na_str = "—") |>
+  bg(i = filas_completas, bg = "#c8e6c9") |>
+  color(i = filas_completas, color = "#1b5e20") |>
+  bold(part = "header") |>
+  flextable::align(j = cols_sec, align = "center", part = "all") |>
+  add_header_lines("Disponibilidad de información por sectores y estados, INEGI/ETEF") |>
+  bold(i = 1, part = "header") |>
+  fontsize(i = 1, size = 13, part = "header") |>
+  theme_booktabs() |>
+  autofit() |>
+  # Ver nota en prep-tablas-cap: fit_to_width() evita que la tabla se
+  # desborde del área imprimible de reference-doc.docx (6" de ancho útil).
+  fit_to_width(max_width = 6, unit = "in") |>
+  add_footer_lines(
+    "Elaboración propia con base en INEGI — Exportaciones Trimestrales por Entidad Federativa (ETEF)."
+  ) |>
+  fontsize(size = 8, part = "footer")
+
+rm(supresion_ns_wide, cols_sec, filas_completas)
+```
+
+## Referencias
+
+::: {#refs}
+:::

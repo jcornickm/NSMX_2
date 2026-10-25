@@ -1,0 +1,415 @@
+---
+title: "Experimento: tema y paleta NSMX"
+subtitle: "Figuras diseñadas al tamaño final de Word (6 pulgadas)"
+author: Jorge Cornick
+date: "2026-10-24"
+format:
+  docx:
+    reference-doc: reference-doc.docx
+lang: es
+editor: source
+editor_options:
+  chunk_output_type: console
+---
+
+<!-- Escrito el 24-oct-2026 SIN poder correr R (no había R disponible): puede
+     tener errores menores. Corregirlos es parte del experimento. -->
+
+## Para qué sirve este documento
+
+Probar, antes de tocar C2, un **tema común** (`tema_nsmx()`) y una **paleta por país** (`paleta_pais`) en tres figuras representativas, diseñadas desde el principio al tamaño final de Word:
+
+- **Ancho 6 pulgadas** (el ancho útil de `reference-doc.docx`), de modo que la escala sea 1:1 y el texto salga a 6.5-9 pt reales (en C2 las figuras de 10-11 pulgadas se reducen a casi la mitad y el texto queda en unos 5 pt).
+- PNG a 300 dpi (Word) y PDF vectorial (diseñador). Todo se guarda en `Plots/Experiment/`; no se toca nada de `Plots/`.
+- México siempre del mismo color, y los demás países también.
+
+**Cómo correrlo.** Abrir en RStudio, correr en orden los chunks `tema-nsmx`, y luego cada `save-*` (están en `eval: false`). Después renderizar en Posit Cloud para ver cómo queda en Word, que es lo que importa.
+
+**Fuente.** El tema usa *IBM Plex Sans* si está instalada en el sistema y, si no, la fuente por defecto. Para instalarla: <https://fonts.google.com/specimen/IBM+Plex+Sans> (descargar, instalar los `.ttf` y reiniciar RStudio). El chunk `tema-nsmx` avisa cuál está usando.
+
+```{r}
+#| label: tema-nsmx
+#| include: false
+
+pacman::p_load(tidyverse, here, scales, systemfonts, patchwork, treemapify)
+source(here::here("Scripts", "funciones.R"))   # ANIO_FIN, FECHA_FIN, sa_adj()
+
+# ---- Fuente --------------------------------------------------------------
+FUENTE <- if ("IBM Plex Sans" %in% systemfonts::system_fonts()$family) "IBM Plex Sans" else ""
+message("Fuente de las figuras: ", if (FUENTE == "") "por defecto del sistema" else FUENTE)
+
+# ---- Tamaño: diseñar al tamaño final en Word -------------------------------
+ANCHO_FIG <- 6      # pulgadas = ancho útil en reference-doc.docx
+ALTO_FIG  <- 3.6    # alto estándar; algunas figuras usan más
+DPI_PNG   <- 300
+BASE      <- 9      # tamaño base del texto (pt) al tamaño final
+
+# ---- Paleta por país (México siempre igual) ------------------------------
+# Tonos apagados, sin rojos ni naranjas estridentes; pares distinguibles también
+# en deuteranopia (ver figura de la paleta). "Otros" es el gris neutro.
+paleta_pais <- c(
+  "México"        = "#2a9d8f",   # verde azulado
+  "China"         = "#c8553d",   # ladrillo
+  "Vietnam"       = "#e9b44c",   # mostaza
+  "Taiwán"        = "#457b9d",   # azul acero
+  "Canadá"        = "#7b6d8d",   # violeta apagado
+  "Japón"         = "#b56576",   # rosa viejo
+  "Corea del Sur" = "#8a9a5b",   # oliva
+  "Alemania"      = "#3d405b",   # pizarra
+  "EUA"           = "#264653",   # azul petróleo oscuro
+  "Costa Rica"    = "#8c6a4f",   # café
+  "R. Dominicana" = "#81b29a",   # salvia
+  "Otros"         = "#b8bdc2"    # gris neutro
+)
+
+# ---- Tema ---------------------------------------------------------------
+# theme_bw() aligerado: sin marco, rejilla horizontal tenue, leyenda abajo,
+# título/subtítulo/nota alineados al borde izquierdo de la figura.
+tema_nsmx <- function(base_size = BASE, base_family = FUENTE, rot_x = 0, grid_x = FALSE) {
+  tm <- theme_bw(base_size = base_size, base_family = base_family) +
+    theme(
+      panel.border          = element_blank(),
+      axis.line.x           = element_line(colour = "grey40", linewidth = 0.3),
+      axis.ticks            = element_line(colour = "grey60", linewidth = 0.3),
+      axis.ticks.length     = unit(2, "pt"),
+      axis.text             = element_text(colour = "grey25", size = rel(0.9)),
+      panel.grid.minor      = element_blank(),
+      panel.grid.major      = element_line(colour = "grey90", linewidth = 0.3),
+      panel.grid.major.x    = element_blank(),
+      legend.position       = "bottom",
+      legend.title          = element_blank(),
+      legend.key.size       = unit(0.35, "cm"),
+      legend.text           = element_text(size = rel(0.9)),
+      plot.title.position   = "plot",
+      plot.caption.position = "plot",
+      plot.title            = element_text(face = "bold", size = rel(1.1), hjust = 0),
+      plot.subtitle         = element_text(colour = "grey25", size = rel(0.95),
+                                           margin = margin(b = 4)),
+      plot.caption          = element_text(colour = "grey35", size = rel(0.8), hjust = 0,
+                                           margin = margin(t = 6)),
+      strip.background      = element_blank(),
+      strip.text            = element_text(face = "bold", hjust = 0),
+      plot.margin           = margin(4, 6, 4, 4)
+    )
+  if (grid_x)
+    tm <- tm + theme(panel.grid.major.x = element_line(colour = "grey90", linewidth = 0.3))
+  if (rot_x != 0)
+    tm <- tm + theme(axis.text.x = element_text(angle = rot_x, vjust = 0.5,
+                                                hjust = if (rot_x == 90) 1 else 0.5))
+  tm
+}
+
+# Variante sin ejes (treemaps)
+tema_nsmx_void <- function(base_size = BASE, base_family = FUENTE) {
+  theme_void(base_size = base_size, base_family = base_family) +
+    theme(
+      plot.title.position   = "plot",
+      plot.caption.position = "plot",
+      plot.subtitle         = element_text(colour = "grey25", size = rel(0.95),
+                                           margin = margin(b = 4)),
+      plot.caption          = element_text(colour = "grey35", size = rel(0.8), hjust = 0,
+                                           margin = margin(t = 6)),
+      legend.position       = "none",
+      plot.margin           = margin(4, 6, 4, 4)
+    )
+}
+
+# ---- Guardado: PDF (cairo) + PNG 300 dpi en Plots/Experiment/ -----------------
+guardar_exp <- function(p, nombre, ancho = ANCHO_FIG, alto = ALTO_FIG) {
+  dir_exp <- here::here("Plots", "Experiment")
+  dir.create(dir_exp, showWarnings = FALSE, recursive = TRUE)
+  purrr::walk(c("pdf", "png"), \(ext) {
+    ruta <- file.path(dir_exp, paste0(nombre, ".", ext))
+    if (file.exists(ruta) && !file.remove(ruta)) {
+      warning("No se pudo reemplazar (¿abierto en otro programa?): ", ruta, call. = FALSE)
+      return(invisible(NULL))
+    }
+    if (ext == "pdf") ggsave(ruta, plot = p, width = ancho, height = alto, device = cairo_pdf)
+    else              ggsave(ruta, plot = p, width = ancho, height = alto, dpi = DPI_PNG)
+    message("✓ ", basename(ruta))
+  })
+  invisible(p)
+}
+```
+
+## 1. La paleta
+
+Cada país tiene un color fijo en todas las figuras. A la derecha, cómo se vería con deuteranopia (la forma más común de daltonismo): los pares que se usan juntos (México-China, México-Vietnam-Taiwán) deben seguir distinguiéndose.
+
+```{r}
+#| label: save-fig-paleta
+#| include: false
+#| eval: false
+
+pacman::p_load(colorspace)
+
+p <- local({
+  tibble(
+    pais   = fct_rev(fct_inorder(names(paleta_pais))),
+    normal = unname(paleta_pais),
+    deutan = colorspace::deutan(unname(paleta_pais))
+  ) |>
+    pivot_longer(c(normal, deutan), names_to = "vision", values_to = "hex") |>
+    ggplot(aes(x = vision, y = pais, fill = hex)) +
+    geom_tile(colour = "white", linewidth = 1) +
+    scale_fill_identity() +
+    scale_x_discrete(position = "top",
+                     labels = c(normal = "Visión normal", deutan = "Deuteranopia")) +
+    labs(x = NULL, y = NULL,
+         caption = "México es siempre #2a9d8f; China, #c8553d.") +
+    tema_nsmx() +
+    theme(panel.grid = element_blank(), axis.line = element_blank(),
+          axis.ticks = element_blank())
+})
+p
+guardar_exp(p, "exp_paleta", alto = 3.2)
+rm(p)
+```
+
+```{r}
+#| label: fig-exp-paleta
+#| echo: false
+#| fig-cap: "Paleta por país, con simulación de deuteranopia"
+#| fig-cap-location: top
+#| out-width: "100%"
+
+knitr::include_graphics(here::here("Plots", "Experiment", "exp_paleta.png"))
+```
+
+## 2. Serie de tiempo: China y México
+
+Réplica de `fig-ImpEUA-CHN-MEX_2024`. Cambios: colores por país, línea de 2018 gris discontinua con etiqueta, nombre y TCAC al final de cada serie (sin cajas ni leyenda), unidades en el subtítulo, años en horizontal. Las TCAC se calculan sobre totales anuales de la serie **original**; la línea es la serie desestacionalizada.
+
+```{r}
+#| label: save-fig-exp-china-mexico
+#| include: false
+#| eval: false
+
+p <- local({
+  impPais <- readRDS(here::here("RDS", "imp_por_pais.rds"))
+
+  d <- impPais |>
+    filter(País %in% c("China", "México")) |>
+    mutate(Imp_bn = Imp_mes / 1e9) |>
+    arrange(País, fecha) |>
+    group_by(País) |>
+    mutate(Imp_bn_sa = sa_adj(Imp_bn, fecha, freq = 12)) |>
+    ungroup()
+
+  # TCAC sobre totales anuales de la serie original (años completos)
+  anuales <- d |>
+    group_by(País, Año = year(fecha)) |>
+    summarise(v = sum(Imp_bn, na.rm = TRUE), .groups = "drop")
+  val  <- \(pais, anio) anuales$v[anuales$País == pais & anuales$Año == anio]
+  cagr <- \(v1, v0, n) ((v1 / v0)^(1 / n) - 1) * 100
+
+  periodos <- tibble(ini = c(2010, 2018), fin = c(2018, 2024))
+  tcac <- crossing(País = c("China", "México"), periodos) |>
+    mutate(
+      tcac     = pmap_dbl(list(País, ini, fin), \(p, a, b) cagr(val(p, b), val(p, a), b - a)),
+      etiqueta = sprintf("TCAC %d–%d: %+.1f%%", ini, fin, tcac)
+    )
+
+  d_plot <- d |> filter(year(fecha) >= 2010, fecha <= FECHA_FIN)
+  x_ini  <- min(d_plot$fecha)
+  x_ult  <- max(d_plot$fecha)
+  span   <- as.numeric(x_ult - x_ini)
+  x_lab  <- x_ult + 0.015 * span
+  paso   <- 0.055 * diff(range(d_plot$Imp_bn_sa, na.rm = TRUE))
+
+  # Última observación de cada serie; la de arriba lleva sus TCAC encima del
+  # nombre, la de abajo debajo (así no chocan entre sí)
+  fin_serie <- d_plot |>
+    group_by(País) |>
+    slice_max(fecha, n = 1, with_ties = FALSE) |>
+    ungroup() |>
+    transmute(País, y_end = Imp_bn_sa) |>
+    arrange(desc(y_end)) |>
+    mutate(dir = c(1, -1))
+
+  etq_tcac <- tcac |>
+    left_join(fin_serie, by = "País") |>
+    group_by(País) |>
+    mutate(n_linea = row_number()) |>
+    ungroup() |>
+    mutate(
+      n_linea = if_else(dir > 0, 3 - n_linea, n_linea),   # orden cronológico de arriba a abajo
+      y       = y_end + dir * paso * n_linea,
+      x       = x_lab
+    )
+
+  ggplot(d_plot, aes(x = fecha, y = Imp_bn_sa, colour = País)) +
+    geom_vline(xintercept = as.Date("2018-01-01"),
+               linetype = "dashed", colour = "grey45", linewidth = 0.4) +
+    annotate("text", x = as.Date("2017-09-01"), y = Inf, vjust = 1.3, hjust = 1,
+             label = "Aranceles a China\n(2018)", size = 2.4, colour = "grey35",
+             lineheight = 0.9, family = FUENTE) +
+    geom_line(linewidth = 0.75) +
+    geom_text(data = fin_serie, aes(x = x_lab, y = y_end, label = País),
+              hjust = 0, fontface = "bold", size = 3, family = FUENTE, show.legend = FALSE) +
+    geom_text(data = etq_tcac, aes(x = x, y = y, label = etiqueta),
+              hjust = 0, size = 2.5, family = FUENTE, show.legend = FALSE) +
+    scale_colour_manual(values = paleta_pais[c("China", "México")], guide = "none") +
+    scale_x_date(breaks = seq(as.Date("2010-01-01"), as.Date("2024-01-01"), by = "year"),
+                 date_labels = "%Y") +
+    scale_y_continuous(labels = label_number()) +
+    coord_cartesian(xlim = c(x_ini, x_ult), clip = "off") +
+    labs(x = NULL, y = NULL,
+         subtitle = "Importaciones mensuales de EUA, miles de millones de dólares (serie desestacionalizada)",
+         caption  = "Elaboración propia con base en US Census Bureau. Ajuste X-13ARIMA-SEATS; TCAC sobre totales anuales sin ajustar.") +
+    tema_nsmx() +
+    theme(plot.margin = margin(4, 82, 4, 4))   # espacio para las etiquetas a la derecha
+})
+p
+guardar_exp(p, "exp_china_mexico")
+rm(p)
+```
+
+```{r}
+#| label: fig-exp-china-mexico
+#| echo: false
+#| fig-cap: "EUA: importaciones mensuales desde China y México, 2010-2024"
+#| fig-cap-location: top
+#| out-width: "100%"
+
+knitr::include_graphics(here::here("Plots", "Experiment", "exp_china_mexico.png"))
+```
+
+## 3. Barras divergentes: cambio de participación por país
+
+Réplica de `fig-imp-cambio-pais_2024`. Cambios: barras grises salvo cuatro países destacados con su color fijo (el color ya no codifica el signo: lo dice la posición), etiquetas horizontales, "−0.0" reemplazado por "0.0", unidades en el subtítulo y un solo estilo de título por panel.
+
+```{r}
+#| label: save-fig-exp-cambio-pais
+#| include: false
+#| eval: false
+
+p <- local({
+  impPais_Perc <- readRDS(here::here("RDS", "impPais_Perc.rds"))
+
+  # nombre de la columna País -> nombre de presentación (clave de paleta_pais)
+  nombres <- c(
+    "México" = "México", "Canadá" = "Canadá", "China" = "China", "Vietnam" = "Vietnam",
+    "Taiwán" = "Taiwán", "Alemania" = "Alemania", "Japón" = "Japón",
+    "Corea_S" = "Corea del Sur", "Irlanda" = "Irlanda", "India" = "India",
+    "Suiza" = "Suiza", "Tailandia" = "Tailandia", "Italia" = "Italia",
+    "R_Unido" = "R. Unido", "Francia" = "Francia", "Malasia" = "Malasia",
+    "Brasil" = "Brasil", "Singapur" = "Singapur", "P_Bajos" = "P. Bajos",
+    "Indonesia" = "Indonesia", "Resto" = "Resto"
+  )
+  codigos_iso <- c(
+    "México" = "MEX", "Canadá" = "CAN", "China" = "CHN", "Vietnam" = "VNM",
+    "Taiwán" = "TWN", "Alemania" = "DEU", "Japón" = "JPN", "Corea_S" = "KOR",
+    "Irlanda" = "IRL", "India" = "IND", "Suiza" = "CHE", "Tailandia" = "THA",
+    "Italia" = "ITA", "R_Unido" = "GBR", "Francia" = "FRA", "Malasia" = "MYS",
+    "Brasil" = "BRA", "Singapur" = "SGP", "P_Bajos" = "NLD", "Indonesia" = "IDN",
+    "Resto" = "RoW"
+  )
+  destacados <- c("México", "China", "Vietnam", "Taiwán")
+
+  panel <- function(ini, fin) {
+    cambios <- impPais_Perc |>
+      filter(año %in% c(ini, fin)) |>
+      select(País, año, share) |>
+      pivot_wider(names_from = año, values_from = share, names_prefix = "y") |>
+      mutate(
+        pais_chr  = as.character(País),
+        cambio_pp = (.data[[paste0("y", fin)]] - .data[[paste0("y", ini)]]) * 100,
+        cod       = fct_reorder(unname(codigos_iso[pais_chr]), cambio_pp, .desc = TRUE),
+        grupo     = if_else(nombres[pais_chr] %in% destacados, unname(nombres[pais_chr]), "Otros"),
+        etiqueta  = if_else(abs(cambio_pp) < 0.05, "0.0", sprintf("%.1f", cambio_pp))
+      )
+
+    ggplot(cambios, aes(x = cod, y = cambio_pp, fill = grupo)) +
+      geom_col(width = 0.75) +
+      geom_text(aes(label = etiqueta, vjust = if_else(cambio_pp >= 0, -0.4, 1.4)),
+                size = 2.3, colour = "grey25", family = FUENTE) +
+      geom_hline(yintercept = 0, linewidth = 0.3, colour = "grey40") +
+      scale_fill_manual(values = paleta_pais, guide = "none") +
+      scale_y_continuous(expand = expansion(mult = c(0.12, 0.12))) +
+      labs(x = NULL, y = NULL, title = paste0(ini, "–", fin)) +
+      tema_nsmx(rot_x = 90)
+  }
+
+  (panel(2010, 2018) / panel(2018, 2024)) +
+    plot_annotation(
+      subtitle = "Cambio en la participación en las importaciones totales de EUA, puntos porcentuales",
+      caption  = "Elaboración propia con base en US Census Bureau.",
+      theme    = theme(
+        plot.subtitle = element_text(colour = "grey25", size = BASE * 0.95, family = FUENTE),
+        plot.caption  = element_text(colour = "grey35", size = BASE * 0.8, hjust = 0, family = FUENTE)
+      )
+    )
+})
+p
+guardar_exp(p, "exp_cambio_pais", alto = 6.2)
+rm(p)
+```
+
+```{r}
+#| label: fig-exp-cambio-pais
+#| echo: false
+#| fig-cap: "Cambios en la participación porcentual de los principales exportadores al mercado de EUA, 2010-2018 y 2018-2024"
+#| fig-cap-location: top
+#| out-width: "100%"
+
+knitr::include_graphics(here::here("Plots", "Experiment", "exp_cambio_pais.png"))
+```
+
+## 4. Treemap por Sección del SA
+
+Réplica de `impMex_sec_perc_2024`. Cambios: el color deja de ser un arcoíris sin significado (Spectral) y destaca solo las tres Secciones que importan para el nearshoring (XVI, XVII y XVIII, en azules apagados); el resto va en gris claro y sin etiqueta cuando pesa menos de 2%.
+
+```{r}
+#| label: save-fig-exp-tree-sec
+#| include: false
+#| eval: false
+
+p <- local({
+  fill_sec <- c("XVI" = "#2f4858", "XVII" = "#55738a", "XVIII" = "#8fa8bb", "Otras" = "#e3e6e9")
+
+  d <- readRDS(here::here("RDS", "impMex_sec_pct.rds")) |>
+    filter(año == ANIO_FIN) |>
+    mutate(
+      grupo    = if_else(Sección %in% c("XVI", "XVII", "XVIII"), as.character(Sección), "Otras"),
+      etiqueta = if_else(pct >= 0.02,
+                         paste0(Sección, ". ", Sección_corto, "\n", scales::percent(pct, accuracy = 1)),
+                         ""),
+      txt      = if_else(grupo == "XVIII" | grupo == "Otras", "oscuro", "claro")
+    )
+
+  ggplot(d, aes(area = pct, fill = grupo, label = etiqueta)) +
+    geom_treemap(layout = "squarified", colour = "white", size = 1) +
+    geom_treemap_text(aes(colour = txt), place = "centre", reflow = TRUE,
+                      size = 8, min.size = 5, family = FUENTE) +
+    scale_fill_manual(values = fill_sec) +
+    scale_colour_manual(values = c(claro = "white", oscuro = "grey15")) +
+    labs(subtitle = paste0("Distribución de las exportaciones de México a EUA por Sección del SA, ",
+                           ANIO_FIN, " (%)"),
+         caption  = "Elaboración propia con base en US Census Bureau.") +
+    tema_nsmx_void()
+})
+p
+guardar_exp(p, "exp_tree_sec")
+rm(p)
+```
+
+```{r}
+#| label: fig-exp-tree-sec
+#| echo: false
+#| fig-cap: "Distribución porcentual de las exportaciones de México a EUA, 2024"
+#| fig-cap-location: top
+#| out-width: "100%"
+
+knitr::include_graphics(here::here("Plots", "Experiment", "exp_tree_sec.png"))
+```
+
+## Qué evaluar al verlo en Word
+
+1. **Legibilidad**: ¿se lee todo sin acercar? Ajustar `BASE` (9 pt) o el ancho de las etiquetas laterales si hace falta.
+2. **Color**: ¿México se reconoce de inmediato en las figuras 2 y 3? ¿El verde azulado contrasta bien con el ladrillo de China?
+3. **Etiquetas directas**: ¿reemplazan bien la leyenda en la figura 2, o se prefieren cajas?
+4. **Treemap**: ¿el énfasis en XVI-XVIII funciona, o se pierde información de las Secciones pequeñas?
+5. **Fuente**: ¿vale la pena instalar IBM Plex Sans (mensaje del chunk `tema-nsmx`)?
+
+**Si se aprueba**, el paso siguiente es mover `paleta_pais`, `tema_nsmx()`, `tema_nsmx_void()` y `guardar_exp()` a `Scripts/funciones.R` (esta última con otro nombre y la ruta `Plots/`), y aplicarlos a los chunks de C2 uno por uno, con el mismo criterio de ancho 6 pulgadas y texto al tamaño final.
