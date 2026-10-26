@@ -88,7 +88,11 @@ hs_cargar <- function() {
   ruta <- here::here("RDS", "hs_dictionary.rds")
   if (!file.exists(ruta))
     stop("Falta RDS/hs_dictionary.rds: corre Scripts/build_hs_dictionary.R")
-  readRDS(ruta)
+  dic <- readRDS(ruta)
+  if (!"nombre_grafico" %in% names(dic))
+    stop("RDS/hs_dictionary.rds es de una versión anterior (sin nombre_grafico): ",
+         "corre Scripts/build_hs_dictionary.R")
+  dic
 }
 
 # Tablas de referencia (Capítulo numérico -> Sección / nombres cortos)
@@ -108,12 +112,14 @@ hs_tablas <- function(dic = hs_cargar()) {
     Sección       = secc$codigo,
     Sección_corto = secc$nombre_corto,
     Sección_tabla = secc$nombre_tabla,
+    Sección_grafico = secc$nombre_grafico,
     stringsAsFactors = FALSE
   )
   list(secciones = secc_tbl, capitulos = cap_tbl, niveles_sección = niveles_secc)
 }
 
-# Agrega Sección, Sección_corto y Cap_corto como factores ordenados.
+# Agrega Sección, Sección_corto, Sección_grafico y Cap_corto (los tres primeros salvo
+# Sección_grafico, que es texto, como factores ordenados).
 # Requiere una columna numérica `Capítulo` (o indicar `col_cap`).
 # Se detiene si algún capítulo queda sin etiqueta.
 hs_agregar_etiquetas <- function(df, col_cap = "Capítulo", dic = hs_cargar()) {
@@ -128,7 +134,7 @@ hs_agregar_etiquetas <- function(df, col_cap = "Capítulo", dic = hs_cargar()) {
   if (col_cap != "Capítulo") out$Capítulo <- out[[col_cap]]
   out <- dplyr::left_join(out, cap[, c("Capítulo", "Sección", "Cap_corto")],
                           by = "Capítulo")
-  out <- dplyr::left_join(out, sec[, c("Sección", "Sección_corto")],
+  out <- dplyr::left_join(out, sec[, c("Sección", "Sección_corto", "Sección_grafico")],
                           by = "Sección")
   out$Sección       <- factor(out$Sección, levels = tb$niveles_sección, ordered = TRUE)
   out$Sección_corto <- factor(out$Sección_corto, levels = sec$Sección_corto, ordered = TRUE)
@@ -155,16 +161,38 @@ hs_etiquetas_partida <- function(df, col_part = "Cod_partida", estricto = TRUE, 
   dplyr::left_join(df, p, by = col_part)
 }
 
+# Para data frames con Sección (numeral romano) pero SIN columna Capítulo (p. ej.
+# impMex_sec_pct): agrega Sección_corto y Sección_grafico y deja Sección como
+# factor ordenado. Se detiene si alguna Sección no está en el diccionario.
+hs_agregar_etiquetas_seccion <- function(df, dic = hs_cargar()) {
+  tb  <- hs_tablas(dic)
+  sec <- tb$secciones
+  cod <- as.character(df[["Sección"]])
+  sin <- setdiff(unique(cod), c(sec$Sección, NA))
+  if (length(sin) > 0)
+    stop("Secciones sin etiqueta en hs_dictionary: ", paste(sin, collapse = ", "))
+  viejas <- c("Sección_corto", "Sección_grafico", "Sección_desc_es", "Sección_desc_orig")
+  df <- df[, setdiff(names(df), viejas), drop = FALSE]
+  i  <- match(cod, sec$Sección)
+  df$Sección_corto   <- factor(sec$Sección_corto[i], levels = sec$Sección_corto, ordered = TRUE)
+  df$Sección_grafico <- sec$Sección_grafico[i]
+  df$Sección         <- factor(cod, levels = tb$niveles_sección, ordered = TRUE)
+  df
+}
+
 # Re-etiqueta un data frame ya existente con el diccionario actual (idempotente):
 # quita las columnas de etiquetas viejas (incl. *_desc_es) y vuelve a ponerlas.
 # Sirve para que los qmd usen siempre los nombres vigentes aunque el RDS se haya
 # generado antes de un cambio en Excel/hs_nombres_cortos.csv.
 hs_relabel <- function(df) {
-  viejas <- c("Sección_corto", "Sección_desc_es", "Sección_desc_orig",
+  viejas <- c("Sección_corto", "Sección_grafico", "Sección_desc_es", "Sección_desc_orig",
               "Cap_corto", "Cap_desc_es", "Part_corto", "Part_desc_es", "Part_tabla")
   if ("Capítulo" %in% names(df)) {
     df <- df[, setdiff(names(df), c(viejas, "Sección")), drop = FALSE]
     df <- hs_agregar_etiquetas(df)
+  }
+  if (!"Capítulo" %in% names(df) && "Sección" %in% names(df)) {
+    df <- hs_agregar_etiquetas_seccion(df)
   }
   if ("Cod_partida" %in% names(df)) {
     resto <- df$Cod_partida == "Resto"

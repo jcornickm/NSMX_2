@@ -625,7 +625,8 @@ rm(impPais, impPais_Perc)
 #| code-summary: "Preparación datos Sección: porcentajes anuales"
 
 # Calculado en Scripts/Prep04_imp_pais_mex.R
-impMex_sec_pct <- readRDS(here::here("RDS", "impMex_sec_pct.rds"))
+# hs_relabel() reaplica los nombres vigentes de RDS/hs_dictionary.rds (Sección_corto, Sección_grafico)
+impMex_sec_pct <- readRDS(here::here("RDS", "impMex_sec_pct.rds")) |> hs_relabel()
 ```
 
 ```{r}
@@ -636,24 +637,13 @@ impMex_sec_pct <- readRDS(here::here("RDS", "impMex_sec_pct.rds"))
 pacman::p_load(patchwork, glue)
 
 p <- local({
-  
-  # Nombres ultra-cortos por Sección (la nomenclatura completa va en el apéndice)
-  nombre_ultracorto <- c(
-    "I"    = "Anim",   "II"   = "Veg",    "III"  = "Grasas", "IV"   = "Alim",
-    "V"    = "Miner",  "VI"   = "Quím",   "VII"  = "Plást",  "VIII" = "Cuero",
-    "IX"   = "Madera", "X"    = "Papel",  "XI"   = "Text",   "XII"  = "Calz",
-    "XIII" = "Piedra", "XIV"  = "Joyas",  "XV"   = "Metales","XVI"  = "Maq",
-    "XVII" = "Transp", "XVIII"= "Instrs", "XIX"  = "Armas",  "XX"   = "Manuf",
-    "XXI"  = "Arte"
-  )
-  
   hacer_divbar_sec <- function(ini, fin, datos) {
     col_ini <- paste0("y", ini)
     col_fin <- paste0("y", fin)
     
     cambios <- datos |>
       filter(año %in% c(ini, fin)) |>
-      select(Sección, Sección_corto, año, pct) |>
+      select(Sección, Sección_grafico, año, pct) |>
       pivot_wider(names_from = año, values_from = pct, names_prefix = "y") |>
       mutate(
         cambio_pp   = (.data[[col_fin]] - .data[[col_ini]]) * 100,
@@ -665,7 +655,7 @@ p <- local({
           cambio_pp > 0      ~ "positivo",
           TRUE               ~ "negativo"
         ),
-        nombre = unname(nombre_ultracorto[as.character(Sección)])
+        nombre = Sección_grafico   # nombre ultracorto: Excel/hs_nombres_cortos.csv, columna nombre_grafico
       )
     
     # separación entre el cero y el nombre, proporcional al rango del panel
@@ -722,7 +712,7 @@ p
 ggsave(here::here("Plots", "fig-imp-cambio-sec-mex_2024.pdf"), plot = p, width = 8, height = 7.5, device = cairo_pdf)
 ggsave(here::here("Plots", "fig-imp-cambio-sec-mex_2024.png"), plot = p, width = 8, height = 7.5, dpi = 150)
 
-rm(p, impMex_sec_pct)
+rm(p)
 
 ```
 
@@ -766,7 +756,7 @@ p
 ggsave(here::here("Plots", "impMex_sec_perc_2024.pdf"), plot = p, width = 11, height = 6, device = cairo_pdf)
 ggsave(here::here("Plots", "impMex_sec_perc_2024.png"), plot = p, width = 11, height = 6, dpi = 150)
 
-rm(p)
+rm(p, impMex_sec_pct)
 ```
 
 
@@ -968,8 +958,16 @@ rm(tcac_shares, tabla_cap)
 
 # Quiebres estructurales (Bai-Perron) y tendencia por partida, calculados en
 # Scripts/Prep05_partidas_quiebres.R (correrlo cuando cambien los datos).
-partidas_tendencia <- readRDS(here::here("RDS", "partidas_tendencia.rds"))
-quiebres_partida   <- readRDS(here::here("RDS", "quiebres_partida.rds"))
+# Los nombres de partida se reaplican desde el diccionario vigente, de modo que los
+# paneles usen siempre Excel/hs_nombres_cortos.csv aunque Prep05 se haya corrido
+# antes de editar un nombre.
+partidas_tendencia <- readRDS(here::here("RDS", "partidas_tendencia.rds")) |>
+  select(-any_of(c("Part_corto", "Part_tabla", "Nombre_corto_partida", "label_partida"))) |>
+  hs_etiquetas_partida() |>
+  mutate(label_partida = paste0(sprintf("%04d", as.integer(Cod_partida)), " — ", Part_corto))
+quiebres_partida <- readRDS(here::here("RDS", "quiebres_partida.rds")) |>
+  select(-any_of("label_partida")) |>
+  left_join(distinct(partidas_tendencia, Cod_partida, label_partida), by = "Cod_partida")
 ```
 
 ```{r}
@@ -1113,7 +1111,7 @@ Empezamos con el **Capítulo 84**, Maquinaria.
 ```{r}
 #| label: tbl-cap84
 #| echo: false
-#| tbl-cap: "Capítulo 84: Maquinaria y equipo mecánico"
+#| tbl-cap: "Capítulo 84: Maquinaria"
 #| tbl-cap-location: top
 
 tab84
@@ -1132,7 +1130,7 @@ Continuamos con el **Capítulo 85**, Maquinaria y equipo eléctrico.
 ```{r}
 #| label: tbl-cap85
 #| echo: false
-#| tbl-cap: "Capítulo 85: Maquinaria y equipo eléctrico"
+#| tbl-cap: "Capítulo 85: Eléctrico"
 #| tbl-cap-location: top
 
 tab85
@@ -1143,7 +1141,7 @@ El panorama es muy distinto para el **Capitulo 87**. Como vimos antes, la Secci�
 ```{r}
 #| label: tbl-cap87
 #| echo: false
-#| tbl-cap: "Capítulo 87: Maquinaria y equipo mecánico"
+#| tbl-cap: "Capítulo 87: Vehículos"
 #| tbl-cap-location: top
 
 tab87
@@ -1154,7 +1152,7 @@ Finalmente, exploramos el comportamiento del **Capítulo 90**. Al igual que en e
 ```{r}
 #| label: tbl-cap90
 #| echo: false
-#| tbl-cap: "Capítulo 90: Maquinaria y equipo mecánico"
+#| tbl-cap: "Capítulo 90: Óptica/médico"
 #| tbl-cap-location: top
 
 tab90

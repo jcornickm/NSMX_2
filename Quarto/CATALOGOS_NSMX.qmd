@@ -69,7 +69,7 @@ Primero los **Query** (traen datos de fuera; casi todos son independientes entre
 - **Moneda y unidades.** Census y USITC en dólares corrientes. `Val_mes` = valor del mes (`GEN_VAL_MO`); `Val_acum` = acumulado del año hasta ese mes (`GEN_VAL_YR`). ETEF en miles de dólares. IED en millones de dólares (mdd). IMMEX en personas.
 - **Códigos de país de Census.** México = 2010, Vietnam = 5520, Taiwán = 5830, China = 5700, Canadá = 1220. Solo los códigos 1000 o más son países; el resto son agregados regionales.
 - **Archivos `meta_*.rds`.** Listas con la procedencia de otro archivo (fuente, endpoint, fecha de descarga, notas). Algunos conservan nombres históricos: `meta_query3.rds` es la procedencia de **Prep02**; `meta_query11.rds` la de **Query02**; `meta_query12.rds` la de **Prep03**.
-- **Etiquetas del Sistema Armonizado.** Los nombres cortos de Secciones, Capítulos y Partidas salen de un único diccionario (`RDS/hs_dictionary.rds`), que se edita solo en `Excel/hs_nombres_cortos.csv` y se reconstruye con `Scripts/build_hs_dictionary.R`. Nunca se escriben tribbles de nombres dentro de un Query o un qmd.
+- **Etiquetas del Sistema Armonizado.** Los nombres cortos de Secciones, Capítulos y Partidas salen de un único diccionario (`RDS/hs_dictionary.rds`), que se edita solo en `Excel/hs_nombres_cortos.csv` y se reconstruye con `Scripts/build_hs_dictionary.R`. Hay cuatro niveles de nombre (corto, de tabla, gráfico y oficial), descritos en la sección *Diccionario del Sistema Armonizado* de la Parte II. Nunca se escriben tribbles de nombres dentro de un Query o un qmd.
 - **Ventana del Capítulo 2.** Todo lo del Capítulo 2 termina en diciembre de 2024 (`ANIO_FIN`, `FECHA_FIN` en `funciones.R`). Los RDS conservan la serie completa; el corte se hace al graficar. El Capítulo 3 usa el último dato disponible.
 
 ## Trampas conocidas
@@ -120,7 +120,7 @@ Son la **única copia** de la fuente para los RDS que de ellos se derivan; hay q
 | `mc-onlinenews-mediacloud_USA.csv` | Igual, EUA (colección 34412234). Descargado 24-oct-2026. | Query10 |
 | `mc-onlinenews-mediacloud-20260611141803-counts.csv` | Descarga previa ("nearshoring Mexico", junio 2026); se conserva solo para el control de revisiones de Query10. | Query10 |
 | `naladisa_2022.xlsx` | Nomenclatura NALADISA 2022. | `build_hs_dictionary.R` |
-| `hs_nombres_cortos.csv` | Nombres cortos y de tabla del SA. **Editable a mano**, única fuente de nombres cortos. | `build_hs_dictionary.R` |
+| `hs_nombres_cortos.csv` | Nombres cortos, de tabla y gráficos (ultracortos) del SA. **Editable a mano**, única fuente de esos nombres. | `build_hs_dictionary.R` |
 | `FBCF_INEGI_OUT_13.xlsx` | INEGI, Oferta y Utilización Trimestral (hoja *Tabulado*), recibido de un colega. | (conversión manual a `fbcf_inegi.rds`, sin script) |
 | `2025_4T_Flujos_PTI_ACT_3_.xlsx` | Versión previa de los flujos de IED (a 2025T3). Se conserva para comparar contra la nueva (la SE revisó 2025 de 40,871 a 41,917 mdd). Ningún script la lee. | ninguno |
 | `Por_eliminar/IMMEX_nuevo/` | Paquete completo descargado de INEGI (catálogos, diccionario, metadatos, zip). Ningún script lo lee; movido a `Por_eliminar/` el 24-oct-2026. | ninguno |
@@ -246,7 +246,7 @@ En las tablas, "Lo leen" lista los consumidores encontrados en `Scripts/` y en l
 
 | Archivo | Contenido | Productor | Lo leen | Estado |
 |:-------------------------|:------------------------------------------------------|:--------|:------------|:-------|
-| `hs_dictionary.rds` (56 KB) | Diccionario del SA: 21 Secciones, 98 Capítulos (96 del SA más 98 y 99 de EUA) y 1,228 Partidas. Columnas `nivel, codigo, codigo_padre, nombre_corto, nombre_tabla, nombre_oficial, fuente`. Los nombres cortos existen para todas las Secciones y Capítulos y solo para las Partidas usadas. | `build_hs_dictionary.R` | todos los scripts que cargan `funciones.R` (ver Parte II) y C2 | Vigente |
+| `hs_dictionary.rds` (56 KB) | Diccionario del SA: 21 Secciones, 98 Capítulos (96 del SA más 98 y 99 de EUA) y 1,228 Partidas. Columnas `nivel, codigo, codigo_padre, nombre_corto, nombre_tabla, nombre_grafico, nombre_oficial, fuente`. Los nombres cortos existen para todas las Secciones y Capítulos y solo para las Partidas usadas. Contenido completo en la sección *Diccionario del Sistema Armonizado* (Parte II). | `build_hs_dictionary.R` | todos los scripts que cargan `funciones.R` (ver Parte II) y C2 | Vigente |
 
 ## Figuras (`Plots/`)
 
@@ -318,7 +318,7 @@ Las imágenes fijas (`Images/nearshoring.png`, `Images/Directorio.png`) vienen d
 
 - Constantes `ANIO_FIN` (2024) y `FECHA_FIN` (2024-12-31): fin de la ventana del Capítulo 2.
 - `sa_adj(x, fechas, freq)`: ajuste estacional X-13 (paquete `seasonal`); detecta la frecuencia mensual o trimestral; si el modelo automático falla, reintenta con un modelo airline fijo.
-- `hs_cargar()`, `hs_tablas()`, `hs_agregar_etiquetas()`, `hs_etiquetas_partida()`, `hs_relabel()`: etiquetas del SA desde `hs_dictionary.rds`. `hs_etiquetas_partida()` se detiene si falta un nombre corto; `hs_relabel()` reaplica los nombres vigentes a un RDS viejo (los qmd lo usan al cargar).
+- `hs_cargar()`, `hs_tablas()`, `hs_agregar_etiquetas()`, `hs_agregar_etiquetas_seccion()`, `hs_etiquetas_partida()`, `hs_relabel()`: etiquetas del SA desde `hs_dictionary.rds`. `hs_cargar()` se detiene si el RDS es de una versión anterior (sin `nombre_grafico`); `hs_etiquetas_partida()` se detiene si falta un nombre corto; `hs_agregar_etiquetas_seccion()` etiqueta tablas que tienen `Sección` pero no `Capítulo` (p. ej. `impMex_sec_pct`); `hs_relabel()` reaplica los nombres vigentes a un RDS viejo, a nivel de Capítulo, de Sección o de Partida según las columnas que tenga (los qmd lo usan al cargar).
 - `breaks_tcac`, `labels_tcac`, `paleta_tcac`: categorías y colores compartidos por el mapa y la tabla de TCAC estatal.
 
 **`Scripts/funciones_datos.R`.** Solo lo cargan los Query de Census y USITC.
@@ -328,7 +328,88 @@ Las imágenes fijas (`Images/nearshoring.png`, `Images/Directorio.png`) vienen d
 - `actualizar_rds()`: une datos viejos y nuevos y reporta revisiones.
 - `buscar_en_repo(patron)`: equivalente de `grep` sobre `.R`, `.qmd`, `.Rmd` y `.md`; sirve para saber qué lee un RDS (ver la Parte III).
 
-**`Scripts/build_hs_dictionary.R`.** Construye `RDS/hs_dictionary.rds` a partir de `Excel/naladisa_2022.xlsx` (capítulos y partidas), de las secciones oficiales (transcritas a mano en el script) y de `Excel/hs_nombres_cortos.csv` (nombres cortos). Valida: 21 Secciones, 98 Capítulos, sin duplicados, sin códigos huérfanos en el CSV; avisa si un nombre corto pasa de 26 caracteres. Para agregar un nombre corto: editar el CSV y volver a correr el script.
+**`Scripts/build_hs_dictionary.R`.** Construye `RDS/hs_dictionary.rds` a partir de `Excel/naladisa_2022.xlsx` (capítulos y partidas), de las secciones oficiales (transcritas a mano en el script) y de `Excel/hs_nombres_cortos.csv` (nombres cortos). Valida: 21 Secciones, 98 Capítulos, sin duplicados, sin códigos huérfanos en el CSV, que el CSV tenga la columna `nombre_grafico`; avisa si un nombre corto pasa de 26 caracteres o si el nombre gráfico de una Sección pasa de 10. Para agregar o cambiar un nombre: editar el CSV y volver a correr el script.
+
+## Diccionario del Sistema Armonizado
+
+`RDS/hs_dictionary.rds` es la **única fuente** de nombres del SA para todo el proyecto: gráficos, tablas, scripts y apéndices. Se construye con `Scripts/build_hs_dictionary.R` y se edita **solo** en `Excel/hs_nombres_cortos.csv`. Esta sección documenta cómo funciona; las tablas del final se generan al renderizar este documento a partir del propio RDS, de modo que nunca pueden quedar desactualizadas respecto a él.
+
+### Los cuatro nombres de cada código
+
+| Columna | Para qué sirve | De dónde sale |
+|:-----------------|:------------------------------------------------|:-------------------------|
+| `nombre_corto` | Nombre legible y breve, con espacios, para leyendas, treemaps y texto. Es el nombre "estándar" en todo el proyecto. | CSV |
+| `nombre_tabla` | Nombre para tablas, si hace falta uno distinto. Si está vacío en el CSV, se usa `nombre_corto`. | CSV |
+| `nombre_grafico` | Nombre **ultracorto**, solo para ejes de gráficos muy apretados (p. ej. `Maq`, `Instrs`, `Transp`). Si está vacío en el CSV, se usa `nombre_corto`. Hoy solo está definido para las 21 Secciones. | CSV |
+| `nombre_oficial` | Texto oficial en español, en minúscula salvo la primera letra; es el que va en el apéndice de nomenclatura. | WCO 2022 (Secciones), NALADISA 2022 (Capítulos y Partidas), manual (Capítulos 98 y 99) |
+
+### Reglas de uso
+
+- **Todo nombre del SA sale de aquí.** Ningún qmd ni script define tribbles o vectores de nombres. Si hace falta un nombre nuevo, se agrega al CSV (`nivel,codigo,nombre_corto,nombre_tabla,nombre_grafico`) y se vuelve a correr `build_hs_dictionary.R`.
+- **Siempre número y nombre.** Donde aparezca una Sección, un Capítulo o una Partida, se muestra su código además del nombre (numeral romano para las Secciones; `Cap. 84`, `8471` para los demás), para que el lector pueda verificar qué es. Los nombres gráficos son la excepción aparente: en los gráficos de barras por Sección el numeral romano va en el eje y el nombre ultracorto junto a la barra.
+- **Los qmd reaplican el diccionario al cargar.** Cada RDS de datos con etiquetas se carga con `hs_relabel()`, de modo que los nombres sean los vigentes aunque el RDS se haya generado antes de editar el CSV. Los paneles de partidas (`partidas_tendencia`) se reetiquetan con `hs_etiquetas_partida()` en el chunk `prep-top-partidas-quiebres`.
+- **Lo que no se reetiqueta solo.** Los títulos de tablas (`tbl-cap`) y de figuras (`fig-cap`) son texto del qmd; al cambiar un nombre en el CSV hay que revisarlos a mano. Los sectores SCIAN de ETEF e IED (p. ej. "Equipo de transporte") son otra clasificación y **no** están en este diccionario.
+- **Después de editar el CSV:** correr `build_hs_dictionary.R`; los qmd recogen el cambio con `hs_relabel()` al cargar. No hace falta volver a correr los Preps, salvo `Prep05_partidas_quiebres.R` si se quiere que el RDS de tendencias lleve los nombres nuevos (el qmd ya los reaplica).
+
+### Contenido actual del diccionario
+
+Se genera al renderizar este documento. Si falta `RDS/hs_dictionary.rds`, se avisa en lugar de la tabla.
+
+```{r}
+#| label: dic-setup
+#| include: false
+
+pacman::p_load(tidyverse, here, knitr)
+ruta_dic <- here::here("RDS", "hs_dictionary.rds")
+hay_dic  <- file.exists(ruta_dic)
+if (hay_dic) dic <- readRDS(ruta_dic)
+aviso_dic <- "*(Falta `RDS/hs_dictionary.rds`: correr `Scripts/build_hs_dictionary.R`.)*"
+```
+
+**Secciones** (las 21).
+
+```{r}
+#| label: dic-secciones
+#| echo: false
+
+if (hay_dic) {
+  dic |>
+    filter(nivel == "Sección") |>
+    transmute(`Sección` = codigo, `Gráfico` = nombre_grafico,
+              Corto = nombre_corto, Oficial = nombre_oficial) |>
+    kable(align = "llll")
+} else cat(aviso_dic)
+```
+
+**Capítulos** (96 del SA más 98 y 99 de EUA).
+
+```{r}
+#| label: dic-capitulos
+#| echo: false
+
+if (hay_dic) {
+  dic |>
+    filter(nivel == "Capítulo") |>
+    transmute(`Capítulo` = codigo, `Sección` = codigo_padre,
+              Corto = nombre_corto, Oficial = nombre_oficial) |>
+    kable(align = "llll")
+} else cat(aviso_dic)
+```
+
+**Partidas con nombre corto** (solo las que se usan en los capítulos; el diccionario trae todas las de NALADISA, con nombre oficial).
+
+```{r}
+#| label: dic-partidas
+#| echo: false
+
+if (hay_dic) {
+  dic |>
+    filter(nivel == "Partida", !is.na(nombre_corto)) |>
+    transmute(Partida = codigo, `Capítulo` = codigo_padre,
+              Corto = nombre_corto, Oficial = nombre_oficial) |>
+    kable(align = "llll")
+} else cat(aviso_dic)
+```
 
 ## Fichas de los Query
 

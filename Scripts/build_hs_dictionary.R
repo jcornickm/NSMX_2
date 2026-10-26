@@ -16,9 +16,12 @@
 #   - Subpartidas: no incluidas.
 #   - Nombres cortos y de tabla: se leen de Excel/hs_nombres_cortos.csv
 #     (editable a mano; es la ÚNICA fuente de nombres cortos). Columnas:
-#     nivel, codigo, nombre_corto, nombre_tabla. Si nombre_tabla está vacío
+#     nivel, codigo, nombre_corto, nombre_tabla, nombre_grafico. Si nombre_tabla está vacío
 #     se usa nombre_corto; así el editor puede pedir nombres largos solo
 #     donde haga falta, editando el CSV y volviendo a correr este script.
+#     nombre_grafico es un nombre ULTRACORTO opcional, para ejes de gráficas muy
+#     apretadas (p. ej. "Maq", "Instrs"); si está vacío se usa nombre_corto.
+#     Hoy solo está definido para las 21 Secciones.
 #
 # Estructura de salida (formato largo, una fila por código):
 #   nivel          — "Sección", "Capítulo" o "Partida"
@@ -29,6 +32,8 @@
 #                    tablas; la misma en todo el proyecto. NA si aún no se define
 #                    (el script lo reporta).
 #   nombre_tabla   — Nombre para tablas; = nombre_corto si no se especifica otro.
+#   nombre_grafico — Nombre ultracorto para ejes de gráficas; = nombre_corto si no
+#                    se especifica otro.
 #   fuente         — "WCO 2022" (Secciones), "NALADISA 2022" o "manual".
 #   nombre_oficial — Texto oficial del SA en español, en "Sentence case"
 #                    (primera letra en mayúscula, resto en minúsculas), tal
@@ -94,6 +99,9 @@ nombres <- read_csv(here("Excel", "hs_nombres_cortos.csv"),
                     na = c("", "NA")) |>
   mutate(codigo = trimws(codigo))
 
+stopifnot("hs_nombres_cortos.csv debe tener la columna nombre_grafico" =
+            "nombre_grafico" %in% names(nombres))
+
 stopifnot("hs_nombres_cortos.csv: duplicados en nivel+codigo" =
             !anyDuplicated(nombres[, c("nivel", "codigo")]))
 
@@ -144,8 +152,11 @@ partidas_tbl <- partidas |>
 
 hs_dictionary <- bind_rows(secciones_tbl, capitulos_tbl, partidas_tbl) |>
   left_join(nombres, by = c("nivel", "codigo")) |>
-  mutate(nombre_tabla = coalesce(nombre_tabla, nombre_corto)) |>
-  select(nivel, codigo, codigo_padre, nombre_corto, nombre_tabla,
+  mutate(
+    nombre_tabla   = coalesce(nombre_tabla, nombre_corto),
+    nombre_grafico = coalesce(nombre_grafico, nombre_corto)
+  ) |>
+  select(nivel, codigo, codigo_padre, nombre_corto, nombre_tabla, nombre_grafico,
          nombre_oficial, fuente)
 
 # Sección 5. Validaciones                                                    ####
@@ -177,6 +188,11 @@ message("Partidas sin nombre_corto: ", nrow(sin_corto),
 largos <- hs_dictionary |> filter(!is.na(nombre_corto), nchar(nombre_corto) > 26)
 if (nrow(largos) > 0) warning("nombre_corto con más de 26 caracteres: ",
                               paste(largos$codigo, collapse = ", "))
+
+graf_largos <- hs_dictionary |>
+  filter(nivel == "Sección", nchar(nombre_grafico) > 10)
+if (nrow(graf_largos) > 0) warning("nombre_grafico de Sección con más de 10 caracteres: ",
+                                   paste(graf_largos$codigo, collapse = ", "))
 
 # Sección 6. Guardado                                                        ####
 
