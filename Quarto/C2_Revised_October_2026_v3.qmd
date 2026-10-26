@@ -770,18 +770,15 @@ rm(p)
 ```
 
 
-
 ### Por Sección del SA
 
-El crecimiento de las exportaciones mexicanas a EUA quedó documentado en la sección anterior. Este crecimiento ha sido acompañado por un cambio sustancial de la composición de esas exportaciones, con diferentes sectores "ganadores" o "perdedores" (en el sentido de sectores cuya participación porcentual dentro del total de exportaciones mexicanas período aumentó o disminuyó) en cada período.
+El crecimiento de las exportaciones mexicanas a EUA quedó documentado en el apartado sección anterior. Este crecimiento ha sido acompañado por un cambio sustancial de la composición de esas exportaciones, con diferentes sectores "ganadores" o "perdedores" (en el sentido de sectores cuya participación porcentual dentro del total de exportaciones mexicanas período aumentó o disminuyó) en cada período ^[A todo lo largo de este capítulo se utilizan los numerales romanos para identificar secciones del SA, y los números correspondientes a capítulos y partidas, lo que permite identificarlos sin ambigüedad.  En aras de la brevedad en el texto, y de la legibilidad en los figuras, se usan nombres cortos, informales, para cada uno de estos niveles del SA.  La nomenclatura oficial, para todas las secciones, y para los capítulos y partidas del SA que se identifican de manera individual tanto en este capítulo como en el siguiente se presenta en el Anexo 7.3].
 
 La @fig-imp-cambio-sec-mex permite visualizar claramente estos cambios.
 
-- Entre 2010 y 2018, Las exportaciones de la Sección XVI, Material de transporte, ganan casi 10 puntos porcentuales de participación, mientras que las de la Sección V, Productos Minerales, se contraer casi exactamente en la misma proporción.
+- Entre 2010 y 2018, Las exportaciones de la Sección XVII, Material de transporte, ganan casi 10 puntos porcentuales de participación, mientras que las de la Sección V, Productos Minerales, se contraer casi exactamente en la misma proporción.
 
-- La dinámica cambia en el período siguiente: el crecimiento en participación porcentual es liderado por la Sección XVII, Máquinas y aparatos eléctricos y por la IV, Alimentos.La Sección V, Productos minerales, continúa disminuyendo su participación.
-
-- En el último período, 2024-2025, se acelera notoriamente el crecimiento de la Sección XVI, Máquinas y aparatos eléctricos, mientras que la Seccion XVII, Material de transporte, acuso un duro golpe.
+- La dinámica cambia en el período siguiente: el crecimiento en participación porcentual es liderado por la Sección XVII, Máquinas y aparatos eléctricos y por la IV, Alimentos. La Sección V, Productos minerales, continúa disminuyendo su participación.
 
 Quizá el dato más sorprendente de este período sea la evolución de las exportaciones de la Sección XVII, ya que como lo expresó Paul Krugman: "no existe realmente una industria automovilística de los EUA; existe una industria norteamericana, que opera en los tres países" integrantes del NAFTA [@krugman2025][^3]. A priori, no hubiera parecido probable que el giro proteccionista en la politica arancelaria de EUA se convirtiera en un obstáculo para esa integración, pero eso es exactamente lo que sucedió.
 
@@ -808,7 +805,7 @@ El resultado de este proceso es un portafolio exportador concentrado en las secc
 knitr::include_graphics(here::here("Plots", "impMex_sec_perc_2024.png"))
 ```
 
-### Por Capítulo y Partida del SA REVISADO HASTA AQUI
+### Por Capítulo y Partida del SA
 
 <!-- Al igual que al inicio de la sección, se coloca al inicio de esta sub sección el código utilizado para generar los gráficos que posteriormente se insertan en el texto -->
 
@@ -1076,24 +1073,34 @@ El siguiente nivel de desagregación en el SA, tras las Secciones, son los Capí
 knitr::include_graphics(here::here("Plots", "fig-treemap-caps-seccion_2024.png"))
 ```
 
-Con ese propósito, se procedió de la siguiente manera: se identificaron las 50 partidas de exportación de México más importantes de México en 2024-2025. Se eliminaron las que correspondían a Secciones que no son de interés desde el punto de vista de NS, con el resultado de una lista de 30 partidas, distribuidas en cuatro capítulos del SA: Maquinaria, Eléctrico, Automóviles y Óptica.
+Con ese propósito, se procedió de la siguiente manera: se identificaron las 50 partidas de exportación de México más importantes de México en 2024. 2025 y 2026 (enero-agosto) y se determinó que existía poca variación entre ellas, por lo que se mantuvieron en un primer paso todas ellas.  Luego, se ordenaron las partidas de mayor a menor en 2024 ^[Para este capítulo] y se seleccionaron las que representaban al menos el 89% de las exportaciones de cada capítulo para análisis individual.  Las demás partidas se agrupaon en una categoríua resdual, "Otros".
 
-Se identificaron además las 50 partidas que mostraron el mayor crecimiento entre 2010 y 2025. En todos los casos, el punto de partida era muy baja, y el volumen aún en 2025 aún muy pequeño, por lo que ninguna de ellas se incluyó en el análisis.
+Se identificaron además las 50 partidas que mostraron el mayor crecimiento entre 2010 y 2025. En todos los casos, el punto de partida era muy bajo, y el volumen aún en 2025 aún muy pequeño, por lo que ninguna de ellas se incluyó en el análisis.
 
-Los resultados de este proceso de selección se resumen en las tablas siguientes, una por capítulo. Las Partidas identificadas de manera individual representan el 83.9% de las exportaciones del capitulo 85, el 82.5% de las exportaciones del Capítulo 85, el 91.9% de las exportaciones del Capítulo 87, y el 83.3% de las exportaciones del Capítulo 90. Sumadas, equivalen al 64.5% de las exportaciones mexicanas a EUA en 2025. En el Anexo 7.1 se presenta esta misma información gráficamente, pero en términos de índices en vez de valores absolutos, y se identifican los puntos de quiebre de tendencia para cada Partida.
+Los resultados de este proceso de selección se resumen en las tablas siguientes, una por capítulo. Las Partidas identificadas de manera individual representan el 83.0% de las exportaciones del capitulo 84, el 80.1% de las exportaciones del Capítulo 85, el 989.9% de las del Capítulo 87, y el 88.2% de las exportaciones del Capítulo 90.
 
-En las tablas se destacan en amarillo las partidas que crecieron más rápidamente en 2024-2025 que en 2018-2024. Solo seis partidas tienen este atributo:
+Sumadas, equivalen al 59.3% de las exportaciones mexicanas a EUA en 2024. En el Anexo 7.1 se presenta esta misma información gráficamente, pero en términos de índices en vez de valores absolutos, y se identifican los puntos de quiebre de tendencia para cada Partida.
 
+En las tablas se destacan en amarillo las 16 partidas que crecieron más rápidamente en 2018-2024 que en 2010-20184:
+
+- 8473, Partes de oficina
+- 8421, Centrifugadoras
 - 8471, Computadoras
-- 8418, Equipo de refrigeración
-- 8407, Motores
+- 8414, Compresores
+- 8418, Refrigeración
+- 8409, Partes de motores
+- 8504, Transformadores
+- 8516, Calentadores eléctricos
+- 8537, Tableros
+- 8536, Conmutación
+- 8501, Motores eléctricos
+- 8528, Televisores
 - 8517, Teléfonos
-- 8543, Maquinaria Eléctrica
-- 8544, Cables eléctricos
+- 9018, Instrumentos médicos
+- 9019, Aparatos de terapia
+- 9032, Reguladores
 
-Las tres primeras partidas equivalen al 18.8% de las exportaciones mexicanas a EUA en 2025, y las tres últimas al 6.8%. Las demás partidas, equivalentes al 38.9% de las exportaciones mexicanas en 2025, vieron su crecimiento **reducirse** en 2024-2025 con respecto a 2018-2024. casi el 90% de las exportaciones de Maquinaria, el 83% de las de Eléctrico, 99% de Automóviles y 53% de Óptica. En conjunto representan aproximadamente el 63% de las exportaciones mexicanas a EUA en 2024-2025.
-
-Una acotación importante es que en este capítulo nos limitamos a registrar los cambios en las exportaciones por Partida, y si bien se identifican los casos en que esos cambios están correlacionados con cambios en la política comercial de los EUA, no se identifican los cambios en las tarifas específicas enfrentadas por cada producto. Esa tarea se aborda en el Capítulo 3.
+Se trata, pues, de un período en el que si bien la aceleración del crecimiento de las exportaciones se concentra en únicamente tres secciones del SA, comprende un número relativamente alto de partidas.  Notablmente, todas las partidas del capítulo 87, equipo de transporte, pilar de la integración productiva entre México y EUA, reducen su ritmo de crecimiento en 2018 con respecto a 2024.
 
 Empezamos con el **Capítulo 84**, Maquinaria.
 
@@ -2986,6 +2993,8 @@ supresion_ns_wide |>
 
 rm(supresion_ns_wide, cols_sec, filas_completas)
 ```
+
+### Tabla de corresponencias: nombres cortos y nomenclatura del SA
 
 ## Referencias
 
