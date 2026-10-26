@@ -1,5 +1,14 @@
 # En Scripts/funciones.R
 
+# ── Umask ──────────────────────────────────────────────────────────────────
+# El umask heredado de algunas sesiones (p. ej. 0007) crea archivos sin
+# permiso de lectura para "otros" (ej. RDS guardados con saveRDS(), o los
+# temporales que genera el paquete `seasonal` dentro de sa_adj()). Eso
+# bloquea la ejecución de los chunks en entornos que exigen archivos
+# world-readable. 022 (rw-r--r-- en archivos, rwxr-xr-x en directorios) es
+# un valor estándar y seguro para este proyecto, que no maneja credenciales.
+Sys.umask("022")
+
 # ── Ventana temporal del Capítulo 2 ───────────────────────────────────────────
 # Todos los gráficos y tablas derivadas del Capítulo 2 terminan en diciembre
 # de 2024. El Capítulo 3 usa los datos más recientes y NO usa estas constantes.

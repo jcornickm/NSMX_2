@@ -1,5 +1,5 @@
 ---
-title: "Capítulo 2: Nearshoring en los datos"
+title: "Capítulo 2: Nearshoring en los datos, 2018-2024"
 subtitle: "El comercio se ajusta más rápidamente que la inversión"
 author: 
   - name: Jorge Cornick
@@ -160,9 +160,27 @@ local({
 })
 ```
 
-### ¿Nearshoring? ¿En México?
+### Nearshoring en México: lo que muestran los datos.
 
-La reconfiguración de las cadenas globales de valor fue un fue un tema que se empezó a discutir tras el inicio de la guerra comercial entre Estados Unidos y China: para ciertos productos, el cálculo económico que había llevado a establecer operaciones de manufactura en China y exportar desde allí hacia los EUA se modificó con los nuevos aranceles. La pandemia del COVID-19 en 2020 añadió urgencia a la discusión, ya que la fragilidad de las cadenas de suministro que se extendían por todo el planeta y concentraban las operaciones de manufactura en China quedó en evidencia, como un factor de riesgo adicional e independiente de los conflictos meramente comerciales. A todo esto se sumaron pronto consideraciones de seguridad nacional como argumento en favor de "acercar" las cadenas de valor ("nearshoring", en adelante NS) o incluso de traer ciertas actividades de manufactura de vuelta a los EUA ("reshoring"). No es de sorprender, entonces, que las menciones sobre estos dos temas se hicieran cada vez más frecuentes en las comunicaciones entre los gerentes generales (CEOs) de las empresas globalesa partir de 2021, como lo muestra la @fig-nearshoring.
+En el Capítulo 1 se identificaron trees tendencias que dieron impulso la nearshoring:
+
+- El conflicto comercial entre EUA y China
+- La fragilidad de las CGV que fue puesta en evidencia por la pandemia ceo COVID-19
+- El retorno de la política industrial en EUA, orientada en parte por criterios de seguridad nacional
+
+En ese capítulo también se argumentó que la reconfiguración de las CGV empieza por la reconfiguración de los flujos comerciales y no tiene por qué reflejarse, en el corto plazo, en cambios en los flujos de IED. Las decisiones en cuanto a localización de plantas de nuevas plantas de producción son lentas, los procesos son discretos ("lumpy") e involucran sumas considerables, y el plazo entre la decisión y su ejecución también puede demorar varios años. Los flujos comerciales, en cambio, pueden ajustarse rápidamente, mediante mecanismos que incluyen traslado de líneas de producción, cambios en los destinos de los productos e incremento en la intensidad del uso de las plantas ya existentes.
+
+Se argumentó también que era un error asumir que la reconfiguración de las CGV es sinónimos de IED fresca para la construcción de nuevas plantas de producción. La reinversión de utilidades en la ampliación de plantas, ya sea para incrementar el volumen de producción o para introducir nuevas líneas de producción es un mecanismos de "respuesta rápida" ante cambios en las señales de mercado, y desde el punto de vista del NS la distinción entre inversión "fresca" y reinversión de utilidades es irrelevante.
+
+Finalmente, se argumentó que el NS no está asociado de manera exclusiva con la IED; la inversión doméstica en plantas que actúan como proveedoras de EMNs exportadoras, que de nuevo puede incluir tanto el incremento en el volumen de produccíon como la diversificación del portafolio y complejidad del portafolio de productos suministrados a las EMNs también es un mecanismo del nearshoring.
+
+Finalmente, en el Capítulo 1 se dio un primer vistazo a la evidencia de la operacion de estas tendencias y sus consecuencias para la economía exportadora de México.
+
+En este capítulo se examina en detalle la evidencia sobre el nearshoring, tal y como tuvo lugar entre el inicio del primer gobierno de Trump y el final del gobierno de Biden. A partir del segundo gobierno de Trump las reglas cambiaron, y esta segunda fase del nearshoring se examina detalladamente en el Capítulo 3. El Capítulo 4, como ya se indicó antes, ofrece una perspectiva distinta pero complementaria: presenta una serie de estudios de caso que muestran como empresas multinacionales y domésticas se han adaptado y respondido a los nuevos retos y oportunidades que ofrece el nearshoring.
+
+### La conversación sobre el nearshoring.
+
+Nearshoring fue un tema de conversación al que prestaron atención tanto los ejecutivos de las empresas multinacionales como el público general. La @fig-nearshoring muestra cómo evolucionó la frecuencia con la que los gerentes generales de empresas multinaciones mencionaron ya sea "nearshoring" o "reshoring" en sus reportes de ganancias entre el segundo trimestre de 2019 y el último de 2024; es interesante que aunque el cambio en la participación de China en el mercado de importaciones de EUA se inició desde 2018, no es sino partir de 2020 que el tema eleva su perfil, en una tendencia ascendente que se mantiene durante todo el período cubierto por este capítulo.
 
 ```{r}
 #| label: fig-nearshoring
@@ -175,15 +193,13 @@ knitr::include_graphics(here::here("Images", "nearshoring.png"))
 
 Fuente: <https://iot-analytics.com/what-ceos-talked-about-in-q4-2024-tariffs-reshoring-agentic-ai/>
 
-Mientras tanto, en la prensa mexicana, particularmente la prensa financiera, el tema adquiere prominencia a partir de 2022, año en el que alcanzas 2,104 menciones. Ese es, por supuesto, el año en el que se inicia la guerra en Ucrania, el segundo gran evento, tras la pandemia de 2020, que puso en evidencia la fragilidad de las CGV [^1].
+Las menciones en la prensa de los términos nearshoring y reshoring ofrecen una perspectiva distinta sobre la evolución de esta conversación. La @fig-nearshoringMX muestra la evolución de estes menciones, tanto en EUA como en México, entre 2018 y 2024.
 
-[^1]: La búsqueda se hizo utilizando únicamente el términos "nearshoring", que es el relevante desde el punto de vista de México
+Es de notar, en primer lugar, la diferencia en la intensidad de la atención de la prensa a este tema. En el panel superior en los períodos más intensos se reportan 80 referencias mensuales, mientras que en México se reportan más de 1000 menciones mensuales por varios meses.
 
-El interés alcanza su punto más alto en los años 2023-2024, con 13 mil menciones por año, y luego se reduce rápidamente, con 3,781 menciones en 2025 y 1,636 en la primera mitad del 2026, lo que equivale a un ritmo anual parecido al de 2025. Los datos se muestran en la @fig-nearshoringMX. Al parecer, al iniciarse el segundo gobierno del presidente Trump el interés - o las expectativas - con relación al "nearshoring" decrecieron.con la llegada del presidente Trump.
+En segundo lugar, la atención de la presa a este tema se inicia mucho más tempranamente en EUA, en donde ya en 2018 la prensa le presta atención, alcanza un pico justo antes de la aprobación del T-MEC y, aunque con altibajos, de mantiene de 2022 en adelante, con una tendencia ascendente a final del período.
 
-Sin embargo, ni cambio en los temas que los CEOs discuten ni un cambio en los temas prominentes en la prensa son equivalentes a un cambio en lo que las empresas efectivamente hacen. La reducción en el interés mediático sobre el tema tampoco es un signo inequívoco de cambio en las decisiones empresariales.
-
-Era razonable, por lo tanto, preguntarse si la intensidad de la discusión sobre NS, en conversaciones empresariales pero también en instituciones de desarrollo y en círculos académicos estaba acompañada de cambios en la organización geográfica de las cadenas globales de valor (CGV) o si todo aquello era "mucho ruido y pocas nueces" y hoy es necesario preguntarse si la reducción de las menciones del tema en la prensa y las comunicaciones empresariales se corresponde o no con cambios en las tendencias de reconfiguración de las CGV.
+En Méixo, en cambio, el tema no llega a ser prominente sino a partir de 2022, y el interés empieza a disminuir desde finales de 2023, quizá porque, como se mostró en el Capítulo 1, expectativas iniciales desproporcionadas dieron lugar a un sentimiento de desengaño, y a la percepción de que el nearshoring era una oportunidad que se había desaprovechado.
 
 ```{r}
 #| label: fig-nearshoringMX
@@ -213,66 +229,41 @@ rm(png_a_panel)
 
 Fuente: elaboración propia con base en MediaCloud
 
-Había algunas razones para ser escépticos sobre la magnitud del cambio en las CGV cuando el tema se empezó a discutir. En el caso de las importaciones provenientes de China sujetas a aranceles a partir de 2018, había un incentivo económico para abastecerse desde países que no estuvieran sujetos a aranceles semejantes, pero para todos los demás productos, el NS era una inversión para protegerse de (eventuales) disrupciones futuras en las CGV. Siendo así, el NS creaba una "desventaja para el primero en moverse" [^2], ya que sus costos se incrementaban de manera inmediata, mientras que los beneficios se realizarían únicamente cuando tuviera lugar una nueva disrupción de gran escala, momento en el cual las empresas que hubiesen invertido en NS tendrían una ventaja competitiva con respecto a las que no lo hubieran hecho.
+Sin embargo, ni cambio en los temas que los CEOs discuten ni un cambio en los temas prominentes en la prensa son equivalentes a un cambio en lo que las empresas efectivamente hacen. La reducción en el interés mediático sobre el tema tampoco es un signo inequívoco de cambio en las decisiones empresariales.
 
-[^2]: En contraposición a la bien conocida "first-mover advantage" popularizada en la literatura sobre estrategia empresarial por Lieberman y Montgomery
+Era razonable, por lo tanto, preguntarse si la intensidad de la discusión sobre NS, en conversaciones empresariales pero también en instituciones de desarrollo y en círculos académicos estaba acompañada de cambios en la organización geográfica de las cadenas globales de valor (CGV) o si todo aquello era "mucho ruido y pocas nueces" y hoy es necesario preguntarse si la reducción de las menciones del tema en la prensa y las comunicaciones empresariales se corresponde o no con cambios en las tendencias de reconfiguración de las CGV.
 
-En tal situación ¿quién será el primero en moverse? Estudios tempranos, asumiendo que el NS, si estaba teniendo lugar, debería reflejarse en cambios en los flujos de inversión extranjera directa, llegaron a la conclusión de que en los datos casi no mostraban evidencia de NS[@brenton2022a] e incluso argumentaron que la prioridad de política debería de ser el fortalecimiento de las CGV y su resiliencia, no su relocalización, que resultaría en pérdidas de eficiencia y reducción del bienestar global.
+Estudios tempranos, asumiendo que el NS, si estaba teniendo lugar, debería reflejarse en cambios en los flujos de inversión extranjera directa, llegaron a la conclusión de que en los datos casi no mostraban evidencia de NS[@brenton2022a] e incluso argumentaron que la prioridad de política debería de ser el fortalecimiento de las CGV y su resiliencia, no su relocalización, que resultaría en pérdidas de eficiencia y reducción del bienestar global.
 
 Sin embargo, los **anuncios** de nueva inversión sugerían un cambio en la dirección futura de la IED. Cabía pues la posibilidad de que si bien a la altura de 2022 no hubiera evidencia de cambios en los flujos de inversión que habían tenido lugar hasta ese momento, el terreno estaba siendo preparado para cambios futuros. Después de todo, no se puede esperar que los flujos de inversión respondan de manera inmediata a cambios en las condiciones comerciales, ni siquiera en el caso de que exista confianza en que esos cambios serán duraderos [@gaurav2024]. El tema de los anuncios de inversión, para el caso concreto de México, de hecho se aborda más adelante en este capítulo.
 
-Otros autores advirtieron, sin embargo, que la reconfiguración de las CGV podía estar teniendo lugar por otros canales [@martínezgarciía2024]: la expansión de capacidades mediante reinversión de utilidades de empresas ya existentes, uso de "shelter companies" y tercerización de operaciones de manufactura y servicios de logística a firmas mexicanas, mientras que Durán y Stein [@durán-fernández2025] propusieron una nueva taxonomía del NS, que se describió con detalle en el capítulo anterior.
+Otros autores advirtieron, sin embargo, que la reconfiguración de las CGV podía estar teniendo lugar por otros canales [@martínezgarciía2024]: la expansión de capacidades mediante reinversión de utilidades de empresas ya existentes, uso de "shelter companies" y tercerización de operaciones de manufactura y servicios de logística a firmas mexicanas[@durán-fernández2025].
 
-Desde esta nueva taxonomía se argumenta, como se explicó en detalle en el capítulo anterior, que la reorganización de las CGV no es sinónimo de la construcción de nuevas plantas ("greenfield" puro) y que la ampliación de capacidad productiva en plantas ya existentes ("brownfield expansion") puede servir exactamente para el mismo propósito: desde el punto de vista del NS, la construcción de nuevas plantas y la ampliación de plantas existentes tiene exactamente el mismo efecto, y la distinción irrelevante, como lo es el mecanismo de financiamiento: da exactamente igual si la expansión se financia mediante ingreso de capital "fresco" o mediante la reinversión de utilidades. El caso de Flex, que se presenta más adelante, ilustra con claridad como la reasignación de líneas de producción entre plantas en distintas ubicaciones y la ampliación de capacidad productiva en México han sido usados como mecanismo directo para el NS.
+Trabajos más recientes [^1] y la evidencia que se presenta en este capítulo y el siguiente zanjan la cuestión sin ambigüedades: el cambio en la organización geográfica de las CGV y en los flujos comerciales es profundo e innegable. La pregunta, desde el punto de vista de México, si ese cambio está teniendo lugar; la pregunta es cómo sacar el mejor provecho de él, consolidar las ganancias que ya se han cosechado, y crear nuevas oportunidades para el crecimiento y diversificación de las exportaciones mexicanas a EUA, y para la profundización de las redes de proveeduría en México.
 
-Además, el NS no está asociado únicamente con la IED: la inversión de empresas domésticas también es un mecanismo para el NS cuando está orientada ya sea a la exportación directa o bien para incrementar el volumen y la complejidad de productos y servicios brindados a empresas exportadoras y existe amplia evidencia de que este mecanismo está siendo utilizado en México. En el Capítulo 4 se presentan varios estudios de caso que ilustran su operación.
+[^1]: Ver las referencias en el Capítulo 1, así como el apartado sobre evidencia econométrica en este capítulo
 
-Por todo lo anterior cabe esperar que el NS se manifieste primero en cambios en los flujos comerciales, apoyados en la reasignación de líneas de producción entre plantas y la ampliación de plantas existentes, y solo con rezago en cambios en las construcción de nuevas plantas y los anuncios de grandes inversiones, que son los que suele capturar los titulares de la prensa.
-
-En este capítulo mostramos que el examen de los flujos comerciales entre México y Estados Unidos arroja evidencia contundente de un proceso de reorganización de CGV, favorable a México en muchos casos, aunque no en todos. Este cambio no es, quizás, de la magnitud que se hubiera podido esperar, y tal vez las expectativas desmedidas iniciales son una de las razones por las que se ha reducido la prominencia del tema.
-
-Aun así, la evidencia que resulta tanto del examen descriptivo como del análisis econométrico coincide en señalar un cambio claro en la organización geográfica de las CGV.
-
-Si a pesar de ello existe en círculos empresariales la impresión de que NS en México ha sido "mucho ruido y pocas nueces", ello quizá se deba a una mezcla de expectativas iniciales sobredimensionadas, y a que existen restricciones internas que impiden a México aprovechar plenamente las oportunidades que los cambios en la política comercial de EUA, y los conflictos geopolíticos, le ofrecen. Algunas de estas restricciones se discuten en los capítulos siguientes de este informe.
+Si a pesar de ello existe en círculos empresariales la impresión de que NS en México ha sido "mucho ruido y pocas nueces", ello quizá se deba a una mezcla de expectativas iniciales sobredimensionadas, que ya antes se mencionaron, y a que existen restricciones internas que impiden a México aprovechar plenamente las oportunidades que los cambios en la política comercial de EUA, y los conflictos geopolíticos, le ofrecen. Algunas de estas restricciones se discuten en los capítulos siguientes de este informe.
 
 ### Alcance del capítulo
 
-En este capítulo, tal y como se indica en su título, se hace una presentación minuciosa de los **datos** que informan el debate sobre el NS, y específicamente el NS en México. El enfoque es fundamentalmente descriptivo: se aspira a identificar y caracterizar los hechos y con ello sentar la base fáctica para las discusiones que se abordan en los demás capítulo del libro, pero también se hace una síntesis, no técnica, de los principales econométricos que explorarn los cambios en las relaciones comerciales entre EUA y México durante la primara fase del NS, que se inicia con el primer gobierno del presidente Trump **REFERENCIAS**
+En este capítulo, tal y como se indica en su título, se hace una presentación minuciosa de los **datos** sobre la primera fase del nearshoring en México, que ya de 2018 a 2024. El enfoque es fundamentalmente descriptivo: se aspira a identificar y caracterizar los hechos y con ello sentar la base fáctica para las discusiones que se abordan en los demás capítulo del libro, pero también se hace una síntesis de los principales econométricos que explorarn los cambios en las relaciones comerciales entre EUA y México durante este período, que se inicia con el primer gobierno del presidente Trump **REFERENCIAS**
 
-Los dos períodos de interés central para el capítulo son, justamente, eso que acabamos de llamar la primera fase del NS, que va desde el primero gobierno de Trump hasta el final del gobierno de Biden, y una nueva fase que se inicia con el segundo gobierno de Trump, que obviamente se encuentra en rápida evolución y cuyos contornos finales aún no se conocen. Como telón de fondo, el análisis de los datos frecuentemente incluye también información para el período 2010-2018, es decir, los últimos años del período en que la globalización, cada vez con menos restricciones, constituyó la tendencia fundamental de las relaciones económicas internacionales.
+El capítulo se organiza en cuatro apartados, además de esta introducción.
 
-El capítulo se organiza en cuatro secciones, además de esta introducción.
+En el apartado 2, se discuten los cambios en la distribución por origen de las importaciones de los Estados Unidos. Como se verá, países ganadores y perdedores (es decir, países que aumentan o ver disminuir su participación en ese mercado) cambian entre los años finales de la globalización ascendente, de 2010 a 2018, y esta primera fase del NS. En este período México llega a convertirse en el mayor exportador al mercado de EUA, al tiempo que Vietnam y Taiwán se convierten en "estrellas ascendentes" en ese mercado.
 
-En la Sección 2, se discuten los cambios en la distribución por origen de las importaciones de los Estados Unidos. Como se verá, países ganadores y perdedores (es decir, países que aumentan o ver disminuir su participación en ese mercado) son diferentes en cada uno de los períodos que se analizarán. Este período culmina con el ascenso de México, que desde 2024 se convierte en el mayor exportador al mercado de EUA.
+En la apartado 3 el foco se traslada a los cambios en la composición de las exportaciones mexicanas a EUA. Empezando con un análisis al mayor nivel de agregación, las Secciones del Sistema Armonizado, el apartado concluye con la identificación de las Partidas más importantes y dinámicas del portafolio exportador de México [^2].
 
-En la Sección 3 el foco se traslada a los cambios en la composición de las exportaciones mexicanas a EUA. Empezando con un análisis al mayor nivel de agregación, las Secciones del SA armonizado, esta sección, tras una rápida mirada a la composición de esas exportaciones por Capítulo, identifica las Partidas más importantes y dinámicas del portafolio exportador de México.
+[^2]: Las partidas se ordenaron de mayor a menor según su participación porcentual en el total de exportaciones al final del período, y se seleccionar aquellas que, sumadas, representaran al menos el 80% del total de exportaciones de cada capítulo.
 
-La Sección 4 aborda el impacto regional del NS. A pesar de que por razones de confidencialidad la información de accesso pública es limitada, los datos disponibles permiten establecer patrones claramente diferenciados en la participación de diversos estados y regiones mexicanas; la división entre "dos Méxicos", ampliamente discutida en los estudios sobre el desarrollo económico del país, no se está reduciendo [@aroca2005][@chiquiar2005][@gómez2009].
+En el apartado 4 aborda el impacto regional del NS. A pesar de que por razones de confidencialidad la información de acceso pública es limitada, los datos disponibles permiten establecer patrones claramente diferenciados en la participación de diversos estados y regiones mexicanas; la división entre "dos Méxicos", ampliamente discutida en los estudios sobre el desarrollo económico del país, no se está reduciendo [@aroca2005b][@chiquiar2005a][@gómez2009b].
 
-En la Sección 5 se abordan dos temas complementarios: los flujos y distribución sectorial de la IED en México, y la evolución de la demanda de suelos de uso industrial, que se ve afectacada, claro está, no solo por la llegada de nuevos inversionistas, sino también por la expansión o contracción de las actividades de empresas que ya operan en México.
+En el apartado 5 se abordan dos temas complementarios: los flujos y distribución sectorial de la IED en México, tomando en cuentan tanto los datos históricos como los anuncios recientes de nueva inversión, así como la evolución de la demanda de suelos de uso industrial, que se ve afectada, claro está, no solo por la llegada de nuevos inversionistas, sino también por la expansión o contracción de las actividades de empresas que ya operan en México \^\[Ernesto: en esta versión no están aún actualizados los datos de fDi: le pedí a Sergio que los actualizara o que coordinara con Ana para ver si ella lo podía hacer. Los datos de uso de suelo industrial no los he podido actualizar. Le escribí a CBRE, la fuente, preguntando por acceso, y ni siquiera me han contestado. Insistiré\].
 
-En la Sección 6, se hace un primer intento de identificar desafíos clave que México debe superar para obtener mayores beneficios del proceso de reorganización de las cadenas globales de valor en curso.
+En el apartado 6 se resumen los hallazos del capítulo y se concluye con un primer intento de identificar desafíos clave que México debe superar para obtener mayores beneficios del proceso de reorganización de las cadenas globales de valor en curso.
 
-, de los que se derivan tanto oportunidades como desafíos se presenta, con bastante detalle, la evidencia disponible sobre el NS en México. Temáticamente, el capítulo se organiza en cuatro secciones:
-
-- El cambio en la composición de las importaciones de EUA por país de origen, que lleva a México a convertirse en el principal proveedor de ese mercado a partir de 2024.
-- El cambio en la composición de las exportaciones mexicanas a EUA en tres distintos niveles de granularidad: Sección primero, y luego los Capítulos y Partidas de mayor importancia.
-- Las dimensiones regionales del NS en México.
-- El análisis de los flujos de IED y de la demanda de suelo de uso industrial.
-
-El examen de la evidencia estadística se concentra en dos períodos:
-
-- 2018 - 2024, que corresponde al inicio de la primera guerra comercial entre Estados Unidos y China durante el primero gobierno del presidente Trump, así como el gobierno del presidente Biden, que mantuvo los aranceles a las importaciones provenientes de China y lanzó además la Inflation Reduction Act y la Chips and Science Act, ambas con el propósito expreso de acercar (nearshoring) o retornar a EUA (reshoring) actividades industriales críticas
-
-- 2024-2025, el período de "turbulencia" que da su título a este libro, durante el cual se lanza una nueva política comercial en EUA, todavía volátil e impredecible, y cuya configuración final dista aún de estar claramente definida.
-
-Un período anterior, 2010 - 2018, que corresponde a los últimos años de la globalización ascendente, se incluye como punto de referencia: nos permite identificar los cambios que tuvieron lugar a partir de 2018.
-
-El impacto del segundo gobierno del presidente Trump debe analizarse con cautela. Cuantitativamente, como se verá en la sección 3 de este capítulo, los efectos son notorios: en muchos rubros, las exportaciones (o al menos su tasa de crecimiento) se reducen con respecto a lo observado entre 2010 y 2018.
-
-Sin embargo, la razón de señal a ruido puede ser alta: aunque el giro proteccionista de la política arancelaria de EUAl está firmemente establecido, no sucede lo mismo con la estructura tarifaria, que ha estado sujeta a fuertes ajustes como resultado de negociaciones comerciales y resoluciones judiciales, y que aún a mediados de 2026 no tiene un perfil estable y predecible. Ni siquiera países que cuentan con acuerdos comerciales bilaterales o regionales con EUA, como México, Canadá y Centroamérica están protegidos contra cambios bruscos en los aranceles de base o para productos específicos, que pueden ser "gatillados" por muy diversas razones.
-
-Hecha esa acotación, es claro que el impacto de la política predominante en cada uno de estos períodos ha sido distinto tanto para México como para otros exportadores al mercado de EUA en términos del volumen y la composición de las exportaciones. A pesar de estas diferencias, hay una constante en términos del impacto regional en México: un pequeño conjunto de estados ha visto disminuir su participación en la economía exportadora en todos ellos, como se muestra en la Sección 4. La división entre "dos Méxicos", que ha sido objeto de amplia discusión en la literatura sobre el desarrollo mexicano .
+Una pequeña serie de anexos ofrece información complementaria que puede ser de interés para algunos lectores.
 
 ## El ascenso de México en el mercado de EUA.
 
@@ -284,17 +275,17 @@ Hecha esa acotación, es claro que el impacto de la política predominante en ca
 impPais <- readRDS(here::here("RDS", "imp_por_pais.rds"))
 ```
 
-### Cambio en las posiciones relativas de México y China
-
 La manifestación más obvia de que los CGV centradas en Estados Unidos se están reorganizando, surge del examen de la evolución de sus importaciones según su país de origen. Este examen pone de manifiesto, de manera contundente, el impacto del NS sobre México y cómo este ha logrado aprovechar las oportunidades que se derivan de este fenómeno, pero también muestra que otros países están cerrando la brecha que los separa de México, y que mantener el liderazgo en ese mercado demandará de una política comercial calibrada con precisión, de negociaciones delicadas con los EUA, y de políticas públicas que permiten superar "cuellos de botella" que ha impedido un crecimiento más acelerado de las exportaciones mexicanas.
+
+Nuestro análisis se inicia con la comparación de las exportaciones de México y China a EUA, mercado en el cual son los dos proveedores más importantes, y luego compara el desempeño de México con el de Vietnam y Taiwán, cuya participación porcentual es mucho menor, pero en rápido ascenso.
+
+### México y China
 
 En la @fig-ImpEUA-CHN-MEX se muestra la evolución de la participación en el mercado de importaciones de EUA de los sus dos principales proveedores: México y China.
 
-- Antes del inicio de la guerra comercial entre EUA y China, las exportaciones de México y China hacia ese país venían creciendo a un ritmo muy parecido: 5.1 y 5%, respectivamente. Aunque la tasa de crecimiento de las exportaciones mexicanas es ligeramente superior, no es suficiente para cerrar la brecha con China que, por el contrario, se amplía en este período.
+- Antes del inicio de la guerra comercial entre EUA y China, las exportaciones de México y China hacia ese país venían creciendo a un ritmo muy parecido: 5.1 y 5.0%, respectivamente. Aunque la tasa de crecimiento de las exportaciones mexicanas era ligeramente superior, la brecha entre ambos países se ensanchaba, porque el punto d partida de México era mucho más bajo.
 
-- Las cosas cambian de manera drástica entre 2018 y 2024: la tasa compuesta anual de crecimiento (TCAC) de China se contrae y alcanza un valor negativo, -3.4%, mientras que la TCAC de las exportaciones mexicanas sube a un 6.6%. El conflicto comercial entre EUA y China, y la imposición por parte de EUA de aranceles diferenciados a las importaciones provenientes de China, permitió a México, cuyas exportaciones durante este período se rigen por las reglas del T-MEC, superar a China y convertirse en el primer exportador de bienes a EUA.
-
-- Entre 2024 y 2025 el crecimiento de las exportaciones mexicanas sigue siendo notable, de 6.3%, apenas inferior al del período anterior, mientras que las exportaciones chinas colapsan, y se contraen en casi un 30%.
+- Las cosas cambiaron de manera drástica entre 2018 y 2024: aunque las exportaciones chinas alcanzaron su nivel más alto en los primeros meses de 2020, para el perído en su conjunto la tasa compuesta anual de crecimiento (TCAC) es de -3.4%, mientras que la de las exportaciones mexicanas sube a un 6.6%. El conflicto comercial entre EUA y China, y la imposición por parte de EUA de aranceles diferenciados a las importaciones provenientes de China, permitió a México, cuyas exportaciones durante este período se rigen por las reglas del T-MEC, superar a China y convertirse en el primer exportador de bienes a EUA.
 
 Una primera impresión, entonces, es que México se ha beneficiado tanto de la tendencia a la liberalización del comercio internacional que predominó hasta 2018 y de su participación en el NAFTA (hoy T-MEC) como del conflicto comercial entre EUA y China y de la nueva política arancelaria de EUA a partir de 2025, aunque con diferencias importantes en cada período.
 
@@ -444,19 +435,13 @@ Es necesario hacer tres acotaciones para no dar un peso injustificadamente eleva
 
 Ninguna de estas acotaciones debe llevar a la conclusión de que el cambio en el origen de las importaciones norteamericanas no es real, pero señalan - de la misma manera que los datos sobre inversión china en México, que se discuten en el Capítulo 8 - que existe una considerable cantidad de "ruido" en la información de que disponemos, y que si bien es posible identificar tendencias claras, será necesario mucho trabajo adicional para elevar el grado de precisión de nuestros diagnósticos.
 
-### Otros participantes y estrellas emergentes
+### Los 20 participantes de más peso en el mercado de EUA
+
+Tal y como se explicó en el capítulo 1, durante esta primera fase del nearshoring, México tuvo una ventaja considerable con respecto a China en las condiciones de acceso al mercado de EUA, pero otros países también se vieron en una posición de ventaja competitiva con respecto a China, y con una desventaja apenas moderada con respecto a México; si bien las exportaciones mexicanas al amparo del NAFTA y luego el T-MEC ingresaban a ese mercado sin pagar aranceles, otros países, al amparo de la norma de Nación más Favorecida (NMF) pagaban un arancel modesto, de alrededor del 2.5%. Las exportaciones mexicanas fuera de NAFTA / T-MEC pagaban ese mismo arancel.
 
 China y México son los dos exportadores más importantes a los EUA, pero no los únicos. Más importante: salvo que hubiese un cambio radical en el estado de las relaciones comerciales entre EUA y China, los principales retos competitivos para México en el mercado de EUA no vendrán de China, sino de otros países cuyas exportaciones están creciendo rápidamente, y en algunos casos justamente en los productos más importantes dentro de las exportaciones mexicanas.
 
-Es necesario, pues, ampliar la mirada. Con este propósito, se han identificado los 20 orígenes más importantes de las importaciones de Estados Unidos\[\^4\] y los cambios en la participación de cada uno de ellos en los años finales de la globalización.
-
-Los ganadores y perdedores de cada unos de estos tres períodos se muestran en la @fig-imp-cambio-pais:
-
-- En los años finales de la globalización, China,México y Vietnam son los principales ganadores. Las pérdidas de participación en el mercado de EUA tienen un pequeño impacto sobre Gran Bretaña y Japón, y un impacto considerable sobre Canadá, a pesar de su acceso preferencial a ese mercado.
-
-- Durante la primera fase del NS, Vietnam logra incrementar su participación a un ritmo mayor que México, y Taiwán pisa sus talones. El gran perdedor es, por supuesto, China.
-
-- Durante la segunda fase de la globalización, Taiwán y Vietnam siguen aumentando su participación y, bastante detrás de ellos, Tailandia. Las exportaciones suizas e irlandesas también se incrementan, pero principalmente en productos que no compiten directamente con las exportaciones mexicanas, por lo que resultan de menos interés para nuestro estudio. En términos relativos, la participación mexicana no sufre alteraciones.
+Es necesario, pues, ampliar la mirada. Con este propósito, se identificaron los 20 orígenes más importantes de las importaciones de Estados Unidos\[\^4\] y los cambios en la participación de cada uno de ellos en los años finales de la globalización y durante la primera fase del nearshoring. Estos cambios se muestran en la @fig-imp-cambio-pais:
 
 ```{r}
 #| label: origAnualPerc
@@ -561,9 +546,15 @@ rm(p)
 knitr::include_graphics(here::here("Plots", "fig-imp-cambio-pais_2024.png"))
 ```
 
-Una última mirada al cambio en las importaciones de EUA por país de origen se presenta en la @fig-ImpEUA-shares, en la que se incluye información únicamente para México, Taiwán y Vietnam. La participación tanto de Taiwán como de Vietnam es de aproximadamente 2% del mercado en 2018, mientras que la de México es de aproximadamente 12.5%. La participación de México alcanza el 15% en 2023 y se ha incrementado muy levemente desde entonces. En cambio, tanto Vietnam como Taiwán triplicaron su participación, que alcanza el 6% en 2025.
+- En los años finales de la globalización, China,México y Vietnam son los principales ganadores y el "resto del mundo" es el gran perdedor. Canadá, a pesar de su acceso preferencial, pierde 2 puntos porcentuales, seguida por Japón y Gran Bretaña.
 
-Estos datos bastan para sugerir que estos dos países serán los principales rivales de México en el mercado de los EUA, pero la intensidad de esa rivalidad dependerá de si están compitiendo en los mismos mercados (es decir, si están exportando los mismos productos) en los que compite México. Este tema se aborda en el Capítulo 3. Allí también se examina la cuestión de el impacto diferenciado de las nuevos aranceles de EUA, por país y producto, que en muchos casos han resultado favorables para México, pero en otros lo han puesto en una situación de desventaja competitiva.
+- En el período siguiente, China es por mucho el gran perdedor: 7.7 puntos porcentuales. Los ganadores son, de mayor a menor, Vietnam, México y Taiwán. Vitenam ya había aparecido entre los principales ganadores en el período anterior; no así Taiwán, cuya participación se mantuvo prácticamente estable (una pérdida insignificante) entre 2010 y 2018.
+
+Vale la pena comparar directamente el desempeño de las exportaciones de México, Vietnam y Taiwán, no sólo por el dinamismo que exhiben las exportaciones de estos dos últimos paíes a partir de 2028 sino además por el papel que ocuparán a partir de 2025, que se examina en el capítulo 3.
+
+La @fig-ImpEUA-shares muestra el comportamiento de las exportaciones de estos tres países entre 2010 y 2024. Es evidente que tanto para Taiwán como para Vietnam se produce un cambio importante a partir de 2018: las participación de Taiwán, estable entre 2010 y 2018 empieza a crecer a partir de ese último año, mientras que las de Vietnam aceleran su crecimiento a partir de ese mismo año. Nótese en particular que entre 2023 y 2024 la participación de México práctamente no cambia, mientras que las de Taiwán y Vietnam crecen.
+
+Estos datos bastan para sugerir que estos dos países podrían ser los principales competidores de México en el mercado de los EUA, pero la intensidad de esa rivalidad dependerá de si están compitiendo en los mismos mercados (es decir, si están exportando los mismos productos) en los que compite México o no. Este tema se aborda en el Capítulo 3. Allí también se examina la cuestión de el impacto diferenciado de las nuevos aranceles de EUA, por país y producto, que en muchos casos han resultado favorables para México, pero en otros lo han puesto en una situación de desventaja competitiva.
 
 El relativo estancamiento de las exportaciones mexicanas a EUA también puede ser explicado, en parte, por restricciones internas que le impiden sacar pleno provecho de sus oportunidades comerciales. Dos de estas posibles restricciones, acceso a energía y acceso a agua se examinan en los capítulos 6 y 7, respectivamente.
 
@@ -623,7 +614,7 @@ knitr::include_graphics(here::here("Plots", "imp_pais_perc_2024.png"))
 rm(impPais, impPais_Perc)
 ```
 
-## Cambios en la composición de Las exportaciones mexicanas a EUA
+## Cambios en la composición de las exportaciones mexicanas a EUA
 
 <!-- Todo el código usado para preparar los gráficos de esta sección se coloca al inicio, y posteriormente se incluye nada más el código necesario para insertar los gráficos en el texto -->
 
@@ -635,48 +626,6 @@ rm(impPais, impPais_Perc)
 
 # Calculado en Scripts/Prep04_imp_pais_mex.R
 impMex_sec_pct <- readRDS(here::here("RDS", "impMex_sec_pct.rds"))
-```
-
-```{r}
-#| label: save-tree-sec
-#| include: false
-#| eval: false
-
-pacman::p_load(treemapify)
-
-p <- local({
-  impMex_sec_pct |>
-    filter(año == ANIO_FIN) |>
-    mutate(
-      etiqueta = paste0(Sección, ". ", Sección_corto, "\n", percent(pct, accuracy = 1)),
-      grupo    = if_else(Sección %in% c("XVI", "XVII", "XVIII"), as.character(Sección), "Otras"),
-      txt      = if_else(grupo %in% c("XVI", "XVII"), "claro", "oscuro")
-    ) |> 
-    ggplot(aes(area = pct, fill = grupo, label = etiqueta)) +
-    geom_treemap(layout = "squarified", color = "white", size = 1) +
-    geom_treemap_text(
-      aes(colour = txt),
-      place = "centre", size = 11,
-      reflow = TRUE, fontface = "bold", min.size = 5
-    ) +
-    scale_fill_manual(values = paleta_seccion) +
-    scale_colour_manual(values = c(claro = "white", oscuro = "grey15")) +
-    theme_bw() +
-    labs(
-      title   = "",
-      caption = "Elaboración propia con base en US Census Bureau"
-    ) +
-    theme(
-      legend.position  = "none",
-      strip.background = element_blank(),
-      strip.text       = element_text(size = 16, face = "plain")
-    )
-})
-p
-ggsave(here::here("Plots", "impMex_sec_perc_2024.pdf"), plot = p, width = 11, height = 6, device = cairo_pdf)
-ggsave(here::here("Plots", "impMex_sec_perc_2024.png"), plot = p, width = 11, height = 6, dpi = 150)
-
-rm(p)
 ```
 
 ```{r}
@@ -749,6 +698,50 @@ ggsave(here::here("Plots", "fig-imp-cambio-sec-mex_2024.png"), plot = p, width =
 rm(p, impMex_sec_pct)
 ```
 
+```{r}
+#| label: save-tree-sec
+#| include: false
+#| eval: false
+
+pacman::p_load(treemapify)
+
+p <- local({
+  impMex_sec_pct |>
+    filter(año == ANIO_FIN) |>
+    mutate(
+      etiqueta = paste0(Sección, ". ", Sección_corto, "\n", percent(pct, accuracy = 1)),
+      grupo    = if_else(Sección %in% c("XVI", "XVII", "XVIII"), as.character(Sección), "Otras"),
+      txt      = if_else(grupo %in% c("XVI", "XVII"), "claro", "oscuro")
+    ) |> 
+    ggplot(aes(area = pct, fill = grupo, label = etiqueta)) +
+    geom_treemap(layout = "squarified", color = "white", size = 1) +
+    geom_treemap_text(
+      aes(colour = txt),
+      place = "centre", size = 11,
+      reflow = TRUE, fontface = "bold", min.size = 5
+    ) +
+    scale_fill_manual(values = paleta_seccion) +
+    scale_colour_manual(values = c(claro = "white", oscuro = "grey15")) +
+    theme_bw() +
+    labs(
+      title   = "",
+      caption = "Elaboración propia con base en US Census Bureau"
+    ) +
+    theme(
+      legend.position  = "none",
+      strip.background = element_blank(),
+      strip.text       = element_text(size = 16, face = "plain")
+    )
+})
+p
+ggsave(here::here("Plots", "impMex_sec_perc_2024.pdf"), plot = p, width = 11, height = 6, device = cairo_pdf)
+ggsave(here::here("Plots", "impMex_sec_perc_2024.png"), plot = p, width = 11, height = 6, dpi = 150)
+
+rm(p)
+```
+
+
+
 ### Por Sección del SA
 
 El crecimiento de las exportaciones mexicanas a EUA quedó documentado en la sección anterior. Este crecimiento ha sido acompañado por un cambio sustancial de la composición de esas exportaciones, con diferentes sectores "ganadores" o "perdedores" (en el sentido de sectores cuya participación porcentual dentro del total de exportaciones mexicanas período aumentó o disminuyó) en cada período.
@@ -786,7 +779,7 @@ El resultado de este proceso es un portafolio exportador concentrado en las secc
 knitr::include_graphics(here::here("Plots", "impMex_sec_perc_2024.png"))
 ```
 
-### Por Capítulo y Partida del SA   REVISADO HASTA AQUI
+### Por Capítulo y Partida del SA REVISADO HASTA AQUI
 
 <!-- Al igual que al inicio de la sección, se coloca al inicio de esta sub sección el código utilizado para generar los gráficos que posteriormente se insertan en el texto -->
 
@@ -1207,7 +1200,7 @@ El hallazgo central es que el desacoplamiento bilateral EE.UU.-China es real, pe
 
 El resultado más provocador del paper es el rol de la integración con cadenas de suministro chinas: los países que más exportaron a EE.UU. son precisamente los que más profundizaron su integración con China. El índice de comercio intraindustrial con China (Grubel-Lloyd) es el predictor más robusto del crecimiento exportador hacia EE.UU. en industrias estratégicas. Dicho de otro modo, para desplazar a China en el mercado estadounidense, los países tuvieron que abrazar las cadenas de suministro chinas. En electrónica — el sector con mayor recomposición — la correlación entre crecimiento de importaciones desde China y crecimiento de exportaciones a EE.UU. es positiva y significativa, con evidencia adicional de posible triangulación (transshipment) en bienes estratégicos.
 
-El patrón de diversificación es consistente con una estrategia "China + 1": en más del 70% de los productos arancelados donde China perdió participación, un solo proveedor alternativo absorbió al menos el 75% de esa pérdida. La diversificación entre múltiples proveedores es la excepción, no la regla. China además sigue siendo proveedor top-3* en más del 60% de los productos donde perdió cuota de mercado.
+El patrón de diversificación es consistente con una estrategia "China + 1": en más del 70% de los productos arancelados donde China perdió participación, un solo proveedor alternativo absorbió al menos el 75% de esa pérdida. La diversificación entre múltiples proveedores es la excepción, no la regla. China además sigue siendo proveedor top-3\* en más del 60% de los productos donde perdió cuota de mercado.
 
 ## Dimensiones regionales del nearshoring
 
@@ -2302,7 +2295,6 @@ knitr::include_graphics(here::here("Plots", "ied_pib_comparativo_wdi_2024.png"))
 
 Dado que la IED solo representa alrededor del 12% de la inversión total del país, resulta apropiado analizar el comportamiento de la FBCF. La FBCF privada creció de manera considerable en años recientes tras la recuperación de la pandemia, lo que contrasta además con la caída de la inversión pública. A precios de 2018, la FBCF privada anual promedio pasó de 4,389 mil MDP en 2010-2017 a 5,239 mil MDP en 2022-2024, un crecimiento de 19.4%. En contraste, la FBCF pública cayó de 922 a 647 mil MDP (-29.8%). A pesar de la caída de la inversión pública, la inversión anual promedio total creció 10.8% entre ambos periodos, dado que el sector privado origina alrededor del 84% de la FBCF nacional.
 
-
 ```{r}
 #| label: save-fig-ied-fbcf
 #| include: false
@@ -2703,7 +2695,6 @@ knitr::include_graphics(here::here("Plots", "ied_manuf_subsector_2024.png"))
 
 Por otra parte, desde la perspectiva de anuncios de inversión, que ofrecen una visión anticipada de proyectos en puerta que pudieran estar relacionados con el nearshoring (que en promedio se materializan entre 3 y 5 años posteriores a su anuncio), se observa que el CAPEX anual de anuncios de inversión extranjera en proyectos de manufactura en México repuntó notablemente tras la recuperación de la pandemia y una vez quedando claro que las tarifas impuestas por Estados Unidos a China serían permanentes. Si bien el CAPEX agregado de estos proyectos se redujo de un promedio anual de 13.2 mil MDD en 2010-2017 a 10.0 mil MDD en 2018-2021 —principalmente por la desaceleración económica de 2019 (cuando el PIB cayó 0.4%) y el impacto de la pandemia en 2020-2021— éste repuntó a un promedio de 26.6 mil MDD en 2022-2024, el doble que previo al inicio de la guerra comercial Estados Unidos-China. Más aún, la participación de las manufacturas en el total de anuncios de inversión pasó de 53.8% en 2010-2017 a 66.1% en 2022-2024.
 
-
 ```{r}
 #| label: fig-capex-tipo-inversion
 #| echo: false
@@ -2761,7 +2752,6 @@ El impacto del nearshoring también se evidencia en la demanda de suelo industri
 
 [^7]: Absorción bruta de inmuebles industriales ya sea de nuevas empresas que llegan al país o de nuevas líneas de producción de empresas establecidas, ambas con el objetivo de abastecer al mercado norteamericano.
 
-
 ```{r}
 #| label: fig-absorcion-bruta-nearshoring
 #| echo: false
@@ -2776,8 +2766,6 @@ Nota: información sobre empresas que se reubican en México para atender el mer
 Fuente: CBRE.
 
 En 2022, aproximadamente el 67% de esta demanda se concentró en el Norte —principalmente en Nuevo León (47%) y Coahuila (12%)— y el 26% en la región Centro-Bajío —principalmente en Jalisco (9%), San Luis Potosí (5%), Ciudad de México (5%) y Estado de México (4%). En 2023, la concentración de la demanda por nearshoring en el Norte aumentó a alrededor del 82% —liderado por Chihuahua (35%), Nuevo León (24%) y Coahuila (20%)— siendo el resto capturado por la región Centro-Bajío —liderado por Querétaro (6%) y Jalisco (5%). En 2024, cerca del 66% de la demanda industrial por nearshoring se concentró en el Norte —liderada por Nuevo León (28%), Chihuahua (17%) y Coahuila (15%)— y el resto en la región Centro-Bajío —liderado por Querétaro (10%), Guanajuato (9%) y San Luis Potosí (8%).
-
-
 
 ```{r}
 #| label: fig-absorcion-estado
@@ -2842,23 +2830,21 @@ knitr::include_graphics(here::here("Plots", "zafra-intenciones.png"))
 
 ## Síntesis y conclusiones
 
-México ha tenido un desempeño exportador exitoso, tanto en términos del valor de sus exportaciones como en términos de su capacidad de integrarse en cadenas de valor sofisticada, y de ser, junto con Costa Rica, uno de los dos únicos países en ALC cuyas exportaciones no están concentradas en bienes primarios.  Su éxito tiene raíces ya lejanas, pero el desempeño durante la primara fase del NS, entre 2018 y 2024 fue notable, y le permitió convertirse en el primer exportador de bienes al mercado de EUA.
+México ha tenido un desempeño exportador exitoso, tanto en términos del valor de sus exportaciones como en términos de su capacidad de integrarse en cadenas de valor sofisticada, y de ser, junto con Costa Rica, uno de los dos únicos países en ALC cuyas exportaciones no están concentradas en bienes primarios. Su éxito tiene raíces ya lejanas, pero el desempeño durante la primara fase del NS, entre 2018 y 2024 fue notable, y le permitió convertirse en el primer exportador de bienes al mercado de EUA.
 
-Aunque las exportaciones mexicanas a EUA han seguido creciendo durante la segunda fase del NS, su participación relativa en ese mercado se ha estabilizado, y nuevos competidores, que aún tienen una participación pequeña, están aumentando rápidamente sus exportaciones.  Es posible que Taiwán y Vietnam se conviertan en rivales estratégicos de México en los próximos años.  El tema se explora con más detalle en el Capítulo 3 de este libro.
+Aunque las exportaciones mexicanas a EUA han seguido creciendo durante la segunda fase del NS, su participación relativa en ese mercado se ha estabilizado, y nuevos competidores, que aún tienen una participación pequeña, están aumentando rápidamente sus exportaciones. Es posible que Taiwán y Vietnam se conviertan en rivales estratégicos de México en los próximos años. El tema se explora con más detalle en el Capítulo 3 de este libro.
 
-De manera quizá sorpresiva, uno de los pilares de la integración de México en el mercado de América del Norte, el sector automotriz, ha sido colocado en una posición de desventaja competitiva, y sus exportaciones se han contraido.  Este tema también se aborda con más detalle en el Capítulo 3.
+De manera quizá sorpresiva, uno de los pilares de la integración de México en el mercado de América del Norte, el sector automotriz, ha sido colocado en una posición de desventaja competitiva, y sus exportaciones se han contraido. Este tema también se aborda con más detalle en el Capítulo 3.
 
-A pesar de estos éxitos, las exportaciones de bienes de México están altamente concentradas, tanto en términos de destinos (EUA absorbe más del 80% del total) como en términos de productos, medidos hasta ahora hasta el nivel de Partida arancelaria, y el crecimiento reciente está aún más concentrado que la distribución total de las exportaciones, como se ha puesto en evidencia en este Capítulo.  
+A pesar de estos éxitos, las exportaciones de bienes de México están altamente concentradas, tanto en términos de destinos (EUA absorbe más del 80% del total) como en términos de productos, medidos hasta ahora hasta el nivel de Partida arancelaria, y el crecimiento reciente está aún más concentrado que la distribución total de las exportaciones, como se ha puesto en evidencia en este Capítulo.
 
 A partir de este análisis es posible identificar cuatro retos importantes que México deberá enfrentar en la próxima década:
 
-- Profundizar el arraigo de los sectores exportadores más exitosos.  La profundización o en su caso la creación de redes de proveedores de alto valor agregado puede contribuir a este arraigo, y en el Capítulo 5 de este libro se presenta una propuesta de cómo hacerlo en el caso del sector exportador que más rápidamente está creciendo en México: el de servidores para centros de datos.  Superar los cuellos de botella en infraestructura pública puede ser igualmente importante, y el caso específico del suministro de energía se examina en el Capítulo 6.
+- Profundizar el arraigo de los sectores exportadores más exitosos. La profundización o en su caso la creación de redes de proveedores de alto valor agregado puede contribuir a este arraigo, y en el Capítulo 5 de este libro se presenta una propuesta de cómo hacerlo en el caso del sector exportador que más rápidamente está creciendo en México: el de servidores para centros de datos. Superar los cuellos de botella en infraestructura pública puede ser igualmente importante, y el caso específico del suministro de energía se examina en el Capítulo 6.
 
-- Diversificar gradualmente el portafolio exportador.  Este tema supera el ámbito de este libro, pero otro proyecto del CEPCAN, "Diversificación Productiva de México" está dedicado exclusivamente a este tema.  Y en ese mismo proyecto se aborda un reto complementario:  el de incorporar a más estados y regiones de México al éxito de la economía exportadora.
+- Diversificar gradualmente el portafolio exportador. Este tema supera el ámbito de este libro, pero otro proyecto del CEPCAN, "Diversificación Productiva de México" está dedicado exclusivamente a este tema. Y en ese mismo proyecto se aborda un reto complementario: el de incorporar a más estados y regiones de México al éxito de la economía exportadora.
 
-- Finalmente, un reto de más largo plazo, quizá menos urgente pero no menos importante:  diversificar los destinos de las exportaciones de México.  La turbulencia de la política arancelaria de EUA hace que esta sea una tarea indispensable pero difícil y delicada.  Quizá sea el momento oportuno para considerar la (re) creación de una agencia federal dedicada a la promoción de exportaciones mexicanas a nuevos mercados, cuya labor sería doblemente efectiva si se complementa con agencias estatales con una misión semejante.  Una red de organizaciones privadas de promoción de las exportaciones, que ya existen en varios estados, sería el complemento indispensable para un proyecto cuyo éxito dependerá, en buena medida, de procesos eficaces de colaboración y co-descubrimiento de oportunidades de exportación entre el sector público y el sector privado.
-
-
+- Finalmente, un reto de más largo plazo, quizá menos urgente pero no menos importante: diversificar los destinos de las exportaciones de México. La turbulencia de la política arancelaria de EUA hace que esta sea una tarea indispensable pero difícil y delicada. Quizá sea el momento oportuno para considerar la (re) creación de una agencia federal dedicada a la promoción de exportaciones mexicanas a nuevos mercados, cuya labor sería doblemente efectiva si se complementa con agencias estatales con una misión semejante. Una red de organizaciones privadas de promoción de las exportaciones, que ya existen en varios estados, sería el complemento indispensable para un proyecto cuyo éxito dependerá, en buena medida, de procesos eficaces de colaboración y co-descubrimiento de oportunidades de exportación entre el sector público y el sector privado.
 
 ## Anexos
 
