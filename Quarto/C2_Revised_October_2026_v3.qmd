@@ -636,10 +636,21 @@ impMex_sec_pct <- readRDS(here::here("RDS", "impMex_sec_pct.rds"))
 pacman::p_load(patchwork, glue)
 
 p <- local({
+  
+  # Nombres ultra-cortos por Sección (la nomenclatura completa va en el apéndice)
+  nombre_ultracorto <- c(
+    "I"    = "Anim",   "II"   = "Veg",    "III"  = "Grasas", "IV"   = "Alim",
+    "V"    = "Miner",  "VI"   = "Quím",   "VII"  = "Plást",  "VIII" = "Cuero",
+    "IX"   = "Madera", "X"    = "Papel",  "XI"   = "Text",   "XII"  = "Calz",
+    "XIII" = "Piedra", "XIV"  = "Joyas",  "XV"   = "Metales","XVI"  = "Maq",
+    "XVII" = "Transp", "XVIII"= "Instrs", "XIX"  = "Armas",  "XX"   = "Manuf",
+    "XXI"  = "Arte"
+  )
+  
   hacer_divbar_sec <- function(ini, fin, datos) {
     col_ini <- paste0("y", ini)
     col_fin <- paste0("y", fin)
-
+    
     cambios <- datos |>
       filter(año %in% c(ini, fin)) |>
       select(Sección, Sección_corto, año, pct) |>
@@ -651,16 +662,30 @@ p <- local({
           Sección == "XVII"  ~ "transporte",
           Sección == "XVI"   ~ "maquinaria",
           Sección == "XVIII" ~ "instrumentos",
-          cambio_pp > 0                   ~ "positivo",
-          TRUE                            ~ "negativo"
-        )
+          cambio_pp > 0      ~ "positivo",
+          TRUE               ~ "negativo"
+        ),
+        nombre = unname(nombre_ultracorto[as.character(Sección)])
       )
-
+    
+    # separación entre el cero y el nombre, proporcional al rango del panel
+    gap <- 0.02 * diff(range(c(0, cambios$cambio_pp)))
+    
     ggplot(cambios, aes(x = Sección, y = cambio_pp, fill = color_grupo)) +
       geom_col() +
       geom_text(
         aes(label = sprintf("%.1f", cambio_pp), vjust = if_else(cambio_pp > 0, -0.4, 1.4)),
         size = 2.8, fontface = "bold"
+      ) +
+      # nombre rotado, junto al cero y del lado opuesto a la barra:
+      # encima del cero si la barra es negativa; debajo si crece o no cambia
+      geom_text(
+        aes(
+          y     = if_else(cambio_pp < 0, gap, -gap),
+          label = nombre,
+          hjust = if_else(cambio_pp < 0, 0, 1)
+        ),
+        angle = 90, vjust = 0.5, size = 2.7, color = "grey20"
       ) +
       geom_hline(yintercept = 0, linewidth = 0.4, color = "grey30") +
       scale_y_continuous(
@@ -683,20 +708,24 @@ p <- local({
         axis.text.y        = element_text(size = 9)
       )
   }
-
+  
   periodos   <- list(c(2010, 2018), c(2018, 2024))
   divbar_sec <- map(periodos, \(pr) hacer_divbar_sec(pr[1], pr[2], impMex_sec_pct))
-
+  
   reduce(divbar_sec, `/`) +
     plot_annotation(caption = "Elaboración propia con base en US Census Bureau") &
     theme(plot.caption = element_text(hjust = 1))
 })
 
+p
+
 ggsave(here::here("Plots", "fig-imp-cambio-sec-mex_2024.pdf"), plot = p, width = 8, height = 7.5, device = cairo_pdf)
 ggsave(here::here("Plots", "fig-imp-cambio-sec-mex_2024.png"), plot = p, width = 8, height = 7.5, dpi = 150)
 
 rm(p, impMex_sec_pct)
+
 ```
+
 
 ```{r}
 #| label: save-tree-sec
