@@ -1890,7 +1890,7 @@ p <- local({
       axis.text.x      = element_text(angle = 90, vjust = 0.5)
     )
 })
-
+p
 ggsave(here::here("Plots", "fig-immex-empleo_2024.pdf"), plot = p, width = 10, height = 6, device = cairo_pdf)
 ggsave(here::here("Plots", "fig-immex-empleo_2024.png"), plot = p, width = 10, height = 6, dpi = 150)
 rm(p)
@@ -2001,45 +2001,50 @@ p <- local({
       )
   }
 
-  periodos <- list(c(2010, 2024), c(2010, 2018), c(2018, 2024))
+  periodos <- list(c(2010, 2018), c(2018, 2024))
   plots    <- map(periodos, \(pr) make_map(pr[1], pr[2]))
 
-  # Leyenda extraída de un panel ya construido (todos los niveles presentes)
-  leyenda <- cowplot::get_legend(
-    plots[[1]] +
-      theme(
-        legend.position  = "bottom",
-        legend.text      = element_text(size = 8),
-        legend.key.size  = unit(0.4, "cm"),
-        legend.key.width = unit(0.5, "cm")
-      )
-  )
+  # Leyenda extraída de un gráfico auxiliar con los 5 niveles de categoría
+  # (misma escala que los mapas), en una sola columna para ubicarla a la derecha.
+  # No se extrae de un mapa: geom_sf solo dibuja la casilla de color de los
+  # niveles presentes en los datos del panel.
+  p_leyenda <- tibble(cat_cambio = factor(labels_pp_immex, levels = labels_pp_immex)) |>
+    ggplot(aes(x = 1, y = 1, fill = cat_cambio)) +
+    geom_tile() +
+    scale_fill_manual(values = paleta_discreta_immex, limits = labels_pp_immex,
+                      name = NULL, drop = FALSE) +
+    guides(fill = guide_legend(ncol = 1, keywidth = unit(0.5, "cm"),
+                               keyheight = unit(0.5, "cm"))) +
+    theme_void() +
+    theme(legend.position = "right", legend.text = element_text(size = 8),
+          legend.key.size = unit(0.5, "cm"))
 
+  leyenda <- cowplot::get_legend(p_leyenda)
 
+  # Layout 2x1: columna de mapas a la izquierda, leyenda vertical a la derecha
   cowplot::plot_grid(
-    cowplot::plot_grid(plotlist = plots, nrow = 1),
+    cowplot::plot_grid(plotlist = plots, ncol = 1),
     leyenda,
-    ncol        = 1,
-    rel_heights = c(1, 0.1)
+    ncol       = 2,
+    rel_widths = c(1, 0.16)
   )
 })
 
-ggsave(here::here("Plots", "mapa_immex_4periodos_2024.pdf"),
-       plot = p, width = 11, height = 4, device = cairo_pdf)
-ggsave(here::here("Plots", "mapa_immex_4periodos_2024.png"),
-       plot = p, width = 11, height = 4, dpi = 150)
+print(p)
+ggsave(here::here("Plots", "mapa_immex_2periodos_2024.pdf"),
+       plot = p, width = 11, height = 9, device = cairo_pdf)
+ggsave(here::here("Plots", "mapa_immex_2periodos_2024.png"),
+       plot = p, width = 11, height = 9, dpi = 150)
 rm(p, estados_lookup, breaks_pp_immex, labels_pp_immex, paleta_discreta_immex)
 ```
 
 ```{r}
-#| label: fig-mapa-immex-4periodos
+#| label: fig-mapa-immex-2periodos
 #| echo: false
-#| fig-cap: "Cambio en la participación porcentual del empleo IMMEX por entidad federativa, cuatro períodos seleccionados"
+#| fig-cap: "Cambio en la participación porcentual del empleo IMMEX por entidad federativa, 2010-2018 y 2018-2024"
 #| fig-cap-location: top
-#| fig-width: 7.5
-#| fig-height: 7.3
 
-knitr::include_graphics(here::here("Plots", "mapa_immex_4periodos_2024.png"))
+knitr::include_graphics(here::here("Plots", "mapa_immex_2periodos_2024.png"))
 ```
 
 ```{r}
