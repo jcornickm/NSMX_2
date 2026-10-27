@@ -1762,13 +1762,15 @@ rm(etef)
 immex <- readRDS(here::here("RDS", "immex_empleo.rds"))
 ```
 
-En la @fig-immex-empleo se muestra la evolución del empleo IMMEX, dividido en "total", "Zona Libre de la Frontera Norte (ZLFN)" y "resto", es decir, total menos ZLFN.
+En la @fig-immex-empleo se muestra la evolución del empleo IMMEX, dividido en "total", "Zona Libre de la Frontera Norte (ZLFN)" y "resto", es decir, total menos ZLFN en los períodos 2010-2018 y 2018-2024.
 
-A pesar del aumento de las exportaciones mexicanas, el empleo IMMEX modera su crecimiento durante Trump-Biden con respecto al que se observó durante la normalidad globalizadora y decrece durante Trump 2. Esta disminución está en parte asociada con una imperfecta asociación entre empleo exportador y empleo IMMEX: las reglas para la incorporación en el régimen, en opinión de muchos de los empresarios entrevistados se han hecho más estrictas, y otros mecanismos, tales como el "safe harbour", resultan más atractivos y menos onerosos para muchas empresas. Además, el costo de incorporación hace que este régimen sea atractivo únicamente para grandes empresas, y las PyMes que forman uno de los componentes importantes del proceso de NS con frecuencia no pueden adoptarlo, o simplemente encuentran que no resulta rentable hacerlo[^7].
+La desaceleración en el segundo período es manifiesta: la TCAC pasa de 5.1% en el período anterior a apenas 1.3% entre 2018 y 2024. En el caso de la ZLFN el crecimiento es nulo, y fuera de esa zona el crecimiento es de apenas 2%.
+
+Como ya se discutió en el capítulo 1, la dinámica del empleo en la ZLFN parece estar fuertemente correlacionado con la evolución del salario mínimo en esa zona, significativamente superior al del resto del país, y que se acelera a partir de 2025, como se verá en detalle en el próximo capítulo.
+
+Por otra parte, la asociación entre empleo exportador y empleo IMMEX es imperfecta: las reglas para la incorporación en el régimen, en opinión de muchos de los empresarios entrevistados se han hecho más estrictas, y otros mecanismos, tales como el "safe harbour", resultan más atractivos y menos onerosos para muchas empresas. Además, el costo de incorporación hace que este régimen sea atractivo únicamente para grandes empresas, y las PyMes que forman uno de los componentes importantes del proceso de NS con frecuencia no pueden adoptarlo, o simplemente encuentran que no resulta rentable hacerlo[^7].
 
 [^7]: Ver Capítulo 4.
-
-Sin embargo, debe tomarse nota de que la caída está claramente asociada a la disminución del empleo IMMEX en la ZLFN a partir de 2022. El resto del empleo IMMEX tiene una tasa de crecimiento del 5.4% durante la normalidad globalizadora, que solo se reduce en 0.4 pp durante Trump-Biden. Durante Trump 2, ese empleo se contrae en 1.4%, mientras que el empleo IMMEX en la ZLFN se contrae 3.5%, lo que pone en evidencia que existen factores específicos que afectan el empleo IMMEX en esta zona: la política diferenciada de salario mínimo para la ZLFN y el resto de México puede ser uno de ellos. Este tema se aborda en el capítulo dedicado al análisis de la IED china en México.
 
 ```{r}
 #| label: save-fig-immex-empleo
@@ -2057,17 +2059,17 @@ rm(immex, immex_pct)
 
 ## La inversión extranjera directa
 
-Como ya se explicó anteriormente, es un error identificar el NS con los anuncios de construcción de nuevas plantas por parte de EMNs. Más aún, se señaló que la IED es tan solo un componente del proceso de NS, y que las inversiones domésticas (o el redireccionamiento de la producción) por parte de empresas domésticas también juega un papel importante.
-
-Aun así, la IED es **uno** de los componentes del proceso, cuyo comportamiento examinamos en esta sección.
+Como se explicó en el capítulo 1, sería un error identificar el nearshoring con los anuncios de construcción de nuevas plantas por parte de EMNs. Esto no quiere decir, por supuesto, que la IED juegue un papel importante en este proceso, y este apartado se dedica a examinar su comportamiento durante la primera fase del nearshoring, entre 2018 y 2024.
 
 ### IED total y por origen
 
-En la @fig-ied-total-origen se muestra la evolución de la IED en México de 2010 al tercer trimestre de 2025. De 2010 a 2020 la IED oscila entre los 50 mil y los 75 mil millones de USD, con la única excepción de 2013, que refleja la adquisición del Grupo Modelo por parte de AB InBev[^8].
+En la @fig-ied-total-origen se muestra la evolución de la IED en México de 2010 a 2024. La línea de tendencia[^8] muestra un crecimiento modesto entre 2010 y 2016, una meseta que se extiende hasta 2021, y de nuevo un crecimiento anual modesto a partir de ese último año.  El pico de 2013 que refleja la adquisición del Grupo Modelo por parte de AB InBev[^9].
 
-[^8]: (<https://www.bevindustry.com/articles/86441-anheuser-busch-inbev-completes-acquisition-of-grupo-modelo>)
+[^8]: Descriptiva: se aplica el método LOESS, que filtra la variación de corto plazo, especificado de tal manera que se minimice la influencia de observaciones atípicas, como la de 2013. No hay una determinación estadística de cambios de tendencia en el gráfico.
 
-Como sucede también con otras variables, el impacto de Trump-Biden se hace evidente después de la pandemia: mientras que entre 2014 y 2019 la IED se mantiene fundamentalmente estable, de 2020 en adelante la tendencia es positiva, y se acelera entre 2024 y 2025.
+[^9]: (<https://www.bevindustry.com/articles/86441-anheuser-busch-inbev-completes-acquisition-of-grupo-modelo>)
+
+En cuanto a los orígenes de la IED, hay un ligero incremento de la participación de conjunta de EUA y Canadá, que pasa del 46.6 al 51%, y un aumento notable de la participación de Asia:  el porcentaje de la inversión proveniente de Japón pasa de 4.5 a 10.9%, mientras que china y Corea del Sur, cuya participación es demasiado pequeña para identificarla de manera individual en 2010, alcanzan el 2.4 y 3.5% del total, respectivamente.  En total, la participación de Asia se incrementa en cerca de 10 pp, anticipando una tendencia que se hará más marcada a partir de 2025.
 
 ```{r}
 #| label: prep-save-fig-ied-total
@@ -2180,8 +2182,8 @@ local({
       labs(title = titulo)
   }
 
-  p_tm10 <- make_treemap(tm_2010, "2010 (año completo)")
-  p_tm24 <- make_treemap(tm_2024, "2024 (año completo)")
+  p_tm10 <- make_treemap(tm_2010, "2010")
+  p_tm24 <- make_treemap(tm_2024, "2024")
 
   p_leyenda <- ggplot(tm_2024, aes(fill = continente, x = 1, y = 1)) +
     geom_col() +
@@ -2193,6 +2195,8 @@ local({
   p_serie <- ied_anual |>
     ggplot(aes(x = año, y = ied_mdd / 1e3)) +
     geom_line(color = paleta_pais[["México"]], linewidth = 0.9) +
+    geom_smooth(method = "loess", span = 0.75, se = FALSE, linetype = 3,
+            method.args = list(family = "symmetric")) +
     geom_point(color = paleta_pais[["México"]], size = 2.2) +
     scale_x_continuous(breaks = 2010:ANIO_FIN) +
     scale_y_continuous(
@@ -2203,13 +2207,14 @@ local({
     theme(panel.grid.minor = element_blank(), axis.text.x = element_text(angle = 0, hjust = 0.5)) +
     labs(
       x = NULL, y = "Miles de millones USD",
-      caption = "Elaboración propia con base en Secretaría de Economía")
+      caption = "Elaboración propia con base en Secretaría de Economía. Línea punteada: tendencia, metodo LOESS robusto, span = 0.75 para reducir influencia de observaciones inusuales).")
 
   fila_treemaps <- p_tm10 + plot_spacer() + p_tm24 + plot_layout(widths = c(1, 0.04, 1))
 
   p <- p_serie / fila_treemaps / cowplot::plot_grid(leyenda) +
     plot_layout(heights = c(1.2, 1.2, 0.15))
 
+  p
   ggsave(here::here("Plots", "ied_total_origen_2024.pdf"), plot = p, width = 10, height = 9, device = cairo_pdf)
   ggsave(here::here("Plots", "ied_total_origen_2024.png"), plot = p, width = 10, height = 9, dpi = 150)
 })
@@ -2228,11 +2233,9 @@ knitr::include_graphics(here::here("Plots", "ied_total_origen_2024.png"))
 
 ### IED como porcentaje del PIB y la formación bruta de capital fijo
 
-En la @fig-ied-ratios se muestra la IED en México como porcentaje del PIB en el panel superior, y como porcentaje de la formación bruta de capital fijo en el panel inferior. En contraste con la @fig-ied-total-origen, que muestra un repunte a partir de 2020, aquí vemos justamente lo contrario: una tendencia decreciente a partir de ese mismo año (el año 2013 es excepcional, por razones que recién se explicaron).
+En la @fig-ied-ratios se muestra la IED en México como porcentaje del PIB en el panel superior, y como porcentaje de la formación bruta de capital fijo en el panel inferior. En contraste con la @fig-ied-total-origen, que muestra una tendencia general ligeramente positiva, aquí vemos justamente lo contrario: la IED como porcentaje del PIB decrece prácticamente dodos los años a partir de 2015, y como porcentaje de la formación bruta de capital fijo se mantiene relativamente estable entre 2015 y 2021, y decrece de allí en adelante.
 
-Nótese que la importancia de la IED se reduce no solo en términos de la participación en el PIB, sino también como porcentaje de la formación bruta de capital fijo (panel inferior de la @fig-ied-ratios).
-
-Da la impresión de que existe una incongruencia entre las oportunidades puestas en evidencia por el crecimiento de las exportaciones mexicanas a partir de 2018 (@fig-ImpEUA-CHN-MEX) y la capacidad de atracción de IED, y esto puede contribuir a explicar el estancamiento de la participación mexicana dentro del mercado de EUA a partir de 2023. Algunos de los factores que pueden estar limitando la capacidad de atracción de IED, en particular las restricciones de acceso a electricidad se discuten en los capítulos siguientes. La desaparición de ProMéxico, la institución responsable a nivel federal de la atracción de IED también puede haber contribuido a este pobre desempeño.
+Da la impresión de que existe una incongruencia entre las oportunidades puestas en evidencia por el crecimiento de las exportaciones mexicanas a partir de 2018 (@fig-ImpEUA-CHN-MEX) y la capacidad de atracción de IED, y esto puede contribuir a explicar el estancamiento de la participación mexicana dentro del mercado de EUA a partir de 2023. Algunos de los factores que pueden estar limitando la capacidad de atracción de IED, en particular las restricciones de acceso a electricidad se discuten en los capítulos siguientes. La desaparición de ProMéxico, la institución responsable a nivel federal de la atracción de IED también puede haber contribuido a este desempeño.
 
 ```{r}
 #| label: prep-save-fig-ied-ratios
@@ -2293,7 +2296,7 @@ rm(p)
 knitr::include_graphics(here::here("Plots", "ied_ratios_2024.png"))
 ```
 
-Este pobre desempeño en atracción de IED no refleja una tendencia general en los países con los que México compite en el mercado de EUA. En la @fig-ied-pib-comparadores se muestra la IED como porcentaje del PIB para Costa Rica, México, R. Dominicana y Vietnam (los puntos en el gráfico) así como su tendencia lineal. De los cuatro países, México es sistemáticamente el que recibe menos inversión como porcentaje del PIB. Esta información revela una debilidad específica de México, que es preciso investigar.
+Como elemento de contexto, es importante notar que la IED como porcentaje del PIB en México es sistemáticamente inferior a la de países con los que compite directamente en el mercado de EUA, tales como Costa Rica, República Dominicana y Vietnam, tal y como se muestra en la @fig-ied-pib-comparadores. Esta información revela una debilidad específica de México, que es preciso investigar.
 
 ```{r}
 #| label: save-fig-ied-pib-comparadores
@@ -2796,11 +2799,11 @@ knitr::include_graphics(here::here("Plots", "zafra-capex-origen.png"))
 
 ### Desarrollo inmobiliario industrial
 
-El impacto del nearshoring también se evidencia en la demanda de suelo industrial. Según CBRE[^9], la demanda anual de bienes raíces industriales atribuida al nearshoring[^10] en México creció de casi 5 millones de pies cuadrados en 2019 a 21.5 millones de pies cuadrados en 2024 (si bien en 2024 el nivel fue 5% inferior a 2023), y la contribución de este fenómeno a la absorción bruta total de bienes inmuebles industriales pasó de menos del 10% al 28%. Durante el periodo de análisis que cubre la firma, la proporción de uso de suelo industrial por el nearshoring proveniente de expansiones en vez de nuevas empresas fue incrementando gradualmente. Esto refleja una expansión de compañías después de su relocalización en México por el aumento en el volumen de producción y nuevas líneas de negocio, una vez que sus operaciones iniciales comenzaron con éxito.
+El impacto del nearshoring también se evidencia en la demanda de suelo industrial. Según CBRE[^10], la demanda anual de bienes raíces industriales atribuida al nearshoring[^11] en México creció de casi 5 millones de pies cuadrados en 2019 a 21.5 millones de pies cuadrados en 2024 (si bien en 2024 el nivel fue 5% inferior a 2023), y la contribución de este fenómeno a la absorción bruta total de bienes inmuebles industriales pasó de menos del 10% al 28%. Durante el periodo de análisis que cubre la firma, la proporción de uso de suelo industrial por el nearshoring proveniente de expansiones en vez de nuevas empresas fue incrementando gradualmente. Esto refleja una expansión de compañías después de su relocalización en México por el aumento en el volumen de producción y nuevas líneas de negocio, una vez que sus operaciones iniciales comenzaron con éxito.
 
-[^9]: Una de las firmas líderes a nivel mundial en consultoría y servicios inmobiliarios, con fuerte presencia en México en los segmentos de parques industriales, oficinas y logística.
+[^10]: Una de las firmas líderes a nivel mundial en consultoría y servicios inmobiliarios, con fuerte presencia en México en los segmentos de parques industriales, oficinas y logística.
 
-[^10]: Absorción bruta de inmuebles industriales ya sea de nuevas empresas que llegan al país o de nuevas líneas de producción de empresas establecidas, ambas con el objetivo de abastecer al mercado norteamericano.
+[^11]: Absorción bruta de inmuebles industriales ya sea de nuevas empresas que llegan al país o de nuevas líneas de producción de empresas establecidas, ambas con el objetivo de abastecer al mercado norteamericano.
 
 ```{r}
 #| label: fig-absorcion-bruta-nearshoring
@@ -2845,9 +2848,9 @@ Por país de origen, China concentró el 37% de la demanda de suelo industrial p
 knitr::include_graphics(here::here("Plots", "zafra-absorcion-origen.png"))
 ```
 
-Con información de la absorción neta (superficie ocupada menos desalojada) de suelo industrial en principales ciudades provistas por Logan Valuation[^11] entre 2019 y 2024, se observa también un crecimiento notable a partir de 2021 y más marcado en el Norte. Durante dicho periodo, en las principales ciudades del Norte la absorción neta creció a una tasa media anual compuesta de 46.8%, mientras que en las del Centro-Bajío a una tasa de 37.4%, si bien en las primeras se observó una desaceleración en 2024 atribuida a la incertidumbre de la demanda externa, mientras que en las segundas el ritmo se sostuvo porque los espacios industriales también se emplean para atender la demanda interna.
+Con información de la absorción neta (superficie ocupada menos desalojada) de suelo industrial en principales ciudades provistas por Logan Valuation[^12] entre 2019 y 2024, se observa también un crecimiento notable a partir de 2021 y más marcado en el Norte. Durante dicho periodo, en las principales ciudades del Norte la absorción neta creció a una tasa media anual compuesta de 46.8%, mientras que en las del Centro-Bajío a una tasa de 37.4%, si bien en las primeras se observó una desaceleración en 2024 atribuida a la incertidumbre de la demanda externa, mientras que en las segundas el ritmo se sostuvo porque los espacios industriales también se emplean para atender la demanda interna.
 
-[^11]: Firma especializada en valuación y consultoría inmobiliaria para clientes institucionales en México y América Latina.
+[^12]: Firma especializada en valuación y consultoría inmobiliaria para clientes institucionales en México y América Latina.
 
 ```{r}
 #| label: fig-absorcion-neta-ciudades
