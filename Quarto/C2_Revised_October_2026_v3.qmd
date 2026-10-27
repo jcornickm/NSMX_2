@@ -2346,7 +2346,9 @@ rm(p, ied_pib_comp)
 knitr::include_graphics(here::here("Plots", "ied_pib_comparativo_wdi_2024.png"))
 ```
 
-Dado que la IED solo representa alrededor del 12% de la inversión total del país, resulta apropiado analizar el comportamiento de la FBCF. La FBCF privada creció de manera considerable en años recientes tras la recuperación de la pandemia, lo que contrasta además con la caída de la inversión pública. A precios de 2018, la FBCF privada anual promedio pasó de 4,389 mil MDP en 2010-2017 a 5,239 mil MDP en 2022-2024, un crecimiento de 19.4%. En contraste, la FBCF pública cayó de 922 a 647 mil MDP (-29.8%). A pesar de la caída de la inversión pública, la inversión anual promedio total creció 10.8% entre ambos periodos, dado que el sector privado origina alrededor del 84% de la FBCF nacional.
+### Formación bruta de capital fijo
+
+Dado que la IED solo representa alrededor del 12% de la inversión total del país, resulta apropiado analizar el comportamiento de la FBCF. Tras la previsible caída durante 2020, la FBCF privada creció de manera considerable hasta 2023, y se mantuvo estable en 2024.  La FBCF pública disminuyó todos los años entre 2020 y 2022, y solo empezó a recuperarse a partir de 2022.
 
 ```{r}
 #| label: save-fig-ied-fbcf
@@ -2456,7 +2458,7 @@ rm(figs)
 knitr::include_graphics(here::here("Plots", "ied_fbcf_privada_publica_2024.png"))
 ```
 
-El crecimiento de la FBCF por tipo de bien sugiere que el sector privado está expandiendo capacidad productiva e importando bienes de capital para nuevos procesos. Por tipo de bien, la FBCF anual promedio privada en construcción (que representa el 55% de la inversión privada) creció 15.1% entre 2010-2017 y 2022-2024, mientras que en Maquinaria y equipo (que representa el otro 45%) creció 23.5%.
+El crecimiento de la FBCF por tipo de bien sugiere que el sector privado está expandiendo capacidad productiva e importando bienes de capital para nuevos procesos y simultáneamente invirtiendo en bienes raíces, pero estos datos no permiten diferenciar entre construcción residencial, comercial e industrial.
 
 ```{r}
 #| label: fig-fbcf-tipo-bien
