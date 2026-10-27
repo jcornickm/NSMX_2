@@ -764,7 +764,7 @@ rm(p, impMex_sec_pct)
 
 El crecimiento de las exportaciones mexicanas a EUA quedó documentado en el apartado sección anterior. Este crecimiento ha sido acompañado por un cambio sustancial de la composición de esas exportaciones, con diferentes sectores "ganadores" o "perdedores" (en el sentido de sectores cuya participación porcentual dentro del total de exportaciones mexicanas período aumentó o disminuyó) en cada período [^4].
 
-[^4]: A todo lo largo de este capítulo se utilizan los numerales romanos para identificar secciones del SA, y los números correspondientes a capítulos y partidas, lo que permite identificarlos sin ambigüedad. En aras de la brevedad en el texto, y de la legibilidad en los figuras, se usan nombres cortos, informales, para cada uno de estos niveles del SA. La nomenclatura oficial, para todas las secciones, y para los capítulos y partidas del SA que se identifican de manera individual tanto en este capítulo como en el siguiente se presenta en el Anexo 7.3
+[^4]: A todo lo largo de este capítulo se utilizan los numerales romanos para identificar secciones del SA, y los números correspondientes a capítulos y partidas, lo que permite identificarlos sin ambigüedad. En aras de la brevedad en el texto, y de la legibilidad en los figuras, se usan nombres cortos, informales, para cada uno de estos niveles del SA. La nomenclatura oficial de todas las secciones y capítulos del SA, y de las partidas que se identifican de manera individual en este capítulo, se presenta en el Anexo 7.3
 
 La @fig-imp-cambio-sec-mex permite visualizar claramente estos cambios.
 
@@ -3014,7 +3014,19 @@ supresion_ns_wide |>
 rm(supresion_ns_wide, cols_sec, filas_completas)
 ```
 
-### Tabla de corresponencias: nombres cortos y nomenclatura del SA
+### Tabla de correspondencias: nombres cortos y nomenclatura del SA
+
+La @tbl-correspondencias-sa presenta, para todas las Secciones y Capítulos del SA y para las Partidas que se identifican individualmente en este capítulo, el nombre corto utilizado en el texto, tablas y figuras junto con la nomenclatura oficial. Para cada Sección se indica, entre paréntesis, el nombre ultracorto utilizado en las figuras.
+
+```{r}
+#| label: tbl-correspondencias-sa
+#| echo: false
+#| tbl-cap: "Correspondencia entre nombres cortos y nomenclatura oficial del Sistema Armonizado"
+#| tbl-cap-location: top
+
+# Generada por Scripts/Prep08_tabla_correspondencias_SA.R (Tablas/)
+readRDS(here::here("Tablas", "tabla_correspondencias_sa.rds"))
+```
 
 ## Referencias
 

@@ -247,6 +247,7 @@ En las tablas, "Lo leen" lista los consumidores encontrados en `Scripts/` y en l
 | Archivo | Contenido | Productor | Lo leen | Estado |
 |:-------------------------|:------------------------------------------------------|:--------|:------------|:-------|
 | `hs_dictionary.rds` (56 KB) | Diccionario del SA: 21 Secciones, 98 Capítulos (96 del SA más 98 y 99 de EUA) y 1,228 Partidas. Columnas `nivel, codigo, codigo_padre, nombre_corto, nombre_tabla, nombre_grafico, nombre_oficial, fuente`. Los nombres cortos existen para todas las Secciones y Capítulos y solo para las Partidas usadas. Contenido completo en la sección *Diccionario del Sistema Armonizado* (Parte II). | `build_hs_dictionary.R` | todos los scripts que cargan `funciones.R` (ver Parte II) y C2 | Vigente |
+| `tabla_correspondencias_sa_datos.rds` | Datos de la tabla del Anexo 7.3 de C2: una fila por Sección, Capítulo o Partida (`nivel, seccion, cap, Código, Nombre, Oficial`). Ver también `Tablas/`. | Prep08 | — | Vigente |
 
 ## Figuras (`Plots/`)
 
@@ -278,6 +279,7 @@ Las imágenes fijas (`Images/nearshoring.png`, `Images/Directorio.png`) vienen d
 | `tabla_partidas_competencia.docx` | Copia en Word, hoja horizontal, de la tabla de competencia (la versión que carga C3 es `RDS/tabla_partidas_competencia.rds`). | Prep03 | revisión |
 | `top_partidas_periodos.rds` y `.docx` | Tabla comparativa de partidas principales por periodo de identificación. | Explora_Top_Partidas_Periodos | revisión |
 | `top_partidas_competidores_periodos.rds` y `.docx` | Igual, para las partidas en competencia. | Explora_Top_Partidas_Competidores | revisión |
+| `tabla_correspondencias_sa.rds` y `.docx` | flextable de correspondencias entre nombres cortos y nomenclatura oficial del SA (Secciones, Capítulos y partidas de C2). Los datos de la tabla están en `RDS/tabla_correspondencias_sa_datos.rds`. | Prep08 | C2 (Anexo 7.3, chunk `tbl-correspondencias-sa`) |
 
 # Parte II. Catálogo de Queries y Preps
 
@@ -293,7 +295,7 @@ Las imágenes fijas (`Images/nearshoring.png`, `Images/Directorio.png`) vienen d
 
 1. `build_hs_dictionary.R` (solo si cambió `hs_nombres_cortos.csv` o `naladisa_2022.xlsx`).
 2. Query01 a Query10. Primero los que usan API (01 a 06) y después los que leen archivos puestos a mano (07 a 10). Query01 y Query02 antes de cualquier Prep.
-3. Prep01 a Prep07, en ese orden, cada uno en una sesión de R limpia.
+3. Prep01 a Prep08, en ese orden, cada uno en una sesión de R limpia.
 
 | Prep | Necesita antes |
 |:---------|:-----------------------------------------|
@@ -304,6 +306,7 @@ Las imágenes fijas (`Images/nearshoring.png`, `Images/Directorio.png`) vienen d
 | Prep05 | Prep02 |
 | Prep06 | Query04 |
 | Prep07 | Query08 |
+| Prep08 | Prep02, `build_hs_dictionary.R` |
 
 ## Mecanismos comunes
 
@@ -547,6 +550,15 @@ if (hay_dic) {
 - **Entradas.** `immex_empleo.rds`.
 - **Salidas.** `immex_pct`.
 
+### Prep08_tabla_correspondencias_SA.R
+
+- **Qué hace.** Arma la tabla de correspondencias entre nombres cortos y nomenclatura oficial del SA (Anexo 7.3 de C2): una sola tabla jerárquica con las 21 Secciones, los Capítulos del SA (sin 98 y 99, que son provisiones de EUA) y solo las Partidas que C2 identifica individualmente.
+- **Entradas.** `hs_dictionary.rds`, `TCAC_y_shares_84858790.rds` (la lista de partidas de C2 son todas las de este archivo menos "Resto").
+- **Salidas.** `RDS/tabla_correspondencias_sa_datos.rds` (data frame), `Tablas/tabla_correspondencias_sa.rds` (flextable que carga el qmd) y `Tablas/tabla_correspondencias_sa.docx` (copia para revisión).
+- **Decisiones que codifica.** En las filas de Sección, el nombre ultracorto (`nombre_grafico`) va entre paréntesis junto al nombre corto; las tablas usan `nombre_tabla` (nunca CamelCase). Se detiene si una partida de C2 no tiene nombre corto. Para C3 (que podría llegar a subpartidas) se amplía `partidas_c2` en la sección 1 del script.
+- **Cuidado.** Hay que volver a correrlo si cambia `hs_nombres_cortos.csv` (después de `build_hs_dictionary.R`) o la lista de partidas de Prep02.
+- **Estado.** Escrito el 27-oct-2026; aún no corrido al momento de escribir esta ficha.
+
 ## Otros scripts de `Scripts/`
 
 | Script | Qué es | Estado |
@@ -604,6 +616,8 @@ Otras fuentes:
   Query06 (WDI)    -> ied_pib_wdi_comp
   Query10 (CSV)    -> media_cloud_diario, media_cloud_mensual
   build_hs_dictionary -> hs_dictionary (etiquetas del SA)
+                      -> Prep08 (+ TCAC_y_shares_84858790)
+                           -> tabla_correspondencias_sa(_datos)
 ```
 
 ## Tabla script, entradas y salidas
@@ -628,6 +642,7 @@ Otras fuentes:
 | Prep05 | `imp_mex_hs4`, `TCAC_y_shares_84858790` | `partidas_tendencia`, `quiebres_partida` |
 | Prep06 | `xmex_total_ef` | `tcac_estados`, `estados_lookup` |
 | Prep07 | `immex_empleo` | `immex_pct` |
+| Prep08 | `hs_dictionary`, `TCAC_y_shares_84858790` | `tabla_correspondencias_sa_datos`; `Tablas/tabla_correspondencias_sa.{rds,docx}` |
 | `Explora_Top_Partidas_Periodos` | `raw_df_mex_vnm_twn` | `top_partidas_periodos`; `Tablas/top_partidas_periodos.{rds,docx}` |
 | `Explora_Top_Partidas_Competidores` | `imp_competidores_hs4` | `top_partidas_competidores_periodos`; `Tablas/top_partidas_competidores_periodos.{rds,docx}` |
 | `ied_plots_fbcf` | `fbcf_inegi`, `meta_fbcf_inegi` | `Plots/ied_fbcf_*` (`_2024` y ventana completa) |
@@ -649,6 +664,7 @@ Otras fuentes:
 | `fbcf_inegi` | Figuras de FBCF (chunk `save-fig-ied-fbcf`) |
 | `media_cloud_mensual` | Figuras de menciones en medios (chunk `save-fig-media-cloud`) |
 | `hs_dictionary` (vía `hs_relabel()`) | Etiquetas al cargar RDS viejos |
+| `Tablas/tabla_correspondencias_sa.rds` | Anexo 7.3: correspondencias de nombres del SA (se carga en cada render) |
 
 Además incluye, sin generarlas, las figuras de `Plots/` (incluidas las `fig_media_cloud_menciones_{mex,usa}_2024.png`, que el chunk `fig-nearshoringMX` apila, y las `zafra-*.png` externas) y `Images/nearshoring.png`.
 
