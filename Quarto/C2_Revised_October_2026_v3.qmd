@@ -2394,9 +2394,14 @@ figs <- local({
     mutate(across(where(is.numeric), ~ round(.x, 1))) |>
     print()
 
-  # Series de México: privada = verde de México, pública = gris oscuro
-  col <- c(privada = paleta_pais[["México"]], publica = COL_TOTAL,
-           privada_construccion = "#d9a441", privada_maquinaria = paleta_pais[["México"]])
+  # Colores: todo de Scripts/funciones.R (sin colores escritos a mano).
+  # Privada = verde de México, pública = gris oscuro; construcción = azul
+  # pizarra de serie genérica, maquinaria = violeta apagado (tono reutilizado
+  # de la paleta, sin significado de país aquí).
+  col <- c(privada              = paleta_pais[["México"]],
+           publica              = COL_TOTAL,
+           privada_construccion = COL_SERIE,
+           privada_maquinaria   = paleta_pais[["Canadá"]])
   etq <- c(privada = "FBCF privada", publica = "FBCF pública",
            privada_construccion = "FBCF privada en construcción",
            privada_maquinaria = "FBCF privada en maquinaria y equipo")
@@ -2404,26 +2409,24 @@ figs <- local({
   fig_fbcf <- function(series) {
     datos |>
       filter(serie %in% series) |>
+      mutate(serie = factor(serie, levels = series)) |>   # orden de la leyenda
       ggplot(aes(anio, mil_mdp, colour = serie)) +
-      geom_line(linewidth = 1) +
-      geom_point(size = 1.4) +
+      geom_line(linewidth = 0.9) +
+      geom_point(size = 1.8) +
       scale_colour_manual(values = col, labels = etq) +
-      scale_x_continuous(breaks = 2010:ANIO_FIN,
-                         expand = expansion(mult = c(0.02, 0.02))) +
+      scale_x_continuous(breaks = 2010:ANIO_FIN) +
       scale_y_continuous(breaks = scales::breaks_width(200),
                          labels = scales::label_comma(),
                          limits = c(0, NA),
                          expand = expansion(mult = c(0, 0.06))) +
-      labs(x        = NULL,
-           y        = NULL,
-           colour   = NULL,
-           subtitle = "Miles de millones de pesos, a precios de 2018",
-           caption  = "Elaboración propia con base en INEGI, Oferta y Utilización Trimestral (año base 2018).") +
+      labs(x       = NULL,
+           y       = "Miles de millones de pesos de 2018",
+           colour  = NULL,
+           caption = "Elaboración propia con base en INEGI, Oferta y Utilización Trimestral (año base 2018).") +
       theme_bw() +
       theme(legend.position  = "bottom",
             panel.grid.minor = element_blank(),
-            plot.subtitle    = element_text(size = 9),
-            axis.text.x      = element_text(angle = 90, vjust = 0.5))
+            axis.text.x      = element_text(angle = 0, hjust = 0.5))
   }
 
   list(
