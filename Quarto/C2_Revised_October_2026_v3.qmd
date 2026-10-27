@@ -1762,13 +1762,15 @@ rm(etef)
 immex <- readRDS(here::here("RDS", "immex_empleo.rds"))
 ```
 
-En la @fig-immex-empleo se muestra la evolución del empleo IMMEX, dividido en "total", "Zona Libre de la Frontera Norte (ZLFN)" y "resto", es decir, total menos ZLFN.
+En la @fig-immex-empleo se muestra la evolución del empleo IMMEX, dividido en "total", "Zona Libre de la Frontera Norte (ZLFN)" y "resto", es decir, total menos ZLFN en los períodos 2010-2018 y 2018-2024.
 
-A pesar del aumento de las exportaciones mexicanas, el empleo IMMEX modera su crecimiento durante Trump-Biden con respecto al que se observó durante la normalidad globalizadora y decrece durante Trump 2. Esta disminución está en parte asociada con una imperfecta asociación entre empleo exportador y empleo IMMEX: las reglas para la incorporación en el régimen, en opinión de muchos de los empresarios entrevistados se han hecho más estrictas, y otros mecanismos, tales como el "safe harbour", resultan más atractivos y menos onerosos para muchas empresas. Además, el costo de incorporación hace que este régimen sea atractivo únicamente para grandes empresas, y las PyMes que forman uno de los componentes importantes del proceso de NS con frecuencia no pueden adoptarlo, o simplemente encuentran que no resulta rentable hacerlo[^7].
+La desaceleración en el segundo período es manifiesta: la TCAC pasa de 5.1% en el período anterior a apenas 1.3% entre 2018 y 2024. En el caso de la ZLFN el crecimiento es nulo, y fuera de esa zona el crecimiento es de apenas 2%.
+
+Como ya se discutió en el capítulo 1, la dinámica del empleo en la ZLFN parece estar fuertemente correlacionado con la evolución del salario mínimo en esa zona, significativamente superior al del resto del país, y que se acelera a partir de 2025, como se verá en detalle en el próximo capítulo.
+
+Por otra parte, la asociación entre empleo exportador y empleo IMMEX es imperfecta: las reglas para la incorporación en el régimen, en opinión de muchos de los empresarios entrevistados se han hecho más estrictas, y otros mecanismos, tales como el "safe harbour", resultan más atractivos y menos onerosos para muchas empresas. Además, el costo de incorporación hace que este régimen sea atractivo únicamente para grandes empresas, y las PyMes que forman uno de los componentes importantes del proceso de NS con frecuencia no pueden adoptarlo, o simplemente encuentran que no resulta rentable hacerlo[^7].
 
 [^7]: Ver Capítulo 4.
-
-Sin embargo, debe tomarse nota de que la caída está claramente asociada a la disminución del empleo IMMEX en la ZLFN a partir de 2022. El resto del empleo IMMEX tiene una tasa de crecimiento del 5.4% durante la normalidad globalizadora, que solo se reduce en 0.4 pp durante Trump-Biden. Durante Trump 2, ese empleo se contrae en 1.4%, mientras que el empleo IMMEX en la ZLFN se contrae 3.5%, lo que pone en evidencia que existen factores específicos que afectan el empleo IMMEX en esta zona: la política diferenciada de salario mínimo para la ZLFN y el resto de México puede ser uno de ellos. Este tema se aborda en el capítulo dedicado al análisis de la IED china en México.
 
 ```{r}
 #| label: save-fig-immex-empleo
