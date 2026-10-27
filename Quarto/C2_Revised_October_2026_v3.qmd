@@ -1,6 +1,6 @@
 ---
-title: "Capítulo 2: Nearshoring en los datos, 2018-2024"
-subtitle: "El comercio se ajusta más rápidamente que la inversión"
+title: "Capítulo 2: Nearshoring en los datos"
+subtitle: "2018-2024. El comercio se ajusta más rápidamente que la inversión"
 author: 
   - name: Jorge Cornick
     affiliations: 
@@ -162,7 +162,7 @@ local({
 
 ### Nearshoring en México: lo que muestran los datos.
 
-En el Capítulo 1 se identificaron trees tendencias que dieron impulso la nearshoring:
+En el Capítulo 1 se identificaron tres tendencias que dieron impulso al nearshoring:
 
 - El conflicto comercial entre EUA y China
 - La fragilidad de las CGV que fue puesta en evidencia por la pandemia ceo COVID-19
@@ -170,11 +170,11 @@ En el Capítulo 1 se identificaron trees tendencias que dieron impulso la nearsh
 
 En ese capítulo también se argumentó que la reconfiguración de las CGV empieza por la reconfiguración de los flujos comerciales y no tiene por qué reflejarse, en el corto plazo, en cambios en los flujos de IED. Las decisiones en cuanto a localización de plantas de nuevas plantas de producción son lentas, los procesos son discretos ("lumpy") e involucran sumas considerables, y el plazo entre la decisión y su ejecución también puede demorar varios años. Los flujos comerciales, en cambio, pueden ajustarse rápidamente, mediante mecanismos que incluyen traslado de líneas de producción, cambios en los destinos de los productos e incremento en la intensidad del uso de las plantas ya existentes.
 
-Se argumentó también que era un error asumir que la reconfiguración de las CGV es sinónimos de IED fresca para la construcción de nuevas plantas de producción. La reinversión de utilidades en la ampliación de plantas, ya sea para incrementar el volumen de producción o para introducir nuevas líneas de producción es un mecanismos de "respuesta rápida" ante cambios en las señales de mercado, y desde el punto de vista del NS la distinción entre inversión "fresca" y reinversión de utilidades es irrelevante.
+Se argumentó también que era un error asumir que la reconfiguración de las CGV es sinónimos de IED fresca para la construcción de nuevas plantas de producción. La reinversión de utilidades en la ampliación de plantas, ya sea para incrementar el volumen de producción o para introducir nuevas líneas de producción es un mecanismo de "respuesta rápida" ante cambios en las señales de mercado, y desde el punto de vista del NS la distinción entre inversión "fresca" y reinversión de utilidades es irrelevante.
 
-Finalmente, se argumentó que el NS no está asociado de manera exclusiva con la IED; la inversión doméstica en plantas que actúan como proveedoras de EMNs exportadoras, que de nuevo puede incluir tanto el incremento en el volumen de produccíon como la diversificación del portafolio y complejidad del portafolio de productos suministrados a las EMNs también es un mecanismo del nearshoring.
+Finalmente, se argumentó que el NS no está asociado de manera exclusiva con la IED; la inversión doméstica en plantas que actúan como proveedoras de empresas multinacionales (EMNs) exportadoras, que de nuevo puede incluir tanto el incremento en el volumen de producción como la diversificación del portafolio y complejidad del portafolio de productos suministrados a las EMNs también es un mecanismo del nearshoring.
 
-Finalmente, en el Capítulo 1 se dio un primer vistazo a la evidencia de la operacion de estas tendencias y sus consecuencias para la economía exportadora de México.
+Finalmente, en el Capítulo 1 se dio un primer vistazo a la evidencia de la operación de estas tendencias y sus consecuencias para la economía exportadora de México.
 
 En este capítulo se examina en detalle la evidencia sobre el nearshoring, tal y como tuvo lugar entre el inicio del primer gobierno de Trump y el final del gobierno de Biden. A partir del segundo gobierno de Trump las reglas cambiaron, y esta segunda fase del nearshoring se examina detalladamente en el Capítulo 3. El Capítulo 4, como ya se indicó antes, ofrece una perspectiva distinta pero complementaria: presenta una serie de estudios de caso que muestran como empresas multinacionales y domésticas se han adaptado y respondido a los nuevos retos y oportunidades que ofrece el nearshoring.
 
@@ -197,9 +197,9 @@ Las menciones en la prensa de los términos nearshoring y reshoring ofrecen una 
 
 Es de notar, en primer lugar, la diferencia en la intensidad de la atención de la prensa a este tema. En el panel superior en los períodos más intensos se reportan 80 referencias mensuales, mientras que en México se reportan más de 1000 menciones mensuales por varios meses.
 
-En segundo lugar, la atención de la presa a este tema se inicia mucho más tempranamente en EUA, en donde ya en 2018 la prensa le presta atención, alcanza un pico justo antes de la aprobación del T-MEC y, aunque con altibajos, de mantiene de 2022 en adelante, con una tendencia ascendente a final del período.
+En segundo lugar, la atención de la presa a este tema se inicia mucho más tempranamente en EUA, en donde ya en 2018 este era un tema prominente, que alcanza un pico justo antes de la aprobación del T-MEC y, aunque con altibajos, de mantiene de 2022 en adelante, con una tendencia ascendente a final del período.
 
-En Méixo, en cambio, el tema no llega a ser prominente sino a partir de 2022, y el interés empieza a disminuir desde finales de 2023, quizá porque, como se mostró en el Capítulo 1, expectativas iniciales desproporcionadas dieron lugar a un sentimiento de desengaño, y a la percepción de que el nearshoring era una oportunidad que se había desaprovechado.
+En México, en cambio, el tema no llega a ser prominente sino a partir de 2022, y el interés empieza a disminuir desde finales de 2023, quizá porque, como se mostró en el Capítulo 1, expectativas iniciales desproporcionadas dieron lugar a un sentimiento de desengaño, y a la percepción de que el nearshoring era una oportunidad que se había desaprovechado.
 
 ```{r}
 #| label: fig-nearshoringMX
@@ -237,9 +237,9 @@ Estudios tempranos, asumiendo que el NS, si estaba teniendo lugar, debería refl
 
 Sin embargo, los **anuncios** de nueva inversión sugerían un cambio en la dirección futura de la IED. Cabía pues la posibilidad de que si bien a la altura de 2022 no hubiera evidencia de cambios en los flujos de inversión que habían tenido lugar hasta ese momento, el terreno estaba siendo preparado para cambios futuros. Después de todo, no se puede esperar que los flujos de inversión respondan de manera inmediata a cambios en las condiciones comerciales, ni siquiera en el caso de que exista confianza en que esos cambios serán duraderos [@gaurav2024]. El tema de los anuncios de inversión, para el caso concreto de México, de hecho se aborda más adelante en este capítulo.
 
-Otros autores advirtieron, sin embargo, que la reconfiguración de las CGV podía estar teniendo lugar por otros canales [@martínezgarciía2024]: la expansión de capacidades mediante reinversión de utilidades de empresas ya existentes, uso de "shelter companies" y tercerización de operaciones de manufactura y servicios de logística a firmas mexicanas[@durán-fernández2025].
+Otros autores advirtieron, además, que la reconfiguración de las CGV podía estar teniendo lugar por otros canales [@martínezgarciía2024]: la expansión de capacidades mediante reinversión de utilidades de empresas ya existentes, uso de "shelter companies" y tercerización de operaciones de manufactura y servicios de logística a firmas mexicanas[@durán-fernández2025].
 
-Trabajos más recientes [^1] y la evidencia que se presenta en este capítulo y el siguiente zanjan la cuestión sin ambigüedades: el cambio en la organización geográfica de las CGV y en los flujos comerciales es profundo e innegable. La pregunta, desde el punto de vista de México, si ese cambio está teniendo lugar; la pregunta es cómo sacar el mejor provecho de él, consolidar las ganancias que ya se han cosechado, y crear nuevas oportunidades para el crecimiento y diversificación de las exportaciones mexicanas a EUA, y para la profundización de las redes de proveeduría en México.
+Trabajos más recientes [^1] y la evidencia que se presenta en este capítulo y el siguiente zanjan la cuestión sin ambigüedades: el cambio en la organización geográfica de las CGV y en los flujos comerciales es profundo e innegable. La pregunta, desde el punto de vista de México, no es si ese cambio está teniendo lugar; la pregunta es cómo sacar el mayor provecho de él, consolidar las ganancias que ya se han cosechado, y crear nuevas oportunidades para el crecimiento y diversificación de las exportaciones mexicanas a EUA, y para la profundización de las redes de proveeduría en México.
 
 [^1]: Ver las referencias en el Capítulo 1, así como el apartado sobre evidencia econométrica en este capítulo
 
@@ -247,11 +247,11 @@ Si a pesar de ello existe en círculos empresariales la impresión de que NS en 
 
 ### Alcance del capítulo
 
-En este capítulo, tal y como se indica en su título, se hace una presentación minuciosa de los **datos** sobre la primera fase del nearshoring en México, que ya de 2018 a 2024. El enfoque es fundamentalmente descriptivo: se aspira a identificar y caracterizar los hechos y con ello sentar la base fáctica para las discusiones que se abordan en los demás capítulo del libro, pero también se hace una síntesis de los principales econométricos que explorarn los cambios en las relaciones comerciales entre EUA y México durante este período, que se inicia con el primer gobierno del presidente Trump **REFERENCIAS**
+En este capítulo, tal y como se indica en su título, se hace una presentación minuciosa de los **datos** sobre la primera fase del nearshoring en México, que ya de 2018 a 2024. El enfoque es fundamentalmente descriptivo: se aspira a identificar y caracterizar los hechos y con ello sentar la base fáctica para las discusiones que se abordan en los demás capítulo del libro, pero también se hace una síntesis de los principales estudios econométricos que exploran los cambios en las relaciones comerciales entre EUA y México durante este período, que se inicia con el primer gobierno del presidente Trump.
 
 El capítulo se organiza en cuatro apartados, además de esta introducción.
 
-En el apartado 2, se discuten los cambios en la distribución por origen de las importaciones de los Estados Unidos. Como se verá, países ganadores y perdedores (es decir, países que aumentan o ver disminuir su participación en ese mercado) cambian entre los años finales de la globalización ascendente, de 2010 a 2018, y esta primera fase del NS. En este período México llega a convertirse en el mayor exportador al mercado de EUA, al tiempo que Vietnam y Taiwán se convierten en "estrellas ascendentes" en ese mercado.
+En el apartado 2, se discuten los cambios en la distribución por origen de las importaciones de los Estados Unidos. Como se verá, países ganadores y perdedores (es decir, países que aumentan o ver disminuir su participación en ese mercado) cambian entre los años finales de la globalización ascendente, de 2010 a 2018, y esta primera fase del nearshoring, durante la cual México llega a convertirse en el mayor exportador al mercado de EUA, al tiempo que Vietnam y Taiwán se convierten en "estrellas ascendentes" en ese mercado.
 
 En la apartado 3 el foco se traslada a los cambios en la composición de las exportaciones mexicanas a EUA. Empezando con un análisis al mayor nivel de agregación, las Secciones del Sistema Armonizado, el apartado concluye con la identificación de las Partidas más importantes y dinámicas del portafolio exportador de México [^2].
 
@@ -259,9 +259,11 @@ En la apartado 3 el foco se traslada a los cambios en la composición de las exp
 
 En el apartado 4 aborda el impacto regional del NS. A pesar de que por razones de confidencialidad la información de acceso pública es limitada, los datos disponibles permiten establecer patrones claramente diferenciados en la participación de diversos estados y regiones mexicanas; la división entre "dos Méxicos", ampliamente discutida en los estudios sobre el desarrollo económico del país, no se está reduciendo [@aroca2005b][@chiquiar2005a][@gómez2009b].
 
-En el apartado 5 se abordan dos temas complementarios: los flujos y distribución sectorial de la IED en México, tomando en cuentan tanto los datos históricos como los anuncios recientes de nueva inversión, así como la evolución de la demanda de suelos de uso industrial, que se ve afectada, claro está, no solo por la llegada de nuevos inversionistas, sino también por la expansión o contracción de las actividades de empresas que ya operan en México \^\[Ernesto: en esta versión no están aún actualizados los datos de fDi: le pedí a Sergio que los actualizara o que coordinara con Ana para ver si ella lo podía hacer. Los datos de uso de suelo industrial no los he podido actualizar. Le escribí a CBRE, la fuente, preguntando por acceso, y ni siquiera me han contestado. Insistiré\].
+En el apartado 5 se abordan dos temas complementarios: los flujos y distribución sectorial de la IED en México, tomando en cuentan tanto los datos históricos como los anuncios recientes de nueva inversión, así como la evolución de la demanda de suelos de uso industrial, que se ve afectada, claro está, no solo por la llegada de nuevos inversionistas, sino también por la expansión o contracción de las actividades de empresas que ya operan en México[^3].
 
-En el apartado 6 se resumen los hallazos del capítulo y se concluye con un primer intento de identificar desafíos clave que México debe superar para obtener mayores beneficios del proceso de reorganización de las cadenas globales de valor en curso.
+[^3]: Ernesto: en esta versión no están aún actualizados los datos de fDi: le pedí a Sergio que los actualizara o que coordinara con Ana para ver si ella lo podía hacer. Los datos de uso de suelo industrial no los he podido actualizar. Le escribí a CBRE, la fuente, preguntando por acceso, y ni siquiera me han contestado. Insistiré.
+
+En el apartado 6 se resumen los hallazgos del capítulo y se concluye con un primer intento de identificar desafíos clave que México debe superar para obtener mayores beneficios del proceso de reorganización de las cadenas globales de valor en curso.
 
 Una pequeña serie de anexos ofrece información complementaria que puede ser de interés para algunos lectores.
 
@@ -275,7 +277,7 @@ Una pequeña serie de anexos ofrece información complementaria que puede ser de
 impPais <- readRDS(here::here("RDS", "imp_por_pais.rds"))
 ```
 
-La manifestación más obvia de que los CGV centradas en Estados Unidos se están reorganizando, surge del examen de la evolución de sus importaciones según su país de origen. Este examen pone de manifiesto, de manera contundente, el impacto del NS sobre México y cómo este ha logrado aprovechar las oportunidades que se derivan de este fenómeno, pero también muestra que otros países están cerrando la brecha que los separa de México, y que mantener el liderazgo en ese mercado demandará de una política comercial calibrada con precisión, de negociaciones delicadas con los EUA, y de políticas públicas que permiten superar "cuellos de botella" que ha impedido un crecimiento más acelerado de las exportaciones mexicanas.
+La manifestación más obvia de que los CGV centradas en Estados Unidos se están reorganizando, surge del examen de la evolución de sus importaciones según su país de origen. Este examen pone de manifiesto, de manera contundente, el impacto del nearshoring sobre México y cómo este ha logrado aprovechar las oportunidades que se derivan de este fenómeno, pero también muestra que otros países están cerrando la brecha que los separa de México, y que mantener el liderazgo en ese mercado demandará de una política comercial calibrada con precisión, de negociaciones delicadas con los EUA, y de políticas públicas que permiten superar "cuellos de botella" que ha impedido un crecimiento más acelerado de las exportaciones mexicanas.
 
 Nuestro análisis se inicia con la comparación de las exportaciones de México y China a EUA, mercado en el cual son los dos proveedores más importantes, y luego compara el desempeño de México con el de Vietnam y Taiwán, cuya participación porcentual es mucho menor, pero en rápido ascenso.
 
@@ -285,9 +287,9 @@ En la @fig-ImpEUA-CHN-MEX se muestra la evolución de la participación en el me
 
 - Antes del inicio de la guerra comercial entre EUA y China, las exportaciones de México y China hacia ese país venían creciendo a un ritmo muy parecido: 5.1 y 5.0%, respectivamente. Aunque la tasa de crecimiento de las exportaciones mexicanas era ligeramente superior, la brecha entre ambos países se ensanchaba, porque el punto d partida de México era mucho más bajo.
 
-- Las cosas cambiaron de manera drástica entre 2018 y 2024: aunque las exportaciones chinas alcanzaron su nivel más alto en los primeros meses de 2020, para el perído en su conjunto la tasa compuesta anual de crecimiento (TCAC) es de -3.4%, mientras que la de las exportaciones mexicanas sube a un 6.6%. El conflicto comercial entre EUA y China, y la imposición por parte de EUA de aranceles diferenciados a las importaciones provenientes de China, permitió a México, cuyas exportaciones durante este período se rigen por las reglas del T-MEC, superar a China y convertirse en el primer exportador de bienes a EUA.
+- Las cosas cambiaron de manera drástica entre 2018 y 2024: aunque las exportaciones chinas alcanzaron su nivel más alto en los primeros meses de 2022, para el período en su conjunto la tasa compuesta anual de crecimiento (TCAC) es de -3.4%, mientras que la de las exportaciones mexicanas sube a un 6.6%. El conflicto comercial entre EUA y China, y la imposición por parte de EUA de aranceles diferenciados a las importaciones provenientes de China, permitió a México, cuyas exportaciones durante este período se rigen por las reglas del T-MEC, superar a China y convertirse en el primer exportador de bienes a EUA.
 
-Una primera impresión, entonces, es que México se ha beneficiado tanto de la tendencia a la liberalización del comercio internacional que predominó hasta 2018 y de su participación en el NAFTA (hoy T-MEC) como del conflicto comercial entre EUA y China y de la nueva política arancelaria de EUA a partir de 2025, aunque con diferencias importantes en cada período.
+Una primera impresión, entonces, es que México se ha beneficiado tanto de la tendencia a la liberalización del comercio internacional que predominó hasta 2018 y de su participación en el NAFTA (hoy T-MEC) como del conflicto comercial entre EUA y China que se inicia en 2018.
 
 ```{r}
 #| label: save-fig-ImpEUA-CHN-MEX
@@ -441,7 +443,7 @@ Tal y como se explicó en el capítulo 1, durante esta primera fase del nearshor
 
 China y México son los dos exportadores más importantes a los EUA, pero no los únicos. Más importante: salvo que hubiese un cambio radical en el estado de las relaciones comerciales entre EUA y China, los principales retos competitivos para México en el mercado de EUA no vendrán de China, sino de otros países cuyas exportaciones están creciendo rápidamente, y en algunos casos justamente en los productos más importantes dentro de las exportaciones mexicanas.
 
-Es necesario, pues, ampliar la mirada. Con este propósito, se identificaron los 20 orígenes más importantes de las importaciones de Estados Unidos\[\^4\] y los cambios en la participación de cada uno de ellos en los años finales de la globalización y durante la primera fase del nearshoring. Estos cambios se muestran en la @fig-imp-cambio-pais:
+Es necesario, pues, ampliar la mirada. Con este propósito, se identificaron los 20 orígenes más importantes de las importaciones de Estados Unidos y los cambios en la participación de cada uno de ellos en los años finales de la globalización y durante la primera fase del nearshoring. Estos cambios se muestran en la @fig-imp-cambio-pais:
 
 ```{r}
 #| label: origAnualPerc
@@ -716,7 +718,6 @@ rm(p)
 
 ```
 
-
 ```{r}
 #| label: save-tree-sec
 #| include: false
@@ -759,10 +760,11 @@ ggsave(here::here("Plots", "impMex_sec_perc_2024.png"), plot = p, width = 11, he
 rm(p, impMex_sec_pct)
 ```
 
-
 ### Por Sección del SA
 
-El crecimiento de las exportaciones mexicanas a EUA quedó documentado en el apartado sección anterior. Este crecimiento ha sido acompañado por un cambio sustancial de la composición de esas exportaciones, con diferentes sectores "ganadores" o "perdedores" (en el sentido de sectores cuya participación porcentual dentro del total de exportaciones mexicanas período aumentó o disminuyó) en cada período ^[A todo lo largo de este capítulo se utilizan los numerales romanos para identificar secciones del SA, y los números correspondientes a capítulos y partidas, lo que permite identificarlos sin ambigüedad.  En aras de la brevedad en el texto, y de la legibilidad en los figuras, se usan nombres cortos, informales, para cada uno de estos niveles del SA.  La nomenclatura oficial, para todas las secciones, y para los capítulos y partidas del SA que se identifican de manera individual tanto en este capítulo como en el siguiente se presenta en el Anexo 7.3].
+El crecimiento de las exportaciones mexicanas a EUA quedó documentado en el apartado sección anterior. Este crecimiento ha sido acompañado por un cambio sustancial de la composición de esas exportaciones, con diferentes sectores "ganadores" o "perdedores" (en el sentido de sectores cuya participación porcentual dentro del total de exportaciones mexicanas período aumentó o disminuyó) en cada período [^4].
+
+[^4]: A todo lo largo de este capítulo se utilizan los numerales romanos para identificar secciones del SA, y los números correspondientes a capítulos y partidas, lo que permite identificarlos sin ambigüedad. En aras de la brevedad en el texto, y de la legibilidad en los figuras, se usan nombres cortos, informales, para cada uno de estos niveles del SA. La nomenclatura oficial, para todas las secciones, y para los capítulos y partidas del SA que se identifican de manera individual tanto en este capítulo como en el siguiente se presenta en el Anexo 7.3
 
 La @fig-imp-cambio-sec-mex permite visualizar claramente estos cambios.
 
@@ -770,9 +772,9 @@ La @fig-imp-cambio-sec-mex permite visualizar claramente estos cambios.
 
 - La dinámica cambia en el período siguiente: el crecimiento en participación porcentual es liderado por la Sección XVII, Máquinas y aparatos eléctricos y por la IV, Alimentos. La Sección V, Productos minerales, continúa disminuyendo su participación.
 
-Quizá el dato más sorprendente de este período sea la evolución de las exportaciones de la Sección XVII, ya que como lo expresó Paul Krugman: "no existe realmente una industria automovilística de los EUA; existe una industria norteamericana, que opera en los tres países" integrantes del NAFTA [@krugman2025][^3]. A priori, no hubiera parecido probable que el giro proteccionista en la politica arancelaria de EUA se convirtiera en un obstáculo para esa integración, pero eso es exactamente lo que sucedió.
+Quizá el dato más sorprendente de este período sea la evolución de las exportaciones de la Sección XVII, ya que como lo expresó Paul Krugman: "no existe realmente una industria automovilística de los EUA; existe una industria norteamericana, que opera en los tres países" integrantes del NAFTA [@krugman2025][^5]. A priori, no hubiera parecido probable que el giro proteccionista en la política arancelaria de EUA se convirtiera en un obstáculo para esa integración, pero eso es exactamente lo que sucedió.
 
-[^3]: Traducción de los autores.
+[^5]: Traducción de los autores.
 
 ```{r}
 #| label: fig-imp-cambio-sec-mex
@@ -1071,7 +1073,9 @@ El siguiente nivel de desagregación en el SA, tras las Secciones, son los Capí
 knitr::include_graphics(here::here("Plots", "fig-treemap-caps-seccion_2024.png"))
 ```
 
-Con ese propósito, se procedió de la siguiente manera: se identificaron las 50 partidas de exportación de México más importantes de México en 2024. 2025 y 2026 (enero-agosto) y se determinó que existía poca variación entre ellas, por lo que se mantuvieron en un primer paso todas ellas.  Luego, se ordenaron las partidas de mayor a menor en 2024 ^[Para este capítulo] y se seleccionaron las que representaban al menos el 89% de las exportaciones de cada capítulo para análisis individual.  Las demás partidas se agrupaon en una categoríua resdual, "Otros".
+Con ese propósito, se procedió de la siguiente manera: se identificaron las 50 partidas de exportación de México más importantes de México en 2024. 2025 y 2026 (enero-agosto) y se determinó que existía poca variación entre ellas, por lo que se mantuvieron en un primer paso todas ellas. Luego, se ordenaron las partidas de mayor a menor en 2024 [^6] y se seleccionaron las que representaban al menos el 89% de las exportaciones de cada capítulo para análisis individual. Las demás partidas se agrupaon en una categoríua resdual, "Otros".
+
+[^6]: Para este capítulo
 
 Se identificaron además las 50 partidas que mostraron el mayor crecimiento entre 2010 y 2025. En todos los casos, el punto de partida era muy bajo, y el volumen aún en 2025 aún muy pequeño, por lo que ninguna de ellas se incluyó en el análisis.
 
@@ -1098,15 +1102,13 @@ En las tablas se destacan en amarillo las 16 partidas que crecieron más rápida
 - 9019, Aparatos de terapia
 - 9032, Reguladores
 
-Se trata, pues, de un período en el que si bien la aceleración del crecimiento de las exportaciones se concentra en únicamente tres secciones del SA, comprende un número relativamente alto de partidas.  Notablmente, todas las partidas del capítulo 87, equipo de transporte, pilar de la integración productiva entre México y EUA, reducen su ritmo de crecimiento en 2018 con respecto a 2024.
+Se trata, pues, de un período en el que si bien la aceleración del crecimiento de las exportaciones se concentra en únicamente tres secciones del SA, comprende un número relativamente alto de partidas. Notablmente, todas las partidas del capítulo 87, equipo de transporte, pilar de la integración productiva entre México y EUA, reducen su ritmo de crecimiento en 2018 con respecto a 2024.
 
-Empezamos con el **Capítulo 84**, Maquinaria.
+Veamos ahora, con más detenimiento, el comportamiento de las exportaciones correspondientes a cada uno de estos capítulos. Empezamos con el **Capítulo 84**, Maquinaria.
 
-- Tres partidas individuales, más la partida residual (Resto), que en conjunto representan el 83.1% de las exportaciones del Capítulo, crecen más rápidamente en 2024-2025 que en el período anterior. Este Capítulo es el gran ganador de la nueva politica arancelaria de EUA. La estructura arancelaria que facilita este crecimiento se examina con detalla en el Capítulo 3 de este libro.
-
-- Las exportaciones del capítulo están altamente concentradas: la partida 8471 representa prácticamente el 60% de las exportaciones del Capítulo, y tuvo un crecimiento extraordinario, del 86%, en el último período.
-
-- Las partidas 8481 y 8409, aunque de menor preso, tienen un crecimiento superior al 4%, y al igual que las tres primeras partidas y la categoría residual, crecen en los tres períodos incluidos en la tabla.
+- En primer lugar, es notoria la concentración de las exportaciones de este capítulo en la partida 8471, que por sí sola representa el 46% de las exportaciones del capítulo y casi el 10% de las exportaciones mexicanas a EUA en 2024.
+- La tasa de crecimiento de la partida 8473, partes y accesorios para equipos de oficina, pasa de 1.9% en 2010-2018 a un sorprendente 27.3% en 2018-2024. A pesar de ello, su peso dentro del capítulo (1.7%) y dentro del total de las exportaciones mexicanas (0.3%) sigue siendo modesto en al finalizar este período.
+- Todas las demás partidas cuya tasa de crecimiento se acelera en 2018-2024 representan montos modestos en 2024. En el capítulo siguiene veremos cómo se comportaron este capítulo y sus principales partidas a partir de 2025.
 
 ```{r}
 #| label: tbl-cap84
@@ -1120,12 +1122,9 @@ tab84
 Continuamos con el **Capítulo 85**, Maquinaria y equipo eléctrico.
 
 - Aunque el peso de las partidas individuales es relativamente bajo, el capítulo representó el 17% de las exportaciones mexicanas a EUA en 2025.
-
 - Es un Capitulo cuyas exportaciones por Partida están mucho menos concentradas que las del Capítulo 84. Solo hay tres Partidas con uns participación mayor al 10% del total del Capítulo y ninguna de ellas alcanza el 20% del total.
-
-- Tres partidas exhiben un crecimiento notable en 2024-2025: 8517, Teléfonos; 8543, Maquinaria eléctrica especial, un 17.5%, y Cables eléctricos, un 9.1%.
-
-- El 83% de las exportaciones del Capítulo muestran una tasa de crecimiento positiva en 2024-2025.
+- Dos partidas exhiben un crecimiento particularmente acelerado en 2018-2024: 8504, transformadores, y 8516, calentadores eléctricos.
+- Únicamente una partida, 8517, teléfonos, muestra una tasa de crecimiento negativa en 2018-2024: teléfonos, pero la tasa es muy baja: -0.1%
 
 ```{r}
 #| label: tbl-cap85
@@ -1136,7 +1135,7 @@ Continuamos con el **Capítulo 85**, Maquinaria y equipo eléctrico.
 tab85
 ```
 
-El panorama es muy distinto para el **Capitulo 87**. Como vimos antes, la Sección XVII, Material de Transporte, fue la de más rápido crecimiento en el período 2010-2018, y el Capítulo 87, que comprende autopartes, cambios y automóviles, representa casi la totalidad de las exportaciones de esta Sección. En contraste con lo sucedido en 2010-2018, todas las partidas del Capítulo 87 se contraen en 2024 - 2025.
+El panorama es muy distinto para el **Capitulo 87**. Las partidas 8704, 8708 y 8703, caminoes, autopartes y automóviles representan prácticamente el 90% de las exportaciones del capítulo y cerca de una cuarta parte del total de las exportaciones mexicanas a EUA en 2024. Todas creen a un ritmo menor en 2018-2024 que en el período anterior: 2.1 pp para camiones, 3 pp para autopartes, y 5.6 pp porcentuales en automóviles. Esto parece representar un cambio sustancial en el patrón de integración productiva entre México y Estados Unidos, que se discute con más detalle en el capítulo 3, en donde se discute el comportamiento de las exportaciones mexicanas a EUA desde enero 2025 hasta agosto 2026.
 
 ```{r}
 #| label: tbl-cap87
@@ -1147,7 +1146,10 @@ El panorama es muy distinto para el **Capitulo 87**. Como vimos antes, la Secci�
 tab87
 ```
 
-Finalmente, exploramos el comportamiento del **Capítulo 90**. Al igual que en el caso del Capítulo 84, las exportaciones están fuertemente concentradas en una única partida, 9018, Instrumentos médicos, que representa el 53.7% de sus exportaciones. Únicamente esta partida, y la 9019, Aparatos para terapia, muestran un crecimiento fuerte en el último período. En las demas, el crecimiento es o muy cercando a cero, o en la mayor parte de los casos, negativo, como se muestra en la @tbl-cap90.
+Finalmente, exploramos el comportamiento del **Capítulo 90**.
+
+- Al igual que en el caso del Capítulo 84, las exportaciones están fuertemente concentradas en una única partida, 9018, Instrumentos médicos, que representa el 52.7% del total de las exportaciones del capítulo.
+- Únicamente esa partida, la 9019, apartaod de terapia, y la 9032, reguladores, crecen más rápidamente en 2018-2024 que en el perído anterior: un notable 11.!% para la partida 9019 y un modesto 1.0% para la 9032.
 
 ```{r}
 #| label: tbl-cap90
@@ -1238,19 +1240,28 @@ El patrón de diversificación es consistente con una estrategia "China + 1": en
 
 ## Dimensiones regionales del nearshoring
 
-El impacto del NS no ha sido igual a lo largo de todo el territorio mexicano sino que por el contrario ha acentuado diferencias ya de por sí agudas entre distintas regiones [@chiquiar2005][@gómez2009]. Exploraremos este tema desde tres perspectivas: la evolución de las exportaciones totales por estado, la evolución de las exportaciones por sectores de interés (clasificación SCIAN) para aquellos estados para los que la información está disponible, y la evolución del empleo IMMEX, aunque este es un indicador cada vez más imperfecto de la evolución del empleo asociado con las exportaciones mexicanas.
+El impacto del NS no ha sido igual a lo largo de todo el territorio mexicano sino que por el contrario ha acentuado diferencias ya de por sí agudas entre distintas regiones . Exploraremos este tema desde tres perspectivas: la evolución de las exportaciones totales por estado, la evolución de las exportaciones por sectores de interés (clasificación SCIAN) para aquellos estados para los que la información está disponible, y la evolución del empleo IMMEX, aunque este es un indicador cada vez más imperfecto de la evolución del empleo asociado con las exportaciones mexicanas.
 
 ### Distribución territorial de las exportaciones
 
-Tanto el ritmo como la distribución del crecimiento de las exportaciones en el territorio mexicano han variado de manera considerable a lo largo del tiempo, y los patrones de crecimiento o contracción difieren claramente entre el período de normalidad globalizadora, Trump-Biden y Trump 2.
+Tanto el ritmo como la distribución del crecimiento de las exportaciones en el territorio mexicano han variado de manera considerable a lo largo del tiempo, y los patrones de crecimiento o contracción difieren claramente entre el período de normalidad globalizadora y la primera fase del nearshoring. La @fig-tcac-estados y la @tbl-tcac-estados permiten visualizar estos cambios.
 
-Durante los últimos 8 años de la "normalidad globalizadora", la tasa de crecimiento de las exportaciones de Campeche, Chiapas, y Tabasco fue negativa, mientras que en el resto del país no solo fue positiva, sino que en numerosos estados superó los dos dígitos (ver el panel superior izquierdo de la @fig-tcac-estados).
+Período 2010 - 2018:
 
-Durante Trump-Biden, el panorama cambia favorablemente desde el punto de vista de su distribución geográfica: las exportaciones de prácticamente todos los estados crecen, aunque generalmente a un ritmo inferior al de período anterior. Las dos excepciones, los dos únicos estados cuyas exportaciones se contraen, son Campeche y Quintana Roo.
+- Las exportaciones de seis estados crecen a dos dígitos: Colima, Guanajuato, Nayarit, Querétaro, San Luis Potosí y Sinaloa.
+- Las exportaciones de 10 estados crecen a un ritmo del 7.5 o superior: los seis ya citados más Coahuila, Durango, Nuevo León y Puebla.
+- Las exportaciones de cuatro estados se contraer: Campeche, Chiapas, Oaxaca (muy ligeramente) y Tabasco que, con 5%, es la contracción más marcada.
 
-Trump 2 tiene un impacto negativo bastante generalizado, pero se caracteriza además por la intensificación de las disparidades entre regiones: las exportaciones de 16 estados se contraen y en seis casos la contracción es de dos dígitos, pero al mismo tiempo, las exportaciones de Chihuahua, Jalisco, Yucatán, Zacatecas, Chiapas, Colima y Potosí crecen a un ritmo de dos dígitos. Particularmente notables son los casos de Chihuahua, con un crecimiento de 45%, y Jalisco, con un crecimiento de 66%.
+En contraste, entre 2018 y 2024:
 
-Es razonable suponer que estas disparidades regionales están asociadas con la composición de las exportaciones de cada estado, pero lamentablemente la información cruzada sobre composición sectorial de las exportaciones y origen estatal es limitada, como se verá en la sección siguiente.
+- No hay ningún estado cuyas exportaciones crezcan a dos dígitos.
+- Solo hay seis estados cuyas exportaciones crezcan a un ritmo de 7.5% o superior: Baja California Sur, Cohaulila, Colima, Guanajuato, Oaxaca y San Luis Potosí.
+- Las exportaciones de Chiapas y Oaxaca, que se contrajeron en el período anterior, crecieron a un 5.4 y un 8.9% en este período.
+- Las contracciones se concentran en dos estados, y son más fuertes que las del período anterior: -6.2% en el caso de campeche y -15.9 en el de Quintana Roo.
+
+Debe notarse que solo hay cuatro estados que crecen a una tasa del 7.5% o superior en ambos períodos: Coahuila, Colima, Guanajuato y San Luis Potosí, mientras que Campeche es el único en el que las exportaciones se contraen en ambos períodos.
+
+Es razonable suponer que estas disparidades regionales están asociadas con la composición de las exportaciones de cada estado, pero lamentablemente la información cruzada sobre composición sectorial de las exportaciones y origen estatal es limitada, como se verá en el apartado siguiente.
 
 ```{r}
 #| label: save-fig-tcac-estados
@@ -1500,17 +1511,17 @@ etef <- readRDS(here::here("RDS", "etef_tidy.rds"))
 
 El análisis del impacto territorial del NS en México, desde el punto de vista de la composición sectorial de las exportaciones, se ve limitado por dos factores:
 
-- En primer lugar, la información por entidad federativa no está disponible utilizando el SA, sino únicamente el SCIAN a 3 dígitos, lo que nos da "sectores" más agregados que los que utilizamos en la sección 3.2 de este capítulo.
+- En primer lugar, la información por entidad federativa no está disponible utilizando el SA, sino únicamente el SCIAN a 3 dígitos, lo que nos da "industrias" más agregados que las partidas del SA.
 
 - En segundo lugar, en muchos casos la información está suprimida por razones de confidencialidad. En el Anexo 7.2 se detalla la disponibilidad de información por estados y sectores.
 
 De lo anterior se deriva que no podemos discutir la distribución de las exportaciones por sector para todo el territorio de México, pero aun así, podemos observar el impacto del NS sobre estados y sectores específicos en los cuales no hay datos suprimidos. Esta información se muestra en las @fig-scian-333, @fig-scian-334, @fig-scian-335 y @fig-scian-336.
 
-Destacan, en primer lugar, el predominio de Nuevo León en Maquinaria y equipo (Sector 333) y en Accesorios y equipo eléctrico (Sector 335), así como la notable aceleración de las exportaciones de estos dos sectores poco después de 2020. En ambos sectores existe una "segunda división" de estados exportadores, que en ambos casos incluye a Chihuahua, Coahuila, Tamaulipas, Baja California, Querétaro y San Luis Potosí. Las relaciones productivas entre estos estados, en estos dos sectores, son un tema pendiente de investigar.
+Destacan, en primer lugar, el predominio de Nuevo León en Maquinaria y equipo (SCIAN 333) y en Accesorios y equipo eléctrico (SCIAN 335), así como la notable aceleración de las exportaciones de estos dos sectores poco después de 2020. En ambos sectores existe una "segunda división" de estados exportadores, que en ambos casos incluye a Chihuahua, Coahuila, Tamaulipas, Baja California, Querétaro y San Luis Potosí. Las relaciones productivas entre estos estados, en estos dos sectores, son un tema pendiente de investigar.
 
-En Equipo de computación y comunicación (Sector 334) son notables el predominio de Chihuahua y Jalisco, y la aceleración que tiene lugar a partir de 2024. La evolución de estas exportaciones se examina con detalle en el próximo capítulo.
+En Equipo de computación y comunicación (SCIAN 334) es notable el predominio de Chihuahua, seguida de lejos, y sin una tasa de crecimiento notable, por Jalisco y Baja California.
 
-Finalmente, los problemas de Equipo de Transporte (Sección 336) quedan en evidencia, con efectos particularmente fuertes en Coahuila y Guanajuato, los principales estados exportadores de este sector.
+Finalmente, Cohaluila y Guanajato predominan en la exportación de equipo de transporte (SCIAN 336), mientras que un grupo de 7 estados adicionales, de menor importancia individual, pero de considerable importancia agregada, completan las exportaciónes de este sector.
 
 ```{r}
 #| label: save-fig-scian-frontera
@@ -1753,9 +1764,9 @@ immex <- readRDS(here::here("RDS", "immex_empleo.rds"))
 
 En la @fig-immex-empleo se muestra la evolución del empleo IMMEX, dividido en "total", "Zona Libre de la Frontera Norte (ZLFN)" y "resto", es decir, total menos ZLFN.
 
-A pesar del aumento de las exportaciones mexicanas, el empleo IMMEX modera su crecimiento durante Trump-Biden con respecto al que se observó durante la normalidad globalizadora y decrece durante Trump 2. Esta disminución está en parte asociada con una imperfecta asociación entre empleo exportador y empleo IMMEX: las reglas para la incorporación en el régimen, en opinión de muchos de los empresarios entrevistados se han hecho más estrictas, y otros mecanismos, tales como el "safe harbour", resultan más atractivos y menos onerosos para muchas empresas. Además, el costo de incorporación hace que este régimen sea atractivo únicamente para grandes empresas, y las PyMes que forman uno de los componentes importantes del proceso de NS con frecuencia no pueden adoptarlo, o simplemente encuentran que no resulta rentable hacerlo[^4].
+A pesar del aumento de las exportaciones mexicanas, el empleo IMMEX modera su crecimiento durante Trump-Biden con respecto al que se observó durante la normalidad globalizadora y decrece durante Trump 2. Esta disminución está en parte asociada con una imperfecta asociación entre empleo exportador y empleo IMMEX: las reglas para la incorporación en el régimen, en opinión de muchos de los empresarios entrevistados se han hecho más estrictas, y otros mecanismos, tales como el "safe harbour", resultan más atractivos y menos onerosos para muchas empresas. Además, el costo de incorporación hace que este régimen sea atractivo únicamente para grandes empresas, y las PyMes que forman uno de los componentes importantes del proceso de NS con frecuencia no pueden adoptarlo, o simplemente encuentran que no resulta rentable hacerlo[^7].
 
-[^4]: Ver Capítulo 4.
+[^7]: Ver Capítulo 4.
 
 Sin embargo, debe tomarse nota de que la caída está claramente asociada a la disminución del empleo IMMEX en la ZLFN a partir de 2022. El resto del empleo IMMEX tiene una tasa de crecimiento del 5.4% durante la normalidad globalizadora, que solo se reduce en 0.4 pp durante Trump-Biden. Durante Trump 2, ese empleo se contrae en 1.4%, mientras que el empleo IMMEX en la ZLFN se contrae 3.5%, lo que pone en evidencia que existen factores específicos que afectan el empleo IMMEX en esta zona: la política diferenciada de salario mínimo para la ZLFN y el resto de México puede ser uno de ellos. Este tema se aborda en el capítulo dedicado al análisis de la IED china en México.
 
@@ -2047,9 +2058,9 @@ Aun así, la IED es **uno** de los componentes del proceso, cuyo comportamiento 
 
 ### IED total y por origen
 
-En la @fig-ied-total-origen se muestra la evolución de la IED en México de 2010 al tercer trimestre de 2025. De 2010 a 2020 la IED oscila entre los 50 mil y los 75 mil millones de USD, con la única excepción de 2013, que refleja la adquisición del Grupo Modelo por parte de AB InBev[^5].
+En la @fig-ied-total-origen se muestra la evolución de la IED en México de 2010 al tercer trimestre de 2025. De 2010 a 2020 la IED oscila entre los 50 mil y los 75 mil millones de USD, con la única excepción de 2013, que refleja la adquisición del Grupo Modelo por parte de AB InBev[^8].
 
-[^5]: (<https://www.bevindustry.com/articles/86441-anheuser-busch-inbev-completes-acquisition-of-grupo-modelo>)
+[^8]: (<https://www.bevindustry.com/articles/86441-anheuser-busch-inbev-completes-acquisition-of-grupo-modelo>)
 
 Como sucede también con otras variables, el impacto de Trump-Biden se hace evidente después de la pandemia: mientras que entre 2014 y 2019 la IED se mantiene fundamentalmente estable, de 2020 en adelante la tendencia es positiva, y se acelera entre 2024 y 2025.
 
@@ -2780,11 +2791,11 @@ knitr::include_graphics(here::here("Plots", "zafra-capex-origen.png"))
 
 ### Desarrollo inmobiliario industrial
 
-El impacto del nearshoring también se evidencia en la demanda de suelo industrial. Según CBRE[^6], la demanda anual de bienes raíces industriales atribuida al nearshoring[^7] en México creció de casi 5 millones de pies cuadrados en 2019 a 21.5 millones de pies cuadrados en 2024 (si bien en 2024 el nivel fue 5% inferior a 2023), y la contribución de este fenómeno a la absorción bruta total de bienes inmuebles industriales pasó de menos del 10% al 28%. Durante el periodo de análisis que cubre la firma, la proporción de uso de suelo industrial por el nearshoring proveniente de expansiones en vez de nuevas empresas fue incrementando gradualmente. Esto refleja una expansión de compañías después de su relocalización en México por el aumento en el volumen de producción y nuevas líneas de negocio, una vez que sus operaciones iniciales comenzaron con éxito.
+El impacto del nearshoring también se evidencia en la demanda de suelo industrial. Según CBRE[^9], la demanda anual de bienes raíces industriales atribuida al nearshoring[^10] en México creció de casi 5 millones de pies cuadrados en 2019 a 21.5 millones de pies cuadrados en 2024 (si bien en 2024 el nivel fue 5% inferior a 2023), y la contribución de este fenómeno a la absorción bruta total de bienes inmuebles industriales pasó de menos del 10% al 28%. Durante el periodo de análisis que cubre la firma, la proporción de uso de suelo industrial por el nearshoring proveniente de expansiones en vez de nuevas empresas fue incrementando gradualmente. Esto refleja una expansión de compañías después de su relocalización en México por el aumento en el volumen de producción y nuevas líneas de negocio, una vez que sus operaciones iniciales comenzaron con éxito.
 
-[^6]: Una de las firmas líderes a nivel mundial en consultoría y servicios inmobiliarios, con fuerte presencia en México en los segmentos de parques industriales, oficinas y logística.
+[^9]: Una de las firmas líderes a nivel mundial en consultoría y servicios inmobiliarios, con fuerte presencia en México en los segmentos de parques industriales, oficinas y logística.
 
-[^7]: Absorción bruta de inmuebles industriales ya sea de nuevas empresas que llegan al país o de nuevas líneas de producción de empresas establecidas, ambas con el objetivo de abastecer al mercado norteamericano.
+[^10]: Absorción bruta de inmuebles industriales ya sea de nuevas empresas que llegan al país o de nuevas líneas de producción de empresas establecidas, ambas con el objetivo de abastecer al mercado norteamericano.
 
 ```{r}
 #| label: fig-absorcion-bruta-nearshoring
@@ -2829,9 +2840,9 @@ Por país de origen, China concentró el 37% de la demanda de suelo industrial p
 knitr::include_graphics(here::here("Plots", "zafra-absorcion-origen.png"))
 ```
 
-Con información de la absorción neta (superficie ocupada menos desalojada) de suelo industrial en principales ciudades provistas por Logan Valuation[^8] entre 2019 y 2024, se observa también un crecimiento notable a partir de 2021 y más marcado en el Norte. Durante dicho periodo, en las principales ciudades del Norte la absorción neta creció a una tasa media anual compuesta de 46.8%, mientras que en las del Centro-Bajío a una tasa de 37.4%, si bien en las primeras se observó una desaceleración en 2024 atribuida a la incertidumbre de la demanda externa, mientras que en las segundas el ritmo se sostuvo porque los espacios industriales también se emplean para atender la demanda interna.
+Con información de la absorción neta (superficie ocupada menos desalojada) de suelo industrial en principales ciudades provistas por Logan Valuation[^11] entre 2019 y 2024, se observa también un crecimiento notable a partir de 2021 y más marcado en el Norte. Durante dicho periodo, en las principales ciudades del Norte la absorción neta creció a una tasa media anual compuesta de 46.8%, mientras que en las del Centro-Bajío a una tasa de 37.4%, si bien en las primeras se observó una desaceleración en 2024 atribuida a la incertidumbre de la demanda externa, mientras que en las segundas el ritmo se sostuvo porque los espacios industriales también se emplean para atender la demanda interna.
 
-[^8]: Firma especializada en valuación y consultoría inmobiliaria para clientes institucionales en México y América Latina.
+[^11]: Firma especializada en valuación y consultoría inmobiliaria para clientes institucionales en México y América Latina.
 
 ```{r}
 #| label: fig-absorcion-neta-ciudades
