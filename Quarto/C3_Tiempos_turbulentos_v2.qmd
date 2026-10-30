@@ -151,9 +151,13 @@ Durante todo este período los aranceles IEEPA permanecen vigentes (la administr
 
 - A partir de setiembre de 2026 se empieza a utilizar la Sección 338 contra Canadá, una autoridad bilateral y punitiva dirigida específicamente a un país (Canadá) por una disputa concreta (trato preferencial a los quesos de la UE bajo CETA frente al T-MEC). Su uso en julio de 2026 — la primera invocación documentada de esta sección en casi cien años — escaló en agosto a un paquete arancelario de USD 27.600 millones y produjo represalia canadiense en espejo, vigente desde el 8 de septiembre de 2026 (fecha de cierre de este documento) [@federalregister2026g; @aljazeera2026a; @canada2026].
 
+<<<<<<< HEAD
 ## México y sus competidores en el mercado de EUA: 2024-2025
 
 ## Reglas arancelarias por país: idas y venidas.
+=======
+## Reglas arancelarias por país: idas y venidas en cuatro casos ilustrativos.
+>>>>>>> a2002808c437b00220ea08dccf1d4b27a443774b
 
 Aún en la cronología simplificada recién presentada, resulta difícil tener un panorama claro de la evolución de la política arancelaria de los EUA durante el segundo gobierno del presidente Trump.
 
