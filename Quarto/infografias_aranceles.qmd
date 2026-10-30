@@ -159,7 +159,8 @@ panel_serie <- function(sp, h_in = 3.75) {
           axis.text.x = element_text(colour = pal[["ink"]], size = if (n > 9) 6 else 6.5, lineheight = 0.9),
           axis.text.y = element_text(colour = pal[["ink3"]], size = 7),
           axis.title.y = element_text(colour = pal[["ink3"]], size = 6.5),
-          axis.line.x = if (banda) element_blank() else element_line(colour = pal[["ink2"]], linewidth = 0.5))
+          axis.line.x = if (banda) element_blank() else element_line(colour = pal[["ink2"]], linewidth = 0.5),
+          plot.margin = margin(5.5, 0, 5.5, 0))   # sin margen lateral: el eje Y queda alineado con título y recuadro
   if (banda) p <- p + annotate("segment", x = 0.5, xend = n + 1, y = 0, yend = 0,
                                colour = pal[["ink2"]], linewidth = 0.5)
   p
@@ -193,7 +194,7 @@ panel_nota <- function(sp) {
 infografia <- function(sp, h_main = 3.75) {
   pl <- panel_leyenda(sp); pn <- panel_nota(sp)
   hts <- c(0.35, 0.85, attr(pl, "filas") * 0.17 + 0.10, h_main, attr(pn, "alto"))
-  fig <- (panel_titulo(sp) / panel_cifras(sp) / pl / panel_serie(sp, h_main) / pn) +
+  fig <- (panel_titulo(sp) / panel_cifras(sp) / pl / wrap_elements(full = panel_serie(sp, h_main)) / pn) +
     plot_layout(heights = hts)
   attr(fig, "alto_total") <- sum(hts)
   fig
@@ -206,61 +207,11 @@ tabla_hitos <- function(sp, caption) {
         format = "pipe", align = c("l", "l"), caption = caption)
 }
 
-# ---- Comparativos "pendiente": Panel A (impacto inicial) y Panel B (alivio negociado)
+# ---- Comparativos por socio: escalones sobre un eje de eventos (mismo estilo que los países)
 col_pais <- c(japon = "#B8871E", corea = "#1F6FA8", ue = "#A23327", mx30 = "#5B8A3A", mx40 = "#8A3B7A", mx = "#5B8A3A")
+fmt_pct <- function(v) paste0(gsub("\\.", ",", as.character(v)), "%")
 
-panel_slope <- function(sp, h_in = 4.1) {
-  s <- sp$series; ns <- nrow(s)
-  xA0 <- 165; xA1 <- 275; xB0 <- 307; xB1 <- 417
-  ytop <- 27.5; ybot <- -13
-  s$hex <- col_pais[s$id]
-  s$lt  <- ifelse(s$dash, "dashed", "solid")
-  rg <- rbind(
-    data.frame(x = xA0, xend = xA1, y = s$a0, yend = s$a1, hex = s$hex, lt = s$lt, id = s$id),
-    data.frame(x = xB0, xend = xB1, y = s$b0, yend = s$b1, hex = s$hex, lt = s$lt, id = s$id))
-  pts <- rbind(data.frame(x = xA0, y = s$a0, hex = s$hex), data.frame(x = xA1, y = s$a1, hex = s$hex),
-               data.frame(x = xB0, y = s$b0, hex = s$hex), data.frame(x = xB1, y = s$b1, hex = s$hex))
-  ticks <- seq(0, 25, 5)
-  p <- ggplot() +
-    annotate("segment", x = 160, xend = xB1, y = ticks, yend = ticks, colour = pal[["line"]],
-             linetype = "13", linewidth = 0.4) +
-    annotate("text", x = 156, y = ticks, label = paste0(ticks, "%"), hjust = 1, size = 2.2,
-             colour = pal[["ink3"]]) +
-    annotate("segment", x = c(xA0, xB0), xend = c(xA1, xB1), y = 0, yend = 0, colour = pal[["ink3"]], linewidth = 0.4) +
-    annotate("text", x = c((xA0 + xA1) / 2, (xB0 + xB1) / 2), y = 26.8, vjust = 0.5, size = 2.4, fontface = "bold",
-             colour = pal[["ink2"]], label = c("PANEL A — impacto inicial", "PANEL B — alivio negociado")) +
-    annotate("text", x = c(xA0, xA1, xB0, xB1), y = c(-1.0, -1.0, -1.0, -1.0), vjust = 1, size = 1.9,
-             colour = pal[["ink2"]], lineheight = 0.9,
-             hjust = c(0, 1, 0, 1), label = sp$xlab) +
-    geom_segment(data = rg, aes(x = x, xend = xend, y = y, yend = yend, colour = hex, linetype = lt),
-                 linewidth = 1.0) +
-    geom_point(data = pts, aes(x, y, colour = hex), size = 1.6)
-  # etiquetas izquierda
-  L <- s
-  p <- p +
-    annotate("text", x = xA0 - 8, y = L$ll + 0.55, label = L$nombre, hjust = 1, vjust = 0.5, size = 2.1,
-             fontface = "bold", colour = L$hex) +
-    annotate("text", x = xA0 - 8, y = L$ll - 0.75, label = L$vini, hjust = 1, vjust = 0.5, size = 2.0,
-             colour = pal[["ink3"]])
-  Ll <- subset(L, lead_l)
-  if (nrow(Ll)) p <- p + annotate("segment", x = xA0 - 5, xend = xA0 - 1, y = Ll$ll + 0.6, yend = Ll$a0,
-                                  colour = Ll$hex, linewidth = 0.25, linetype = "13", alpha = 0.6)
-  # etiquetas derecha
-  p <- p +
-    annotate("text", x = xB1 + 10, y = L$lr + 0.55, label = L$rtxt, hjust = 0, vjust = 0.5, size = 2.1,
-             fontface = "bold", colour = L$hex) +
-    annotate("text", x = xB1 + 10, y = L$lr - 0.75, label = L$rsub, hjust = 0, vjust = 0.5, size = 2.0,
-             colour = pal[["ink3"]])
-  Lr <- subset(L, lead_r)
-  if (nrow(Lr)) p <- p + annotate("segment", x = xB1 + 7, xend = xB1 + 1, y = Lr$lr, yend = Lr$b1,
-                                  colour = Lr$hex, linewidth = 0.25, linetype = "13", alpha = 0.6)
-  p +
-    scale_colour_identity() + scale_linetype_identity() +
-    coord_cartesian(xlim = c(0, 650), ylim = c(ybot, ytop), expand = FALSE, clip = "off") +
-    theme_void()
-}
-
-leyenda_slope <- function(sp) {
+leyenda_serie <- function(sp) {
   s <- sp$series; cw <- 0.78
   s$w <- 5.5 + nchar(s$leg) * cw + 4
   x <- 0; r <- 1; s$x <- NA; s$r <- NA
@@ -279,149 +230,74 @@ leyenda_slope <- function(sp) {
   p
 }
 
-panel_titulo_sl <- function(sp) {
-  tt <- paste(strwrap(sp$title, 62), collapse = "\n")
-  sub <- paste(strwrap(sp$subtitle, 112), collapse = "\n")
-  ggplot() +
-    annotate("text", x = 0, y = 1, hjust = 0, vjust = 1, label = tt, size = 4.6, fontface = "bold",
-             colour = pal[["ink"]], lineheight = 0.95) +
-    annotate("text", x = 0, y = 0, hjust = 0, vjust = 0, label = sub, size = 2.2, colour = pal[["ink2"]], lineheight = 1.0) +
-    coord_cartesian(xlim = c(0, 100), ylim = c(0, 1), expand = FALSE, clip = "off") + theme_void()
-}
-
-panel_nota_sl <- function(sp) {
-  txt <- vapply(sp$foot, function(f) paste0(wrap_txt(f$h, 128), "\n", wrap_txt(f$p, 128)), "")
-  nl <- sum(n_lines(txt)) + 0.9 * length(txt)
-  H <- 0.28 + nl * 0.118
-  yy <- H - 0.14
-  p <- ggplot() +
-    annotate("rect", xmin = 0, xmax = 100, ymin = 0, ymax = H, fill = "#FBFBF8", colour = pal[["ink3"]], linewidth = 0.3) +
-    annotate("rect", xmin = 0, xmax = 0.9, ymin = 0, ymax = H, fill = "#B8871E", colour = NA)
-  for (i in seq_along(sp$foot)) {
-    f <- sp$foot[[i]]; hh <- wrap_txt(f$h, 128); pp <- wrap_txt(f$p, 128)
-    p <- p + annotate("text", x = 3, y = yy, hjust = 0, vjust = 1, size = 2.5, fontface = "bold", colour = pal[["ink"]], label = hh) +
-      annotate("text", x = 3, y = yy - 0.14, hjust = 0, vjust = 1, size = 2.3, lineheight = 1.05, colour = pal[["ink2"]], label = pp)
-    yy <- yy - 0.14 - n_lines(pp) * 0.118 - 0.13
+panel_serie_multi <- function(sp, h_in = 3.75) {
+  ev <- sp$events; n <- nrow(ev); s <- sp$series; R <- sp$rates
+  ymax <- max(sp$ticks)
+  pan_h <- h_in - 0.45
+  ytop <- ymax / (1 - 0.42 / pan_h)
+  ymin <- -0.16 * ytop
+  u <- (ytop - ymin) / pan_h
+  xfin <- n + 0.45                                   # los escalones llegan hasta "hoy"
+  seg <- list(); pts <- list()
+  for (k in seq_len(nrow(s))) {
+    id <- s$id[k]; r <- R[[id]]
+    d <- ifelse(r == 0, 0, sp$dodge[[id]])           # desplazamiento vertical visual (no aplica sobre 0%)
+    xo <- sp$xoff[[id]]                              # desplazamiento horizontal: separa los tramos verticales
+    for (i in seq_len(n)) {
+      seg[[length(seg) + 1]] <- data.frame(id = id, x = i + xo, xend = if (i < n) i + 1 + xo else xfin,
+                                           y = r[i] + d[i], yend = r[i] + d[i])
+      if (i > 1 && r[i] != r[i - 1])
+        seg[[length(seg) + 1]] <- data.frame(id = id, x = i + xo, xend = i + xo, y = r[i - 1] + d[i - 1], yend = r[i] + d[i])
+    }
+    ch <- c(TRUE, r[-1] != r[-n])
+    pts[[k]] <- data.frame(id = id, x = which(ch) + xo, y = (r + d)[ch])
   }
-  p <- p + coord_cartesian(xlim = c(0, 100), ylim = c(0, H), expand = FALSE) + theme_void()
-  attr(p, "alto") <- H
-  p
-}
-
-comparativo <- function(sp, h_main = 4.1) {
-  pl <- leyenda_slope(sp); pn <- panel_nota_sl(sp)
-  hts <- c(0.62, attr(pl, "filas") * 0.17 + 0.10, h_main, attr(pn, "alto"))
-  fig <- (panel_titulo_sl(sp) / pl / panel_slope(sp, h_main) / pn) + plot_layout(heights = hts)
-  attr(fig, "alto_total") <- sum(hts)
-  fig
-}
-
-# ---- Comparativos "pendiente": Panel A (impacto inicial) y Panel B (alivio negociado)
-col_pais <- c(japon = "#B8871E", corea = "#1F6FA8", ue = "#A23327", mx30 = "#5B8A3A", mx40 = "#8A3B7A", mx = "#5B8A3A")
-
-panel_slope <- function(sp, h_in = 4.1) {
-  s <- sp$series; ns <- nrow(s)
-  xA0 <- 165; xA1 <- 275; xB0 <- 307; xB1 <- 417
-  ytop <- 27.5; ybot <- -13
-  s$hex <- col_pais[s$id]
-  s$lt  <- ifelse(s$dash, "dashed", "solid")
-  rg <- rbind(
-    data.frame(x = xA0, xend = xA1, y = s$a0, yend = s$a1, hex = s$hex, lt = s$lt, id = s$id),
-    data.frame(x = xB0, xend = xB1, y = s$b0, yend = s$b1, hex = s$hex, lt = s$lt, id = s$id))
-  pts <- rbind(data.frame(x = xA0, y = s$a0, hex = s$hex), data.frame(x = xA1, y = s$a1, hex = s$hex),
-               data.frame(x = xB0, y = s$b0, hex = s$hex), data.frame(x = xB1, y = s$b1, hex = s$hex))
-  ticks <- seq(0, 25, 5)
-  p <- ggplot() +
-    annotate("segment", x = 160, xend = xB1, y = ticks, yend = ticks, colour = pal[["line"]],
-             linetype = "13", linewidth = 0.4) +
-    annotate("text", x = 156, y = ticks, label = paste0(ticks, "%"), hjust = 1, size = 2.2,
+  seg <- do.call(rbind, seg); pts <- do.call(rbind, pts)
+  seg$hex <- col_pais[seg$id]; pts$hex <- col_pais[pts$id]
+  seg$lt <- ifelse(s$dash[match(seg$id, s$id)], "dashed", "solid")
+  # --- rótulos de la derecha, con guías
+  E <- sp$end; E$hex <- col_pais[E$id]
+  E$yend <- vapply(seq_len(nrow(E)), function(i) { r <- R[[E$id[i]]]; r[n] + sp$dodge[[E$id[i]]] * (r[n] != 0) }, 0)
+  xl <- n + 0.78
+  pk <- sp$peak                                      # rótulo del pico
+  ggplot() +
+    geom_segment(data = seg, aes(x = x, y = y, xend = xend, yend = yend, colour = hex, linetype = lt),
+                 linewidth = 1.6, lineend = "square") +
+    geom_vline(xintercept = n + 0.6, linetype = "22", colour = pal[["ink3"]], linewidth = 0.4) +
+    annotate("text", x = n + 0.6, y = ytop * 0.975, label = "hoy", size = 2.2, colour = pal[["ink3"]]) +
+    geom_point(data = pts, aes(x, y, fill = hex, colour = hex), shape = 21, size = 3.0) +
+    annotate("text", x = pk$x, y = pk$y + 1.1, label = fmt_pct(pk$val), size = 3.4,
+             fontface = "bold", colour = pal[["crimson"]], vjust = 0) +
+    annotate("segment", x = n + 0.47, xend = xl - 0.05, y = E$yend, yend = E$ly, colour = E$hex,
+             linewidth = 0.3, linetype = "13", alpha = 0.7) +
+    annotate("text", x = xl, y = E$ly + 0.55, label = E$rtxt, hjust = 0, vjust = 0.5, size = 2.3,
+             fontface = "bold", colour = E$hex) +
+    annotate("text", x = xl, y = E$ly - 0.75, label = E$rsub, hjust = 0, vjust = 0.5, size = 2.0,
              colour = pal[["ink3"]]) +
-    annotate("segment", x = c(xA0, xB0), xend = c(xA1, xB1), y = 0, yend = 0, colour = pal[["ink3"]], linewidth = 0.4) +
-    annotate("text", x = c((xA0 + xA1) / 2, (xB0 + xB1) / 2), y = 26.8, vjust = 0.5, size = 2.4, fontface = "bold",
-             colour = pal[["ink2"]], label = c("PANEL A — impacto inicial", "PANEL B — alivio negociado")) +
-    annotate("text", x = c(xA0, xA1, xB0, xB1), y = c(-1.0, -1.0, -1.0, -1.0), vjust = 1, size = 1.9,
-             colour = pal[["ink2"]], lineheight = 0.9,
-             hjust = c(0, 1, 0, 1), label = sp$xlab) +
-    geom_segment(data = rg, aes(x = x, xend = xend, y = y, yend = yend, colour = hex, linetype = lt),
-                 linewidth = 1.0) +
-    geom_point(data = pts, aes(x, y, colour = hex), size = 1.6)
-  # etiquetas izquierda
-  L <- s
-  p <- p +
-    annotate("text", x = xA0 - 8, y = L$ll + 0.55, label = L$nombre, hjust = 1, vjust = 0.5, size = 2.1,
-             fontface = "bold", colour = L$hex) +
-    annotate("text", x = xA0 - 8, y = L$ll - 0.75, label = L$vini, hjust = 1, vjust = 0.5, size = 2.0,
-             colour = pal[["ink3"]])
-  Ll <- subset(L, lead_l)
-  if (nrow(Ll)) p <- p + annotate("segment", x = xA0 - 5, xend = xA0 - 1, y = Ll$ll + 0.6, yend = Ll$a0,
-                                  colour = Ll$hex, linewidth = 0.25, linetype = "13", alpha = 0.6)
-  # etiquetas derecha
-  p <- p +
-    annotate("text", x = xB1 + 10, y = L$lr + 0.55, label = L$rtxt, hjust = 0, vjust = 0.5, size = 2.1,
-             fontface = "bold", colour = L$hex) +
-    annotate("text", x = xB1 + 10, y = L$lr - 0.75, label = L$rsub, hjust = 0, vjust = 0.5, size = 2.0,
-             colour = pal[["ink3"]])
-  Lr <- subset(L, lead_r)
-  if (nrow(Lr)) p <- p + annotate("segment", x = xB1 + 7, xend = xB1 + 1, y = Lr$lr, yend = Lr$b1,
-                                  colour = Lr$hex, linewidth = 0.25, linetype = "13", alpha = 0.6)
-  p +
-    scale_colour_identity() + scale_linetype_identity() +
-    coord_cartesian(xlim = c(0, 650), ylim = c(ybot, ytop), expand = FALSE, clip = "off") +
-    theme_void()
+    annotate("segment", x = 0.5, xend = n + 0.6, y = 0, yend = 0, colour = pal[["ink2"]], linewidth = 0.5) +
+    geom_text(data = data.frame(x = seq_len(n), y = -0.025 * ytop, nota = ev$nota),
+              aes(x, y, label = nota), vjust = 1, size = 2.0, colour = pal[["ink2"]], lineheight = 0.9) +
+    scale_colour_identity() + scale_fill_identity() + scale_linetype_identity() +
+    scale_x_continuous(breaks = seq_len(n), labels = sub(" (\\d{4})$", "\n\\1", ev$fecha),
+                       limits = c(0.5, n + 2.6), expand = c(0, 0)) +
+    scale_y_continuous(breaks = sp$ticks, labels = function(v) paste0(v, "%"),
+                       limits = c(ymin, ytop), expand = c(0, 0)) +
+    labs(x = NULL, y = sp$ytitle) +
+    theme_minimal(base_size = 8) +
+    theme(plot.background = element_rect(fill = NA, colour = NA),
+          panel.grid.major.x = element_blank(), panel.grid.minor = element_blank(),
+          panel.grid.major.y = element_line(colour = pal[["line"]], linetype = "13", linewidth = 0.4),
+          axis.text.x = element_text(colour = pal[["ink"]], size = 6.5, lineheight = 0.9),
+          axis.text.y = element_text(colour = pal[["ink3"]], size = 7),
+          axis.title.y = element_text(colour = pal[["ink3"]], size = 6.5),
+          plot.margin = margin(5.5, 0, 5.5, 0))   # sin margen lateral: el eje Y queda alineado con título y recuadro
 }
 
-leyenda_slope <- function(sp) {
-  s <- sp$series; cw <- 0.78
-  s$w <- 5.5 + nchar(s$leg) * cw + 4
-  x <- 0; r <- 1; s$x <- NA; s$r <- NA
-  for (i in seq_len(nrow(s))) {
-    if (i > 1 && x + s$w[i] > 100) { r <- r + 1; x <- 0 }
-    s$x[i] <- x; s$r[i] <- r; x <- x + s$w[i]
-  }
-  nr <- max(s$r); s$y <- nr - s$r + 0.5; s$hex <- col_pais[s$id]
-  p <- ggplot() +
-    geom_segment(data = s, aes(x = x, xend = x + 4, y = y, yend = y, colour = hex,
-                               linetype = ifelse(dash, "dashed", "solid")), linewidth = 1.3) +
-    geom_text(data = s, aes(x = x + 5, y = y, label = leg), hjust = 0, size = 2.3, colour = pal[["ink2"]]) +
-    scale_colour_identity() + scale_linetype_identity() +
-    coord_cartesian(xlim = c(0, 100), ylim = c(0, nr), expand = FALSE, clip = "off") + theme_void()
-  attr(p, "filas") <- nr
-  p
-}
-
-panel_titulo_sl <- function(sp) {
-  tt <- paste(strwrap(sp$title, 62), collapse = "\n")
-  sub <- paste(strwrap(sp$subtitle, 112), collapse = "\n")
-  ggplot() +
-    annotate("text", x = 0, y = 1, hjust = 0, vjust = 1, label = tt, size = 4.6, fontface = "bold",
-             colour = pal[["ink"]], lineheight = 0.95) +
-    annotate("text", x = 0, y = 0, hjust = 0, vjust = 0, label = sub, size = 2.2, colour = pal[["ink2"]], lineheight = 1.0) +
-    coord_cartesian(xlim = c(0, 100), ylim = c(0, 1), expand = FALSE, clip = "off") + theme_void()
-}
-
-panel_nota_sl <- function(sp) {
-  txt <- vapply(sp$foot, function(f) paste0(wrap_txt(f$h, 128), "\n", wrap_txt(f$p, 128)), "")
-  nl <- sum(n_lines(txt)) + 0.9 * length(txt)
-  H <- 0.28 + nl * 0.118
-  yy <- H - 0.14
-  p <- ggplot() +
-    annotate("rect", xmin = 0, xmax = 100, ymin = 0, ymax = H, fill = "#FBFBF8", colour = pal[["ink3"]], linewidth = 0.3) +
-    annotate("rect", xmin = 0, xmax = 0.9, ymin = 0, ymax = H, fill = "#B8871E", colour = NA)
-  for (i in seq_along(sp$foot)) {
-    f <- sp$foot[[i]]; hh <- wrap_txt(f$h, 128); pp <- wrap_txt(f$p, 128)
-    p <- p + annotate("text", x = 3, y = yy, hjust = 0, vjust = 1, size = 2.5, fontface = "bold", colour = pal[["ink"]], label = hh) +
-      annotate("text", x = 3, y = yy - 0.14, hjust = 0, vjust = 1, size = 2.3, lineheight = 1.05, colour = pal[["ink2"]], label = pp)
-    yy <- yy - 0.14 - n_lines(pp) * 0.118 - 0.13
-  }
-  p <- p + coord_cartesian(xlim = c(0, 100), ylim = c(0, H), expand = FALSE) + theme_void()
-  attr(p, "alto") <- H
-  p
-}
-
-comparativo <- function(sp, h_main = 4.1) {
-  pl <- leyenda_slope(sp); pn <- panel_nota_sl(sp)
-  hts <- c(0.62, attr(pl, "filas") * 0.17 + 0.10, h_main, attr(pn, "alto"))
-  fig <- (panel_titulo_sl(sp) / pl / panel_slope(sp, h_main) / pn) + plot_layout(heights = hts)
+infografia_multi <- function(sp, h_main = 3.75) {
+  pl <- leyenda_serie(sp); pn <- panel_nota(sp)
+  hts <- c(0.35, 0.85, attr(pl, "filas") * 0.17 + 0.10, h_main, attr(pn, "alto"))
+  fig <- (panel_titulo(sp) / panel_cifras(sp) / pl / wrap_elements(full = panel_serie_multi(sp, h_main)) / pn) +
+    plot_layout(heights = hts)
   attr(fig, "alto_total") <- sum(hts)
   fig
 }
@@ -710,55 +586,70 @@ spec_taiwan <- list(
 )
 
 spec_autos <- list(
-  title = "Autos: arancel de Sección 232 (EUA) por socio comercial — cómo se movió cada uno",
-  subtitle = "HS 8703, vehículos de pasajeros · dos tramos: el golpe inicial de la Sección 232 (izquierda) y el alivio negociado después (derecha)",
-  xlab = c("ene. 2025", "3 abr. 2025\n(pico, Secc. 232)", "3 abr. 2025\n(pico)", "tasa vigente\n(acuerdo bilateral)"),
+  ytitle = "Arancel de Sección 232 sobre vehículos",
+  title = data.frame(txt = c("Autos bajo Sección 232: ", "pico de 25% ", "y acuerdos al 15%"), col = c("ink", "crimson", "green")),
+  stats = data.frame(
+    col = c("crimson", "gold", "green", "plum"),
+    lab = c("PICO COMÚN", "JAPÓN · UE · COREA HOY", "MÉXICO · 30% CONT. EUA", "MÉXICO · 40% CONT. EUA"),
+    num = c("25%", "15%", "17,5%", "15%"),
+    sub = c("3 abr. 2025 · Japón, UE y Corea", "acuerdos bilaterales · sep.–nov. 2025", "sin acuerdo · desde 3 abr. 2025", "sin acuerdo · desde 3 abr. 2025")),
   series = data.frame(
-    id     = c("japon", "ue", "corea", "mx30", "mx40"),
-    leg    = c("Japón", "Unión Europea", "Corea del Sur", "México — 30% contenido EUA", "México — 40% contenido EUA"),
-    dash   = c(FALSE, FALSE, FALSE, FALSE, TRUE),
-    nombre = c("Japón", "Unión Europea", "Corea del Sur", "México — 30% cont. EUA", "México — 40% cont. EUA"),
-    vini   = c("2.5%", "2.5%", "0%", "0%", "0%"),
-    a0 = c(2.65, 2.35, 0, 0, 0), a1 = c(25.15, 24.85, 25, 17.5, 15),
-    b0 = c(25.32, 24.68, 25, 17.5, 14.36), b1 = c(15.3, 14.68, 15, 17.5, 14.36),
-    ll = c(-1.9, -4.2, -6.5, -8.8, -11.1),
-    lead_l = c(TRUE, TRUE, TRUE, TRUE, TRUE),
-    lr = c(14.9, 12.2, 9.5, 17.5, 6.8),
-    lead_r = c(FALSE, TRUE, TRUE, FALSE, TRUE),
-    rtxt = c("Japón · 15%", "Unión Europea · 15%", "Corea del Sur · 15%",
-             "México — 30% cont. EUA · 17.5%", "México — 40% cont. EUA · 15%"),
-    rsub = c("16 sep. 2025", "25 sep. 2025", "1 nov. 2025", "sin acuerdo", "sin acuerdo")),
+    id   = c("japon", "ue", "corea", "mx30", "mx40"),
+    leg  = c("Japón", "Unión Europea", "Corea del Sur", "México — 30% contenido EUA", "México — 40% contenido EUA"),
+    dash = c(FALSE, FALSE, FALSE, FALSE, TRUE)),
+  ticks = c(0, 5, 10, 15, 20, 25),
+  events = data.frame(
+    fecha = c("ene. 2025", "3 abr. 2025", "16 sep. 2025", "25 sep. 2025", "1 nov. 2025"),
+    texto = c("Nivel de partida (Japón y UE 2,5%; Corea y México 0%)", "Proclamación 10908: 25% (México con descuento por contenido EUA)", "Acuerdo con Japón: 15%", "Acuerdo con la UE: 15%", "Acuerdo con Corea del Sur: 15%"),
+    nota = c("Nivel de\npartida", "Proc. 10908\n25%", "Acuerdo\nJapón", "Acuerdo\nUE", "Acuerdo\nCorea")),
+  rates = list(   # tasa vigente después de cada evento
+    japon = c(2.5, 25, 15, 15, 15), ue = c(2.5, 25, 25, 15, 15), corea = c(0, 25, 25, 25, 15),
+    mx30 = c(0, 17.5, 17.5, 17.5, 17.5), mx40 = c(0, 15, 15, 15, 15)),
+  dodge = c(japon = 0.45, ue = -0.45, corea = 0, mx30 = 0, mx40 = -0.9),     # separación visual vertical (pp)
+  xoff  = c(japon = 0.09, ue = 0.045, corea = 0, mx30 = -0.045, mx40 = -0.09), # separación horizontal de los tramos verticales
+  peak = list(x = 2, y = 25, val = 25),
+  end = data.frame(
+    id = c("mx30", "japon", "corea", "ue", "mx40"),
+    ly = c(20.3, 17.4, 14.9, 12.4, 9.9),
+    rtxt = c("México · 17,5%", "Japón · 15%", "Corea del Sur · 15%", "Unión Europea · 15%", "México · 15%"),
+    rsub = c("30% cont. EUA · sin acuerdo", "16 sep. 2025", "1 nov. 2025", "25 sep. 2025", "40% cont. EUA · sin acuerdo")),
   foot = list(
-    list(h = "Panel A — impacto inicial",
-         p = "nivel de partida (enero de 2025, sin cambios relevantes respecto a la década previa) hasta el pico común de 25% que impuso la Proclamación 10908 el 3 de abril de 2025 para Japón, Corea del Sur y la Unión Europea. México no pasa por ese pico: al ser un vehículo calificado bajo el T-MEC, el descuento por contenido estadounidense certificado se aplica desde el primer día, así que salta directo a su arancel efectivo (17.5% con 30% de contenido EUA, 15% con 40%)."),
-    list(h = "Panel B — alivio negociado",
-         p = "desde ese pico de 25%, Japón, Corea del Sur y la Unión Europea bajan a un techo de 15% mediante acuerdos bilaterales, cada uno en su propia fecha de 2025 (ver nota junto a cada línea). México no tiene un acuerdo bilateral negociado que sustituya la Proclamación 10908 — su arancel efectivo no cambia entre paneles, sigue determinado únicamente por el contenido estadounidense certificado de cada vehículo.")),
+    list(h = "Qué muestra este gráfico", p = c("Arancel de Sección 232 sobre vehículos de pasajeros (HS 8703), por socio. Cada escalón es un cambio de tasa en la fecha indicada; el eje ordena eventos, no es proporcional al tiempo.", "Japón, UE y Corea parten de su nivel de enero de 2025 (2,5%, 2,5% y 0%), suben juntos al 25% de la Proclamación 10908 y bajan al 15% cada uno en su fecha de 2025. Las líneas se desplazan hasta 0,9 pp para no taparse; las tasas son las rotuladas.")),
+    list(h = "Nota del caso: México", p = c("México no pasa por el pico de 25%: al ser un vehículo calificado bajo el T-MEC, el descuento por contenido estadounidense certificado se aplica desde el primer día, y la tasa salta directo a su arancel efectivo (17,5% con 30% de contenido EUA; 15% con 40%).", "No hay un acuerdo bilateral que sustituya la Proclamación 10908, así que la tasa no cambia: la determina solo el contenido EUA certificado de cada vehículo."))),
   fuentes = "Federal Register (2025-04-03, 2025-09-25, 2025-12-04) · The White House (2025, O.E. 4 sep.)"
 )
 
 spec_autopartes <- list(
-  title = "Autopartes: arancel de Sección 232 (EUA) por socio comercial — cómo se movió cada uno",
-  subtitle = "Partidas HTS bajo el Anexo de la Proclamación 10908 (mayormente cap. 8708) · dos tramos: el golpe inicial de la Sección 232 (izquierda) y el alivio negociado después (derecha)",
-  xlab = c("ene. 2025", "3 may. 2025\n(pico, Secc. 232)", "3 may. 2025\n(pico)", "tasa vigente\n(acuerdo bilateral)"),
+  ytitle = "Arancel de Sección 232 sobre autopartes",
+  title = data.frame(txt = c("Autopartes bajo Sección 232: ", "pico de 25% ", "y México exento"), col = c("ink", "crimson", "green")),
+  stats = data.frame(
+    col = c("crimson", "gold", "green"),
+    lab = c("PICO COMÚN", "JAPÓN · UE · COREA HOY", "MÉXICO · T-MEC CALIFICADO"),
+    num = c("25%", "15%", "0%"),
+    sub = c("3 may. 2025 · Japón, UE y Corea", "acuerdos bilaterales · sep.–nov. 2025", "exento (9903.94.06) · todo el período")),
   series = data.frame(
-    id     = c("japon", "ue", "corea", "mx"),
-    leg    = c("Japón", "Unión Europea", "Corea del Sur", "México — T-MEC calificado"),
-    dash   = c(FALSE, FALSE, FALSE, FALSE),
-    nombre = c("Japón", "Unión Europea", "Corea del Sur", "México — T-MEC calificado"),
-    vini   = c("2.5%", "2.5%", "0%", "0%"),
-    a0 = c(2.65, 2.35, 0, 0), a1 = c(25.15, 24.85, 25, 0),
-    b0 = c(25.26, 24.74, 25, 0), b1 = c(15.26, 14.74, 15, 0),
-    ll = c(-1.9, -4.2, -6.5, -8.8),
-    lead_l = c(TRUE, TRUE, TRUE, TRUE),
-    lr = c(14.9, 12.2, 9.5, 0),
-    lead_r = c(FALSE, TRUE, TRUE, FALSE),
-    rtxt = c("Japón · 15%", "Unión Europea · 15%", "Corea del Sur · 15%", "México — T-MEC calificado · 0%"),
-    rsub = c("16 sep. 2025", "25 sep. 2025", "1 nov. 2025", "exento (9903.94.06)")),
+    id   = c("japon", "ue", "corea", "mx"),
+    leg  = c("Japón", "Unión Europea", "Corea del Sur", "México — T-MEC calificado"),
+    dash = c(FALSE, FALSE, FALSE, FALSE)),
+  ticks = c(0, 5, 10, 15, 20, 25),
+  events = data.frame(
+    fecha = c("ene. 2025", "3 may. 2025", "16 sep. 2025", "25 sep. 2025", "1 nov. 2025"),
+    texto = c("Nivel de partida (Japón y UE 2,5%; Corea y México 0%)", "Proclamación 10908: 25% (México exento si califica bajo T-MEC)", "Acuerdo con Japón: 15%", "Acuerdo con la UE: 15%", "Acuerdo con Corea del Sur: 15%"),
+    nota = c("Nivel de\npartida", "Proc. 10908\n25%", "Acuerdo\nJapón", "Acuerdo\nUE", "Acuerdo\nCorea")),
+  rates = list(   # tasa vigente después de cada evento
+    japon = c(2.5, 25, 15, 15, 15), ue = c(2.5, 25, 25, 15, 15), corea = c(0, 25, 25, 25, 15),
+    mx = c(0, 0, 0, 0, 0)),
+  dodge = c(japon = 0.45, ue = -0.45, corea = 0, mx = 0),      # separación visual vertical (pp)
+  xoff  = c(japon = 0.09, ue = 0.045, corea = 0, mx = -0.045), # separación horizontal de los tramos verticales
+  peak = list(x = 2, y = 25, val = 25),
+  end = data.frame(
+    id = c("japon", "corea", "ue", "mx"),
+    ly = c(17.4, 14.9, 12.4, 3.0),
+    rtxt = c("Japón · 15%", "Corea del Sur · 15%", "Unión Europea · 15%", "México · 0%"),
+    rsub = c("16 sep. 2025", "1 nov. 2025", "25 sep. 2025", "T-MEC calificado · exento")),
   foot = list(
-    list(h = "Panel A — impacto inicial",
-         p = "nivel de partida (enero de 2025) hasta el pico común de 25% que impuso la Proclamación 10908 el 3 de mayo de 2025 (un mes después que vehículos) para Japón, Corea del Sur y la Unión Europea. México no pasa por ese pico en absoluto: a diferencia de los vehículos, las autopartes que califican como originarias bajo el T-MEC (umbrales de 65-75% de RVC según categoría de parte) quedan exentas de la Sección 232 vía la línea arancelaria 9903.94.06 — no hay descuento proporcional por contenido EUA como en vehículos, es exención completa o arancel pleno."),
-    list(h = "Panel B — alivio negociado",
-         p = "desde ese pico de 25%, Japón, Corea del Sur y la Unión Europea bajan a un techo de 15% en las mismas fechas bilaterales que autos (la cobertura de sus acuerdos incluye autopartes por igual). México se mantiene exento en 0% durante todo el período. No graficado: una autoparte mexicana que no califica bajo el T-MEC paga el 25% pleno sobre el valor total — pero hacia enero de 2026 cerca del 85% de las autopartes mexicanas importadas reclamaban la exención T-MEC, por lo que se omite del gráfico por poco representativa del comercio efectivo.")),
+    list(h = "Qué muestra este gráfico", p = c("Arancel de Sección 232 sobre autopartes (partidas del Anexo de la Proclamación 10908, mayormente cap. 8708), por socio. Cada escalón es un cambio de tasa en la fecha indicada; el eje ordena eventos, no es proporcional al tiempo.", "Japón, UE y Corea parten de su nivel de enero de 2025, suben al 25% el 3 de mayo de 2025 (un mes después que vehículos) y bajan al 15% en las mismas fechas bilaterales que autos. Las líneas se desplazan hasta 0,45 pp para no taparse; las tasas son las rotuladas.")),
+    list(h = "Nota del caso: México", p = c("Las autopartes que califican como originarias bajo el T-MEC (umbrales de 65-75% de RVC según la parte) quedan exentas vía la línea arancelaria 9903.94.06. A diferencia de los vehículos, no hay descuento proporcional por contenido EUA: es exención completa o arancel pleno.", "No graficado: una autoparte mexicana que no califica paga el 25% pleno sobre su valor total, pero hacia enero de 2026 cerca del 85% de las autopartes mexicanas importadas reclamaban la exención T-MEC, así que se omite por poco representativa del comercio efectivo."))),
   fuentes = "Federal Register (2025-04-03, 2025-09-25, 2025-12-04) · The White House (2025, O.E. 4 sep.) · GingerControl (s.f.) · International Trade Insights (2025) · BLG (2018)"
 )
 
@@ -957,10 +848,10 @@ tabla_hitos(spec_taiwan, "Hitos de la política arancelaria de EUA hacia Taiwán
 #| warning: false
 #| message: false
 #| fig-width: 6.5
-#| fig-height: 6.832
+#| fig-height: 7.03
 #| fig-dpi: 300
 #| dev: ragg_png
-comparativo(spec_autos)
+infografia_multi(spec_autos)
 ```
 
 *Fuentes:* Federal Register (2025-04-03, 2025-09-25, 2025-12-04) · The White House (2025, O.E. 4 sep.)
@@ -974,10 +865,10 @@ comparativo(spec_autos)
 #| warning: false
 #| message: false
 #| fig-width: 6.5
-#| fig-height: 6.898
+#| fig-height: 7.096
 #| fig-dpi: 300
 #| dev: ragg_png
-comparativo(spec_autopartes)
+infografia_multi(spec_autopartes)
 ```
 
 *Fuentes:* Federal Register (2025-04-03, 2025-09-25, 2025-12-04) · The White House (2025, O.E. 4 sep.) · GingerControl (s.f.) · International Trade Insights (2025) · BLG (2018)
@@ -1003,8 +894,8 @@ graficos <- list(
   infografia_ue           = infografia(spec_ue),
   infografia_vietnam      = infografia(spec_vietnam),
   infografia_taiwan       = infografia(spec_taiwan),
-  comparativo_autos       = comparativo(spec_autos),
-  comparativo_autopartes  = comparativo(spec_autopartes)
+  comparativo_autos       = infografia_multi(spec_autos),
+  comparativo_autopartes  = infografia_multi(spec_autopartes)
 )
 
 for (nm in names(graficos)) {
