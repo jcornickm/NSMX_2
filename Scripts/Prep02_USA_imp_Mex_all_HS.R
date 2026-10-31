@@ -28,7 +28,7 @@ source(here("Scripts", "funciones.R"))   # hs_agregar_etiquetas(), hs_etiquetas_
 
 ANIOS_TOP          <- 2024:2025
 PARTIDAS_FORZADAS  <- "8703"
-ANIOS_REF          <- c(2010L, 2018L, 2024L, 2025L)
+ANIOS_REF          <- c(2010L, 2017L, 2024L, 2025L)   # anclas: 2010, 2017 (último año previo a la guerra comercial), 2024
 caps_seleccionados <- c(84, 85, 87, 90)
 
 capitulos_es <- hs_tablas()$capitulos |> tibble::as_tibble()   # Capítulo, Sección, Cap_corto, Cap_tabla
@@ -224,8 +224,11 @@ guardar(meta_query4,          "meta_query3.rds")   # nombre de archivo históric
 # · val_AAAA:     suma de 12 meses, años ANIOS_REF.
 # · val_ytd_AAAA: suma enero–mes_corte (último mes disponible), para ANIOS_REF,
 #                 el año anterior al actual y el actual.
-# · TCAC_1018, TCAC_1824, Crec_2425: sobre años completos (Capítulo 2).
-# · TCAC_ytd_1018, TCAC_ytd_1824, TCAC_ytd_24act, Crec_ytd_act: lo mismo con
+# · TCAC_1017, TCAC_1724, Crec_2425: sobre años completos (Capítulo 2).
+#   Períodos (bloques) 2010-2017 y 2018-2024: el crecimiento de cada año se asigna
+#   al bloque que lo contiene; por eso el segundo bloque se mide desde la base 2017
+#   (último año previo a la guerra comercial): 7 intervalos en cada bloque.
+# · TCAC_ytd_1017, TCAC_ytd_1724, TCAC_ytd_24act, Crec_ytd_act: lo mismo con
 #   enero–mes_corte (Capítulo 3).
 # · Shares (pct_*): sobre años completos 2025 y 2024; denominador = total del
 #   capítulo / total general México→EUA (de imp_mex_sec_cap).
@@ -293,12 +296,12 @@ TCAC_y_shares_84858790 <- ancha_anual |>
   left_join(ancha_ytd |> select(all_of(llaves), starts_with("val_ytd_")), by = llaves) |>
   left_join(total_cap_anual, by = "Capítulo") |>
   mutate(
-    TCAC_1018 = tcac(val_2018, val_2010, 8),
-    TCAC_1824 = tcac(val_2024, val_2018, 6),
+    TCAC_1017 = tcac(val_2017, val_2010, 7),
+    TCAC_1724 = tcac(val_2024, val_2017, 7),
     Crec_2425 = crec(val_2025, val_2024),
     
-    TCAC_ytd_1018  = tcac(val_ytd_2018, val_ytd_2010, 8),
-    TCAC_ytd_1824  = tcac(val_ytd_2024, val_ytd_2018, 6),
+    TCAC_ytd_1017  = tcac(val_ytd_2017, val_ytd_2010, 7),
+    TCAC_ytd_1724  = tcac(val_ytd_2024, val_ytd_2017, 7),
     TCAC_ytd_24act = tcac(.data[[col_ytd_act]], val_ytd_2024, anio_act - 2024L),
     Crec_ytd_act   = crec(.data[[col_ytd_act]], .data[[col_ytd_prev]]),
     
@@ -309,11 +312,11 @@ TCAC_y_shares_84858790 <- ancha_anual |>
   ) |>
   select(
     all_of(llaves),
-    val_2010, val_2018, val_2024, val_2025,
-    TCAC_1018, TCAC_1824, Crec_2425,
+    val_2010, val_2017, val_2024, val_2025,
+    TCAC_1017, TCAC_1724, Crec_2425,
     pct_cap, pct_total, pct_cap_2024, pct_total_2024,
     starts_with("val_ytd_"),
-    TCAC_ytd_1018, TCAC_ytd_1824, TCAC_ytd_24act, Crec_ytd_act
+    TCAC_ytd_1017, TCAC_ytd_1724, TCAC_ytd_24act, Crec_ytd_act
   ) |>
   arrange(Capítulo, desc(val_2025))
 
@@ -339,8 +342,8 @@ meta_TCAC_y_shares <- list(
   mes_corte      = paste0("ytd = enero–", month.name[mes_corte], " (último dato: ", format(fecha_max), ")"),
   años_ytd       = paste(ANIOS_YTD, collapse = ", "),
   tasas          = paste(
-    "TCAC_1018 (8 años), TCAC_1824 (6 años), Crec_2425: años completos.",
-    "TCAC_ytd_1018, TCAC_ytd_1824: lo mismo con enero–mes_corte;",
+    "TCAC_1017 (2010→2017, 7 años), TCAC_1724 (2017→2024, 7 años; bloque 2018-2024 con base 2017), Crec_2425: años completos.",
+    "TCAC_ytd_1017, TCAC_ytd_1724: lo mismo con enero–mes_corte;",
     "TCAC_ytd_24act: 2024 → año actual (enero–mes_corte);",
     "Crec_ytd_act: año anterior → año actual (enero–mes_corte)."
   ),

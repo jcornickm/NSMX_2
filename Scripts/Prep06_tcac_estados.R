@@ -21,8 +21,8 @@ xmex_val <- x_ef |>
 # TCAC (%) del valor exportado entre año_ini y año_fin, por estado
 periodos <- tribble(
   ~col,             ~año_ini, ~año_fin,
-  "tcac_2010_2018", 2010,     2018,
-  "tcac_2018_2024", 2018,     2024,
+  "tcac_2010_2017", 2010,     2017,
+  "tcac_2017_2024", 2017,     2024,   # bloque 2018-2024, base 2017 (último año previo a la guerra comercial)
   "tcac_2024_2025", 2024,     2025
 )
 

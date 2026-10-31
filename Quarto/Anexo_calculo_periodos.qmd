@@ -1,0 +1,43 @@
+# Anexo: cómo se calcularon los cambios entre períodos {.unnumbered}
+
+Varios gráficos y tablas del capítulo comparan dos períodos, **2010-2017** y **2018-2024**. Este anexo explica cómo se construyó esa comparación.
+
+## Regla de cálculo
+
+Los períodos son bloques de años, y la variación de cada año se asigna al bloque al que pertenece. Como el crecimiento de un año se mide contra el año anterior, cada bloque se mide desde el último año del bloque previo:
+
+| Período | Variaciones interanuales incluidas | Base y final | Intervalos |
+|:---|:---|:---|:---:|
+| 2010-2017 | 2011 a 2017 | 2010 → 2017 | 7 |
+| 2018-2024 | 2018 a 2024 | 2017 → 2024 | 7 |
+
+La tasa de crecimiento anual compuesta (TCAC) de un período es
+
+$$
+\text{TCAC} = \left(\frac{V_{\text{final}}}{V_{\text{base}}}\right)^{1/n} - 1,
+$$
+
+donde $V$ es el valor anual (o, en el caso del empleo IMMEX, el nivel de diciembre) y $n$ el número de intervalos. Los cambios de participación se calculan como diferencia, en puntos porcentuales, entre la participación del año final y la del año base: $s_{2017} - s_{2010}$ y $s_{2024} - s_{2017}$.
+
+Los dos períodos tienen la misma duración (siete variaciones interanuales cada uno), lo que hace comparables sus tasas. El primer bloque se rotula 2010-2017 aunque sus variaciones son las de 2011 a 2017: 2010 es solo la base, porque la serie empieza ese año.
+
+## Por qué la base es 2017
+
+2018 es un año de cambio de régimen: los aranceles de la Sección 301 sobre importaciones chinas entran en vigor en julio de ese año. Tomar 2018 como base incluiría esa variación en el primer período, mientras que el rótulo "2018-2024" sugiere lo contrario. Con base 2017, último año anterior a la guerra comercial, la variación de 2018 queda en el período al que pertenece. Es también el año base que usan los estudios de referencia sobre el tema en el capítulo [@alfarochor2023; @freund2024].
+
+## Qué se calculó en cada figura y tabla
+
+| Resultado | Variable | Cálculo |
+|:---|:---|:---|
+| Cambio de participación por país y por sección (importaciones de EUA) | Participación anual | Diferencia en pp: 2010→2017 y 2017→2024 |
+| Series China y México | Total anual de la serie original, sin ajuste estacional | TCAC 2010→2017 y 2017→2024; la línea dibujada sí es desestacionalizada, solo para graficar |
+| Tablas de partidas, Capítulos 84, 85, 87 y 90 | Valor anual de exportaciones por partida | TCAC 2010→2017 y 2017→2024; se resaltan las partidas con TCAC mayor en el segundo período |
+| Mapas y tabla por estado | Valor anual exportado por entidad | TCAC 2010→2017 y 2017→2024 |
+| Empleo IMMEX (serie y mapas) | Empleo de diciembre | TCAC y cambio de participación por entidad, 2010→2017 y 2017→2024 |
+
+## Aclaraciones
+
+- **Rótulos.** Los títulos de paneles, encabezados de tablas y captions usan el nombre del bloque (2010-2017 y 2018-2024) e indican que el segundo se mide respecto a 2017. Las líneas verticales en 2018 de varios gráficos señalan el inicio de la guerra comercial y no marcan un corte de cálculo.
+- **Otras comparaciones.** Las secciones de inversión (IED y formación bruta de capital fijo) comparan promedios de bloques de años (por ejemplo, 2010-2017 frente a 2022-2024), no tasas entre años ancla.
+- **Sensibilidad a los años extremos.** Una TCAC entre dos años usa solo esos dos valores, de modo que un año atípico en la base o en el final la afecta. Por eso el cálculo se hace sobre años calendario completos y, en las series de comercio, sobre la serie original.
+- **Capítulo siguiente.** El tratamiento es el mismo para todos los cortes: la base de cada período es el último año anterior al inicio del régimen siguiente. Por eso el período que sigue a 2024 se mide desde 2024.

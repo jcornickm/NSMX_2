@@ -315,7 +315,7 @@ p <- local({
     ungroup()
 
   # — 3. Totales anuales (sobre la serie ORIGINAL, sin ajuste estacional) -----
-  # Años calendario completos (2010, 2018, 2024): sin estacionalidad que
+  # Años calendario completos (2010, 2017, 2024): sin estacionalidad que
   # remover, y no dependen de las revisiones de X-13. La serie ajustada solo
   # se usa para la línea del gráfico.
   anuales <- imp_chn_mex |>
@@ -333,29 +333,29 @@ p <- local({
 
   # — 5. Valores ancla -------------------------------------------------------
   mex_10 <- val_anual(anuales, "México", 2010)
-  mex_18 <- val_anual(anuales, "México", 2018)
+  mex_17 <- val_anual(anuales, "México", 2017)
   mex_24 <- val_anual(anuales, "México", 2024)
   chn_10 <- val_anual(anuales, "China",  2010)
-  chn_18 <- val_anual(anuales, "China",  2018)
+  chn_17 <- val_anual(anuales, "China",  2017)
   chn_24 <- val_anual(anuales, "China",  2024)
 
   # — 6. Etiquetas -----------------------------------------------------------
   # y_pos se ancla a valores mensuales promedio (~total anual / 12)
   etiquetas_mex <- tibble(
     fecha = as.Date(c("2014-01-01", "2021-06-01")),
-    y_pos = c(mex_18 / 12 + 1.5, mex_24 / 12 - 9),
+    y_pos = c(mex_17 / 12 + 1.5, mex_24 / 12 - 9),
     label = c(
-      paste0("TCAC MEX 10-18: ", round(cagr(mex_18, mex_10, 8), 1), "%"),
-      paste0("TCAC MEX 18-24: ", round(cagr(mex_24, mex_18, 6), 1), "%")
+      paste0("TCAC MEX 10-17: ", round(cagr(mex_17, mex_10, 7), 1), "%"),
+      paste0("TCAC MEX 18-24: ", round(cagr(mex_24, mex_17, 7), 1), "%")
     )
   )
 
   etiquetas_chn <- tibble(
     fecha = as.Date(c("2014-01-01", "2021-06-01")),
-    y_pos = c(chn_18 / 12 + 1.5, chn_24 / 12 + 6),
+    y_pos = c(chn_17 / 12 + 1.5, chn_24 / 12 + 6),
     label = c(
-      paste0("TCAC CHN 10-18: ", round(cagr(chn_18, chn_10, 8), 1), "%"),
-      paste0("TCAC CHN 18-24: ", round(cagr(chn_24, chn_18, 6), 1), "%")
+      paste0("TCAC CHN 10-17: ", round(cagr(chn_17, chn_10, 7), 1), "%"),
+      paste0("TCAC CHN 18-24: ", round(cagr(chn_24, chn_17, 7), 1), "%")
     )
   )
 
@@ -420,8 +420,8 @@ rm(p)
 #| echo: false
 #| code-summary: "Importaciones EUA desde China y México"
 #| fig-cap: |
-#|   EUA: importaciones mensuales desde China y México, 2010-2024
-#|   Miles de millones de dólares
+#|   EUA: importaciones mensuales desde China y México, 2010-2024.
+#|   Miles de millones de dólares. La TCAC de 2018-2024 se mide respecto a 2017.
 #| fig-cap-location: top
 
 knitr::include_graphics(here::here("Plots", "fig-ImpEUA-CHN-MEX_2024.png"))
@@ -513,7 +513,7 @@ p <- local({
         "otros"   = paleta_pais[["Otros"]]
       )) +
       theme_bw() +
-      labs(x = NULL, y = NULL, title = glue("{ini} – {fin}")) +
+      labs(x = NULL, y = NULL, title = etiqueta_periodo(ini, fin)) +
       theme(
         plot.title         = element_text(face = "plain"),
         legend.position    = "none",
@@ -523,7 +523,7 @@ p <- local({
       )
   }
 
-  periodos      <- list(c(2010, 2018), c(2018, 2024))
+  periodos      <- list(c(2010, 2017), c(2017, 2024))   # 2º bloque (2018-2024) medido desde 2017
   divbar_paises <- map(periodos, \(pr) hacer_divbar_paises(pr[1], pr[2], impPais_Perc))
 
   reduce(divbar_paises, `/`) +
@@ -541,7 +541,7 @@ rm(p)
 ```{r}
 #| label: fig-imp-cambio-pais
 #| echo: false
-#| fig-cap: "Cambios en la participación porcentual de los principales exportadores al mercado de EUA, 2010-2018 y 2018-2024"
+#| fig-cap: "Cambios en la participación porcentual de los principales exportadores al mercado de EUA, 2010-2017 y 2018-2024. El segundo período se mide respecto a 2017."
 #| fig-cap-location: top
 #| out-width: 100%
 
@@ -550,7 +550,7 @@ knitr::include_graphics(here::here("Plots", "fig-imp-cambio-pais_2024.png"))
 
 - En los años finales de la globalización, China,México y Vietnam son los principales ganadores y el "resto del mundo" es el gran perdedor. Canadá, a pesar de su acceso preferencial, pierde 2 puntos porcentuales, seguida por Japón y Gran Bretaña.
 
-- En el período siguiente, China es por mucho el gran perdedor: 7.7 puntos porcentuales. Los ganadores son, de mayor a menor, Vietnam, México y Taiwán. Vitenam ya había aparecido entre los principales ganadores en el período anterior; no así Taiwán, cuya participación se mantuvo prácticamente estable (una pérdida insignificante) entre 2010 y 2018.
+- En el período siguiente, China es por mucho el gran perdedor: 7.7 puntos porcentuales. Los ganadores son, de mayor a menor, Vietnam, México y Taiwán. Vitenam ya había aparecido entre los principales ganadores en el período anterior; no así Taiwán, cuya participación se mantuvo prácticamente estable (una pérdida insignificante) entre 2010 y 2017.
 
 Vale la pena comparar directamente el desempeño de las exportaciones de México, Vietnam y Taiwán, no sólo por el dinamismo que exhiben las exportaciones de estos dos últimos paíes a partir de 2028 sino además por el papel que ocuparán a partir de 2025, que se examina en el capítulo 3.
 
@@ -692,7 +692,7 @@ p <- local({
         "negativo"     = paleta_seccion[["Otras"]]
       )) +
       theme_bw() +
-      labs(x = NULL, y = NULL, title = glue("{ini} – {fin}")) +
+      labs(x = NULL, y = NULL, title = etiqueta_periodo(ini, fin)) +
       theme(
         legend.position    = "none",
         panel.grid.major.x = element_blank(),
@@ -701,7 +701,7 @@ p <- local({
       )
   }
   
-  periodos   <- list(c(2010, 2018), c(2018, 2024))
+  periodos   <- list(c(2010, 2017), c(2017, 2024))   # 2º bloque (2018-2024) medido desde 2017
   divbar_sec <- map(periodos, \(pr) hacer_divbar_sec(pr[1], pr[2], impMex_sec_pct))
   
   reduce(divbar_sec, `/`) +
@@ -768,7 +768,7 @@ El crecimiento de las exportaciones mexicanas a EUA quedó documentado en el apa
 
 La @fig-imp-cambio-sec-mex permite visualizar claramente estos cambios.
 
-- Entre 2010 y 2018, Las exportaciones de la Sección XVII, Material de transporte, ganan casi 10 puntos porcentuales de participación, mientras que las de la Sección V, Productos Minerales, se contraer casi exactamente en la misma proporción.
+- Entre 2010 y 2017, Las exportaciones de la Sección XVII, Material de transporte, ganan casi 10 puntos porcentuales de participación, mientras que las de la Sección V, Productos Minerales, se contraer casi exactamente en la misma proporción.
 
 - La dinámica cambia en el período siguiente: el crecimiento en participación porcentual es liderado por la Sección XVII, Máquinas y aparatos eléctricos y por la IV, Alimentos. La Sección V, Productos minerales, continúa disminuyendo su participación.
 
@@ -779,7 +779,7 @@ Quizá el dato más sorprendente de este período sea la evolución de las expor
 ```{r}
 #| label: fig-imp-cambio-sec-mex
 #| echo: false
-#| fig-cap: "Cambios en la participación porcentual por Secciones de las exportaciones mexicanas a EUA, 2010-2018 y 2018-2024"
+#| fig-cap: "Cambios en la participación porcentual por Secciones de las exportaciones mexicanas a EUA, 2010-2017 y 2018-2024. El segundo período se mide respecto a 2017."
 #| fig-cap-location: top
 #| out-width: 100%
 
@@ -880,7 +880,7 @@ tabla_cap <- function(cap_num, datos = tcac_shares) {
   df <- datos |>
     filter(Capítulo == cap_num) |>
     { \(d) bind_rows(
-      d |> filter(Cod_partida != "Resto") |> arrange(desc(TCAC_1824)),
+      d |> filter(Cod_partida != "Resto") |> arrange(desc(TCAC_1724)),
       d |> filter(Cod_partida == "Resto")
     )}() |>
     mutate(
@@ -890,8 +890,8 @@ tabla_cap <- function(cap_num, datos = tcac_shares) {
     select(
       Partida      = Cod_partida,
       Descripción  = Part_corto,
-      TCAC_1018,
-      TCAC_1824,
+      TCAC_1017,
+      TCAC_1724,
       pct_cap,
       pct_cap_acum,
       pct_total,
@@ -900,20 +900,20 @@ tabla_cap <- function(cap_num, datos = tcac_shares) {
     # fmt_percent() de gt multiplicaba por 100 y agregaba "%" a la vez;
     # colformat_double() de flextable solo agrega el sufijo, así que hay que
     # escalar los valores a mano antes de formatear.
-    mutate(across(c(TCAC_1018, TCAC_1824,
+    mutate(across(c(TCAC_1017, TCAC_1724,
                      pct_cap, pct_cap_acum, pct_total, pct_total_acum),
                   \(x) x * 100))
 
-  # Se resaltan las partidas cuyo crecimiento se aceleró en 2018-2024 respecto a 2010-2018
-  filas_resaltar <- which(df$TCAC_1824 > df$TCAC_1018)
+  # Se resaltan las partidas cuyo crecimiento se aceleró en 2018-2024 (base 2017) respecto a 2010-2017
+  filas_resaltar <- which(df$TCAC_1724 > df$TCAC_1017)
 
   df |>
     flextable() |>
     set_header_labels(
       Partida        = "Partida",
       Descripción    = "Descripción",
-      TCAC_1018      = "2010–2018",
-      TCAC_1824      = "2018–2024",
+      TCAC_1017      = "2010–2017",
+      TCAC_1724      = "2018–2024",
       pct_cap        = "%",
       pct_cap_acum   = "% acum.",
       pct_total      = "%",
@@ -926,7 +926,7 @@ tabla_cap <- function(cap_num, datos = tcac_shares) {
       colwidths = c(1, 1, 2, 2, 2)
     ) |>
     colformat_double(
-      j = c("TCAC_1018", "TCAC_1824",
+      j = c("TCAC_1017", "TCAC_1724",
             "pct_cap", "pct_cap_acum", "pct_total", "pct_total_acum"),
       suffix = "%", digits = 1
     ) |>
@@ -1083,7 +1083,7 @@ Los resultados de este proceso de selección se resumen en las tablas siguientes
 
 Sumadas, equivalen al 59.3% de las exportaciones mexicanas a EUA en 2024. En el Anexo 7.1 se presenta esta misma información gráficamente, pero en términos de índices en vez de valores absolutos, y se identifican los puntos de quiebre de tendencia para cada Partida.
 
-En las tablas se destacan en amarillo las 16 partidas que crecieron más rápidamente en 2018-2024 que en 2010-20184:
+En las tablas se destacan en amarillo las 16 partidas que crecieron más rápidamente en 2018-2024 que en 2010-20174:
 
 - 8473, Partes de oficina
 - 8421, Centrifugadoras
@@ -1107,7 +1107,7 @@ Se trata, pues, de un período en el que si bien la aceleración del crecimiento
 Veamos ahora, con más detenimiento, el comportamiento de las exportaciones correspondientes a cada uno de estos capítulos. Empezamos con el **Capítulo 84**, Maquinaria.
 
 - En primer lugar, es notoria la concentración de las exportaciones de este capítulo en la partida 8471, que por sí sola representa el 46% de las exportaciones del capítulo y casi el 10% de las exportaciones mexicanas a EUA en 2024.
-- La tasa de crecimiento de la partida 8473, partes y accesorios para equipos de oficina, pasa de 1.9% en 2010-2018 a un sorprendente 27.3% en 2018-2024. A pesar de ello, su peso dentro del capítulo (1.7%) y dentro del total de las exportaciones mexicanas (0.3%) sigue siendo modesto en al finalizar este período.
+- La tasa de crecimiento de la partida 8473, partes y accesorios para equipos de oficina, pasa de 1.9% en 2010-2017 a un sorprendente 27.3% en 2018-2024. A pesar de ello, su peso dentro del capítulo (1.7%) y dentro del total de las exportaciones mexicanas (0.3%) sigue siendo modesto en al finalizar este período.
 - Todas las demás partidas cuya tasa de crecimiento se acelera en 2018-2024 representan montos modestos en 2024. En el capítulo siguiene veremos cómo se comportaron este capítulo y sus principales partidas a partir de 2025.
 
 ```{r}
@@ -1246,7 +1246,7 @@ El impacto del NS no ha sido igual a lo largo de todo el territorio mexicano sin
 
 Tanto el ritmo como la distribución del crecimiento de las exportaciones en el territorio mexicano han variado de manera considerable a lo largo del tiempo, y los patrones de crecimiento o contracción difieren claramente entre el período de normalidad globalizadora y la primera fase del nearshoring. La @fig-tcac-estados y la @tbl-tcac-estados permiten visualizar estos cambios.
 
-Período 2010 - 2018:
+Período 2010 - 2017:
 
 - Las exportaciones de seis estados crecen a dos dígitos: Colima, Guanajuato, Nayarit, Querétaro, San Luis Potosí y Sinaloa.
 - Las exportaciones de 10 estados crecen a un ritmo del 7.5 o superior: los seis ya citados más Coahuila, Durango, Nuevo León y Puebla.
@@ -1271,7 +1271,7 @@ Es razonable suponer que estas disparidades regionales están asociadas con la c
 pacman::p_load(sf, cowplot, ggrepel)
 
 # ---- mapa_xmex_2periodos_tcac_2024 ----
-# 2 mapas de México (2010-2018, 2018-2024) con la TCAC de las
+# 2 mapas de México (2010-2017, 2018-2024; 2º bloque medido desde 2017) con la TCAC de las
 # exportaciones de cada estado en cada subperíodo, en layout 2x1 (vertical).
 # 7 categorías de TCAC, paleta manual (naranja -> amarillo -> azul), etiquetas
 # abreviadas por estado, leyenda a la derecha en una sola columna.
@@ -1337,7 +1337,7 @@ p <- local({
       ) +
       scale_fill_manual(values = paleta_tcac, limits = labels_tcac,
                         name = NULL, na.value = "grey80", drop = FALSE) +
-      labs(title = paste0(año_ini, " – ", año_fin)) +
+      labs(title = etiqueta_periodo(año_ini, año_fin)) +
       # ncol = 1 -- leyenda apilada verticalmente (se usará a la derecha,
       # no abajo); legend.position se fija en "none" aquí porque el panel
       # individual no la muestra -- se extrae aparte más abajo.
@@ -1352,7 +1352,7 @@ p <- local({
       )
   }
 
-  periodos <- list(c(2010, 2018), c(2018, 2024))
+  periodos <- list(c(2010, 2017), c(2017, 2024))   # 2º bloque (2018-2024) medido desde 2017
   plots    <- map(periodos, \(pr) make_map(pr[1], pr[2]))
 
   # Leyenda extraída de un gráfico auxiliar que contiene los 7 niveles de
@@ -1395,7 +1395,7 @@ rm(p, tcac_estados, estados_lookup)
 ```{r}
 #| label: fig-tcac-estados
 #| echo: false
-#| fig-cap: "Tasas de crecimiento de las exportaciones por estado, 2010-2018 y 2018-2024"
+#| fig-cap: "Tasas de crecimiento de las exportaciones por estado, 2010-2017 y 2018-2024. El segundo período se mide respecto a 2017."
 #| fig-cap-location: top
 
 knitr::include_graphics(here::here("Plots", "mapa_xmex_2periodos_tcac_2024.png"))
@@ -1409,7 +1409,7 @@ knitr::include_graphics(here::here("Plots", "mapa_xmex_2periodos_tcac_2024.png")
 
 # ---- tabla_xmex_2periodos_tcac ----
 # Tabla gt con la TCAC de las exportaciones por estado en los mismos 3
-# subperíodos del mapa anterior (2010-2018, 2018-2024). Mismo
+# subperíodos del mapa anterior (2010-2017, 2018-2024; 2º bloque medido desde 2017). Mismo
 # cálculo de TCAC y misma paleta/bins que el mapa, para consistencia visual.
 
 # TCAC por estado y período: Scripts/Prep06_tcac_estados.R
@@ -1440,15 +1440,15 @@ if (nrow(tabla_der) < nrow(tabla_izq)) {
   tabla_der <- tabla_der |>
     bind_rows(tibble(
       nombre         = NA_character_,
-      tcac_2010_2018 = NA_real_,
-      tcac_2018_2024 = NA_real_
+      tcac_2010_2017 = NA_real_,
+      tcac_2017_2024 = NA_real_
     ))
 }
 names(tabla_der) <- paste0(names(tabla_der), "_b")
 
 tabla_tcac_wide <- bind_cols(tabla_izq, tabla_der)
 
-cols_izq <- c("tcac_2010_2018", "tcac_2018_2024")
+cols_izq <- c("tcac_2010_2017", "tcac_2017_2024")
 cols_der <- paste0(cols_izq, "_b")
 
 ### Tabla: tabla-xmex-tcac-estados ----
@@ -1461,11 +1461,11 @@ tabla_tcac_wide |>
   flextable() |>
   set_header_labels(
     nombre           = "Entidad",
-    tcac_2010_2018   = "2010–2018",
-    tcac_2018_2024   = "2018–2024",
+    tcac_2010_2017   = "2010–2017",
+    tcac_2017_2024   = "2018–2024",
     nombre_b         = "Entidad",
-    tcac_2010_2018_b = "2010–2018",
-    tcac_2018_2024_b = "2018–2024"
+    tcac_2010_2017_b = "2010–2017",
+    tcac_2017_2024_b = "2018–2024"
   ) |>
   colformat_double(
     j = c(cols_izq, cols_der),
@@ -1762,7 +1762,7 @@ rm(etef)
 immex <- readRDS(here::here("RDS", "immex_empleo.rds"))
 ```
 
-En la @fig-immex-empleo se muestra la evolución del empleo IMMEX, dividido en "total", "Zona Libre de la Frontera Norte (ZLFN)" y "resto", es decir, total menos ZLFN en los períodos 2010-2018 y 2018-2024.
+En la @fig-immex-empleo se muestra la evolución del empleo IMMEX, dividido en "total", "Zona Libre de la Frontera Norte (ZLFN)" y "resto", es decir, total menos ZLFN en los períodos 2010-2017 y 2018-2024.
 
 La desaceleración en el segundo período es manifiesta: la TCAC pasa de 5.1% en el período anterior a apenas 1.3% entre 2018 y 2024. En el caso de la ZLFN el crecimiento es nulo, y fuera de esa zona el crecimiento es de apenas 2%.
 
@@ -1812,39 +1812,39 @@ p <- local({
 
   cagr <- function(v_fin, v_ini, n) ((v_fin / v_ini)^(1 / n) - 1) * 100
 
-  tot_10 <- val_en("Total", 2010);  tot_18 <- val_en("Total", 2018)
+  tot_10 <- val_en("Total", 2010);  tot_17 <- val_en("Total", 2017)
   tot_24 <- val_en("Total", 2024)
 
-  zlf_10 <- val_en("ZLFN",  2010);  zlf_18 <- val_en("ZLFN",  2018)
+  zlf_10 <- val_en("ZLFN",  2010);  zlf_17 <- val_en("ZLFN",  2017)
   zlf_24 <- val_en("ZLFN",  2024)
 
-  dif_10 <- val_en("Resto", 2010);  dif_18 <- val_en("Resto", 2018)
+  dif_10 <- val_en("Resto", 2010);  dif_17 <- val_en("Resto", 2017)
   dif_24 <- val_en("Resto", 2024)
 
   etiquetas_total <- tibble(
     fecha = as.Date(c("2014-06-01", "2021-06-01")),
-    y_pos = c(tot_18 + 15, tot_24 - 30),
+    y_pos = c(tot_17 + 15, tot_24 - 30),
     label = c(
-      paste0("TCAC Total 10-18: ", round(cagr(tot_18, tot_10, 8), 1), "%"),
-      paste0("TCAC Total 18-24: ", round(cagr(tot_24, tot_18, 6), 1), "%")
+      paste0("TCAC Total 10-17: ", round(cagr(tot_17, tot_10, 7), 1), "%"),
+      paste0("TCAC Total 18-24: ", round(cagr(tot_24, tot_17, 7), 1), "%")
     )
   )
 
   etiquetas_zlfn <- tibble(
     fecha = as.Date(c("2014-06-01", "2021-06-01")),
-    y_pos = c(zlf_18 - 40, zlf_24 + 130),
+    y_pos = c(zlf_17 - 40, zlf_24 + 130),
     label = c(
-      paste0("TCAC ZLFN 10-18: ", round(cagr(zlf_18, zlf_10, 8), 1), "%"),
-      paste0("TCAC ZLFN 18-24: ", round(cagr(zlf_24, zlf_18, 6), 1), "%")
+      paste0("TCAC ZLFN 10-17: ", round(cagr(zlf_17, zlf_10, 7), 1), "%"),
+      paste0("TCAC ZLFN 18-24: ", round(cagr(zlf_24, zlf_17, 7), 1), "%")
     )
   )
 
   etiquetas_dif <- tibble(
     fecha = as.Date(c("2014-06-01", "2021-06-01")),
-    y_pos = c(dif_18 - 20, dif_24 - 20),
+    y_pos = c(dif_17 - 20, dif_24 - 20),
     label = c(
-      paste0("TCAC Resto 10-18: ", round(cagr(dif_18, dif_10, 8), 1), "%"),
-      paste0("TCAC Resto 18-24: ", round(cagr(dif_24, dif_18, 6), 1), "%")
+      paste0("TCAC Resto 10-17: ", round(cagr(dif_17, dif_10, 7), 1), "%"),
+      paste0("TCAC Resto 18-24: ", round(cagr(dif_24, dif_17, 7), 1), "%")
     )
   )
 
@@ -1901,7 +1901,7 @@ rm(p)
 ```{r}
 #| label: fig-immex-empleo
 #| echo: false
-#| fig-cap: "Empleo IMMEX en manufactura: Total, ZLFN y Resto, 2010-2024 (miles de personas, diciembre)"
+#| fig-cap: "Empleo IMMEX en manufactura: Total, ZLFN y Resto, 2010-2024 (miles de personas, diciembre). La TCAC de 2018-2024 se mide respecto a 2017."
 #| fig-cap-location: top
 
 knitr::include_graphics(here::here("Plots", "fig-immex-empleo_2024.png"))
@@ -1991,7 +1991,7 @@ p <- local({
         na.value = "grey85",
         drop     = FALSE
       ) +
-      labs(title = paste0(año_ini, " – ", año_fin)) +
+      labs(title = etiqueta_periodo(año_ini, año_fin)) +
       guides(fill = guide_legend(nrow = 1, keywidth = unit(1.6, "cm"),
                                  keyheight = unit(0.4, "cm"))) +
       theme_void() +
@@ -2003,7 +2003,7 @@ p <- local({
       )
   }
 
-  periodos <- list(c(2010, 2018), c(2018, 2024))
+  periodos <- list(c(2010, 2017), c(2017, 2024))   # 2º bloque (2018-2024) medido desde 2017
   plots    <- map(periodos, \(pr) make_map(pr[1], pr[2]))
 
   # Leyenda extraída de un gráfico auxiliar con los 5 niveles de categoría
@@ -2043,7 +2043,7 @@ rm(p, estados_lookup, breaks_pp_immex, labels_pp_immex, paleta_discreta_immex)
 ```{r}
 #| label: fig-mapa-immex-2periodos
 #| echo: false
-#| fig-cap: "Cambio en la participación porcentual del empleo IMMEX por entidad federativa, 2010-2018 y 2018-2024"
+#| fig-cap: "Cambio en la participación porcentual del empleo IMMEX por entidad federativa, 2010-2017 y 2018-2024. El segundo período se mide respecto a 2017."
 #| fig-cap-location: top
 
 knitr::include_graphics(here::here("Plots", "mapa_immex_2periodos_2024.png"))

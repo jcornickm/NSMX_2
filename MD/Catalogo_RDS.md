@@ -74,7 +74,7 @@ Open items: (1) `top_hs4_Pendiente.R`: check whether the .qmd files use its resu
 | `imp_mex_hs4_84858790.rds` | 386 KB | 33,226 × 11 | HS4 subset: Capítulos 84, 85, 87, 90 | derived | Query04 |
 | `imp_mex_hs6_84858790.rds` | 4.1 MB | 153,458 × 12 | HS6 subset: Capítulos 84, 85, 87, 90 | derived | Query04 |
 | `imp_mex_top_hs4.rds` | 77 KB | 5,568 × 13 | Monthly series for the 29 selected top HS4 partidas within Caps. 84/85/87/90, with short names | derived | Query04 |
-| `TCAC_y_shares_84858790.rds` | 4 KB | 33 × 14 | Per-partida values (2010, 2018, 2024, 2025), TCAC and shares, with "Resto" rows | derived | Query04 |
+| `TCAC_y_shares_84858790.rds` | 4 KB | 33 × 14 | Per-partida values (2010, 2017, 2024, 2025), TCAC and shares, with "Resto" rows | derived | Query04 |
 | `meta_TCAC_y_shares.rds` | 0.7 KB | list (10) | Definitions of the TCAC and share columns | | Query04 |
 | `meta_query3.rds` | 0.9 KB | list (12) | Provenance for the Query04 outputs | | Query04 |
 | `raw/raw_hs6_2010…2025.rds` | 16 files | | Per-year API responses cached by Query04 | Census Intl Trade API | Query04 |
@@ -146,7 +146,7 @@ Open items: (1) `top_hs4_Pendiente.R`: check whether the .qmd files use its resu
 - **`raw_df.rds` / `USallImpMex.rds`**: `time ("YYYY-MM"), I_COMMODITY (HS 2–10 digit), I_COMMODITY_LDESC, GEN_VAL_MO, GEN_VAL_YR, CTY_CODE`. 24,349 distinct commodity codes. Assembled from the per-year files in `raw/raw_hs6_YYYY.rds`. Query04 saves the same object under both names.
 - **`imp_mex_hs4.rds`** (HS4) and **`imp_mex_hs6.rds`** (HS6): `fecha, Sección*, Cap*, Cod_partida, [Cod_subpartida], Desc_api_*, Val_mes, Val_acum`. Obtained by filtering `nchar(I_COMMODITY)` to 4 or 6, joined to Sección/Capítulo labels. The `_84858790` versions keep Capítulos 84, 85, 87 and 90 (machinery, electrical, vehicles, optics).
 - **`imp_mex_top_hs4.rds`**: the 29 top partidas within Caps. 84/85/87/90. It adds `Part_corto, Part_tabla` (the old `Part_desc_es` is gone).
-- **`TCAC_y_shares_84858790.rds`**: `Capítulo, Cap_corto, Cod_partida, Part_corto, Part_tabla, val_2010, val_2018, val_2024, val_2025, TCAC_1018, TCAC_1824, Crec_2425, pct_cap, pct_total`. Values are 12-month sums per year. TCAC is NA when the initial value is 0. The "Resto" row is the chapter total minus the listed partidas. Definitions are in `meta_TCAC_y_shares`.
+- **`TCAC_y_shares_84858790.rds`**: `Capítulo, Cap_corto, Cod_partida, Part_corto, Part_tabla, val_2010, val_2017, val_2024, val_2025, TCAC_1017, TCAC_1724, Crec_2425, pct_cap, pct_total`. Values are 12-month sums per year. TCAC is NA when the initial value is 0. The "Resto" row is the chapter total minus the listed partidas. Definitions are in `meta_TCAC_y_shares`.
 
 ### C. Curated partida lists
 - **`partidas_valor_depurado.rds`** (Query05): the top 30 HS4 partidas by 2024–2025 value after removing special classification categories. Columns: `ranking, Cod_partida, Cap_corto, Desc_api_partida, Val_2024_2025, Desc_es, Nombre_corto_partida`.

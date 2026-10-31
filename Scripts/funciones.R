@@ -250,3 +250,13 @@ COL_HITO      <- "grey45"    # líneas verticales de referencia (p. ej. 2018)
 # Secciones del Sistema Armonizado destacadas para el nearshoring
 paleta_seccion <- c("XVI" = "#2f4858", "XVII" = "#55738a",
                     "XVIII" = "#8fa8bb", "Otras" = "#e3e6e9")
+
+# ── Rotulado de períodos de comparación ───────────────────────────────────────
+# Bloques de años: 2010-2017, 2018-2024. El crecimiento de cada año se asigna al
+# bloque que lo contiene, así que el segundo bloque se mide desde la base 2017
+# (último año previo a la guerra comercial). Los cálculos usan 2010 -> 2017 y
+# 2017 -> 2024; los rótulos muestran el nombre del bloque (2017 se rotula 2018).
+etiqueta_periodo <- function(ini, fin) {
+  ini_rot <- ifelse(ini == 2017, 2018, ini)
+  paste0(ini_rot, " – ", fin)
+}

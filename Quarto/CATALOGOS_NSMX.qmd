@@ -163,7 +163,7 @@ En las tablas, "Lo leen" lista los consumidores encontrados en `Scripts/` y en l
 | `imp_mex_hs6.rds` (19.3 MB) | Mensual por Subpartida (HS6), todos los capítulos. | Prep02 | — | Intermedio |
 | `imp_mex_hs4_84858790.rds` (396 KB), `imp_mex_hs6_84858790.rds` (4.3 MB) | Subconjuntos de los dos anteriores: Capítulos 84, 85, 87 y 90. | Prep02 | — | Intermedio |
 | `imp_mex_top_hs4.rds` (82 KB) | Serie mensual de las **partidas principales** de los cuatro capítulos (unión de las que acumulan 80% del capítulo en 2024, 2025 y enero-último mes del año en curso, más 8703), con `Part_corto` y `Part_tabla`. | Prep02 | top_hs4_Pendiente | Intermedio |
-| `TCAC_y_shares_84858790.rds` (7 KB) | Una fila por partida principal más una fila "Resto" por capítulo: valores anuales (2010, 2018, 2024, 2025), valores enero-último mes (`val_ytd_*`), TCAC, crecimiento y participaciones. | Prep02 | C2 (tablas `tbl-cap84`, `85`, `87`, `90`); Prep05 | Vigente |
+| `TCAC_y_shares_84858790.rds` (7 KB) | Una fila por partida principal más una fila "Resto" por capítulo: valores anuales (2010, 2017, 2024, 2025), valores enero-último mes (`val_ytd_*`), TCAC, crecimiento y participaciones. | Prep02 | C2 (tablas `tbl-cap84`, `85`, `87`, `90`); Prep05 | Vigente |
 | `meta_TCAC_y_shares.rds` | Definiciones de las columnas anteriores. | Prep02 | — | Vigente |
 | `meta_query3.rds` | Procedencia de las salidas de Prep02 (nombre histórico). | Prep02 | — | Vigente |
 | `partidas_tendencia.rds` (227 KB) | Serie mensual desestacionalizada de cada partida principal (índice enero 2018 = 100) y su tendencia por tramos. | Prep05 | C2 (paneles de partidas, anexo) | Vigente |
@@ -208,7 +208,7 @@ En las tablas, "Lo leen" lista los consumidores encontrados en `Scripts/` y en l
 | `meta_etef.rds` | Procedencia y definición de banderas. (El archivo actual aun cita `etef_valor_accounting.rds`, que nunca existió; la referencia ya se quitó del script y desaparece al volver a correr Query07.) | Query07 | — | Vigente |
 | `etef_supresion_check.rds` (5 KB) | Por entidad × subsector: observaciones, suprimidas y porcentaje "C". | Query07 | — | Intermedio |
 | `supresion_ns_wide.rds` (1 KB) | Porcentaje de suprimidos para los sectores 333, 334, 335 y 336, una columna por sector, por estado. | Query07 | C2 (anexo de disponibilidad) | Vigente |
-| `tcac_estados.rds` (1.5 KB) | TCAC (en %) de las exportaciones estatales en tres subperíodos: 2010-2018, 2018-2024, 2024-2025. Formato largo. | Prep06 | C2 (mapa y `tbl-tcac-estados`) | Vigente |
+| `tcac_estados.rds` (1.5 KB) | TCAC (en %) de las exportaciones estatales en tres subperíodos: 2010-2017, 2017-2024, 2024-2025. Formato largo. | Prep06 | C2 (mapa y `tbl-tcac-estados`) | Vigente |
 | `estados_lookup.rds` (0.6 KB) | Lista con abreviaturas de estados y la correspondencia de nombres GADM → nombres del proyecto. | Prep06 | C2 (mapas) | Vigente |
 
 ### Empleo IMMEX (Query08, Prep07)
@@ -258,7 +258,7 @@ Las figuras de C2 las genera cada chunk `save-*` (marcado `eval: false`, se corr
 | `fig-ImpEUA-CHN-MEX_2024`, `fig-imp-cambio-pais_2024`, `imp_pais_perc_2024`, `dist_imp_pais` (sin sufijo; ningún chunk actual la genera) | `imp_por_pais`, `impPais_Perc` | chunks de C2 | C2 (las tres primeras) |
 | `impMex_sec_perc_2024`, `fig-imp-cambio-sec-mex_2024`, `fig-treemap-caps-seccion_2024` | `impMex_sec_pct`, `imp_mex_sec_cap` | chunks de C2 | C2 |
 | `panel_partidas_cap84_2024`, `…85_2024`, `…87_2024`, `…90_2024` | `partidas_tendencia`, `quiebres_partida` | chunk `save-top-partidas-paneles` de C2 | C2 (anexo) |
-| `mapa_xmex_2periodos_tcac_2024` (antes `mapa_xmex_3periodos_tcac`; solo dibuja 2010-2018 y 2018-2024) | `tcac_estados`, `estados_lookup`, `geodata/` | chunk `save-fig-tcac-estados` de C2 | C2 |
+| `mapa_xmex_2periodos_tcac_2024` (antes `mapa_xmex_3periodos_tcac`; solo dibuja 2010-2017 y 2018-2024, este último medido desde 2017) | `tcac_estados`, `estados_lookup`, `geodata/` | chunk `save-fig-tcac-estados` de C2 | C2 |
 | `fig-etef-sector-333_2024`, `…334_2024`, `…335_2024`, `…336_2024` (una figura por sector SCIAN; antes un solo arreglo `fig-etef-sectores-sa`) | `etef_tidy` | chunk `save-fig-scian-frontera` de C2 | C2 (`fig-scian-333` a `fig-scian-336`) |
 | `fig-immex-empleo_2024`, `mapa_immex_4periodos_2024` | `immex_empleo`, `immex_pct` | chunks de C2 | C2 |
 | `ied_total_origen_2024`, `ied_ratios_2024`, `ied_pib_comparativo_wdi_2024`, `ied_actividad_combinado_2024`, `ied_manuf_subsector_2024` | `ied_*`, `ied_pib_wdi_comp` | chunks de C2 | C2 |
@@ -512,7 +512,7 @@ if (hay_dic) {
 - **Entradas.** `raw_df_mex_vnm_twn.rds` (México), `imp_mex_sec_cap.rds`.
 - **Salidas.** `imp_mex_hs4`, `imp_mex_hs6`, sus versiones `_84858790`, `imp_mex_top_hs4`, `TCAC_y_shares_84858790`, `meta_TCAC_y_shares`, `meta_query3`.
 - **Regla de selección.** En cada capítulo y para cada periodo (2024, 2025 y enero hasta el último mes del año en curso), las partidas ordenadas por valor hasta cruzar el 80% acumulado. El conjunto final es la **unión** de los periodos más `PARTIDAS_FORZADAS` (8703, por importancia histórica). Decisión del 22-oct-2026: las diferencias entre periodos son mínimas y se conserva todo lo que aparece al menos una vez.
-- **Parámetros.** `ANIOS_TOP = 2024:2025`, `ANIOS_REF = 2010, 2018, 2024, 2025`, `caps_seleccionados = 84, 85, 87, 90`.
+- **Parámetros.** `ANIOS_TOP = 2024:2025`, `ANIOS_REF = 2010, 2017, 2024, 2025`, `caps_seleccionados = 84, 85, 87, 90`.
 - **Verificaciones.** Suma de partidas por capítulo contra `imp_mex_sec_cap` (tolerancia 1 USD); HS6 contra HS4 (informativo); los porcentajes de cada capítulo suman 1.
 
 ### Prep03_TopPartidas_Competidores.R
@@ -539,7 +539,7 @@ if (hay_dic) {
 
 ### Prep06_tcac_estados.R
 
-- **Qué hace.** TCAC de las exportaciones estatales para 2010-2018, 2018-2024 y 2024-2025, más abreviaturas de estados y la correspondencia con los nombres del mapa GADM.
+- **Qué hace.** TCAC de las exportaciones estatales para 2010-2017, 2017-2024 y 2024-2025, más abreviaturas de estados y la correspondencia con los nombres del mapa GADM.
 - **Entradas.** `xmex_total_ef.rds`.
 - **Salidas.** `tcac_estados` (en %), `estados_lookup`.
 - **Verificaciones.** Deben salir 32 entidades por periodo y todas deben tener abreviatura.
@@ -653,7 +653,7 @@ Otras fuentes:
 
 | Objeto cargado | Para qué |
 |:----------------------------------|:------------------------------------------------|
-| `imp_por_pais`, `impPais_Perc` | Figuras de participación por país (China, México; cambios 2010-2018 y 2018-2024; México, Taiwán, Vietnam) |
+| `imp_por_pais`, `impPais_Perc` | Figuras de participación por país (China, México; cambios 2010-2017 y 2018-2024 (base 2017); México, Taiwán, Vietnam) |
 | `impMex_sec_pct`, `imp_mex_sec_cap` | Treemap y barras por Sección; treemap de Capítulos de las Secciones XVI a XVIII (2024) |
 | `TCAC_y_shares_84858790` | Las cuatro tablas por capítulo (84, 85, 87, 90) |
 | `partidas_tendencia`, `quiebres_partida` | Paneles de partidas (anexo) |
