@@ -35,7 +35,8 @@ Líneas del qmd `C2_Revised_October_2026_v3.qmd` al 2026-10-31. Solo se cambió 
 4. Chunks `save-` de C2, uno por uno: fig-ImpEUA-CHN-MEX, fig-imp-cambio-pais, fig-imp-cambio-sec-mex, mapa_xmex_2periodos_tcac, fig-immex-empleo, mapa_immex_2periodos. Las tablas de partidas y de estados se calculan al renderizar.
 5. Revisar a ojo las etiquetas de TCAC en los gráficos de línea (cambió la altura `y_pos`: ahora se ancla en 2017).
 
-## Pendiente fuera de C2
-- `Scripts/top_hs4_Pendiente.R` usa `tcr_1824` (2018→2024, n=6).
-- `Scripts/Rec_Diverging_Bars.R` (receta) tiene `c(2010, 2018)` y `c(2018, 2024)`.
-- `RMD/NSMX_C2_Plots_julio_2026 Claude.Rmd` usa `TCAC_1018/1824` (archivo antiguo).
+## Pendiente fuera de C2 (resuelto 2026-10-31)
+Movidos a `Por_eliminar/` sin actualizar a base 2017 (se eliminan si C2 y C3 no los necesitan):
+- `Scripts/Por_eliminar/top_hs4_Pendiente.R` (usaba `tcr_1824`).
+- `Scripts/Por_eliminar/Rec_Diverging_Bars.R` (receta con `c(2010, 2018)` y `c(2018, 2024)`).
+- `RMD/Por_eliminar/NSMX_C2_Plots_julio_2026 Claude.Rmd` (usaba `TCAC_1018/1824`).
