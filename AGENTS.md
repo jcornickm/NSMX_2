@@ -78,6 +78,20 @@ documents in [Quarto/](Quarto); data pipelines are standalone R scripts in
   cached as an individual RDS immediately.
 - `CTY_CODE = "2010"` = Mexico in Census API country codes.
 
+## Environments
+
+- Sync is done with `sync(msg = NULL)`, defined in the user's personal
+  `.Rprofile` (not in the repo): it stages and commits everything, then
+  `gert::git_pull()` (errors on conflict) and `git_push()`. **Never make
+  manual commits or pushes**; the user runs `sync()` themselves.
+
+- Work happens in two places, synced via Git at the start and end of each
+  session: local RStudio (Surface ARM, Windows) and Posit Cloud.
+- **Do not render Quarto in local RStudio** (`quarto render`, `quarto preview`,
+  or equivalents): Quarto doesn't work well on the Surface ARM. Renders are
+  done only in Posit Cloud. Locally, editing `.qmd`/scripts, running the
+  `eval: false` plot/table chunks, and running `Scripts/` pipelines is fine.
+
 ## Preferences
 
 - Use the `here` package for all paths (`here::here(...)`), not relative or
