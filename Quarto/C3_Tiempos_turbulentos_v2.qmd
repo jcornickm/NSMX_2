@@ -151,13 +151,399 @@ Durante todo este período los aranceles IEEPA permanecen vigentes (la administr
 
 - A partir de setiembre de 2026 se empieza a utilizar la Sección 338 contra Canadá, una autoridad bilateral y punitiva dirigida específicamente a un país (Canadá) por una disputa concreta (trato preferencial a los quesos de la UE bajo CETA frente al T-MEC). Su uso en julio de 2026 — la primera invocación documentada de esta sección en casi cien años — escaló en agosto a un paquete arancelario de USD 27.600 millones y produjo represalia canadiense en espejo, vigente desde el 8 de septiembre de 2026 (fecha de cierre de este documento) [@federalregister2026g; @aljazeera2026a; @canada2026].
 
-<<<<<<< HEAD
+
 ## México y sus competidores en el mercado de EUA: 2024-2025
 
-## Reglas arancelarias por país: idas y venidas.
-=======
+```{r}
+#| label: save-fig-ImpEUA-CHN-MEX-VNM-TWN
+#| echo: false
+#| eval: false
+#| code-summary: "Código del gráfico"
+
+# 2018 hasta el último mes disponible. Datos: RDS/imp_por_pais.rds.
+# Línea: serie desestacionalizada (X-13 sobre la serie completa; el corte a 2018
+# se hace solo al graficar). TCAC: suma enero-último mes de cada año, serie
+# ORIGINAL (misma metodología que el Anexo del Cap. 2). 2018-2024 se mide
+# 2017 -> 2024; 2025-2026 se mide 2024 -> último año. No usa FECHA_FIN.
+
+source(here::here("Scripts", "funciones.R"))   # sa_adj(), paleta_pais, COL_HITO
+
+impPais <- readRDS(here::here("RDS", "imp_por_pais.rds"))
+
+p <- local({
+  paises <- c("México", "China", "Vietnam", "Taiwán")
+  cod    <- c("México" = "MEX", "China" = "CHN", "Vietnam" = "VNM", "Taiwán" = "TWN")
+  meses_es <- c("enero", "febrero", "marzo", "abril", "mayo", "junio", "julio",
+                "agosto", "setiembre", "octubre", "noviembre", "diciembre")
+
+  # — 1. Datos mensuales y ajuste estacional --------------------------------
+  imp_4 <- impPais |>
+    filter(País %in% paises, !is.na(Imp_mes)) |>
+    mutate(Imp_bn = Imp_mes / 1e9) |>
+    arrange(País, fecha) |>
+    group_by(País) |>
+    mutate(Imp_bn_sa = sa_adj(Imp_bn, fecha, freq = 12)) |>
+    ungroup() |>
+    mutate(País = factor(País, levels = paises))
+
+  # Último mes disponible común a los cuatro países
+  ultimo_mes <- imp_4 |>
+    group_by(País) |>
+    summarise(m = max(fecha), .groups = "drop") |>
+    pull(m) |>
+    min()
+  mes_fin  <- month(ultimo_mes)
+  anio_fin <- as.integer(year(ultimo_mes))
+  message("Último mes disponible: ", format(ultimo_mes, "%Y-%m"))
+
+  # — 2. Acumulado enero-mes_fin por año (serie ORIGINAL) --------------------
+  acum <- imp_4 |>
+    filter(month(fecha) <= mes_fin) |>
+    group_by(País, Año = year(fecha)) |>
+    summarise(Imp_acum = sum(Imp_bn), n_mes = n(), .groups = "drop") |>
+    mutate(País = as.character(País), Año = as.integer(Año))
+
+  anclas <- c(2017L, 2024L, anio_fin)
+  stopifnot(all(acum$n_mes[acum$Año %in% anclas] == mes_fin))  # años ancla completos
+
+  # — 3. Períodos y TCAC (joins, sin rowwise) --------------------------------
+  periodos <- tibble(
+    base     = c(2017L, 2024L),
+    fin      = c(2024L, anio_fin),
+    rot      = c("18-24", sprintf("25-%02d", anio_fin %% 100L)),
+    ini_graf = as.Date(c("2018-01-01", "2025-01-01")),
+    fin_graf = c(as.Date("2024-12-31"), ultimo_mes)
+  )
+
+  v_base <- acum |> transmute(País, base = Año, v_base = Imp_acum)
+  v_fin  <- acum |> transmute(País, fin  = Año, v_fin  = Imp_acum)
+
+  y_max   <- max(imp_4$Imp_bn_sa)
+  y_banda <- y_max * 1.12
+  paso    <- y_max * 0.075
+
+  etiquetas <- expand_grid(País = paises, periodos) |>
+    left_join(v_base, by = c("País", "base")) |>
+    left_join(v_fin,  by = c("País", "fin")) |>
+    mutate(
+      tcac  = ((v_fin / v_base)^(1 / (fin - base)) - 1) * 100,
+      fecha = as.Date(ini_graf + (fin_graf - ini_graf) / 2),
+      # Etiquetas en una banda sobre las series, una fila por país
+      y_pos = y_banda - (match(País, paises) - 1) * paso,
+      x_pos = if_else(base == 2017L, fecha, ultimo_mes),
+      hj    = if_else(base == 2017L, 0.5, 1),
+      label = paste0("TCAC ", unname(cod[País]), " ", rot, ": ",
+                     sprintf("%.1f", tcac), "%"),
+      País  = factor(País, levels = paises)
+    )
+
+  print(etiquetas |> select(País, rot, base, fin, tcac))   # para verificar
+
+  # — 4. Gráfico -------------------------------------------------------------
+  imp_4 |>
+    filter(fecha >= as.Date("2018-01-01"), fecha <= ultimo_mes) |>  # corte solo al graficar
+    ggplot(aes(x = fecha, y = Imp_bn_sa, color = País)) +
+    geom_line(linewidth = 1) +
+    geom_vline(
+      xintercept = as.Date("2025-01-01"),
+      linetype = "dotted", color = COL_HITO, linewidth = 0.7
+    ) +
+    geom_label(
+      data = etiquetas,
+      aes(x = x_pos, y = y_pos, label = label, color = País, hjust = hj),
+      inherit.aes = FALSE,
+      fill = "white", fontface = "bold", size = 3.2, show.legend = FALSE
+    ) +
+    scale_color_manual(values = paleta_pais[paises]) +
+    scale_x_date(
+      breaks = seq(as.Date("2018-01-01"), floor_date(ultimo_mes, "year"), by = "1 year"),
+      date_labels = "%Y"
+    ) +
+    scale_y_continuous(expand = expansion(mult = c(0.02, 0.08))) +
+    labs(
+      x       = NULL,
+      y       = NULL,
+      color   = "",
+      caption = paste(
+        "Elaboración propia con base en US Census Bureau.",
+        paste0("Serie mensual ajustada por estacionalidad (X-13ARIMA-SEATS), hasta ",
+               meses_es[mes_fin], " de ", anio_fin,
+               "."),
+        paste0("TCAC: acumulado enero-", meses_es[mes_fin],
+               " de cada año, serie original."),
+        sep = "\n"
+      )
+    ) +
+    theme_bw() +
+    theme(
+      legend.position  = "bottom",
+      panel.grid.minor = element_blank(),
+      axis.text.x      = element_text(angle = 0)
+    )
+})
+
+p
+ggsave(here::here("Plots", "fig-ImpEUA-CHN-MEX-VNM-TWN.pdf"),
+       plot = p, width = 11, height = 6, device = cairo_pdf)
+ggsave(here::here("Plots", "fig-ImpEUA-CHN-MEX-VNM-TWN.png"),
+       plot = p, width = 11, height = 6, dpi = 150)
+rm(p, impPais)
+```
+
+```{r}
+#| label: fig-ImpEUA-CHN-MEX-VNM-TWN
+#| message: false
+#| warning: false
+#| echo: false
+#| code-summary: "Importaciones EUA desde México, China, Vietnam y Taiwán"
+#| fig-cap: |
+#|   EUA: importaciones mensuales desde México, China, Vietnam y Taiwán, 2018-2026.
+#|   Miles de millones de dólares.
+#| fig-cap-location: top
+
+knitr::include_graphics(here::here("Plots", "fig-ImpEUA-CHN-MEX-VNM-TWN.png"))
+```
+
+```{r}
+#| label: save-fig-ImpMEX-total-sin847150
+#| echo: false
+#| eval: false
+#| code-summary: "Código del gráfico"
+
+# México: importaciones totales de EUA vs. totales sin la subpartida 847150.
+# Datos: RDS/imp_por_pais.rds (total) y RDS/imp_mex_hs6.rds (847150).
+# Línea: serie desestacionalizada (X-13 sobre la serie completa). TCAC: suma
+# enero-último mes de cada año, serie ORIGINAL; 2018-2024 se mide 2017 -> 2024
+# y 2025-2026 se mide 2024 -> último año. No usa FECHA_FIN.
+
+source(here::here("Scripts", "funciones.R"))   # sa_adj(), paleta_pais, COL_TOTAL
+
+impPais <- readRDS(here::here("RDS", "imp_por_pais.rds"))
+impHS6  <- readRDS(here::here("RDS", "imp_mex_hs6.rds"))
+
+p <- local({
+  series   <- c("Total", "Total sin 847150")
+  meses_es <- c("enero", "febrero", "marzo", "abril", "mayo", "junio", "julio",
+                "agosto", "setiembre", "octubre", "noviembre", "diciembre")
+
+  # — 1. Series mensuales y ajuste estacional -------------------------------
+  tot <- impPais |>
+    filter(País == "México", !is.na(Imp_mes)) |>
+    select(fecha, Total = Imp_mes)
+
+  hs <- impHS6 |>
+    filter(Cod_subpartida == "847150") |>
+    group_by(fecha) |>
+    summarise(s847150 = sum(Val_mes), .groups = "drop")
+
+  imp_s <- tot |>
+    left_join(hs, by = "fecha") |>
+    mutate(
+      s847150 = coalesce(s847150, 0),
+      `Total sin 847150` = Total - s847150
+    ) |>
+    select(fecha, Total, `Total sin 847150`) |>
+    pivot_longer(-fecha, names_to = "Serie", values_to = "Imp") |>
+    mutate(Imp_bn = Imp / 1e9) |>
+    arrange(Serie, fecha) |>
+    group_by(Serie) |>
+    mutate(Imp_bn_sa = sa_adj(Imp_bn, fecha, freq = 12)) |>
+    ungroup() |>
+    mutate(Serie = factor(Serie, levels = series))
+
+  ultimo_mes <- max(imp_s$fecha)
+  mes_fin    <- month(ultimo_mes)
+  anio_fin   <- as.integer(year(ultimo_mes))
+  message("Último mes disponible: ", format(ultimo_mes, "%Y-%m"))
+
+  # — 2. Acumulado enero-mes_fin por año (serie ORIGINAL) --------------------
+  acum <- imp_s |>
+    filter(month(fecha) <= mes_fin) |>
+    group_by(Serie, Año = as.integer(year(fecha))) |>
+    summarise(Imp_acum = sum(Imp_bn), n_mes = n(), .groups = "drop") |>
+    mutate(Serie = as.character(Serie))
+
+  anclas <- c(2017L, 2024L, anio_fin)
+  stopifnot(all(acum$n_mes[acum$Año %in% anclas] == mes_fin))
+
+  # — 3. Períodos y TCAC -----------------------------------------------------
+  periodos <- tibble(
+    base     = c(2017L, 2024L),
+    fin      = c(2024L, anio_fin),
+    rot      = c("18-24", sprintf("25-%02d", anio_fin %% 100L)),
+    ini_graf = as.Date(c("2018-01-01", "2025-01-01")),
+    fin_graf = c(as.Date("2024-12-31"), ultimo_mes)
+  )
+
+  v_base <- acum |> transmute(Serie, base = Año, v_base = Imp_acum)
+  v_fin  <- acum |> transmute(Serie, fin  = Año, v_fin  = Imp_acum)
+
+  y_max   <- max(imp_s$Imp_bn_sa)
+  y_banda <- y_max * 1.12
+  paso    <- y_max * 0.075
+
+  etiquetas <- expand_grid(Serie = series, periodos) |>
+    left_join(v_base, by = c("Serie", "base")) |>
+    left_join(v_fin,  by = c("Serie", "fin")) |>
+    mutate(
+      tcac  = ((v_fin / v_base)^(1 / (fin - base)) - 1) * 100,
+      fecha = as.Date(ini_graf + (fin_graf - ini_graf) / 2),
+      y_pos = y_banda - (match(Serie, series) - 1) * paso,
+      x_pos = if_else(base == 2017L, fecha, ultimo_mes),
+      hj    = if_else(base == 2017L, 0.5, 1),
+      label = paste0("TCAC ", str_replace(Serie, "Total sin", "sin"), " ", rot, ": ", sprintf("%.1f", tcac), "%"),
+      Serie = factor(Serie, levels = series)
+    )
+
+  print(etiquetas |> select(Serie, rot, base, fin, tcac))   # para verificar
+
+  col_serie <- c("Total" = unname(paleta_pais["México"]), "Total sin 847150" = COL_TOTAL)
+
+  # — 4. Gráfico -------------------------------------------------------------
+  imp_s |>
+    # corte solo al graficar
+    filter(fecha >= as.Date("2018-01-01")) |>
+    ggplot(aes(x = fecha, y = Imp_bn_sa, color = Serie)) +
+    geom_line(linewidth = 1) +
+    geom_vline(
+      xintercept = as.Date("2025-01-01"),
+      linetype = "dotted", color = COL_HITO, linewidth = 0.7
+    ) +
+    geom_label(
+      data = etiquetas,
+      aes(x = x_pos, y = y_pos, label = label, color = Serie, hjust = hj),
+      inherit.aes = FALSE,
+      fill = "white", fontface = "bold", size = 3.2, show.legend = FALSE
+    ) +
+    scale_color_manual(values = col_serie) +
+    scale_x_date(
+      breaks = seq(as.Date("2018-01-01"), floor_date(ultimo_mes, "year"), by = "1 year"),
+      date_labels = "%Y"
+    ) +
+    scale_y_continuous(expand = expansion(mult = c(0.02, 0.08))) +
+    labs(
+      x       = NULL,
+      y       = NULL,
+      color   = "",
+      caption = paste(
+        "Elaboración propia con base en US Census Bureau.",
+        paste0("Serie mensual ajustada por estacionalidad (X-13ARIMA-SEATS), hasta ",
+               meses_es[mes_fin], " de ", anio_fin, "."),
+        paste0("TCAC: acumulado enero-", meses_es[mes_fin],
+               " de cada año, serie original."),
+        sep = "
+"
+      )
+    ) +
+    theme_bw() +
+    theme(
+      legend.position  = "bottom",
+      panel.grid.minor = element_blank(),
+      axis.text.x      = element_text(angle = 0)
+    )
+})
+
+p
+ggsave(here::here("Plots", "fig-ImpMEX-total-sin847150.pdf"),
+       plot = p, width = 11, height = 6, device = cairo_pdf)
+ggsave(here::here("Plots", "fig-ImpMEX-total-sin847150.png"),
+       plot = p, width = 11, height = 6, dpi = 150)
+rm(p, impPais, impHS6)
+```
+
+```{r}
+#| label: fig-ImpMEX-total-sin847150
+#| message: false
+#| warning: false
+#| echo: false
+#| code-summary: "Importaciones EUA desde México: total y total sin 847150"
+#| fig-cap: |
+#|   EUA: importaciones mensuales desde México, total y total excluyendo la
+#|   subpartida 847150, 2018-2026. Miles de millones de dólares.
+#| fig-cap-location: top
+
+knitr::include_graphics(here::here("Plots", "fig-ImpMEX-total-sin847150.png"))
+```
+
+```{r}
+#| label: save-tbl-share-847150
+#| echo: false
+#| eval: false
+#| code-summary: "Código de la tabla"
+
+# Participación de la subpartida 847150 en las importaciones totales de EUA
+# desde México. Acumulado enero-último mes de cada año, serie ORIGINAL (misma
+# base que los TCAC de la figura anterior). No usa FECHA_FIN.
+
+pacman::p_load(flextable)
+set_flextable_defaults(fonts_ignore = TRUE)
+
+impPais <- readRDS(here::here("RDS", "imp_por_pais.rds"))
+impHS6  <- readRDS(here::here("RDS", "imp_mex_hs6.rds"))
+
+tabla_flex <- local({
+  meses_es <- c("enero", "febrero", "marzo", "abril", "mayo", "junio", "julio",
+                "agosto", "setiembre", "octubre", "noviembre", "diciembre")
+
+  tot <- impPais |>
+    filter(País == "México", !is.na(Imp_mes), fecha >= as.Date("2017-01-01")) |>
+    select(fecha, total = Imp_mes)
+
+  hs <- impHS6 |>
+    filter(Cod_subpartida == "847150") |>
+    group_by(fecha) |>
+    summarise(hs847150 = sum(Val_mes), .groups = "drop")
+
+  mensual <- tot |>
+    left_join(hs, by = "fecha") |>
+    mutate(hs847150 = coalesce(hs847150, 0))
+
+  ultimo_mes <- max(mensual$fecha)
+  mes_fin    <- month(ultimo_mes)
+
+  anual <- mensual |>
+    filter(month(fecha) <= mes_fin) |>
+    group_by(Año = as.integer(year(fecha))) |>
+    summarise(pct = sum(hs847150) / sum(total) * 100, n_mes = n(),
+              .groups = "drop")
+  stopifnot(all(anual$n_mes == mes_fin))
+
+  anual |>
+    transmute(Año = as.character(Año), pct = sprintf("%.1f%%", pct)) |>
+    pivot_wider(names_from = Año, values_from = pct) |>
+    mutate(Concepto = "847150 como % del total", .before = 1) |>
+    flextable() |>
+    set_header_labels(Concepto = "") |>
+    align(j = -1, align = "right", part = "all") |>
+    add_footer_lines(paste0(
+      "Participación en las importaciones totales de EUA desde México, ",
+      "acumulado enero-", meses_es[mes_fin],
+      " de cada año. Elaboración propia con base en US Census Bureau."
+    )) |>
+    theme_booktabs() |>
+    # Anchos fijos (suman 6"): autofit() mide el pie de tabla como una sola línea
+    width(j = 1, width = 1.7) |>
+    width(j = -1, width = 0.43) |>
+    fontsize(size = 9, part = "all")
+})
+
+tabla_flex
+dir.create(here::here("Tablas"), showWarnings = FALSE)
+saveRDS(tabla_flex, here::here("Tablas", "tabla_share_847150.rds"))
+rm(tabla_flex, impPais, impHS6)
+```
+
+```{r}
+#| label: tbl-share-847150
+#| echo: false
+#| tbl-cap: "Importaciones de EUA desde México: participación de la subpartida 847150, enero-agosto de cada año"
+#| tbl-cap-location: top
+
+readRDS(here::here("Tablas", "tabla_share_847150.rds"))
+```
+
+
 ## Reglas arancelarias por país: idas y venidas en cuatro casos ilustrativos.
->>>>>>> a2002808c437b00220ea08dccf1d4b27a443774b
 
 Aún en la cronología simplificada recién presentada, resulta difícil tener un panorama claro de la evolución de la política arancelaria de los EUA durante el segundo gobierno del presidente Trump.
 

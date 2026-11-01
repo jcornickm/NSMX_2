@@ -567,8 +567,8 @@ if (hay_dic) {
 | `Explora_Top_Partidas_Competidores.R` | Igual para las partidas en competencia México/Vietnam/Taiwán (replica Prep03 bajo tres periodos). Lee `imp_competidores_hs4.rds`. Su lista de capítulos excluidos **no** incluye el 72, a diferencia de Prep03. | Exploratorio |
 | `Explora_BIE_ETEF_Claves.R`, `Explora_BIE_ETEF_Probe.R` | Pruebas contra el BIE para encontrar las claves de los subsectores ETEF por entidad. No guardan nada. | Exploratorio |
 | `ied_plots_fbcf.R` | Figuras de FBKF privada y pública y por tipo de bien (precios de 2018). Lee `fbcf_inegi.rds`; escribe `Plots/ied_fbcf_*` en las ventanas `_2024` (C2) y completa (C3). Corrido el 24-oct-2026. C2 tiene además su propio chunk `save-fig-ied-fbcf` para la ventana `_2024`. Código recibido de un colega. | Vigente (alimenta C3) |
-| `top_hs4_Pendiente.R` | Borrador de tablas por capítulo con `gt()`; lee `imp_mex_top_hs4` e `imp_mex_sec_cap`. Parece redundante con el chunk `prep-tablas-cap` de C2. Pendiente de revisar si se archiva. | Pendiente de revisión |
-| `Rec_Diverging_Bars.R` | Borrador de barras divergentes por país; lo reemplaza el chunk de C2. | Heredado |
+| `Por_eliminar/top_hs4_Pendiente.R` | Borrador de tablas por capítulo con `gt()`; lee `imp_mex_top_hs4` e `imp_mex_sec_cap`. Parece redundante con el chunk `prep-tablas-cap` de C2. Pendiente de revisar si se archiva. | Pendiente de revisión |
+| `Por_eliminar/Rec_Diverging_Bars.R` | Borrador de barras divergentes por país; lo reemplaza el chunk de C2. | Heredado |
 | `Sectores en ETEF.R` | Tabla de referencia (tribble) de los subsectores SCIAN que aparecen en el BIE. No es un script ejecutable del pipeline. | Referencia |
 | `retryloop.R` | Bucle de reintentos de Census; lo reemplaza `census_descargar()`. | Heredado |
 | `percents.R`, `plot_save_load.R` | Fragmentos sueltos (`percents.R` termina con un carácter estray). `plot_save_load.R` es un ejemplo del patrón de figura. | Heredado |
