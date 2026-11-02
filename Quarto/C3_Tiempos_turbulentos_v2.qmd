@@ -4,7 +4,7 @@ subtitle: "La política arancelaria de EUA a partir de 2025"
 author: 
   - name: Jorge Cornick
   - name: Ernesto Stein
-date: "2026-10-12"
+date: "2026-11-02"
 format:
   docx:
     reference-doc: reference-doc.docx
