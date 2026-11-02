@@ -109,15 +109,18 @@ census_descargar <- function(vars, desde, hasta, archivo,
 # Una descarga por año (enero–diciembre) y las une. Cada año se guarda en
 # RDS/raw/<prefijo>_<año>.rds. El año en curso se baja solo hasta
 # `mes_fin_actual` (resultado de census_ultimo_mes()); si es NA, se omite.
-# Si algún año falla, se detiene indicando cuáles; los años ya bajados quedan
+# Los años que fallan se reintentan en `rondas` adicionales (pausa_ronda s entre ellas).
+# Si aún así alguno falla, se detiene indicando cuáles; los años ya bajados quedan
 # guardados y se reutilizan al volver a correr (ver max_edad_horas).
 census_descargar_anios <- function(prefijo, anios, vars,
                                    filtros        = list(),
                                    mes_fin_actual = NA_character_,
                                    max_edad_horas = Inf,
+                                   rondas         = 3,
+                                   pausa_ronda    = 30,
                                    ...) {
   anio_actual <- lubridate::year(Sys.Date())
-  piezas <- map(anios, \(a) {
+  descargar_uno <- \(a) {
     hasta <- if (a == anio_actual) mes_fin_actual else sprintf("%d-12", a)
     if (is.na(hasta)) return(tibble())   # año en curso sin datos todavía
     census_descargar(
@@ -125,7 +128,19 @@ census_descargar_anios <- function(prefijo, anios, vars,
       archivo = here::here("RDS", "raw", sprintf("%s_%d.rds", prefijo, a)),
       filtros = filtros, max_edad_horas = max_edad_horas, ...
     )
-  })
+  }
+  piezas <- map(anios, descargar_uno)
+
+  # El API de Census falla de forma intermitente: los años que fallaron se
+  # reintentan en rondas adicionales (con pausa), reutilizando los ya bajados.
+  for (ronda in seq_len(rondas)) {
+    pend <- which(map_lgl(piezas, is.null))
+    if (length(pend) == 0) break
+    message("  Ronda de reintento ", ronda, "/", rondas, ": años ",
+            paste(anios[pend], collapse = ", "), " (pausa de ", pausa_ronda, " s)")
+    Sys.sleep(pausa_ronda)
+    piezas[pend] <- map(anios[pend], descargar_uno)
+  }
   fallos <- anios[map_lgl(piezas, is.null)]
   if (length(fallos) > 0)
     stop("Fallaron los años: ", paste(fallos, collapse = ", "),

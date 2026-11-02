@@ -24,7 +24,7 @@
 #
 # Entradas:  RDS/raw_df_mex_vnm_twn.rds (versión actual), API de Census
 # Salidas:   RDS/raw_df_mex_vnm_twn.rds, RDS/imp_competidores_hs4.rds,
-#            RDS/meta_query11.rds, RDS/revision_q11.rds (qué cambió)
+#            RDS/meta_query02.rds, RDS/revision_q02.rds (qué cambió)
 
 #   NOTAS SOBRE EL API                                                      ####
 
@@ -69,7 +69,7 @@ if (!"fecha" %in% names(raw_df))
   raw_df <- raw_df |> mutate(fecha = as.Date(paste0(time, "-01")))
 message("Datos crudos actuales: ", nrow(raw_df), " filas, hasta ", format(max(raw_df$fecha)))
 
-revision_q11 <- NULL
+revision_q02 <- NULL
 ultimo_mes   <- NA_character_
 
 if (DESCARGAR) {
@@ -101,7 +101,7 @@ if (DESCARGAR) {
                         valor = "GEN_VAL_MO", desde = desde,
                         nombre = "importaciones MX/VN/TW (todos los niveles)")
   raw_df       <- act$datos
-  revision_q11 <- act$revision
+  revision_q02 <- act$revision
   rm(nuevo, act); invisible(gc())
 
   # Los tres países deben llegar al mismo mes
@@ -111,8 +111,8 @@ if (DESCARGAR) {
 
   tryCatch({
     saveRDS(raw_df, ruta_raw)
-    saveRDS(list(revision = revision_q11, fecha = Sys.time()), here("RDS", "revision_q11.rds"))
-    message("✔  raw_df_mex_vnm_twn.rds y revision_q11.rds guardados.")
+    saveRDS(list(revision = revision_q02, fecha = Sys.time()), here("RDS", "revision_q02.rds"))
+    message("✔  raw_df_mex_vnm_twn.rds y revision_q02.rds guardados.")
   }, error = function(e) message("✗  ERROR guardando los datos crudos: ", conditionMessage(e)))
 } else {
   message("\n=== DESCARGAR = FALSE: se usan los datos crudos ya guardados (sin llamar al API) ===")
@@ -192,7 +192,7 @@ imp_competidores_hs4 |>
 
 # Sección 6. Metadatos y guardado   ####
 
-meta_query11 <- list(
+meta_query02 <- list(
   fuente              = "US Census Bureau — International Trade API",
   endpoint            = "timeseries/intltrade/imports/hs",
   url                 = "https://api.census.gov/data/timeseries/intltrade/imports/hs",
@@ -213,7 +213,7 @@ meta_query11 <- list(
     "filtrando por nchar(I_COMMODITY). Val_mes y Val_acum en dólares corrientes.",
     "Actualización incremental: los años anteriores a", ANIO_SOLAPE, "provienen de la",
     "descarga original (octubre de 2026, con 2026 hasta julio); desde", ANIO_SOLAPE,
-    "se volvió a descargar (Census revisa años recientes; ver revision_q11.rds).",
+    "se volvió a descargar (Census revisa años recientes; ver revision_q02.rds).",
     "El último año es parcial — no comparar contra años completos sin comparar los",
     "mismos meses.",
     "Prep01 y Prep02 derivan de raw_df_mex_vnm_twn.rds (México); Prep03, de imp_competidores_hs4.rds."
@@ -226,6 +226,6 @@ tryCatch({
 }, error = function(e) message("✗  ERROR guardando imp_competidores_hs4.rds: ", conditionMessage(e)))
 
 tryCatch({
-  saveRDS(meta_query11, here("RDS", "meta_query11.rds"))
-  message("✔  meta_query11.rds guardado.")
-}, error = function(e) message("✗  ERROR guardando meta_query11.rds: ", conditionMessage(e)))
+  saveRDS(meta_query02, here("RDS", "meta_query02.rds"))
+  message("✔  meta_query02.rds guardado.")
+}, error = function(e) message("✗  ERROR guardando meta_query02.rds: ", conditionMessage(e)))

@@ -37,15 +37,15 @@ set_flextable_defaults(fonts_ignore = TRUE)
 
 ## Introducción
 
-La evolución de la primera fase del nearshoring y el cambio en los flujos comerciales entre México y EUA en ese período fue descrita con bastante detalle en el capítulo anterior. Durante esa primera fase, los cambios en las reglas del juego fueron acotados y estables: EUA impuso un arancel diferenciado para la mayor parte de las importaciones provenientes de China, y el resto de sus relaciones comerciales se siguieron rigiendo por las reglas multilaterales del comercio internacional de la OMC, o bien por los acuerdos de libre comercio entre EUA y algunos de sus socios comerciales. Esto nos permitió focalizarnos directamente en los cambios en los flujos comerciales y de inversión, sin una descripción detallada ni de los instrumentos ni de los cambios en la política arancelaria de EUA en ese período.
+La evolución de la primera fase del nearshoring y el cambio en los flujos comerciales entre México y EUA en ese período fue descrita con bastante detalle en el capítulo anterior. Durante esa primera fase, los cambios en las reglas del juego fueron acotados y estables: salvo en lo concerniente a la guerra comercial con China, las relaciones comerciales de EUA se siguieron rigiendo por las reglas multilaterales del comercio internacional de la OMC, o bien por los acuerdos de libre comercio entre EUA y algunos de sus socios comerciales. Esto nos permitió focalizarnos directamente en los cambios en los flujos comerciales y de inversión, sin una descripción detallada ni de los instrumentos ni de los cambios en la política arancelaria de EUA en ese período.
 
 A partir de 2025, con el inicio del segundo gobierno de Trump, las cosas cambian: la definición unilateral de la política arancelaria se convierte en la norma, ya no la excepción; la política está sujeta a ajustes rápidos y a veces profundos que la hacen fundamentalmente impredecible, y el portafolio de instrumentos movilizados para implementarla es más amplio, novedoso y controversial. Por estas razones, en este capítulo será necesario esbozar la cronología y describir los instrumentos de la política comercial de EUA a partir de 2025, aunque sea de manera breve. El **apartado 2** de este capítulo aborda estos dos temas. 
 
-En el **apartado 3** se describe la evolución de los aranceles que aplica EUA a las importaciones provenientes de cuatro países:  México, Canadá, Vietnam y China.  Se trata de los aranceles "del carril principal", es decir, aquellos que aplican a productos que no exportan al amparo de regímenes especiales (como los tratados de libre comercio) o que no están sujetos a aranceles específicos por producto, independientemente de su origen y de la existencia de acuerdos comerciales (como es el caso de aranceles y aluminio).  Este apartado pone en evidencia varias características fundamentales de la nueva política arancelaria: su carácter unilateral, su variabilidad y el tratamiento diferenciado que reciben distintos países.  Nuestro interés es el impacto que todo ello tiene sobre la posición competitiva de México como exportador a EUA.
+En el **apartado 3** se describe la evolución de los aranceles que aplica EUA a las importaciones provenientes de cuatro países:  México, Canadá, Vietnam, Taiwán y China.  Se trata de los aranceles "del carril principal", es decir, aquellos que aplican a productos que no exportan al amparo de regímenes especiales (como los tratados de libre comercio) o que no están sujetos a aranceles específicos por producto, independientemente de su origen y de la existencia de acuerdos comerciales (como es el caso de aranceles y aluminio).  Este apartado pone en evidencia varias características fundamentales de la nueva política arancelaria: su carácter unilateral, su variabilidad y el tratamiento diferenciado que reciben distintos países.  Nuestro interés es el impacto que todo ello tiene sobre la posición competitiva de México como exportador a EUA.
 
-El **apartado 4** es similar al anterior, en el sentido de que permite poner en evidencia las características fundamentales de la nueva política arancelaria, pero la perspectiva es distinta:  el enfoque no son los aranceles por país, sino los aranceles que se imponen a ciertos productos, indepedientemente de su origen: autos, autopartes, acero y aluminio, y servidores para inteligencia artificial, todos ellos de importancia central para la competitividad de México.
+El **apartado 4** es similar al anterior, en el sentido de que permite poner en evidencia las características fundamentales de la nueva política arancelaria, pero la perspectiva es distinta:  el enfoque no son los aranceles por país, sino los aranceles que se imponen a ciertos productos, independientemente de su origen: autos, autopartes, acero y aluminio, y servidores para inteligencia artificial, todos ellos de importancia central para la competitividad de México.
 
-El tema de los flujos comerciales se retoma, finalmente, en el **apartado 5**, en el que se examinan dos temas complementarios: primero, los cambios en la participación en el mercado de EUA por parte de China, México, Vietnam y Taiwán y, segundo, la composición de las exportaciones de los últimos tres países, con el propósito de identificar la existencia, o no, de competencia directa entre ellos en términos de partidas y subpartidas del SA.
+El tema de los flujos comerciales se retoma, finalmente, en el **apartado 5**, en el que se examinan dos temas complementarios: primero, los cambios en la participación en el mercado de EUA por parte de China, México, Vietnam y Taiwán y, segundo, la composición de las exportaciones de los últimos tres países, con el propósito de identificar la existencia, o no, de competencia directa entre ellos en términos de partidas y subpartidas del SA.  Este apartado pone en evidencia la consolidación de México como primer exportador al mercado de EUA, pero también el extraordinariamente rápido crecimiento de las exportaciones de Vietnam y Taiwán, así como los retos competitivos que de ello se derivan para México.
 
 El **apartado 6** aborda el tema de la renegociación del T-MEC y su importancia para México, aún si el actual gobierno de EUA no trata sus acuerdos comerciales como compromisos vinculantes. Se abordan aquí tanto temas de fondo como de estrategia y negociación.
 
@@ -139,11 +139,11 @@ Durante todo este período los aranceles IEEPA permanecen vigentes (la administr
 
 - A partir de setiembre de 2026 se empieza a utilizar la Sección 338 contra Canadá, una autoridad bilateral y punitiva dirigida específicamente a un país (Canadá) por una disputa concreta (trato preferencial a los quesos de la UE bajo CETA frente al T-MEC). Su uso en julio de 2026 — la primera invocación documentada de esta sección en casi cien años — escaló en agosto a un paquete arancelario de USD 27.600 millones y produjo represalia canadiense en espejo, vigente desde el 8 de septiembre de 2026 (fecha de cierre de este documento) [@federalregister2026g; @aljazeera2026a; @canada2026].
 
-## Reglas arancelarias por país: cuatro casos ilustrativos.
+## Reglas arancelarias por país: cinco casos ilustrativos.
 
-Aún en la cronología simplificada recién presentada, resulta difícil tener un panorama claro de la evolución de la política arancelaria de los EUA durante el segundo gobierno del presidente Trump.
+Aún en la cronología simplificada recién presentada, resulta difícil tener un panorama claro de la evolución de la política arancelaria de los EUA durante el segundo gobierno del presidente Trump.  Son demasiados instrumentos y demasiados cambios y es difícil visualizarlos conjuntamente.
 
-Para superar esta dificultad, en este apartado se muestra gráficamente la evolución de los aranceles del “carril principal”, entendido como el arancel que pagan los productos que no están sujetos a tratamiento especial en virtud de acuerdos comerciales o de la aplicación de instrumentos específicos, como en el caso de acero y aluminio.
+Para superar esta dificultad, en este apartado se muestra gráficamente la evolución de los aranceles del “carril principal”, entendido como el arancel que pagan los productos que no están sujetos a tratamiento especial en virtud de acuerdos comerciales o de la aplicación de instrumentos específicos, como en el caso de acero y aluminio.  
 
 {{< pagebreak >}}
 
@@ -159,7 +159,11 @@ Para superar esta dificultad, en este apartado se muestra gráficamente la evolu
 knitr::include_graphics(here::here("Plots", "infografia_mexico.png"))
 ```
 
-Tras el anuncio inicial de un arancel del 25% para todas las importaciones provenientes de México, se hace una excepción para los productos que se exporten vía T-MEC. La amenaza de un incremento del arancel a 30% nunca se concreta, y tras la resolución de la Corte Suprema de los Estados Unidos (SCOTUS) el arancel se reduce a 10% bajo Sección 122 y se mantiene al mismo nivel luego bajo Sección 301.
+La @fig-info-mexico muestra los principales hitos en la evolución de los aranceles impuestos por EUA a las importaciones provenientes de Méixoc a partir de 2025: el 1 de febrero se anuncia un arancel general del 25%, que es pausado dos días después; ese arancel entra en  vigor, sin excepciones, el 4 de marzo, pero dos días después se exceptúan de él los productos que se exporten dentro del T-MEC (salvo los sujetos a aranceles específicos, que se discuten en el apartado siguiente).  El 12 de julio se amenaza con incrementar el arancel general a un 30%, pero la medida se suspende el 31 de julio.  El 30 de febrero de 2026 la Corte Suprema de EUA declara inválidos los aranceles IEEPA, que son sustituidos por un arancel del 10% bajo la Sección 122, y cuando esta expira, por un arancel de 10% bajo la sección 301.
+
+Con estas reglas, México queda en una posición muy ventajosa frente a otros comerciales en aquellos productos que se exporten bajo el T-MEC, con las excepciones que se discuten en el próximo apartado, y queda con una ligera ventaja (arancel de 10%) frente a importaciones fuera de T-MEC con respecto a Vietnam y China (arancel de 12.55).
+
+El panorama parece muy favorable, pero las cosas se complican una vez que se consideran los aranceles a productos específicos, en el apartado siguiente.
 
 {{< pagebreak >}}
 
@@ -175,9 +179,9 @@ Tras el anuncio inicial de un arancel del 25% para todas las importaciones prove
 knitr::include_graphics(here::here("Plots", "infografia_canada.png"))
 ```
 
-La trayectoria de los aranceles de EUA a las importaciones provenientes de Canadá es idéntica a la de México entre febrero y agosto de 2025, pero cambia a partir de ese momento, con aranceles de 35% para los productos que se exporten fuera del T-MEC y si bien tras la resolución de SCOTUS Canadá, al igual que México, enfrentó aranceles del 10% bajo la Sección 122 y luego la 301, con posterioridad a julio 2026 (fecha de corte para este informe) se ha iniciado una guerra comercial entre Canadá y EUA cuyo desenlace aún no se conoce.
+La trayectoria de los aranceles de EUA a las importaciones provenientes de Canadá, que se muestra en la @fig-info-can, es idéntica a la de México entre febrero y agosto de 2025, pero cambia a partir de ese momento, con aranceles de 35% para los productos que se exporten fuera del T-MEC y si bien tras la resolución de SCOTUS Canadá, al igual que México, enfrentó aranceles del 10% bajo la Sección 122 y luego la 301, con posterioridad a julio 2026 (fecha de corte para este informe) se ha iniciado una guerra comercial entre Canadá y EUA cuyo desenlace aún no se conoce.
 
-Todo esto tiene relevancia para México por dos razones: porque pone en evidencia que el T-MEC solo ofrece una protección moderada frente a cambios abruptos en la política arancelaria del presidente Trump, y porque muestra que aún un país tan profundamente integrado con la economía de EUA puede verse forzado a desarrollar una estrategia económica y política que le permita un “desacople” (para usar la misma expresión que se ha utilizado para referirse a las relaciones económicas entre China y EUA) parcial, sin duda gradual, pero significativo con respecto a la economía de EUA.
+Todo esto tiene relevancia para México por dos razones: porque pone en evidencia que el T-MEC solo ofrece una protección moderada frente a cambios abruptos en la política arancelaria de EUA y porque muestra que aún un país tan profundamente integrado con la economía de EUA puede verse forzado a desarrollar una estrategia económica y política que busque “desacople”, aunque sea parcial y gradual, con respecto a la economía de EUA por razones tanto económicas como de seguridad nacional.
 
 {{< pagebreak >}}
 
@@ -193,9 +197,25 @@ Todo esto tiene relevancia para México por dos razones: porque pone en evidenci
 knitr::include_graphics(here::here("Plots", "infografia_vietnam.png"))
 ```
 
-Aunque en “Liberation Day” se anunció un arancel para las importaciones provenientes de Vietnam del 46%, muy por encima del arancel del 25% para importaciones provenientes de México que no cumplieran con T-MEC, entre abril 2025 y febrero 2026 el arancel para “carril principal” fue menor para Vietnam que para México: 10% de abril a agosto 2025, y 20% desde agosto hasta la anulación de las tarifas IEEPA.
+Los altibajos de la política arancelaria de EUA, y el hecho de que las alícuotas anunciadas son con frecuencia un instrumento para catalizar una negociación más que una decisión definitiva, son ilustrados aún más vívidamente en el caso de Vietnam, como se muestra en la @fig-info-vtn.
 
-Al amparo de Sección 122, se estableció un arancel igual al de México, y posteriormente 12.5% al amparo de Sección 301. Estos datos se ilustran en la @fig-info-vtn.
+El 2 de abril, "Liberation Day” se anunció un arancel para las importaciones provenientes de Vietnam del 46%, pro tal solo 7 días después se anunció una pausa global, y el arancel se redujo a 10%. Tras la emisión de una orden ejecutivo el 31 de julio, un arancel del 20% entró en vigor un arancel del 20%.  Tras la resolución de la Corte Suprema sobre los aranceles IEEPA, el arancel se redujo a 10 bajo la Sección 122, a partir del 24 de febrero de 2026, y se elevó a 12.5% bajo la sección 301 a partir del 24 de julio de 2026..
+
+{{< pagebreak >}}
+
+### Taiwán
+
+```{r}
+#| label: fig-info-twn
+#| echo: false
+#| fig-cap: "Aranceles de EUA a las importaciones de Taiwán, carril principal, 2025-2026"
+#| fig-cap-location: top
+#| out-width: 100%
+
+knitr::include_graphics(here::here("Plots", "infografia_taiwan.png"))
+```
+
+La trayectoria de los aranceles a las importaciones provenientes de Taiwán, que se muestra en la @fig-info-twn es bastante parecida a la de Vietnam, aunque con valores iniciales y finales más bajo:  el 2 de abril se anuncio un arancel del 32%, que se redujo al 10% el 9 de abril, subió al 20 el 7 de agosto de 2025, y se redujo al 10% a partir del 24 de febrero de 2026 bajo la Sección 122. A diferencia de Vietnam, que paga un arancel del 12.5% bajo la Sección 301 a partir de julio 2026, Taiwán paga un arancel del 10%.
 
 {{< pagebreak >}}
 
@@ -221,9 +241,7 @@ El caso ya no es único, porque en setiembre 2026 Canadá respondió al incremen
 
 Los aranceles que ha impuesto Canadá pueden causar disrupciones económicas en los EUA, pero en ningún caso afectan a bienes con un papel estratégico comparable con el de las “tierras raras”.
 
-
-
-## Reglas arancelarias por producto: autos, autopartes, acero y aluminio, semiconductores
+## Autos, autopartes, acero y aluminio, semiconductores
 
 Los aranceles de la “carril principal” son solo una pieza de la política arancelaria de EUA en la actualidad.
 
@@ -237,7 +255,19 @@ Examinamos seguidamente cuatro casos de particular importancia para México: aut
 
 Nuestro interés es siempre el cambio en la posición competitiva de México, ya que paradójicamente es posible que México enfrente simultáneamente un arancel más alto que el vigente hasta 2024 y una mayor ventaja competitiva sobre otros exportadores al mercado de EUA que en el período anterior.
 
+{{< pagebreak >}}
+
 ### Autos
+
+```{r}
+#| label: fig-autos
+#| echo: false
+#| fig-cap: "Aranceles de EUA a las importaciones de China, carril principal, 2025-2026"
+#| fig-cap-location: top
+#| out-width: 100%
+
+knitr::include_graphics(here::here("Plots", "comparativo_autos.png"))
+```
 
 Automóviles es un caso en el que la nueva política arancelaria bajo Sección 232 ha puesto a México en clara desventaja frente a otros exportadores al mercado de EUA, tales como la UE, Japón y Corea del Sur.
 
@@ -255,21 +285,9 @@ Ninguno de esos tres países tiene que cumplir con las reglas de contenido de va
 
 El arancel del 15% es una tarifa plana en un caso, y el resultado de un proceso complejo, costoso y con restricciones sobre la elección de suplidores en el otro.
 
-```{r}
-#| label: fig-autos
-#| echo: false
-#| fig-cap: "Aranceles de EUA a las importaciones de China, carril principal, 2025-2026"
-#| fig-cap-location: top
-#| out-width: 100%
-
-knitr::include_graphics(here::here("Plots", "comparativo_autos.png"))
-```
+{{< pagebreak >}}
 
 ### Autopartes
-
-En contraste con lo que sucede en autos, en autopartes la situación de México resulta altamente ventajosa en comparación con la de sus competidores.
-
-Bajo la misma Proclama 10908, las autopartes originadas en México que cumplan con las reglas de T-MEC ingresan a EUA con un arancel de 0, en contraste con el 15% que pagan sus competidores.
 
 ```{r}
 #| label: fig-autopartes
@@ -280,6 +298,10 @@ Bajo la misma Proclama 10908, las autopartes originadas en México que cumplan c
 
 knitr::include_graphics(here::here("Plots", "comparativo_autopartes.png"))
 ```
+
+En contraste con lo que sucede en autos, en autopartes la situación de México resulta altamente ventajosa en comparación con la de sus competidores.
+
+Bajo la misma Proclama 10908, las autopartes originadas en México que cumplan con las reglas de T-MEC ingresan a EUA con un arancel de 0, en contraste con el 15% que pagan sus competidores.  Sin embargo, aún en estas condiciones, el comportamiento de las exportaciones de autopartes no ha sido particularmente dinámico, como se muestra en el apartado 5.3. 
 
 ### Acero y aluminio
 
@@ -815,6 +837,236 @@ saveRDS(tabla_flex, here::here("Tablas", "tabla_share_847150.rds"))
 rm(tabla_flex, impPais, impHS6)
 ```
 
+```{r}
+#| label: save-fig-ImpEUA-8471-8517-8473
+#| echo: false
+#| eval: false
+#| code-summary: "Código de la figura"
+
+# Importaciones de EUA desde México, Vietnam y Taiwán en las Partidas 8471,
+# 8517 y 8473, enero 2018 - último mes disponible. Serie mensual desestacionalizada.
+# Datos: RDS/imp_competidores_hs4.rds. No usa FECHA_FIN.
+
+source(here::here("Scripts", "funciones.R"))   # paleta_pais, hs_etiquetas_partida()
+
+impHS4 <- readRDS(here::here("RDS", "imp_competidores_hs4.rds"))
+
+p <- local({
+  paises   <- c("México", "Vietnam", "Taiwán")
+  partidas <- c("8471", "8517", "8473")
+  meses_es <- c("enero", "febrero", "marzo", "abril", "mayo", "junio", "julio",
+                "agosto", "setiembre", "octubre", "noviembre", "diciembre")
+
+  # Ajuste estacional sobre la serie completa (desde 2010); el corte a 2018
+  # se hace solo al graficar
+  datos <- impHS4 |>
+    filter(Pais %in% paises, Cod_partida %in% partidas) |>
+    hs_etiquetas_partida() |>
+    arrange(Pais, Cod_partida, fecha) |>
+    group_by(Pais, Cod_partida) |>
+    mutate(Val_bn_sa = sa_adj(Val_mes / 1e9, fecha, freq = 12)) |>
+    ungroup() |>
+    mutate(
+      Pais  = factor(Pais, levels = paises),
+      panel = factor(paste("Partida", Cod_partida, "-", Part_corto),
+                     levels = paste("Partida", partidas, "-",
+                                    Part_corto[match(partidas, Cod_partida)]))
+    )
+  ultimo_mes <- max(datos$fecha)
+
+  datos |>
+    filter(fecha >= as.Date("2018-01-01")) |>
+  ggplot(aes(x = fecha, y = Val_bn_sa, color = Pais)) +
+    geom_line(linewidth = 0.8) +
+    geom_vline(
+      xintercept = as.Date("2025-01-01"),
+      linetype = "dotted", color = COL_HITO, linewidth = 0.7
+    ) +
+    facet_wrap(~ panel, ncol = 1, scales = "free_y") +
+    scale_color_manual(values = paleta_pais[paises]) +
+    scale_x_date(
+      breaks = seq(as.Date("2018-01-01"), floor_date(ultimo_mes, "year"), by = "1 year"),
+      date_labels = "%Y"
+    ) +
+    labs(
+      x = NULL, y = "Miles de millones de dólares", color = "",
+      caption = paste0("Elaboración propia con base en US Census Bureau. ",
+                       "Serie mensual ajustada por estacionalidad (X-13ARIMA-SEATS), hasta ",
+                       meses_es[month(ultimo_mes)], " de ", year(ultimo_mes), ".")
+    ) +
+    theme_bw() +
+    theme(
+      legend.position  = "bottom",
+      panel.grid.minor = element_blank(),
+      strip.background = element_blank(),
+      strip.text       = element_text(face = "bold", hjust = 0),
+      axis.text.x      = element_text(angle = 0)
+    )
+})
+
+p
+for (f in c("pdf", "png")) {
+  ruta <- here::here("Plots", paste0("fig-ImpEUA-8471-8517-8473.", f))
+  if (file.exists(ruta)) file.remove(ruta)
+}
+ggsave(here::here("Plots", "fig-ImpEUA-8471-8517-8473.pdf"),
+       plot = p, width = 8, height = 10, device = cairo_pdf)
+ggsave(here::here("Plots", "fig-ImpEUA-8471-8517-8473.png"),
+       plot = p, width = 8, height = 10, dpi = 150)
+rm(p, impHS4)
+```
+
+
+```{r}
+#| label: save-fig-ImpEUA-autos-autopartes
+#| echo: false
+#| eval: false
+#| code-summary: "Código de las figuras"
+
+# Importaciones de EUA de automóviles (8703) y autopartes (8708) desde México,
+# Japón, Corea del Sur y Alemania (proxy de la UE), 2018 hasta el último mes
+# disponible. Una figura por partida. Datos: RDS/imp_autos_socios.rds (Query11).
+# Línea: serie desestacionalizada (X-13 sobre la serie completa; el corte a 2018
+# se hace solo al graficar). TCAC: suma enero-último mes de cada año, serie
+# ORIGINAL. 2018-2024 se mide 2017 -> 2024; 2025-2026 se mide 2024 -> último año.
+# No usa FECHA_FIN.
+
+source(here::here("Scripts", "funciones.R"))   # sa_adj(), paleta_pais, COL_HITO
+
+impAutos <- readRDS(here::here("RDS", "imp_autos_socios.rds"))
+
+ps <- local({
+  paises   <- c("México", "Japón", "Corea del Sur", "Alemania")
+  cod      <- c("México" = "MEX", "Japón" = "JPN",
+                "Corea del Sur" = "KOR", "Alemania" = "DEU")
+  partidas <- c(autos = "8703", autopartes = "8708")
+  meses_es <- c("enero", "febrero", "marzo", "abril", "mayo", "junio", "julio",
+                "agosto", "setiembre", "octubre", "noviembre", "diciembre")
+
+  # — 1. Datos mensuales y ajuste estacional --------------------------------
+  datos <- impAutos |>
+    filter(nivel == "HS4", Pais %in% paises, partida %in% partidas) |>
+    mutate(Val_bn = Val_mes / 1e9) |>
+    arrange(Pais, partida, fecha) |>
+    group_by(Pais, partida) |>
+    mutate(Val_bn_sa = sa_adj(Val_bn, fecha, freq = 12)) |>
+    ungroup()
+
+  # Último mes disponible común a todas las series
+  ultimo_mes <- datos |>
+    group_by(Pais, partida) |>
+    summarise(m = max(fecha), .groups = "drop") |>
+    pull(m) |>
+    min()
+  mes_fin  <- month(ultimo_mes)
+  anio_fin <- as.integer(year(ultimo_mes))
+  message("Último mes disponible: ", format(ultimo_mes, "%Y-%m"))
+
+  # — 2. Acumulado enero-mes_fin por año (serie ORIGINAL) --------------------
+  acum <- datos |>
+    filter(month(fecha) <= mes_fin) |>
+    group_by(Pais, partida, Año = as.integer(year(fecha))) |>
+    summarise(Val_acum = sum(Val_bn), n_mes = n(), .groups = "drop")
+
+  anclas <- c(2017L, 2024L, anio_fin)
+  stopifnot(all(acum$n_mes[acum$Año %in% anclas] == mes_fin))  # años ancla completos
+
+  # — 3. Períodos y TCAC ------------------------------------------------------
+  periodos <- tibble(
+    base     = c(2017L, 2024L),
+    fin      = c(2024L, anio_fin),
+    rot      = c("18-24", sprintf("25-%02d", anio_fin %% 100L)),
+    ini_graf = as.Date(c("2018-01-01", "2025-01-01")),
+    fin_graf = c(as.Date("2024-12-31"), ultimo_mes)
+  )
+
+  v_base <- acum |> transmute(Pais, partida, base = Año, v_base = Val_acum)
+  v_fin  <- acum |> transmute(Pais, partida, fin  = Año, v_fin  = Val_acum)
+
+  # — 4. Un gráfico por partida ----------------------------------------------
+  graficar <- function(part) {
+    imp_p <- datos |>
+      filter(partida == part) |>
+      mutate(Pais = factor(Pais, levels = paises))
+
+    y_max   <- max(imp_p$Val_bn_sa)
+    # Banda de etiquetas por encima de todas las series
+    y_banda <- y_max * 1.45
+    paso    <- y_max * 0.09
+
+    etiquetas <- expand_grid(Pais = paises, partida = part, periodos) |>
+      left_join(v_base, by = c("Pais", "partida", "base")) |>
+      left_join(v_fin,  by = c("Pais", "partida", "fin")) |>
+      mutate(
+        tcac  = ((v_fin / v_base)^(1 / (fin - base)) - 1) * 100,
+        fecha = as.Date(ini_graf + (fin_graf - ini_graf) / 2),
+        # Etiquetas en una banda sobre las series, una fila por país
+        y_pos = y_banda - (match(Pais, paises) - 1) * paso,
+        x_pos = if_else(base == 2017L, fecha, ultimo_mes),
+        hj    = if_else(base == 2017L, 0.5, 1),
+        label = paste0("TCAC ", unname(cod[Pais]), " ", rot, ": ",
+                       sprintf("%.1f", tcac), "%"),
+        Pais  = factor(Pais, levels = paises)
+      )
+
+    print(etiquetas |> select(Pais, partida, rot, base, fin, tcac))   # para verificar
+
+    imp_p |>
+      filter(fecha >= as.Date("2018-01-01"), fecha <= ultimo_mes) |>  # corte solo al graficar
+      ggplot(aes(x = fecha, y = Val_bn_sa, color = Pais)) +
+      geom_line(linewidth = 1) +
+      geom_vline(
+        xintercept = as.Date("2025-01-01"),
+        linetype = "dotted", color = COL_HITO, linewidth = 0.7
+      ) +
+      geom_label(
+        data = etiquetas,
+        aes(x = x_pos, y = y_pos, label = label, color = Pais, hjust = hj),
+        inherit.aes = FALSE,
+        fill = "white", fontface = "bold", size = 3.2, show.legend = FALSE
+      ) +
+      scale_color_manual(values = paleta_pais[paises]) +
+      scale_x_date(
+        breaks = seq(as.Date("2018-01-01"), floor_date(ultimo_mes, "year"), by = "1 year"),
+        date_labels = "%Y"
+      ) +
+      scale_y_continuous(expand = expansion(mult = c(0.02, 0.08))) +
+      labs(
+        x       = NULL,
+        y       = NULL,
+        color   = "",
+        caption = paste(
+          "Elaboración propia con base en US Census Bureau.",
+          "Alemania como aproximación de la Unión Europea.",
+          paste0("Serie mensual ajustada por estacionalidad (X-13ARIMA-SEATS), hasta ",
+                 meses_es[mes_fin], " de ", anio_fin, "."),
+          paste0("TCAC: acumulado enero-", meses_es[mes_fin],
+                 " de cada año, serie original."),
+          sep = "\n"
+        )
+      ) +
+      theme_bw() +
+      theme(
+        legend.position  = "bottom",
+        panel.grid.minor = element_blank(),
+        axis.text.x      = element_text(angle = 0)
+      )
+  }
+
+  map(partidas, graficar)
+})
+
+ps$autos
+ps$autopartes
+for (nm in names(ps)) {
+  base_f <- here::here("Plots", paste0("fig-ImpEUA-", nm))
+  for (ext in c(".pdf", ".png")) if (file.exists(paste0(base_f, ext))) file.remove(paste0(base_f, ext))
+  ggsave(paste0(base_f, ".pdf"), plot = ps[[nm]], width = 11, height = 6, device = cairo_pdf)
+  ggsave(paste0(base_f, ".png"), plot = ps[[nm]], width = 11, height = 6, dpi = 150)
+}
+rm(ps, impAutos, nm, base_f, ext)
+```
+
 ### La participación en el mercado de EUA: México, China, Taiwán y Vietnam
 
 En el período 2018 - 2024, México se convirtió en el principal exportador al mercado de EUA; China no fue simplemente desplazada de esa posición, sino que su participación en ese mercado se contrajo severamente, y surgieron dos nuevas estrellas exportadoras, Vietnam y Taiwán.
@@ -837,7 +1089,7 @@ En el período 2018 - 2024, México se convirtió en el principal exportador al 
 knitr::include_graphics(here::here("Plots", "fig-ImpEUA-CHN-MEX-VNM-TWN.png"))
 ```
 
-El resultado acumulado son cambios que parece justificado calificar como dramáticos en la participación de cada uno de estos cuatro países en el mercado de EUA. En la @fig-ImpEUA-treempas-CHN-MEX-VNM-TWN se muestras esas participaciones al inicio del nearshoring, al final de su primera fase, y en los datos más recientes:
+El resultado acumulado son cambios que parece justificado calificar como dramáticos en la participación de cada uno de estos cuatro países en el mercado de EUA. En la @fig-ImpEUA-treemaps-CHN-MEX-VNM-TWN se muestras esas participaciones al inicio del nearshoring, al final de su primera fase, y en los datos más recientes:
 
 - China inicia con una participación del 20.6%, que se reduce a 13.1% en 2024 y todavía más, a un 7.6% en 2026
 - México crece de manera consistente: pasa de 13.6% a 15.6 y finalmente 17.4%
@@ -884,9 +1136,18 @@ readRDS(here::here("Tablas", "tabla_share_847150.rds"))
 
 ### ¿Compiten directamente México, Taiwán y Vietnam?
 
-El análisis parte de México. Se ordenaron las Partidas (HS4) por el valor exportado a EUA entre enero de 2025 y agosto de 2026, depuradas de categorías sin interés para NS (alimentos, combustibles, materias primas, joyería, muebles, textiles y calzado, entre otras), y se conservaron las de mayor valor hasta cubrir el 80% del valor restante. Son 22 Partidas, que equivalen al 63.6% de las exportaciones totales de México a EUA en ese periodo. Para esas mismas Partidas se registró el valor exportado por Vietnam y Taiwán; no se identificaron Partidas principales para estos países, pues interesan solo en la medida en que compiten con México.
+El crecimiento de las exportaciones de Taiwán y Vietnam a EUA sugiere la posibilidad de una competencia directa entre estos dos países y México, pero no es suficiente para concluir que esa competencia existe:  eso dependerá de los productos específicos que cada país esté exportando.  Esa es la cuestión que se aborda en este apartado.
 
-La @tbl-partidas-competencia muestra el resultado. Las Partidas se concentran en los Capítulos 84, 85, 87 y 90 del SA, los mismos identificados para México en el Capítulo 2. La presencia de Vietnam y Taiwán es muy desigual: en la mayoría de las Partidas su valor es pequeño, tanto en dólares como en proporción de sus propias exportaciones a EUA. Las excepciones son las computadoras (8471), donde Taiwán exporta 180 mil millones de dólares (46.3% de sus exportaciones a EUA) y Vietnam 63 mil millones (17.1%); los teléfonos (8517), que representan el 16.4% de las exportaciones de Vietnam; y las partes de oficina (8473), con 19.9% de las exportaciones de Taiwán y 11.4% de las de Vietnam.
+El análisis parte de México. Se ordenaron las Partidas (HS4) por el valor exportado a EUA entre enero de 2025 y agosto de 2026, depuradas de categorías sin interés para NS (alimentos, combustibles, materias primas, joyería, muebles, textiles y calzado, entre otras), y se conservaron las de mayor valor hasta cubrir el 80% del valor restante ^[Es decir, el 80% del valor de las exportaciones relevantes para el nearshoring, no el 80% del valor del total de las exportaciones mexicanas a EUA]. 
+En total se identificaron 22 Partidas, que equivalen al 63.6% de las exportaciones totales de México a EUA en ese periodo. Para esas mismas Partidas se registró el valor exportado por Vietnam y Taiwán; no se identificaron Partidas principales para estos países, pues interesan solo en la medida en que compiten con México.
+
+La @tbl-partidas-competencia muestra el resultado. Las Partidas se concentran en los Capítulos 84, 85, 87 y 90 del SA, los mismos identificados para México en el Capítulo 2. La presencia de Vietnam y Taiwán es muy desigual: en la mayoría de las Partidas su valor es pequeño, tanto en dólares como en proporción de sus propias exportaciones a EUA. Las excepciones son:
+
+- Computadoras (8471), donde Taiwán exporta 180 mil millones de dólares (46.3% de sus exportaciones a EUA) y Vietnam 63 mil millones (17.1%).
+- Teléfonos (8517), que representan el 16.4% de las exportaciones de Vietnam.
+- Partes para equipos de oficina (8473), con 19.9% de las exportaciones de Taiwán y 11.4% de las de Vietnam, pero apenas 0.6% de las exportaciones mexicanas.
+
+{{< pagebreak >}}
 
 ```{r}
 #| label: tbl-partidas-competencia
@@ -895,6 +1156,61 @@ La @tbl-partidas-competencia muestra el resultado. Las Partidas se concentran en
 #| tbl-cap-location: top
 
 readRDS(here::here("RDS", "tabla_partidas_competencia.rds"))
+```
+
+{{< pagebreak >}}
+
+```{r}
+#| label: fig-ImpEUA-8471-8517-8473
+#| message: false
+#| warning: false
+#| echo: false
+#| code-summary: "Importaciones EUA desde México, Vietnam y Taiwán: 8471, 8517 y 8473"
+#| fig-cap: |
+#|   EUA: importaciones mensuales desde México, Vietnam y Taiwán en las
+#|   Partidas 8471, 8517 y 8473, 2018-2026. Miles de millones de dólares.
+#| fig-cap-location: top
+#| out.width: "100%"
+
+knitr::include_graphics(here::here("Plots", "fig-ImpEUA-8471-8517-8473.png"))
+```
+
+La @fig-impeEUA-8471-8517-8473 sugiere que:
+
+- Pude haber competencia directa entre México y Taiwán en la partida 8471, pero como la mayor parte de las exportaciones mexicanas en esta partida se concentran en la subpartida 847150, y las firmas exportadores establecidas en México son taiwanesas ^[Ernesto: estoy escribiendo esto "de oído".  Coincide con lo que vos me has descrito, pero no he documentado las inversiones y su nacionalidad], parece más plausible la hipótesis de que estas cifras muestran una estrategia de las firmas taiwanesas de abastecer el mercado de EUA tanto desde Taiwán como desde México.  En todo caso, las partes que se usan en la fabricación de los servidores para inteligencia artificial provienen fundamentalmente de Asia, así que su manufactura en México no necesariamente representa competencia para las firmas asiáticas.
+- En teléfonos, partida 8517, si hay un incremento de las exportaciones mexicanas a partir de 2025.  Aunque el valor total es pequeño, tal vez sea una partida que tenga algún papel que jugar dentro de una estrategia de diversificación de las exportaciones mexicanas a EUA.
+- Por último, la partida 8473 no es de mayor interés para México: su participación en el total de exportaciones es baja, y el valor de las exportaciones no muestra tendencia a crecer.
+
+### Autos y autopartes
+
+```{r}
+#| label: fig-ImpEUA-autos
+#| message: false
+#| warning: false
+#| echo: false
+#| code-summary: "Importaciones EUA de automóviles (8703): México, Japón, Corea del Sur y Alemania"
+#| fig-cap: |
+#|   EUA: importaciones mensuales de automóviles (8703) desde México, Japón,
+#|   Corea del Sur y Alemania, 2018-2026. Miles de millones de dólares.
+#| fig-cap-location: top
+#| out.width: "100%"
+
+knitr::include_graphics(here::here("Plots", "fig-ImpEUA-autos.png"))
+```
+
+```{r}
+#| label: fig-ImpEUA-autopartes
+#| message: false
+#| warning: false
+#| echo: false
+#| code-summary: "Importaciones EUA de autopartes (8708): México, Japón, Corea del Sur y Alemania"
+#| fig-cap: |
+#|   EUA: importaciones mensuales de autopartes (8708) desde México, Japón,
+#|   Corea del Sur y Alemania, 2018-2026. Miles de millones de dólares.
+#| fig-cap-location: top
+#| out.width: "100%"
+
+knitr::include_graphics(here::here("Plots", "fig-ImpEUA-autopartes.png"))
 ```
 
 

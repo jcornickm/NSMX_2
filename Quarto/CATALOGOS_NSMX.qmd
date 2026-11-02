@@ -67,8 +67,8 @@ Primero los **Query** (traen datos de fuera; casi todos son independientes entre
 
 - **Fechas.** `fecha` es el primer día del mes (series mensuales) o del trimestre (series trimestrales). `año` es entero; `trim` o `trimestre` va de 1 a 4.
 - **Moneda y unidades.** Census y USITC en dólares corrientes. `Val_mes` = valor del mes (`GEN_VAL_MO`); `Val_acum` = acumulado del año hasta ese mes (`GEN_VAL_YR`). ETEF en miles de dólares. IED en millones de dólares (mdd). IMMEX en personas.
-- **Códigos de país de Census.** México = 2010, Vietnam = 5520, Taiwán = 5830, China = 5700, Canadá = 1220. Solo los códigos 1000 o más son países; el resto son agregados regionales.
-- **Archivos `meta_*.rds`.** Listas con la procedencia de otro archivo (fuente, endpoint, fecha de descarga, notas). Algunos conservan nombres históricos: `meta_query3.rds` es la procedencia de **Prep02**; `meta_query11.rds` la de **Query02**; `meta_query12.rds` la de **Prep03**.
+- **Códigos de país de Census.** México = 2010, Vietnam = 5520, Taiwán = 5830, China = 5700, Canadá = 1220, Japón = 5880, Corea del Sur = 5800, Alemania = 4280. Solo los códigos 1000 o más son países; el resto son agregados regionales.
+- **Archivos `meta_*.rds`.** Listas con la procedencia de otro archivo (fuente, endpoint, fecha de descarga, notas). Algunos conservan nombres históricos: `meta_query3.rds` es la procedencia de **Prep02**; `meta_query02.rds` la de **Query02**; `meta_query12.rds` la de **Prep03**.
 - **Etiquetas del Sistema Armonizado.** Los nombres cortos de Secciones, Capítulos y Partidas salen de un único diccionario (`RDS/hs_dictionary.rds`), que se edita solo en `Excel/hs_nombres_cortos.csv` y se reconstruye con `Scripts/build_hs_dictionary.R`. Hay cuatro niveles de nombre (corto, de tabla, gráfico y oficial), descritos en la sección *Diccionario del Sistema Armonizado* de la Parte II. Nunca se escriben tribbles de nombres dentro de un Query o un qmd.
 - **Ventana del Capítulo 2.** Todo lo del Capítulo 2 termina en diciembre de 2024 (`ANIO_FIN`, `FECHA_FIN` en `funciones.R`). Los RDS conservan la serie completa; el corte se hace al graficar. El Capítulo 3 usa el último dato disponible.
 
@@ -80,7 +80,7 @@ Son los errores que más fácilmente se repetirían al volver al proyecto.
 2. **Los flujos de IED por origen, actividad y tipo son acumulados del año.** Columna `ied_acum_mdd`; el dato anual es `trim == 4`. Nunca sumar trimestres: inflaba las cifras de actividad unas 3.5 veces. En cambio, `ied_pib` e `ied_fbkf` traen el flujo *del trimestre* (`ied_mdd`) y su porcentaje trimestral no está anualizado.
 3. **El año en curso está incompleto.** No comparar un año parcial contra años completos; las tablas del Capítulo 3 comparan enero hasta el último mes disponible (columnas `val_ytd_*`).
 4. **Census devuelve agregados mezclados con países.** Filtrar `CTY_CODE >= 1000` y calcular totales de una consulta aparte; nunca sumando países.
-5. **Census revisa los años recientes.** Por eso los Query descargan desde un año de solape (2023) y reportan qué cambió (`revision_q1.rds`, `revision_q11.rds`).
+5. **Census revisa los años recientes.** Por eso los Query descargan desde un año de solape (2023) y reportan qué cambió (`revision_q1.rds`, `revision_q02.rds`).
 6. **`Val_mes_sa` cambia en toda la historia** cada vez que se agregan datos, porque X-13 se reestima sobre la serie completa.
 7. **ETEF: las celdas "C" (confidenciales) pasan a NA.** Los totales estatales armados con el Excel por subsector subestiman. Los denominadores correctos son los de `xmex_total_ef.rds` (BIE).
 8. **IMMEX: totales por suma.** `CVE_ENT = "TOT"` es la suma de los 17 estados; `"ZLF"` es la Zona Libre de la Frontera Norte (construida); Baja California se arma sumando municipios. No sumar `TOT` con `ZLF`.
@@ -91,7 +91,7 @@ Son los errores que más fácilmente se repetirían al volver al proyecto.
 
 | Fuente | Cómo se obtiene | Script | Credencial |
 |:----------------|:---------------------------|:--------------|:-------------|
-| US Census Bureau, International Trade API (`timeseries/intltrade/imports/hs`) | API, año por año; omitir `COMM_LVL` porque combinado con `CTY_CODE` da error del servidor | Query01, Query02 | `CENSUS_API_KEY` |
+| US Census Bureau, International Trade API (`timeseries/intltrade/imports/hs`) | API, año por año; omitir `COMM_LVL` porque combinado con `CTY_CODE` da error del servidor | Query01, Query02, Query11 | `CENSUS_API_KEY` |
 | USITC DataWeb (`datawebws.usitc.gov/dataweb`, `v2/report2/runReport`) | API; una sola llamada con toda la historia | Query03 | `DATAWEB_TOKEN` |
 | INEGI, Banco de Información Económica (BIE) | API; una llamada por entidad (clave del indicador 6207095692) | Query04 | `BIE_TOKEN` |
 | GDELT (BigQuery, `gdelt-bq.gdeltv2.gkg`) | Consulta SQL; autenticación interactiva con `bq_auth()` | Query05 | `GCP_PROJECT_ID` |
@@ -147,11 +147,21 @@ En las tablas, "Lo leen" lista los consumidores encontrados en `Scripts/` y en l
 |:-------------------------|:------------------------------------------------------|:--------|:------------|:-------|
 | `raw_df_mex_vnm_twn.rds` (38 MB) | Descarga cruda mensual desde 2010, los tres países, **todos los niveles del SA mezclados** (total, HS2, HS4, HS6, HS10). Columnas `time, I_COMMODITY, I_COMMODITY_LDESC, GEN_VAL_MO, GEN_VAL_YR, CTY_CODE_dl, Pais, fecha`. De aquí se derivan todos los datos de comercio por partida. | Query02 | Prep01, Prep02; Explora_Top_Partidas_Periodos | Vigente |
 | `imp_competidores_hs4.rds` (19.6 MB) | Solo partidas (HS4), los tres países, todos los capítulos, con etiquetas de Sección y Capítulo. | Query02 | Prep03; Explora_Top_Partidas_Competidores | Intermedio |
-| `meta_query11.rds` | Procedencia de la fuente maestra. | Query02 | — | Vigente |
-| `revision_q11.rds` | Cambios por año entre descargas. | Query02 | — | Intermedio |
+| `meta_query02.rds` | Procedencia de la fuente maestra. | Query02 | — | Vigente |
+| `revision_q02.rds` | Cambios por año entre descargas. | Query02 | — | Intermedio |
 | `raw/raw_hs_<CTY>_<año>.rds` | Caché por país (2010, 5520, 5830) y año, 2010 a 2026. Ver trampa 9. | Query02 | Query02 | Intermedio |
 | `raw_df.rds` (45 MB), `USallImpMex.rds` (66 MB) | Descargas viejas de México (todos los niveles). **Ningún script actual las escribe y no se encontró código que las lea.** Movidos a `RDS/Por_eliminar/`. | script anterior | — | Por eliminar |
 | `raw/raw_hs6_2010.rds … 2025.rds` | Caché por año de esa descarga vieja de México. Movidos a `RDS/Por_eliminar/raw/`. | script anterior | — | Por eliminar |
+
+### Autos y autopartes: México, Japón, Corea del Sur y Alemania (Query11)
+
+| Archivo | Contenido | Productor | Lo leen | Estado |
+|:-------------------------|:------------------------------------------------------|:--------|:------------|:-------|
+| `raw_df_autos_socios.rds` | Descarga cruda mensual desde 2010 de las partidas 8703 y 8708 con todas sus subpartidas (HS4, HS6, HS10) para Japón, Corea del Sur y Alemania; **no incluye México**. Mismas columnas que `raw_df_mex_vnm_twn.rds`. | Query11 | Query11 | Intermedio |
+| `imp_autos_socios.rds` | Los cuatro países, limpio. Columnas `Pais, fecha, partida, nivel, cod, Desc_api, Val_mes, Val_acum`; `nivel` = HS4, HS6 o HS10. México se deriva de `raw_df_mex_vnm_twn.rds`. Alemania es la aproximación de la UE. | Query11 | C3 (chunk `save-fig-ImpEUA-autos-autopartes`) | Vigente |
+| `meta_query11.rds` | Procedencia. | Query11 | — | Vigente |
+| `revision_q11.rds` | Cambios por año entre descargas (`NULL` en la primera descarga completa). | Query11 | — | Intermedio |
+| `raw/raw_autos_<CTY>_<partida>_<año>.rds` | Caché por país (5880, 5800, 4280), partida (8703, 8708) y año. | Query11 | Query11 | Intermedio |
 
 ### Importaciones de EUA desde México, por Sección, Capítulo y Partida (Prep01, Prep02, Prep04, Prep05)
 
@@ -261,6 +271,7 @@ Las figuras de C2 las genera cada chunk `save-*` (marcado `eval: false`, se corr
 | `fig-immex-empleo_2024`, `mapa_immex_4periodos_2024` | `immex_empleo`, `immex_pct` | chunks de C2 | C2 |
 | `ied_total_origen_2024`, `ied_ratios_2024`, `ied_pib_comparativo_wdi_2024`, `ied_actividad_combinado_2024`, `ied_manuf_subsector_2024` | `ied_*`, `ied_pib_wdi_comp` | chunks de C2 | C2 |
 | `fig_media_cloud_menciones_mex[_2024]`, `…_usa[_2024]` | `media_cloud_mensual` | chunk `save-fig-media-cloud` (inicio de la Introducción de C2); ya no lo genera Query10 | C2: las dos `_2024` se cargan y se apilan con patchwork (EUA arriba, México abajo) en `fig-nearshoringMX`; las de ventana completa quedan para C3 |
+| `fig-ImpEUA-autos`, `fig-ImpEUA-autopartes` (serie desestacionalizada 2018 a agosto de 2026; TCAC enero-agosto 2018-24 y 2025-26) | `imp_autos_socios` | chunk `save-fig-ImpEUA-autos-autopartes` de C3 (antes de `### La participación…`) | C3 (`fig-ImpEUA-autos`, `fig-ImpEUA-autopartes`, en `### Autos y autopartes`) |
 | `infografia_mexico`, `…_canada`, `…_china`, `…_corea`, `…_japon`, `…_ue`, `…_vietnam`, `…_taiwan` | **datos escritos a mano** dentro de `infografias_aranceles.qmd` | `infografias_aranceles.qmd` | C3 |
 | `comparativo_autos`, `comparativo_autopartes` | **datos escritos a mano** en `infografias_aranceles.qmd` | idem | C3 |
 | `ied_fbcf_privada_publica[_2024]`, `ied_fbcf_privada_por_tipo_bien[_2024]` | `fbcf_inegi` | las `_2024`: chunk `save-fig-ied-fbcf` de C2; las dos ventanas: `ied_plots_fbcf.R` (corrido el 24-oct-2026) | C2 (`fig-fbcf-publica-privada`, `fig-fbcf-tipo-bien`, las `_2024`) |
@@ -292,7 +303,7 @@ Las imágenes fijas (`Images/nearshoring.png`, `Images/Directorio.png`) vienen d
 ## Orden de ejecución
 
 1. `build_hs_dictionary.R` (solo si cambió `hs_nombres_cortos.csv` o `naladisa_2022.xlsx`).
-2. Query01 a Query10. Primero los que usan API (01 a 06) y después los que leen archivos puestos a mano (07 a 10). Query01 y Query02 antes de cualquier Prep.
+2. Query01 a Query11. Primero los que usan API (01 a 06) y después los que leen archivos puestos a mano (07 a 10). Query01 y Query02 antes de cualquier Prep. Query11 usa API pero debe correr **después de Query02**, porque deriva México de su descarga y exige que ambos terminen en el mismo mes.
 3. Prep01 a Prep08, en ese orden, cada uno en una sesión de R limpia.
 
 | Prep | Necesita antes |
@@ -310,7 +321,7 @@ Las imágenes fijas (`Images/nearshoring.png`, `Images/Directorio.png`) vienen d
 
 - **`repull` o `DESCARGAR`.** Query02 tiene `DESCARGAR` (si es `FALSE` no llama al API y solo regenera derivados). La regla general del proyecto: con el interruptor en `FALSE`, reconstruir desde el caché.
 - **Actualización incremental.** Query01 y Query02 no vuelven a bajar toda la historia: descargan desde `ANIO_SOLAPE` (2023) hasta el último mes disponible y sustituyen ese tramo en el RDS existente; lo anterior no se toca. `actualizar_rds()` detiene el proceso si hay duplicados, meses faltantes, columnas distintas o un hueco entre lo viejo y lo nuevo, y deja un reporte de revisiones.
-- **Un archivo por año.** Cada año descargado se guarda de inmediato en `RDS/raw/`. Si una descarga se cae, lo ya bajado no se pierde; `census_descargar()` reutiliza archivos de menos de 12 horas (`VIGENCIA_HORAS`) y reintenta tres veces.
+- **Un archivo por año.** Cada año descargado se guarda de inmediato en `RDS/raw/`. Si una descarga se cae, lo ya bajado no se pierde; `census_descargar()` reutiliza archivos de menos de 12 horas (`VIGENCIA_HORAS`) y reintenta tres veces; `census_descargar_anios()` además repite hasta tres rondas (pausa de 30 s) con los años que siguen fallando, porque el API devuelve a veces respuestas vacías (error `incorrect number of dimensions` de `censusapi`).
 - **Verificaciones dentro del script.** Los Query y Preps imprimen sus comprobaciones (sumas contra totales, rangos, duplicados) y varios usan `stopifnot()`. Revisar la consola después de correr.
 
 ## Ayudantes (no son parte del pipeline, los cargan los demás)
@@ -429,7 +440,7 @@ if (hay_dic) {
 - **Qué hace.** **Fuente maestra** de comercio de EUA por partida: importaciones desde México, Vietnam y Taiwán, todos los niveles del SA mezclados, mensual desde 2010. De aquí se derivan todos los datos de México por Capítulo y Partida.
 - **Fuente.** Census (`CENSUS_API_KEY`). Descarga año por año y país por país.
 - **Entradas.** `RDS/raw_df_mex_vnm_twn.rds` (versión actual) y el API.
-- **Salidas.** `raw_df_mex_vnm_twn`, `imp_competidores_hs4`, `meta_query11`, `revision_q11`; caché `raw/raw_hs_<CTY>_<año>.rds`.
+- **Salidas.** `raw_df_mex_vnm_twn`, `imp_competidores_hs4`, `meta_query02`, `revision_q02`; caché `raw/raw_hs_<CTY>_<año>.rds`.
 - **Parámetros.** `DESCARGAR`, `ANIO_SOLAPE = 2023`, `VIGENCIA_HORAS = 12`.
 - **Verificaciones.** Los tres países deben terminar en el mismo mes (`stopifnot`); conteos por nivel y por país.
 - **Cuidado.** Se omite `COMM_LVL` a propósito; los niveles se separan por `nchar(I_COMMODITY)` (total `-`, 2, 4, 6 y 10 dígitos).
@@ -494,6 +505,16 @@ if (hay_dic) {
 - **Salidas.** `media_cloud_diario`, `media_cloud_mensual`, `meta_media_cloud`.
 - **Parámetros.** `ULTIMO_MES` (último mes completo, fijado a mano).
 - **Verificaciones.** Días duplicados, faltantes y NA por país; control de revisiones contra la descarga previa de México.
+
+### Query11_Autos_Autopartes_Socios.R
+
+- **Qué hace.** Importaciones de EUA de automóviles (8703) y autopartes (8708), con sus subpartidas HS6 y HS10, desde Japón, Corea del Sur y Alemania, mensual desde 2010. México se deriva de `raw_df_mex_vnm_twn.rds` (Query02). Alemania hace de aproximación de la UE: el agregado de Census cambia de composición con el Brexit.
+- **Fuente.** Census (`CENSUS_API_KEY`). Descarga por país, partida y año, con el filtro `I_COMMODITY` con comodín (`8703*`, `8708*`), que devuelve la partida y todas sus subpartidas en una llamada.
+- **Entradas.** `RDS/raw_df_mex_vnm_twn.rds`, `RDS/raw_df_autos_socios.rds` (si existe) y el API.
+- **Salidas.** `raw_df_autos_socios`, `imp_autos_socios`, `meta_query11`, `revision_q11`; caché `raw/raw_autos_<CTY>_<partida>_<año>.rds`.
+- **Parámetros.** `DESCARGAR`, `ANIO_INI = 2010` (primera descarga), `ANIO_SOLAPE = 2023` (actualizaciones), `VIGENCIA_HORAS = 12`.
+- **Verificaciones.** Los tres países descargados terminan en el mismo mes; México (Query02) llega al mismo mes que ellos (si no, correr Query02 primero); sin niveles inesperados ni filas duplicadas.
+- **Cuidado.** Sin cantidades (`QTY`), para mantener simetría con México. En la primera corrida `revision_q11` queda `NULL`. Corre después de Query02.
 
 ## Fichas de los Prep
 
@@ -602,6 +623,9 @@ Census:
                     -> Prep04
              -> imp_competidores_hs4
                     -> Prep03 -> tabla_partidas_competencia
+  Query11 (lee raw_df_mex_vnm_twn de Query02 para México)
+             -> raw_df_autos_socios, imp_autos_socios
+                    -> figuras fig-ImpEUA-autos, fig-ImpEUA-autopartes (C3)
 
 Otras fuentes:
   Query03 (USITC)  -> aranceles_autos_autopartes_mensual
@@ -624,7 +648,7 @@ Otras fuentes:
 |:--------------|:---------------------------------|:-------------------------------------------|
 | `build_hs_dictionary` | `Excel/naladisa_2022.xlsx`, `Excel/hs_nombres_cortos.csv` | `hs_dictionary` |
 | Query01 | API Census; `imp_por_pais_all` previo | `imp_por_pais_all`, `imp_por_pais`, `meta_imp_por_pais`, `revision_q1`, `raw/q1_*` |
-| Query02 | API Census; `raw_df_mex_vnm_twn` previo; `hs_dictionary` | `raw_df_mex_vnm_twn`, `imp_competidores_hs4`, `meta_query11`, `revision_q11`, `raw/raw_hs_*` |
+| Query02 | API Census; `raw_df_mex_vnm_twn` previo; `hs_dictionary` | `raw_df_mex_vnm_twn`, `imp_competidores_hs4`, `meta_query02`, `revision_q02`, `raw/raw_hs_*` |
 | Query03 | API USITC; `aranceles_hts8703_mex_kor_mensual` (comparación) | `aranceles_autos_autopartes_mensual`, `meta_aranceles_autos_autopartes` |
 | Query04 | API BIE | `xmex_total_ef`, `meta_xmex_total_ef` |
 | Query05 | BigQuery (GDELT), API Media Cloud | `gdelt_nearshoring_mx`, `meta_gdelt_nearshoring_mx`, `mediacloud_nearshoring_mx`, `meta_mediacloud_nearshoring_mx` |
@@ -633,6 +657,7 @@ Otras fuentes:
 | Query08 | `Excel/IMMEX/*.csv` | `immex_empleo`, `meta_immex_empleo` |
 | Query09 | `Excel/IED_flujos.xlsx`, `IED_PIB_6.xlsx`, `IED_FBKF_7.xlsx` | `ied_por_origen`, `ied_por_actividad`, `ied_flujos_tipo`, `ied_pib`, `ied_fbkf`, `meta_ied` |
 | Query10 | `Excel/mc-onlinenews-mediacloud-*.csv` | `media_cloud_diario`, `media_cloud_mensual`, `meta_media_cloud` |
+| Query11 | API Census; `raw_df_mex_vnm_twn` (México); `raw_df_autos_socios` previo | `raw_df_autos_socios`, `imp_autos_socios`, `meta_query11`, `revision_q11`, `raw/raw_autos_*` |
 | Prep01 | `raw_df_mex_vnm_twn`, `imp_por_pais_all`, `imp_mex_sec_cap` previo | `imp_mex_sec_cap`, `meta_imp_mex_sec_cap` |
 | Prep02 | `raw_df_mex_vnm_twn`, `imp_mex_sec_cap` | `imp_mex_hs4`, `imp_mex_hs6`, `imp_mex_*_84858790`, `imp_mex_top_hs4`, `TCAC_y_shares_84858790`, `meta_TCAC_y_shares`, `meta_query3` |
 | Prep03 | `imp_competidores_hs4` | `tabla_competencia_mex_vnm_twn`, `meta_query12`, `tabla_partidas_competencia`; `Tablas/tabla_partidas_competencia.docx` |
@@ -666,7 +691,7 @@ Otras fuentes:
 
 Además incluye, sin generarlas, las figuras de `Plots/` (incluidas las `fig_media_cloud_menciones_{mex,usa}_2024.png`, que el chunk `fig-nearshoringMX` apila, y las `zafra-*.png` externas) y `Images/nearshoring.png`.
 
-**Capítulo 3 (`C3_Tiempos_turbulentos_v2.qmd`).** Carga `tabla_partidas_competencia.rds` (tabla ya formateada, Prep03) y `datos_847150_hs6.rds` (sin productor). Incluye las infografías de aranceles y los comparativos de autos y autopartes de `Plots/`, generados por `infografias_aranceles.qmd` con datos escritos a mano.
+**Capítulo 3 (`C3_Tiempos_turbulentos_v2.qmd`).** Carga `tabla_partidas_competencia.rds` (tabla ya formateada, Prep03) y `datos_847150_hs6.rds` (sin productor). Las figuras `fig-ImpEUA-autos` y `fig-ImpEUA-autopartes` salen de `imp_autos_socios.rds` (Query11) mediante el chunk `save-fig-ImpEUA-autos-autopartes`. Incluye las infografías de aranceles y los comparativos de autos y autopartes de `Plots/`, generados por `infografias_aranceles.qmd` con datos escritos a mano.
 
 **`infografias_aranceles.qmd`.** No lee RDS.
 

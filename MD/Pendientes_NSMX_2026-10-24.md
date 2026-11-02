@@ -56,7 +56,7 @@ recoge lo que quedó abierto. Marcar con `[x]` al cerrar cada punto.
       genere desde `raw_df_mex_vnm_twn.rds`, o quitar la figura de C3.
 - [ ] `fbcf_inegi.rds`: se hizo a mano desde un Excel de un colega. Si C2 o C3
       lo usan, conviene dejar el procedimiento escrito.
-- [ ] `meta_etef.rds` y `meta_query11.rds` en disco conservan texto viejo
+- [ ] `meta_etef.rds` y `meta_query02.rds` (antes meta_query11) en disco conservan texto viejo
       (la referencia a `etef_valor_accounting.rds`, y "Query03 y Query04
       derivan..."). Se corrigen solos al volver a correr Query07 y Query02.
 - [ ] `Excel/2025_4T_Flujos_PTI_ACT_3_.xlsx`: estaba para una revisión
