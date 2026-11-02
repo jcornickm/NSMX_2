@@ -10,3 +10,7 @@
 .DS_Store
 .quarto
 RDS/raw_df_mex_vnm_twn.rds
+
+RDS/p_immex_mapas.rds
+RDS/Por_eliminar/
+Excel/Por_eliminar/
