@@ -159,6 +159,9 @@ En las tablas, "Lo leen" lista los consumidores encontrados en `Scripts/` y en l
 |:-------------------------|:------------------------------------------------------|:--------|:------------|:-------|
 | `raw_df_autos_socios.rds` | Descarga cruda mensual desde 2010 de las partidas 8703 y 8708 con todas sus subpartidas (HS4, HS6, HS10) para Japón, Corea del Sur y Alemania; **no incluye México**. Mismas columnas que `raw_df_mex_vnm_twn.rds`. | Query11 | Query11 | Intermedio |
 | `imp_autos_socios.rds` | Los cuatro países, limpio. Columnas `Pais, fecha, partida, nivel, cod, Desc_api, Val_mes, Val_acum`; `nivel` = HS4, HS6 o HS10. México se deriva de `raw_df_mex_vnm_twn.rds`. Alemania es la aproximación de la UE. | Query11 | C3 (chunk `save-fig-ImpEUA-autos-autopartes`) | Vigente |
+| `imp_autos_mundo.rds` | Total mundial (fila `CTY_CODE == "-"` del API) de 8703 y 8708, solo HS4, 2010 a último mes. Columnas `fecha, partida, Val_mes, Val_acum`. Sirve para calcular Resto = Mundo − México − Japón − Corea del Sur − Alemania. | Query11 (Sección 2b) | C3 (chunk `save-fig-ImpEUA-treemaps-autos-autopartes`) | Vigente |
+| `revision_q11_mundo.rds` | Revisiones del total mundial entre descargas (`NULL` en la primera). | Query11 | — | Intermedio |
+| `raw/raw_autos_mundo_<partida>_<año>.rds` | Caché de la descarga sin filtro de país (todos los países y agregados) para 8703 y 8708. | Query11 | Query11 | Intermedio |
 | `meta_query11.rds` | Procedencia. | Query11 | — | Vigente |
 | `revision_q11.rds` | Cambios por año entre descargas (`NULL` en la primera descarga completa). | Query11 | — | Intermedio |
 | `raw/raw_autos_<CTY>_<partida>_<año>.rds` | Caché por país (5880, 5800, 4280), partida (8703, 8708) y año. | Query11 | Query11 | Intermedio |
@@ -271,6 +274,7 @@ Las figuras de C2 las genera cada chunk `save-*` (marcado `eval: false`, se corr
 | `fig-immex-empleo_2024`, `mapa_immex_4periodos_2024` | `immex_empleo`, `immex_pct` | chunks de C2 | C2 |
 | `ied_total_origen_2024`, `ied_ratios_2024`, `ied_pib_comparativo_wdi_2024`, `ied_actividad_combinado_2024`, `ied_manuf_subsector_2024` | `ied_*`, `ied_pib_wdi_comp` | chunks de C2 | C2 |
 | `fig_media_cloud_menciones_mex[_2024]`, `…_usa[_2024]` | `media_cloud_mensual` | chunk `save-fig-media-cloud` (inicio de la Introducción de C2); ya no lo genera Query10 | C2: las dos `_2024` se cargan y se apilan con patchwork (EUA arriba, México abajo) en `fig-nearshoringMX`; las de ventana completa quedan para C3 |
+| `fig-ImpEUA-treemaps-autos`, `fig-ImpEUA-treemaps-autopartes` (participación 2018, 2024 y ene-ago 2026; México, Japón, Corea del Sur, Alemania y Resto) | `imp_autos_socios`, `imp_autos_mundo` | chunk `save-fig-ImpEUA-treemaps-autos-autopartes` de C3 (antes de `### La participación…`, junto al chunk de las líneas) | C3 (`fig-ImpEUA-treemaps-autos`, `fig-ImpEUA-treemaps-autopartes`, en `### Autos y autopartes`, tras cada gráfico de líneas) |
 | `fig-ImpEUA-autos`, `fig-ImpEUA-autopartes` (serie desestacionalizada 2018 a agosto de 2026; TCAC enero-agosto 2018-24 y 2025-26) | `imp_autos_socios` | chunk `save-fig-ImpEUA-autos-autopartes` de C3 (antes de `### La participación…`) | C3 (`fig-ImpEUA-autos`, `fig-ImpEUA-autopartes`, en `### Autos y autopartes`) |
 | `infografia_mexico`, `…_canada`, `…_china`, `…_corea`, `…_japon`, `…_ue`, `…_vietnam`, `…_taiwan` | **datos escritos a mano** dentro de `infografias_aranceles.qmd` | `infografias_aranceles.qmd` | C3 |
 | `comparativo_autos`, `comparativo_autopartes` | **datos escritos a mano** en `infografias_aranceles.qmd` | idem | C3 |

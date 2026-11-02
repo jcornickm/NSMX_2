@@ -1067,6 +1067,123 @@ for (nm in names(ps)) {
 rm(ps, impAutos, nm, base_f, ext)
 ```
 
+```{r}
+#| label: save-fig-ImpEUA-treemaps-autos-autopartes
+#| echo: false
+#| eval: false
+#| code-summary: "Código de los treemaps"
+
+# Complemento de fig-ImpEUA-autos / fig-ImpEUA-autopartes: participación en las
+# importaciones totales de EUA de 8703 y 8708 (México, Japón, Corea del Sur,
+# Alemania y Resto) en 2018, 2024 y el último año (acumulado enero-último mes,
+# serie ORIGINAL). Resto = Mundo menos los cuatro países. Una figura por partida.
+# Datos: RDS/imp_autos_socios.rds e RDS/imp_autos_mundo.rds (Query11).
+
+pacman::p_load(treemapify)
+source(here::here("Scripts", "funciones.R"))   # paleta_pais, COL_RESTO
+
+impAutos <- readRDS(here::here("RDS", "imp_autos_socios.rds"))
+impMundo <- readRDS(here::here("RDS", "imp_autos_mundo.rds"))
+
+pt <- local({
+  paises   <- c("México", "Japón", "Corea del Sur", "Alemania")
+  partidas <- c(autos = "8703", autopartes = "8708")
+  meses_es <- c("enero", "febrero", "marzo", "abril", "mayo", "junio", "julio",
+                "agosto", "setiembre", "octubre", "noviembre", "diciembre")
+
+  # — 1. Datos mensuales: Mundo y los cuatro países (HS4) ---------------------
+  datos <- bind_rows(
+    impAutos |> filter(nivel == "HS4", Pais %in% paises) |> select(Pais, fecha, partida, Val_mes),
+    impMundo |> transmute(Pais = "Mundo", fecha, partida, Val_mes)
+  ) |>
+    filter(partida %in% partidas)
+
+  ultimo_mes <- datos |>
+    group_by(Pais, partida) |>
+    summarise(m = max(fecha), .groups = "drop") |>
+    pull(m) |>
+    min()
+  mes_fin  <- month(ultimo_mes)
+  anio_fin <- as.integer(year(ultimo_mes))
+  anios    <- c(2018L, 2024L, anio_fin)
+  message("Último mes disponible: ", format(ultimo_mes, "%Y-%m"))
+
+  # — 2. Acumulado enero-mes_fin por año (serie ORIGINAL) ----------------------
+  acum <- datos |>
+    mutate(Año = as.integer(year(fecha))) |>
+    filter(Año %in% anios, month(fecha) <= mes_fin) |>
+    group_by(partida, Año, Pais) |>
+    summarise(valor = sum(Val_mes) / 1e9, n_mes = n(), .groups = "drop")
+  stopifnot(all(acum$n_mes == mes_fin))
+
+  # — 3. Resto = Mundo - cuatro países ----------------------------------------
+  tm <- acum |>
+    select(partida, Año, Pais, valor) |>
+    pivot_wider(names_from = Pais, values_from = valor) |>
+    mutate(Resto = Mundo - rowSums(across(all_of(paises)))) |>
+    pivot_longer(-c(partida, Año, Mundo), names_to = "Pais", values_to = "valor") |>
+    mutate(pct = valor / Mundo * 100)
+
+  stopifnot(all(tm$valor > 0))
+  print(tm |> select(partida, Año, Pais, valor, pct) |> arrange(partida, Año, desc(valor)), n = 30)
+
+  col_tm <- c(paleta_pais[paises], "Resto" = COL_RESTO)
+
+  # — 4. Un treemap por partida -----------------------------------------------
+  graficar <- function(part) {
+    tm |>
+      filter(partida == part) |>
+      mutate(
+        Pais     = factor(Pais, levels = names(col_tm)),
+        etiqueta = paste0(Pais, "\n", sprintf("%.1f", pct), "%"),
+        txt      = if_else(Pais == "Resto", "grey15", "white"),
+        panel    = paste0(Año, "\nTotal: US$ ", format(round(Mundo), big.mark = ","),
+                          " mil millones")
+      ) |>
+      arrange(Año) |>
+      mutate(panel = factor(panel, levels = unique(panel))) |>
+      ggplot(aes(area = valor, fill = Pais)) +
+      geom_treemap(colour = "white", linewidth = 1.5) +
+      geom_treemap_text(
+        aes(label = etiqueta, colour = txt),
+        place = "centre", reflow = TRUE, min.size = 3, fontface = "bold"
+      ) +
+      facet_wrap(~ panel, nrow = 1) +
+      scale_fill_manual(values = col_tm) +
+      scale_colour_identity() +
+      guides(fill = "none") +
+      labs(
+        caption = paste(
+          "Elaboración propia con base en US Census Bureau.",
+          paste0("Participación en las importaciones totales de EUA. Acumulado enero-",
+                 meses_es[mes_fin], " de cada año. Serie original."),
+          "Área proporcional al valor importado; Resto = total menos los cuatro países.",
+          "Alemania como aproximación de la Unión Europea.",
+          sep = "\n"
+        )
+      ) +
+      theme_bw() +
+      theme(
+        panel.grid       = element_blank(),
+        panel.border     = element_blank(),
+        strip.background = element_rect(fill = "white", colour = NA),
+        strip.text       = element_text(face = "bold", size = 10)
+      )
+  }
+
+  map(partidas, graficar)
+})
+
+pt$autos
+pt$autopartes
+for (nm in names(pt)) {
+  base_f <- here::here("Plots", paste0("fig-ImpEUA-treemaps-", nm))
+  ggsave(paste0(base_f, ".pdf"), plot = pt[[nm]], width = 11, height = 4.5, device = cairo_pdf)
+  ggsave(paste0(base_f, ".png"), plot = pt[[nm]], width = 11, height = 4.5, dpi = 150)
+}
+rm(pt, impAutos, impMundo, nm, base_f)
+```
+
 ### La participación en el mercado de EUA: México, China, Taiwán y Vietnam
 
 En el período 2018 - 2024, México se convirtió en el principal exportador al mercado de EUA; China no fue simplemente desplazada de esa posición, sino que su participación en ese mercado se contrajo severamente, y surgieron dos nuevas estrellas exportadoras, Vietnam y Taiwán.
@@ -1199,6 +1316,21 @@ knitr::include_graphics(here::here("Plots", "fig-ImpEUA-autos.png"))
 ```
 
 ```{r}
+#| label: fig-ImpEUA-treemaps-autos
+#| message: false
+#| warning: false
+#| echo: false
+#| code-summary: "Participación en las importaciones de EUA de automóviles (8703)"
+#| fig-cap: |
+#|   EUA: participación de México, Japón, Corea del Sur y Alemania en las
+#|   importaciones de automóviles (8703), enero-agosto de 2018, 2024 y 2026.
+#| fig-cap-location: top
+#| out.width: "100%"
+
+knitr::include_graphics(here::here("Plots", "fig-ImpEUA-treemaps-autos.png"))
+```
+
+```{r}
 #| label: fig-ImpEUA-autopartes
 #| message: false
 #| warning: false
@@ -1211,6 +1343,21 @@ knitr::include_graphics(here::here("Plots", "fig-ImpEUA-autos.png"))
 #| out.width: "100%"
 
 knitr::include_graphics(here::here("Plots", "fig-ImpEUA-autopartes.png"))
+```
+
+```{r}
+#| label: fig-ImpEUA-treemaps-autopartes
+#| message: false
+#| warning: false
+#| echo: false
+#| code-summary: "Participación en las importaciones de EUA de autopartes (8708)"
+#| fig-cap: |
+#|   EUA: participación de México, Japón, Corea del Sur y Alemania en las
+#|   importaciones de autopartes (8708), enero-agosto de 2018, 2024 y 2026.
+#| fig-cap-location: top
+#| out.width: "100%"
+
+knitr::include_graphics(here::here("Plots", "fig-ImpEUA-treemaps-autopartes.png"))
 ```
 
 

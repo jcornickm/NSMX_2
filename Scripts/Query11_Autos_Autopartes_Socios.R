@@ -19,7 +19,8 @@
 # Entradas:  RDS/raw_df_mex_vnm_twn.rds, API de Census
 # Salidas:   RDS/raw_df_autos_socios.rds (crudo, solo los países descargados),
 #            RDS/imp_autos_socios.rds (4 países, limpio),
-#            RDS/meta_query11.rds, RDS/revision_q11.rds
+#            RDS/imp_autos_mundo.rds (total mundial HS4, para calcular Resto),
+#            RDS/meta_query11.rds, RDS/revision_q11.rds, RDS/revision_q11_mundo.rds
 
 #   NOTAS SOBRE EL API                                                      ####
 
@@ -116,6 +117,64 @@ if (DESCARGAR) {
   stopifnot("No existe raw_df_autos_socios.rds: corre con DESCARGAR <- TRUE" = !is.null(raw_df))
 }
 
+#  Sección 2b. Total mundial (HS4)                                          ####
+
+# Importaciones totales de EUA (todos los países) de 8703 y 8708, para calcular
+# "Resto" = Mundo − México − Japón − Corea del Sur − Alemania. Sin filtro de
+# CTY_CODE el API devuelve todos los países y agregados; el total mundial es la
+# fila CTY_CODE == "-". I_COMMODITY exacto (sin comodín): solo HS4.
+
+ruta_mundo     <- here("RDS", "imp_autos_mundo.rds")
+mundo_previo   <- if (file.exists(ruta_mundo)) readRDS(ruta_mundo) else NULL
+revision_mundo <- NULL
+
+if (DESCARGAR) {
+  incr_mundo  <- !is.null(mundo_previo)
+  anio_d_mundo <- if (incr_mundo) ANIO_SOLAPE else ANIO_INI
+  años_mundo  <- if (is.na(ultimo_mes)) anio_d_mundo:(anio_actual - 1L) else anio_d_mundo:anio_actual
+  desde_mundo <- as.Date(sprintf("%d-01-01", anio_d_mundo))
+
+  nuevo_mundo <- map(partidas, function(partida) {
+    message("\n=== Mundo — ", partida, " ", min(años_mundo), "–", max(años_mundo), " ===")
+    census_descargar_anios(
+      prefijo = sprintf("raw_autos_mundo_%s", partida), anios = años_mundo,
+      vars    = c("I_COMMODITY", "CTY_CODE", "GEN_VAL_MO", "GEN_VAL_YR"),
+      filtros = list(I_COMMODITY = partida),
+      mes_fin_actual = ultimo_mes, max_edad_horas = VIGENCIA_HORAS
+    )
+  }) |>
+    bind_rows() |>
+    filter(CTY_CODE == "-") |>
+    transmute(
+      fecha    = as.Date(paste0(time, "-01")),
+      partida  = as.character(I_COMMODITY),
+      Val_mes  = as.numeric(GEN_VAL_MO),
+      Val_acum = as.numeric(GEN_VAL_YR)
+    )
+
+  if (incr_mundo) {
+    act <- actualizar_rds(mundo_previo, nuevo_mundo, llaves = "partida",
+                          valor = "Val_mes", desde = desde_mundo,
+                          nombre = "importaciones mundo autos/autopartes")
+    mundo_previo   <- act$datos
+    revision_mundo <- act$revision
+    rm(act)
+  } else {
+    mundo_previo <- nuevo_mundo
+  }
+  rm(nuevo_mundo)
+}
+stopifnot("No existe imp_autos_mundo.rds: corre con DESCARGAR <- TRUE" = !is.null(mundo_previo))
+
+imp_autos_mundo <- mundo_previo |> arrange(partida, fecha)
+rm(mundo_previo)
+
+stopifnot(
+  "Filas duplicadas en el total mundial" = anyDuplicated(imp_autos_mundo[c("partida", "fecha")]) == 0,
+  "El total mundial no llega al mismo mes que los países" =
+    max(imp_autos_mundo$fecha) == max(raw_df$fecha)
+)
+
 #  Sección 3. Limpieza y México desde Query02                              ####
 
 raw_mex <- readRDS(here("RDS", "raw_df_mex_vnm_twn.rds")) |>
@@ -149,6 +208,15 @@ imp_autos_socios <- bind_rows(
 stopifnot("Hay niveles inesperados" = !any(imp_autos_socios$nivel == "otro"))
 stopifnot("Filas duplicadas" = anyDuplicated(imp_autos_socios[c("Pais", "cod", "fecha")]) == 0)
 
+# Los cuatro países (HS4) no pueden exceder el total mundial
+chequeo_mundo <- imp_autos_socios |>
+  filter(nivel == "HS4") |>
+  group_by(partida, fecha) |>
+  summarise(cuatro = sum(Val_mes), .groups = "drop") |>
+  inner_join(imp_autos_mundo, by = c("partida", "fecha"))
+stopifnot("Los cuatro países exceden el total mundial" = all(chequeo_mundo$cuatro <= chequeo_mundo$Val_mes))
+rm(chequeo_mundo)
+
 cat("\nCobertura por país y nivel:\n")
 imp_autos_socios |>
   group_by(Pais, nivel) |>
@@ -169,7 +237,8 @@ meta_query11 <- list(
   ultimo_mes     = ultimo_mes,
   archivos       = list(
     raw_df_autos_socios = "Descarga cruda: Japón, Corea del Sur y Alemania (sin México)",
-    imp_autos_socios    = "Los cuatro países, limpio: Pais, fecha, partida, nivel, cod, Val_mes, Val_acum"
+    imp_autos_socios    = "Los cuatro países, limpio: Pais, fecha, partida, nivel, cod, Val_mes, Val_acum",
+    imp_autos_mundo     = "Total mundial (CTY_CODE '-') de 8703 y 8708, HS4: fecha, partida, Val_mes, Val_acum"
   ),
   notas          = paste(
     "Val_mes y Val_acum: importaciones generales (GEN_VAL_MO / GEN_VAL_YR), dólares corrientes.",
@@ -184,4 +253,8 @@ tryCatch({
   message("✔  imp_autos_socios.rds guardado. Filas: ", nrow(imp_autos_socios))
   saveRDS(meta_query11, here("RDS", "meta_query11.rds"))
   message("✔  meta_query11.rds guardado.")
+  saveRDS(imp_autos_mundo, ruta_mundo)
+  message("✔  imp_autos_mundo.rds guardado. Filas: ", nrow(imp_autos_mundo))
+  if (DESCARGAR)
+    saveRDS(list(revision = revision_mundo, fecha = Sys.time()), here("RDS", "revision_q11_mundo.rds"))
 }, error = function(e) message("✗  ERROR guardando: ", conditionMessage(e)))
