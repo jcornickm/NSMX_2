@@ -99,3 +99,55 @@ documents in [Quarto/](Quarto); data pipelines are standalone R scripts in
 - Pipeline scripts guard expensive re-downloads with a `repull` switch
   (default `FALSE`): when `FALSE`, rebuild everything from cached RDS;
   when `TRUE`, re-call the API (requires an API key in `.Renviron`).
+
+## Detailed instructions (read at the start of every session)
+
+Full project conventions live in [MD/instrucciones_posit_ai.md](MD/instrucciones_posit_ai.md)
+(shared with the other assistant, Claude, so the repo is the common memory).
+**Read it at the start of each session**, together with `Scripts/funciones.R`,
+and `MD/Pendientes_NSMX_*.md`. It covers: working style, script
+naming, R code conventions, plot theme/palettes (`paleta_pais`, `COL_*`,
+`paleta_seccion`, `paleta_tcac`; never loose hex), saving figures, qmd chunk
+patterns, flextable tables, HS dictionary, periods/dates (2010-2017 vs 2018-2024,
+base 2017), and known source pitfalls. Highlights:
+
+- Wait for an explicit "adelante" before editing files or running work; plans
+  mentioned by Jorge are context, not instructions.
+- The "do not run interactively" rule in `instrucciones_posit_ai.md` is for Claude only.
+  Posit Assistant MAY run code and chunks interactively (Jorge works with me when he
+  wants interactivity). Still wait for "adelante" before editing files.
+- Font: ignore the `[VERIFICAR: IBM Plex Sans]` note; match what existing plots do
+  (`theme_bw()` + short `theme()`, no custom font).
+- (Claude-only rule, for reference) Jorge runs scripts himself, one by one, in a fresh session. Do not re-run
+  sections interactively unless asked (e.g. asked to run the `eval: false` chunks).
+- Code comments and variable names in Spanish, `snake_case`; `pacman::p_load()`.
+- Country names must match `paleta_pais` keys exactly ("EUA", "Taiwán", "Vietnam",
+  "Corea del Sur"); never invent colors for missing countries, flag them.
+- Never print or commit credentials; read them with `Sys.getenv()`.
+- Orphan files go to `RDS/Por_eliminar/` or `Excel/Por_eliminar/`, not deleted.
+
+## Reference-file digest (read once on 2026-11-01; re-open only when needed)
+
+`Scripts/funciones.R` (already sourced; objects live in the R session) defines,
+in order: `Sys.umask("022")`; `ANIO_FIN`, `FECHA_FIN`; `sa_adj()`; HS helpers
+(`hs_cargar`, `hs_tablas`, `hs_agregar_etiquetas`, `hs_etiquetas_partida`,
+`hs_agregar_etiquetas_seccion`, `hs_relabel`); `breaks_tcac`/`labels_tcac`/
+`paleta_tcac`; `paleta_pais` (12 keys); `COL_TOTAL/RESTO/SERIE/TENDENCIA/HITO`;
+`paleta_seccion` (XVI, XVII, XVIII, Otras); `etiqueta_periodo(ini, fin)`.
+There is NO shared ggplot theme function.
+
+`Quarto/CATALOGOS_NSMX.qmd` (current as of 2026-10-24; replaces the deleted
+`MD/Catalogo_RDS.md`) is the data/script catalogue: RDS files by topic (contents,
+producer, readers, status), figures, tables, Query/Prep cards, dependency map.
+Consult it (read the .qmd; do not render) when:
+- loading/using any `RDS/*.rds` and unsure of its contents, producer or status;
+- tracing which script produces a file or what must be re-run (Part II run
+  order, Part III dependency map);
+- touching FDI (`ied_*`: `ied_acum_mdd` is CUMULATIVE within year; annual =
+  `trim == 4`, never sum quarters), Media Cloud, IMMEX, ETEF, tariffs, or Census
+  imports; see "Trampas conocidas" in Part I.
+It has no row/column counts or date ranges for files regenerated in the last
+repull; inspect the RDS directly (or its appendix chunk) for those.
+Other MD files not yet read: `Pendientes_NSMX_2026-10-24.md`,
+`Fuentes_APIs.md`, `Pendientes_periodos_2017.md`, `fuentes_ied.md`.
+Read `Pendientes_*` before suggesting next steps or when asked about open items.

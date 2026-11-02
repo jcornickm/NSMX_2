@@ -217,7 +217,7 @@ actualizar_rds <- function(viejo, nuevo, llaves, valor, desde,
 #   buscar_en_repo("immex_empleo")
 #   buscar_en_repo("TCAC_y_shares", ext = "\\.(R|qmd)$")     # solo código
 #   buscar_en_repo("immex_(pct|empleo)", fixed = FALSE)      # expresión regular
-# Por defecto busca en .R, .qmd, .Rmd y .md (incluye Catalogo_RDS.md) y excluye
+# Por defecto busca en .R, .qmd, .Rmd y .md y excluye
 # copias de respaldo (_backup*), Quarto/OldQmd y carpetas de render. Para incluir
 # CSV, pasar ext = "\\.(R|qmd|Rmd|md|csv)$" (puede ser lento si hay CSV grandes).
 buscar_en_repo <- function(patron,

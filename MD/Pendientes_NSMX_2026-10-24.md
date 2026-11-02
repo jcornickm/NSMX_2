@@ -27,8 +27,8 @@ recoge lo que quedó abierto. Marcar con `[x]` al cerrar cada punto.
 - [ ] Decidir si se archivan también los intermedios que ningún qmd carga y
       que regenera un Prep: `imp_mex_hs6`, `imp_mex_hs4_84858790`,
       `imp_mex_hs6_84858790`, `imp_mex_top_hs4`, `impMex_caps_2025`,
-      `listas_finales_NS_mex_vnm_twn`, `tabla_competencia_mex_vnm_twn`,
-      `tabla_overlap_mex_vnm_twn`, `ied_flujos_tipo`,
+      `tabla_competencia_mex_vnm_twn` (rediseñado 1-nov-2026),
+      `ied_flujos_tipo`,
       `aranceles_autos_autopartes_mensual`, `top_partidas_periodos`,
       `top_partidas_competidores_periodos`. Si se quieren dejar de producir,
       hay que cambiar el Prep que los escribe, no moverlos.
@@ -62,8 +62,8 @@ recoge lo que quedó abierto. Marcar con `[x]` al cerrar cada punto.
 - [ ] `Excel/2025_4T_Flujos_PTI_ACT_3_.xlsx`: estaba para una revisión
       "vieja vs. nueva" de la IED (prevista el 23-oct). Si ya se hizo, mover a
       `Por_eliminar/`.
-- [ ] `MD/Catalogo_RDS.md` (catálogo anterior, 19-oct) queda superado por el
-      nuevo documento; decidir si se archiva.
+- [x] `MD/Catalogo_RDS.md` (catálogo anterior, 19-oct) queda superado por el
+      nuevo documento; eliminado el 2026-11-01 (queda en el historial de Git).
 
 ## E. Siguiente documento
 

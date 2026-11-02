@@ -4,7 +4,7 @@
 # Antes este cálculo estaba DUPLICADO en los dos chunks del qmd; ahora se hace
 # una sola vez aquí.
 #
-# Entradas: RDS/xmex_total_ef.rds (Query04; fuente: ver MD/Catalogo_RDS.md)
+# Entradas: RDS/xmex_total_ef.rds (Query04; fuente: ver Quarto/CATALOGOS_NSMX.qmd)
 # Salidas:  RDS/tcac_estados.rds   — formato largo: cve_geo, nombre, col, año_ini,
 #                                    año_fin, tcac_pct (en %, p. ej. 5.2 = 5.2%)
 #           RDS/estados_lookup.rds — list(abreviaturas, gadm_a_nombre)
