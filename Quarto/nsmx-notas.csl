@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<style xmlns="http://purl.org/net/xbiblio/csl" class="note" version="1.0" default-locale="es-ES">
+  <info>
+    <title>NSMX - notas al pie (estilo Chicago simplificado)</title>
+    <id>http://www.zotero.org/styles/nsmx-notas</id>
+    <category citation-format="note"/>
+    <category field="social_science"/>
+    <updated>2026-11-03T00:00:00+00:00</updated>
+  </info>
+  <macro name="author">
+    <names variable="author">
+      <name and="text" delimiter=", " initialize-with=". "/>
+    </names>
+  </macro>
+  <macro name="title">
+    <choose>
+      <if type="article-journal chapter paper-conference" match="any">
+        <text variable="title" quotes="true"/>
+      </if>
+      <else>
+        <text variable="title" font-style="italic"/>
+      </else>
+    </choose>
+  </macro>
+  <macro name="title-short">
+    <choose>
+      <if type="article-journal chapter paper-conference" match="any">
+        <text variable="title" form="short" quotes="true"/>
+      </if>
+      <else>
+        <text variable="title" form="short" font-style="italic"/>
+      </else>
+    </choose>
+  </macro>
+  <macro name="issued">
+    <date variable="issued" delimiter=" ">
+      <date-part name="day" suffix=" de"/>
+      <date-part name="month" suffix=" de"/>
+      <date-part name="year"/>
+    </date>
+  </macro>
+  <macro name="source">
+    <group delimiter=", ">
+      <text variable="note"/>
+      <text variable="container-title" font-style="italic"/>
+      <group delimiter=" ">
+        <text term="volume" form="short"/>
+        <text variable="volume"/>
+      </group>
+      <text variable="issue" prefix="núm. "/>
+      <text variable="publisher"/>
+      <text macro="issued"/>
+      <text variable="page" prefix="pp. "/>
+    </group>
+  </macro>
+  <citation>
+    <layout delimiter="; " suffix=".">
+      <choose>
+        <if position="first">
+          <group delimiter=", ">
+            <text macro="author"/>
+            <text macro="title"/>
+            <text macro="source"/>
+            <text variable="URL"/>
+          </group>
+        </if>
+        <else>
+          <group delimiter=", ">
+            <text macro="author"/>
+            <text macro="title-short"/>
+          </group>
+        </else>
+      </choose>
+    </layout>
+  </citation>
+  <bibliography hanging-indent="true" entry-spacing="1">
+    <sort>
+      <key macro="author"/>
+      <key variable="issued"/>
+    </sort>
+    <layout suffix=".">
+      <group delimiter=". ">
+        <text macro="author"/>
+        <text macro="title"/>
+        <text macro="source"/>
+        <text variable="URL"/>
+      </group>
+    </layout>
+  </bibliography>
+</style>
